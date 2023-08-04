@@ -1,0 +1,63 @@
+{
+    "name": "swooletw/hyperf-packages",
+    "type": "library",
+    "description": "The pakcages for Hyperf maintained by SwooleTW.",
+    "license": "MIT",
+    "keywords": [
+        "php",
+        "hyperf",
+        "packages",
+        "swoole"
+    ],
+    "authors": [
+        {
+            "name": "Albert Chen",
+            "email": "albert.cht@pm.me",
+            "homepage": "https://albert-chen.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/swooletw/hyperf-packages/issues",
+        "source": "https://github.com/swooletw/hyperf-packages"
+    },
+    "autoload": {
+        "psr-4": {
+            "SwooleTW\\Hyperf\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SwooleTW\\Hyperf\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^8.1",
+        "hyperf/context": "^3.0",
+        "hyperf/di": "^3.0",
+        "swooletw/hyperf-container": "@dev",
+        "swooletw/hyperf-contracts": "@dev",
+        "swooletw/hyperf-hashing": "@dev",
+        "swooletw/hyperf-support": "@dev"
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.5.1",
+        "phpunit/phpunit": "^10.0.7"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "0.1-dev"
+        }
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "src/*",
+            "options": {
+                "symlink": true
+            }
+        }
+    ]
+}

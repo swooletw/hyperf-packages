@@ -1,0 +1,45 @@
+{
+    "name": "swooletw/hyperf-hashing",
+    "type": "library",
+    "description": "The hashing pakcage for Hyperf.",
+    "license": "MIT",
+    "keywords": [
+        "php",
+        "hyperf",
+        "hashing",
+        "swoole"
+    ],
+    "authors": [
+        {
+            "name": "Albert Chen",
+            "email": "albert.cht@pm.me",
+            "homepage": "https://albert-chen.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/swooletw/hyperf-packages/issues",
+        "source": "https://github.com/swooletw/hyperf-packages"
+    },
+    "autoload": {
+        "psr-4": {
+            "SwooleTW\\Hyperf\\Hashing\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.1",
+        "hyperf/config": "^3.0",
+        "hyperf/context": "^3.0",
+        "hyperf/support": "^3.0"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "hyperf": {
+            "config": "SwooleTW\\Hyperf\\Hashing\\ConfigProvider"
+        },
+        "branch-alias": {
+            "dev-main": "0.1-dev"
+        }
+    }
+}
