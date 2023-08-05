@@ -6,9 +6,9 @@ namespace SwooleTW\Hyperf\Support;
 
 use Closure;
 use Hyperf\Contract\ConfigInterface;
-use Hyperf\Contract\ContainerInterface;
 use Hyperf\Stringable\Str;
 use InvalidArgumentException;
+use Psr\Container\ContainerInterface;
 
 abstract class Manager
 {
@@ -36,7 +36,7 @@ abstract class Manager
     /**
      * Create a new manager instance.
      *
-     * @param  \Hyperf\Contract\ContainerInterface  $container
+     * @param  \Psr\Container\ContainerInterface  $container
      * @return void
      */
     public function __construct(
@@ -144,7 +144,7 @@ abstract class Manager
     /**
      * Get the container instance used by the manager.
      *
-     * @return \Hyperf\Contract\ContainerInterface
+     * @return \Psr\Container\ContainerInterface
      */
     public function getContainer(): ContainerInterface
     {
@@ -154,7 +154,7 @@ abstract class Manager
     /**
      * Set the container instance used by the manager.
      *
-     * @param  \Hyperf\Contract\ContainerInterface  $container
+     * @param  \Psr\Container\ContainerInterface  $container
      * @return $this
      */
     public function setContainer(ContainerInterface $container): static
