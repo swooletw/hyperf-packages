@@ -228,8 +228,36 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
      */
     public function bind(string $abstract, mixed $concrete = null): void
     {
+        $this->dropStaleInstances($abstract);
+
+        // If no concrete type was given, we will simply set the concrete type to the
+        // abstract type. After that, the concrete type to be registered as shared
+        // without being forced to state their classes in both of the parameters.
+        if (is_null($concrete)) {
+            $concrete = $abstract;
+        }
+
+        if ($this->bound($abstract)) {
+            $this->rebound($abstract);
+        }
+
         $this->define($abstract, $concrete);
     }
+
+    /**
+     * Register a binding if it hasn't already been registered.
+     *
+     * @param  string  $abstract
+     * @param  \Closure|string|null  $concrete
+     * @return void
+     */
+    public function bindIf(string $abstract, mixed $concrete = null): void
+    {
+        if (! $this->bound($abstract)) {
+            $this->define($abstract, $concrete);
+        }
+    }
+
 
     /**
      * "Extend" an abstract type in the container.
@@ -271,11 +299,12 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
         if (is_object($instance)) {
             $instance = fn () => $instance;
         }
-        $this->define($abstract, $instance);
 
         if ($this->bound($abstract)) {
             $this->rebound($abstract);
         }
+
+        $this->define($abstract, $instance);
 
         return $instance;
     }
@@ -387,7 +416,7 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
      * @param  array  $parameters
      * @return mixed
      *
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @throws \Hyperf\Di\Exception\InvalidDefinitionException
      */
     public function makeWith($abstract, array $parameters = []): mixed
     {
@@ -648,9 +677,9 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
     /**
      * Get the globally available instance of the container.
      *
-     * @return static
+     * @return ContainerContract
      */
-    public static function getInstance(): static
+    public static function getInstance(): ContainerContract
     {
         if (is_null(ApplicationContext::getContainer())) {
             ApplicationContext::setContainer(
@@ -664,10 +693,10 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
     /**
      * Set the shared instance of the container.
      *
-     * @param  \SwooleTW\Hyperf\Contracts\Container\Container|null  $container
-     * @return \SwooleTW\Hyperf\Contracts\Container\Container|static
+     * @param  \SwooleTW\Hyperf\Contracts\Container\Container  $container
+     * @return \SwooleTW\Hyperf\Contracts\Container\Container
      */
-    public static function setInstance(ContainerContract $container = null): static
+    public static function setInstance(ContainerContract $container): ContainerContract
     {
         return ApplicationContext::setContainer($container);
     }

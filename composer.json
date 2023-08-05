@@ -21,8 +21,12 @@
         "source": "https://github.com/swooletw/hyperf-packages"
     },
     "autoload": {
+        "exclude-from-classmap": [
+            "vendor/hyperf/di/src/Container.php"
+        ],
         "psr-4": {
-            "SwooleTW\\Hyperf\\": "src/"
+            "SwooleTW\\Hyperf\\": "src/",
+            "Hyperf\\Di\\": "overrides/Hyperf/Di/"
         }
     },
     "autoload-dev": {

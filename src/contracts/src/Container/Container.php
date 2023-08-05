@@ -61,6 +61,15 @@ interface Container extends HyperfContainerInterface
     public function bind(string $abstract, mixed $concrete = null): void;
 
     /**
+     * Register a binding if it hasn't already been registered.
+     *
+     * @param  string  $abstract
+     * @param  \Closure|string|null  $concrete
+     * @return void
+     */
+    public function bindIf(string $abstract, mixed $concrete = null): void;
+
+    /**
      * "Extend" an abstract type in the container.
      *
      * @param  string  $abstract
@@ -196,15 +205,15 @@ interface Container extends HyperfContainerInterface
     /**
      * Get the globally available instance of the container.
      *
-     * @return static
+     * @return SwooleTW\Hyperf\Contracts\Container\Container
      */
-    public static function getInstance(): static;
+    public static function getInstance(): Container;
 
     /**
      * Set the shared instance of the container.
      *
-     * @param  \SwooleTW\Hyperf\Contracts\Container\Container|null  $container
-     * @return \SwooleTW\Hyperf\Contracts\Container\Container|static
+     * @param  \SwooleTW\Hyperf\Contracts\Container\Container  $container
+     * @return \SwooleTW\Hyperf\Contracts\Container\Container
      */
-    public static function setInstance(Container $container = null): static;
+    public static function setInstance(Container $container): Container;
 }
