@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Contracts\Container;
+namespace SwooleTW\Hyperf\Container\Contracts;
 
 use Closure;
 use Hyperf\Contract\ContainerInterface as HyperfContainerInterface;
@@ -205,15 +205,15 @@ interface Container extends HyperfContainerInterface
     /**
      * Get the globally available instance of the container.
      *
-     * @return SwooleTW\Hyperf\Contracts\Container\Container
+     * @return SwooleTW\Hyperf\Container\Contracts\Container
      */
     public static function getInstance(): Container;
 
     /**
      * Set the shared instance of the container.
      *
-     * @param  \SwooleTW\Hyperf\Contracts\Container\Container  $container
-     * @return \SwooleTW\Hyperf\Contracts\Container\Container
+     * @param  \SwooleTW\Hyperf\Container\Contracts\Container  $container
+     * @return \SwooleTW\Hyperf\Container\Contracts\Container
      */
     public static function setInstance(Container $container): Container;
 }

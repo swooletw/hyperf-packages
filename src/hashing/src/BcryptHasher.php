@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Hashing;
 
 use RuntimeException;
-use SwooleTW\Hyperf\Contracts\Hashing\Hasher as HasherContract;
+use SwooleTW\Hyperf\Hashing\Contracts\Hasher as HasherContract;
 
 class BcryptHasher extends AbstractHasher implements HasherContract
 {

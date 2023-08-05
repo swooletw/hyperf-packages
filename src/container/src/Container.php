@@ -10,7 +10,7 @@ use Hyperf\Context\ApplicationContext;
 use Hyperf\Di\Container as HyperfContainer;
 use Hyperf\Di\Definition\DefinitionSource;
 use LogicException;
-use SwooleTW\Hyperf\Contracts\Container\Container as ContainerContract;
+use SwooleTW\Hyperf\Container\Contracts\Container as ContainerContract;
 
 class Container extends HyperfContainer implements ContainerContract, ArrayAccess
 {

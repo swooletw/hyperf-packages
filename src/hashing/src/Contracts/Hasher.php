@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Contracts\Hashing;
+namespace SwooleTW\Hyperf\Hashing\Contracts;
 
 interface Hasher
 {

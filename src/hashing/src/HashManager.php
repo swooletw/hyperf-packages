@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Hashing;
 
-use SwooleTW\Hyperf\Contracts\Hashing\Hasher;
+use SwooleTW\Hyperf\Hashing\Contracts\Hasher;
 use SwooleTW\Hyperf\Support\Manager;
 
 /**
- * @mixin \SwooleTW\Hyperf\Contracts\Hashing\Hasher
+ * @mixin \SwooleTW\Hyperf\Hashing\Contracts\Hasher
  */
 class HashManager extends Manager implements Hasher
 {

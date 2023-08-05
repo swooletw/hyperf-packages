@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Hashing;
 
-use SwooleTW\Hyperf\Contracts\Hashing\Hasher as HasherContract;
 use RuntimeException;
+use SwooleTW\Hyperf\Hashing\Contracts\Hasher as HasherContract;
 
 class ArgonHasher extends AbstractHasher implements HasherContract
 {
