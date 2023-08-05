@@ -1,7 +1,7 @@
 {
     "name": "swooletw/hyperf-hashing",
     "type": "library",
-    "description": "The hashing pakcage for Hyperf.",
+    "description": "The hashing package for Hyperf.",
     "license": "MIT",
     "keywords": [
         "php",
