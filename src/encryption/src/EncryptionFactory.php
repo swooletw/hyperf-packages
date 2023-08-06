@@ -13,7 +13,7 @@ use function Hyperf\Tappable\tap;
 
 class EncryptionFactory
 {
-    public function __invoke(ContainerInterface $container): array
+    public function __invoke(ContainerInterface $container): Encrypter
     {
         $config = $container->get(ConfigInterface::class)
             ->get('encryption', []);
