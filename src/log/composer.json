@@ -40,7 +40,7 @@
             "config": "SwooleTW\\Hyperf\\Log\\ConfigProvider"
         },
         "branch-alias": {
-            "dev-main": "0.1-dev"
+            "dev-main": "3.0-dev"
         }
     }
 }
