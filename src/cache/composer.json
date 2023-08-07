@@ -1,0 +1,51 @@
+{
+    "name": "swooletw/hyperf-cache",
+    "type": "library",
+    "description": "The cache package for Hyperf.",
+    "license": "MIT",
+    "keywords": [
+        "php",
+        "hyperf",
+        "cache",
+        "swoole"
+    ],
+    "authors": [
+        {
+            "name": "Albert Chen",
+            "email": "albert.cht@pm.me",
+            "homepage": "https://albert-chen.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/swooletw/hyperf-packages/issues",
+        "source": "https://github.com/swooletw/hyperf-packages"
+    },
+    "autoload": {
+        "psr-4": {
+            "SwooleTW\\Hyperf\\Cache\\": "src/"
+        },
+        "files": [
+            "src/Functions.php"
+        ]
+    },
+    "require": {
+        "php": "^8.1",
+        "hyperf/config": "^3.0",
+        "hyperf/support": "^3.0",
+        "psr/simple-cache": "^3.0"
+    },
+    "suggests": {
+        "hyperf/redis": "Required to use redis driver. (^2.0)"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "hyperf": {
+            "config": "SwooleTW\\Hyperf\\Cache\\ConfigProvider"
+        },
+        "branch-alias": {
+            "dev-main": "3.0-dev"
+        }
+    }
+}
