@@ -11,11 +11,10 @@ use Hyperf\Stringable\Str;
 use function Hyperf\Support\env;
 
 /**
+ * @method bool isTesting()
  * @method bool isLocal()
- * @method bool isDev()
  * @method bool isDevelop()
  * @method bool isProduction()
- * @method bool isOnline()
  */
 class Environment
 {
