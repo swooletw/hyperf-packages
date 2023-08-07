@@ -30,8 +30,8 @@
     },
     "require": {
         "php": "^8.1",
-        "hyperf/http-server": "^3.0",
-        "hyperf/context": "^3.0"
+        "hyperf/http-server": "^3.1",
+        "hyperf/context": "^3.1"
     },
     "config": {
         "sort-packages": true
@@ -41,7 +41,7 @@
             "config": "SwooleTW\\Hyperf\\Router\\ConfigProvider"
         },
         "branch-alias": {
-            "dev-main": "3.0-dev"
+            "dev-main": "3.1-dev"
         }
     }
 }

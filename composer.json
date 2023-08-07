@@ -36,9 +36,9 @@
     },
     "require": {
         "php": "^8.1",
-        "hyperf/context": "^3.0",
-        "hyperf/di": "^3.0",
-        "hyperf/redis": "^3.0",
+        "hyperf/context": "^3.1",
+        "hyperf/di": "^3.1",
+        "hyperf/redis": "^3.1",
         "swooletw/hyperf-cache": "@dev",
         "swooletw/hyperf-container": "@dev",
         "swooletw/hyperf-cookie": "@dev",
@@ -61,7 +61,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-main": "0.1-dev"
+            "dev-main": "3.1-dev"
         }
     },
     "repositories": [

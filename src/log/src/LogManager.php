@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Log;
 
 use Closure;
+use Hyperf\Collection\Collection;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Stringable\Str;
 use InvalidArgumentException;
@@ -189,8 +190,7 @@ class LogManager implements LoggerInterface
         );
 
         return new Logger(
-            new Monolog('laravel', $this->prepareHandlers([$handler])),
-            $this->app['events']
+            new Monolog('laravel', $this->prepareHandlers([$handler]))
         );
     }
 
@@ -260,13 +260,13 @@ class LogManager implements LoggerInterface
             $config['channels'] = explode(',', $config['channels']);
         }
 
-        $handlers = collect($config['channels'])->flatMap(function ($channel) {
+        $handlers = Collection::make($config['channels'])->flatMap(function ($channel) {
             return $channel instanceof LoggerInterface
                 ? $channel->getHandlers()
                 : $this->channel($channel)->getHandlers();
         })->all();
 
-        $processors = collect($config['channels'])->flatMap(function ($channel) {
+        $processors = Collection::make($config['channels'])->flatMap(function ($channel) {
             return $channel instanceof LoggerInterface
                 ? $channel->getProcessors()
                 : $this->channel($channel)->getProcessors();
@@ -386,7 +386,7 @@ class LogManager implements LoggerInterface
             );
         }
 
-        collect($config['processors'] ?? [])->each(function ($processor) {
+        Collection::make($config['processors'] ?? [])->each(function ($processor) {
             $processor = $processor['processor'] ?? $processor;
 
             if (! is_a($processor, ProcessorInterface::class, true)) {
@@ -406,7 +406,7 @@ class LogManager implements LoggerInterface
             $this->app->make($config['handler'], $with), $config
         );
 
-        $processors = collect($config['processors'] ?? [])
+        $processors = Collection::make($config['processors'] ?? [])
             ->map(fn ($processor) => $this->app->make($processor['processor'] ?? $processor, $processor['with'] ?? []))
             ->toArray();
 
