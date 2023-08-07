@@ -276,17 +276,13 @@ class SQLiteGrammar extends Grammar
      */
     public function compileDropColumn(Blueprint $blueprint, Fluent $command, Connection $connection): array
     {
-        $tableDiff = $this->getDoctrineTableDiff(
-            $blueprint, $schema = $connection->getDoctrineSchemaManager()
-        );
+        $table = $this->wrapTable($blueprint);
 
-        foreach ($command->columns as $name) {
-            $tableDiff->removedColumns[$name] = $connection->getDoctrineColumn(
-                $this->getTablePrefix().$blueprint->getTable(), $name
-            );
-        }
+        $columns = $this->prefixArray('drop column', $this->wrapArray($command->columns));
 
-        return (array) $schema->getDatabasePlatform()->getAlterTableSQL($tableDiff);
+        return Collection::make($columns)
+            ->map(fn ($column) => 'alter table '.$table.' '.$column
+            )->all();
     }
 
     /**

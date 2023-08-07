@@ -33,7 +33,7 @@
         "hyperf/stringable": "^3.0"
     },
     "suggest": {
-        "doctrine/dbal": "Required to rename columns and drop SQLite columns (^3.5.1)."
+        "doctrine/dbal": "Required to rename SQLite indexs (^3.5.1)."
     },
     "config": {
         "sort-packages": true

@@ -97,34 +97,23 @@ class DatabaseSQLiteSchemaGrammarTest extends TestCase
         $this->assertSame('drop index "foo"', $statements[0]);
     }
 
-    // public function testDropColumn()
-    // {
-    //     $pdo = (new SQLiteConnector())
-    //         ->connect([
-    //             'driver' => 'sqlite',
-    //             'database' => ':memory:',
-    //             'prefix' => 'prefix_',
-    //         ]);
-    //     $connection = new SQLiteConnection($pdo);
-    //     $resolver = new ConnectionResolver([
-    //         'default' => $connection
-    //     ]);
+    public function testDropColumn()
+    {
+        $blueprint = new Blueprint('users');
+        $blueprint->dropColumn('foo');
+        $statements = $blueprint->toSql($this->getConnection(), $this->getGrammar());
 
-    //     $schema = $resolver->connection()->getSchemaBuilder();
-    //     $schema->create('users', function (Blueprint $table) {
-    //         $table->string('email');
-    //         $table->string('name');
-    //     });
+        $this->assertCount(1, $statements);
+        $this->assertSame('alter table "users" drop column "foo"', $statements[0]);
 
-    //     $this->assertTrue($schema->hasTable('users'));
-    //     $this->assertTrue($schema->hasColumn('users', 'name'));
+        $blueprint = new Blueprint('users');
+        $blueprint->dropColumn(['foo', 'bar']);
+        $statements = $blueprint->toSql($this->getConnection(), $this->getGrammar());
 
-    //     $schema->table('users', function (Blueprint $table) {
-    //         $table->dropColumn('name');
-    //     });
-
-    //     $this->assertFalse($schema->hasColumn('users', 'name'));
-    // }
+        $this->assertCount(2, $statements);
+        $this->assertSame('alter table "users" drop column "foo"', $statements[0]);
+        $this->assertSame('alter table "users" drop column "bar"', $statements[1]);
+    }
 
     public function testDropSpatialIndex()
     {
