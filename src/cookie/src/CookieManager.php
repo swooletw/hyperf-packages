@@ -23,7 +23,7 @@ class CookieManager
         return ! is_null($this->get($key));
     }
 
-    public function get(string $key, string $default = null)
+    public function get(string $key, ?string $default = null): ?string
     {
         if (! Context::has(ServerRequestInterface::class)) {
             return null;
@@ -50,7 +50,7 @@ class CookieManager
         $this->appendToQueue($cookie);
     }
 
-    public function expire(string $name, string $path = '', string $domain = '')
+    public function expire(string $name, string $path = '', string $domain = ''): void
     {
         $this->queue($this->forget($name, $path, $domain));
     }
