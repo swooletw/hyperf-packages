@@ -26,6 +26,7 @@ use ReflectionProperty;
 use RuntimeException;
 use SwooleTW\Hyperf\Log\LogManager;
 use SwooleTW\Hyperf\Log\Logger;
+use SwooleTW\Hyperf\Support\Environment;
 
 class LogManagerTest extends TestCase
 {
@@ -253,8 +254,9 @@ class LogManagerTest extends TestCase
                 throw new RuntimeException('Emergency logger was created.');
             }
         };
+
+        $container->get(Environment::class)->set('testing');
         $config = $container->get(ConfigInterface::class);
-        $config->set('app.env', 'testing');
         $config->set('logging.default', null);
         $config->set('logging.channels.null', [
             'driver' => 'monolog',
@@ -273,7 +275,7 @@ class LogManagerTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Emergency logger was created.');
 
-        $config->set('app.env', 'production');
+        $container->get(Environment::class)->set('production');
         $manager->info('message');
     }
 

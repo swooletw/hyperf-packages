@@ -2,6 +2,12 @@
     "name": "swooletw/hyperf-support",
     "description": "The Support package for Hyperf.",
     "license": "MIT",
+    "keywords": [
+        "php",
+        "hyperf",
+        "support",
+        "swoole"
+    ],
     "support": {
         "issues": "https://github.com/swooletw/hyperf-packages/issues",
         "source": "https://github.com/swooletw/hyperf-packages"
@@ -19,7 +25,10 @@
     "autoload": {
         "psr-4": {
             "SwooleTW\\Hyperf\\Support\\": "src/"
-        }
+        },
+        "files": [
+            "src/helpers.php"
+        ]
     },
     "extra": {
         "branch-alias": {

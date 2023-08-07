@@ -30,7 +30,8 @@
         "hyperf/config": "^3.0",
         "monolog/monolog": "^3.0",
         "hyperf/stringable": "^3.0",
-        "hyperf/contract": "^3.0"
+        "hyperf/contract": "^3.0",
+        "swooletw/hyperf-support": "^3.0"
     },
     "config": {
         "sort-packages": true

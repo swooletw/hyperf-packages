@@ -24,6 +24,7 @@ use Monolog\Processor\PsrLogMessageProcessor;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Stringable;
+use SwooleTW\Hyperf\Support\Environment;
 use Throwable;
 
 /**
@@ -480,7 +481,7 @@ class LogManager implements LoggerInterface
      */
     protected function getFallbackChannelName(): string
     {
-        return $this->config->get('app.env') ?: 'production';
+        return $this->app->get(Environment::class)->get() ?: 'production';
     }
 
     /**
@@ -554,7 +555,7 @@ class LogManager implements LoggerInterface
     {
         $driver ??= $this->getDefaultDriver();
 
-        if ($this->config->get('app.env') === 'testing') {
+        if ($this->app->get(Environment::class)->isTesting()) {
             $driver ??= 'null';
         }
 
