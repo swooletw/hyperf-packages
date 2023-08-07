@@ -36,12 +36,14 @@
     },
     "require": {
         "php": "^8.1",
+        "doctrine/dbal": "^3.6",
         "hyperf/context": "^3.0",
         "hyperf/di": "^3.0",
         "swooletw/hyperf-container": "@dev",
         "swooletw/hyperf-encryption": "@dev",
         "swooletw/hyperf-hashing": "@dev",
         "swooletw/hyperf-log": "@dev",
+        "swooletw/hyperf-sqlite": "@dev",
         "swooletw/hyperf-support": "@dev"
     },
     "require-dev": {

@@ -1,0 +1,49 @@
+{
+    "name": "swooletw/hyperf-sqlite",
+    "type": "library",
+    "description": "The sqlite driver for Hyperf.",
+    "license": "MIT",
+    "keywords": [
+        "php",
+        "hyperf",
+        "sqlite",
+        "swoole"
+    ],
+    "authors": [
+        {
+            "name": "Albert Chen",
+            "email": "albert.cht@pm.me",
+            "homepage": "https://albert-chen.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/swooletw/hyperf-packages/issues",
+        "source": "https://github.com/swooletw/hyperf-packages"
+    },
+    "autoload": {
+        "psr-4": {
+            "SwooleTW\\Hyperf\\Database\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.1",
+        "hyperf/database": "^3.0",
+        "hyperf/support": "^3.0",
+        "hyperf/collection": "^3.0",
+        "hyperf/stringable": "^3.0"
+    },
+    "suggest": {
+        "doctrine/dbal": "Required to rename columns and drop SQLite columns (^3.5.1)."
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "hyperf": {
+            "config": "SwooleTW\\Hyperf\\Database\\ConfigProvider"
+        },
+        "branch-alias": {
+            "dev-main": "3.0-dev"
+        }
+    }
+}
