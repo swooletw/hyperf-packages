@@ -41,6 +41,7 @@
         "hyperf/redis": "^3.0",
         "swooletw/hyperf-cache": "@dev",
         "swooletw/hyperf-container": "@dev",
+        "swooletw/hyperf-cookie": "@dev",
         "swooletw/hyperf-encryption": "@dev",
         "swooletw/hyperf-hashing": "@dev",
         "swooletw/hyperf-log": "@dev",
