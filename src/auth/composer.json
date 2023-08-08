@@ -1,0 +1,59 @@
+{
+    "name": "swooletw/hyperf-auth",
+    "description": "The Support package for Hyperf.",
+    "license": "MIT",
+    "keywords": [
+        "php",
+        "hyperf",
+        "auth",
+        "swoole",
+        "larvel"
+    ],
+    "support": {
+        "issues": "https://github.com/swooletw/hyperf-packages/issues",
+        "source": "https://github.com/swooletw/hyperf-packages"
+    },
+    "authors": [
+        {
+            "name": "Albert Chen",
+            "email": "albert.cht@pm.me",
+            "homepage": "https://albert-chen.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "nesbot/carbon": "^2.16",
+        "hyperf/context": "^3.1",
+        "hyperf/stringable": "^3.1",
+        "hyperf/macroable": "^3.1",
+        "hyperf/contract": "^3.1",
+        "hyperf/config": "^3.1",
+        "hyperf/database": "^3.1",
+        "hyperf/http-server": "^3.1",
+        "swooletw/hyperf-hashing": "^3.1|dev-master",
+        "swooletw/hyperf-jwt": "^3.1|dev-master"
+    },
+    "suggest": {
+        "hyperf/session": "Required to use session guard."
+    },
+    "autoload": {
+        "psr-4": {
+            "SwooleTW\\Hyperf\\Auth\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "extra": {
+        "hyperf": {
+            "config": "SwooleTW\\Hyperf\\Auth\\ConfigProvider"
+        },
+        "branch-alias": {
+            "dev-master": "3.1-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev"
+}
