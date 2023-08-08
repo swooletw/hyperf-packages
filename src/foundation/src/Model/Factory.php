@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Modules\Foundation\Model;
+namespace SwooleTW\Hyperf\Foundation\Model;
 
 use Hyperf\Context\ApplicationContext;
 use Hyperf\Contract\ConfigInterface;

@@ -37,7 +37,7 @@ trait RefreshDatabase
     {
         // reset connection in connection pool in Hyperf\DbConnection\ConnectionResolver
         // data will be cleared once in-memory connection closed
-        if ($connection = Context::get("database.connection.{$this->getConnection()}")) {
+        if ($connection = Context::get("database.connection.{$this->getRefreshConnection()}")) {
             $connection->reconnect();
         }
 
@@ -53,7 +53,7 @@ trait RefreshDatabase
     {
         $config = $this->app->get(ConfigInterface::class);
 
-        return $config->get("databases.{$this->getConnection()}.database") === ':memory:';
+        return $config->get("databases.{$this->getRefreshConnection()}.database") === ':memory:';
     }
 
     /**
@@ -65,7 +65,7 @@ trait RefreshDatabase
     {
         return [
             '--seed' => $this->shouldSeed(),
-            '--database' => $this->getConnection(),
+            '--database' => $this->getRefreshConnection(),
         ];
     }
 
@@ -138,7 +138,7 @@ trait RefreshDatabase
         // ...
     }
 
-    protected function getConnection(): string
+    protected function getRefreshConnection(): string
     {
         return $this->app
             ->get(ConfigInterface::class)

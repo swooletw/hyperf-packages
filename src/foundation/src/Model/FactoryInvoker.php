@@ -2,18 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Modules\Foundation\Model;
+namespace SwooleTW\Hyperf\Foundation\Model;
 
 use Faker\Factory as FakerFactory;
-use Hyperf\Contract\ConfigInterface;
-use Modules\Foundation\Model\Factory;
 use Psr\Container\ContainerInterface;
+use SwooleTW\Hyperf\Foundation\Model\Factory;
 
 class FactoryInvoker
 {
     public function __invoke(ContainerInterface $container)
     {
-        $config = $container->get(ConfigInterface::class);
         $factory = new Factory(
             FakerFactory::create('en_US')
         );

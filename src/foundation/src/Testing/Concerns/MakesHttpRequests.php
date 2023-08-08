@@ -43,7 +43,7 @@ trait MakesHttpRequests
     protected function doRequest(string $method, ...$args): TestResponse
     {
         return $this->createTestResponse(
-            make(Client::class)->{$method}(...$args)
+            $this->app->make(Client::class)->{$method}(...$args)
         );
     }
 

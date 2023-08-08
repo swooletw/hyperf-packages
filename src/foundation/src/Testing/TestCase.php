@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Mockery as m;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithConsole;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithContainer;
+use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithDatabase;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\MakesHttpRequests;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\MocksApplicationServices;
 use SwooleTW\Hyperf\Foundation\Testing\DatabaseMigrations;
@@ -23,35 +24,36 @@ class TestCase extends \PHPUnit\Framework\TestCase
     use InteractsWithContainer,
         MakesHttpRequests,
         MocksApplicationServices,
-        InteractsWithConsole;
+        InteractsWithConsole,
+        InteractsWithDatabase;
 
     /**
      * The callbacks that should be run after the application is created.
      *
      * @var array
      */
-    protected $afterApplicationCreatedCallbacks = [];
+    protected array $afterApplicationCreatedCallbacks = [];
 
     /**
      * The callbacks that should be run before the application is destroyed.
      *
      * @var array
      */
-    protected $beforeApplicationDestroyedCallbacks = [];
+    protected array $beforeApplicationDestroyedCallbacks = [];
 
     /**
      * The exception thrown while running an application destruction callback.
      *
      * @var \Throwable
      */
-    protected $callbackException;
+    protected ?Throwable $callbackException = null;
 
     /**
      * Indicates if we have made it through the base setUp function.
      *
      * @var bool
      */
-    protected $setUpHasRun = false;
+    protected bool $setUpHasRun = false;
 
     protected function setUp(): void
     {
