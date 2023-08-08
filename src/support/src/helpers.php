@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Hyperf\Collection\Collection;
-use Hyperf\Support\Optional;
+use Hyperf\Context\ApplicationContext;
 use Hyperf\Tappable\HigherOrderTapProxy;
 use SwooleTW\Hyperf\Support\Environment;
 
@@ -13,7 +13,7 @@ if (! function_exists('value')) {
      */
     function value(mixed $value, ...$args)
     {
-        return $value instanceof Closure ? $value(...$args) : $value;
+        return \Hyperf\Support\value($value, ...$args);
     }
 }
 
@@ -26,28 +26,7 @@ if (! function_exists('env')) {
      */
     function env($key, $default = null)
     {
-        $value = getenv($key);
-        if ($value === false) {
-            return value($default);
-        }
-        switch (strtolower($value)) {
-            case 'true':
-            case '(true)':
-                return true;
-            case 'false':
-            case '(false)':
-                return false;
-            case 'empty':
-            case '(empty)':
-                return '';
-            case 'null':
-            case '(null)':
-                return null;
-        }
-        if (($valueLength = strlen($value)) > 1 && $value[0] === '"' && $value[$valueLength - 1] === '"') {
-            return substr($value, 1, -1);
-        }
-        return $value;
+        return \Hyperf\Support\env($key, $default);
     }
 }
 
@@ -59,10 +38,11 @@ if (! function_exists('environment')) {
      */
     function environment(...$environments)
     {
-        $environment = app(Environment::class);
+        $environment = ApplicationContext::getContainer()
+            ->get(Environment::class);
 
         if (count($environments) > 0) {
-            return $environment->environment(...$environments);
+            return $environment->is(...$environments);
         }
 
         return $environment;
@@ -132,9 +112,7 @@ if (! function_exists('class_basename')) {
      */
     function class_basename($class)
     {
-        $class = is_object($class) ? get_class($class) : $class;
-
-        return basename(str_replace('\\', '/', $class));
+        return \Hyperf\Support\class_basename($class);
     }
 }
 
@@ -147,17 +125,7 @@ if (! function_exists('class_uses_recursive')) {
      */
     function class_uses_recursive($class)
     {
-        if (is_object($class)) {
-            $class = get_class($class);
-        }
-
-        $results = [];
-
-        foreach (array_reverse(class_parents($class)) + [$class => $class] as $class) {
-            $results += trait_uses_recursive($class);
-        }
-
-        return array_unique($results);
+        return \Hyperf\Support\class_uses_recursive($class);
     }
 }
 
@@ -198,11 +166,7 @@ if (! function_exists('optional')) {
      */
     function optional($value = null, callable $callback = null)
     {
-        if (is_null($callback)) {
-            return new Optional($value);
-        } elseif (! is_null($value)) {
-            return $callback($value);
-        }
+        return \Hyperf\Support\optional($value, $callback);
     }
 }
 
@@ -210,35 +174,13 @@ if (! function_exists('retry')) {
     /**
      * Retry an operation a given number of times.
      *
-     * @param  int  $times
-     * @param  callable  $callback
-     * @param  int|\Closure  $sleepMilliseconds
-     * @param  callable|null  $when
-     * @return mixed
-     *
-     * @throws \Exception
+     * @param float|int $times
+     * @param int $sleep millisecond
+     * @throws Throwable
      */
-    function retry($times, callable $callback, $sleepMilliseconds = 0, $when = null)
+    function retry($times, callable $callback, int $sleep = 0)
     {
-        $attempts = 0;
-
-        beginning:
-        $attempts++;
-        $times--;
-
-        try {
-            return $callback($attempts);
-        } catch (\Exception $e) {
-            if ($times < 1 || ($when && ! $when($e))) {
-                throw $e;
-            }
-
-            if ($sleepMilliseconds) {
-                usleep(value($sleepMilliseconds, $attempts) * 1000);
-            }
-
-            goto beginning;
-        }
+        return \Hyperf\Support\retry($times, $callback, $sleep);
     }
 }
 
@@ -295,7 +237,7 @@ if (! function_exists('with')) {
      */
     function with($value, callable $callback = null)
     {
-        return is_null($callback) ? $value : $callback($value);
+        return \Hyperf\Support\with($value, $callback);
     }
 }
 
