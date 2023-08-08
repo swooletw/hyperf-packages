@@ -7,6 +7,7 @@ namespace SwooleTW\Hyperf\Foundation\Bootstrap;
 use Hyperf\Command\Command;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Di\ReflectionManager;
+use Hyperf\Support\Filesystem\Filesystem;
 use Psr\Container\ContainerInterface;
 
 class LoadCommands
@@ -19,9 +20,13 @@ class LoadCommands
      */
     public function bootstrap(ContainerInterface $app): void
     {
-        $reflections = ReflectionManager::getAllClasses([
-            app_path('Console/Commands')
-        ]);
+        $pathExisted = $app->get(Filesystem::class)
+            ->exists($path = app_path('Console/Commands'));
+        if (! $pathExisted) {
+            return;
+        }
+
+        $reflections = ReflectionManager::getAllClasses([$path]);
 
         $commands = $app->get(ConfigInterface::class)
             ->get('commands', []);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation;
 
+use SwooleTW\Hyperf\Foundation\Console\Commands\ServerReloadCommand;
 use SwooleTW\Hyperf\Foundation\Queue\Console\QueueWorkCommand;
 
 class ConfigProvider
@@ -13,6 +14,7 @@ class ConfigProvider
         return [
             'commands' => [
                 QueueWorkCommand::class,
+                ServerReloadCommand::class,
             ],
             'publish' => [
                 [

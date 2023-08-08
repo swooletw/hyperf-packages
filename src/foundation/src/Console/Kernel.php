@@ -21,7 +21,7 @@ class Kernel implements KernelContract
      *
      * @return void
      */
-    public function schedule(Schedule $schedule)
+    public function schedule(Schedule $schedule): void
     {
         //
     }

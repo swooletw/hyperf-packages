@@ -38,8 +38,10 @@ if (! function_exists('environment')) {
      */
     function environment(...$environments)
     {
-        $environment = ApplicationContext::getContainer()
-            ->get(Environment::class);
+        $environment = ApplicationContext::hasContainer()
+            ? ApplicationContext::getContainer()
+                ->get(Environment::class)
+            : new Environment();
 
         if (count($environments) > 0) {
             return $environment->is(...$environments);

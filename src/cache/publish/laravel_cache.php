@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Hyperf\Stringable\Str;
-use Hyperf\Support\env;
+use function Hyperf\Support\env;
 
 return [
     /*

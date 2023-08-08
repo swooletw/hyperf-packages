@@ -8,6 +8,7 @@ use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Engine\Coroutine;
 use Hyperf\Server\ServerFactory;
+use function Hyperf\Support\swoole_hook_flags;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 trait CanStartServer
