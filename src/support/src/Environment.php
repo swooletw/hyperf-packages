@@ -20,9 +20,12 @@ class Environment
 {
     use Macroable;
 
-    public function __construct(protected ?string $env = null)
-    {
+    public function __construct(
+        protected ?string $env = null,
+        protected ?bool $debug = null
+    ) {
         $this->env = $env ?? env('APP_ENV', 'local');
+        $this->debug = $debug ?? env('APP_DEBUG', true);
     }
 
     public function __call($method, $parameters = [])
@@ -53,6 +56,16 @@ class Environment
     }
 
     /**
+     * Set the current debug environment of application.
+     */
+    public function setDebug(bool $debug): static
+    {
+        $this->debug = $debug;
+
+        return $this;
+    }
+
+    /**
      * check the current application environment.
      * @param string|string[] $environments
      */
@@ -61,5 +74,13 @@ class Environment
         $patterns = is_array($environments[0]) ? $environments[0] : $environments;
 
         return Str::is($patterns, $this->env);
+    }
+
+    /**
+     * Get the current debug environment of application.
+     */
+    public function isDebug(): bool
+    {
+        return $this->debug;
     }
 }
