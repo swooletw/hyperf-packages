@@ -1,12 +1,13 @@
 {
-    "name": "swooletw/hyperf-support",
+    "name": "swooletw/hyperf-foundation",
     "description": "The Support package for Hyperf.",
     "license": "MIT",
     "keywords": [
         "php",
         "hyperf",
-        "support",
-        "swoole"
+        "foundation",
+        "swoole",
+        "larvel"
     ],
     "support": {
         "issues": "https://github.com/swooletw/hyperf-packages/issues",
@@ -21,21 +22,36 @@
     ],
     "require": {
         "php": "^8.1",
-        "hyperf/context": "^3.1",
+        "nesbot/carbon": "^2.16",
+        "swooletw/hyperf-support": "^3.1",
+        "hyperf/config": "^3.1",
+        "hyperf/di": "^3.1",
         "hyperf/support": "^3.1",
+        "hyperf/command": "^3.1",
+        "hyperf/crontab": "^3.1",
+        "hyperf/async-queue": "^3.1",
+        "hyperf/collection": "^3.1",
+        "hyperf/context": "^3.1",
+        "hyperf/http-server": "^3.1",
         "hyperf/stringable": "^3.1",
-        "hyperf/tappable": "^3.1",
-        "hyperf/collection": "^3.1"
+        "hyperf/database": "^3.1",
+        "hyperf/contract": "^3.1",
+        "hyperf/signal": "^3.1",
+        "hyperf/engine": "^2.1",
+        "hyperf/db-connection": "^3.1"
     },
     "autoload": {
         "psr-4": {
-            "SwooleTW\\Hyperf\\Support\\": "src/"
+            "SwooleTW\\Hyperf\\Foundation\\": "src/"
         },
         "files": [
             "src/helpers.php"
         ]
     },
     "extra": {
+        "hyperf": {
+            "config": "SwooleTW\\Hyperf\\Foundation\\ConfigProvider"
+        },
         "branch-alias": {
             "dev-master": "3.1-dev"
         }

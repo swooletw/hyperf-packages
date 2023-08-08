@@ -43,6 +43,7 @@
         "swooletw/hyperf-container": "@dev",
         "swooletw/hyperf-cookie": "@dev",
         "swooletw/hyperf-encryption": "@dev",
+        "swooletw/hyperf-foundation": "@dev",
         "swooletw/hyperf-hashing": "@dev",
         "swooletw/hyperf-log": "@dev",
         "swooletw/hyperf-router": "@dev",
@@ -64,6 +65,7 @@
             "dev-main": "3.1-dev"
         }
     },
+    "minimum-stability": "dev",
     "repositories": [
         {
             "type": "path",
