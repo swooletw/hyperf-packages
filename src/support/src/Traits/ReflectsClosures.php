@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Support\Traits;
 
 use Closure;
-use SwooleTW\Hyperf\Support\Reflector;
+use Hyperf\Collection\Collection;
 use ReflectionFunction;
 use RuntimeException;
+use SwooleTW\Hyperf\Support\Reflector;
 
 trait ReflectsClosures
 {
@@ -48,7 +49,7 @@ trait ReflectsClosures
     {
         $reflection = new ReflectionFunction($closure);
 
-        $types = collect($reflection->getParameters())->mapWithKeys(function ($parameter) {
+        $types = Collection::make($reflection->getParameters())->mapWithKeys(function ($parameter) {
             if ($parameter->isVariadic()) {
                 return [$parameter->getName() => null];
             }
@@ -79,7 +80,7 @@ trait ReflectsClosures
     {
         $reflection = new ReflectionFunction($closure);
 
-        return collect($reflection->getParameters())->mapWithKeys(function ($parameter) {
+        return Collection::make($reflection->getParameters())->mapWithKeys(function ($parameter) {
             if ($parameter->isVariadic()) {
                 return [$parameter->getName() => null];
             }

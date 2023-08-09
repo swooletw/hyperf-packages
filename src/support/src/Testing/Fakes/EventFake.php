@@ -6,11 +6,12 @@ namespace SwooleTW\Hyperf\Support\Testing\Fakes;
 
 use Closure;
 use Hyperf\Collection\Arr;
+use Hyperf\Collection\Collection;
 use Hyperf\Stringable\Str;
-use SwooleTW\Hyperf\Support\Traits\ReflectsClosures;
 use PHPUnit\Framework\Assert as PHPUnit;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use ReflectionFunction;
+use SwooleTW\Hyperf\Support\Traits\ReflectsClosures;
 
 class EventFake implements EventDispatcherInterface
 {
@@ -171,14 +172,14 @@ class EventFake implements EventDispatcherInterface
     public function dispatched($event, $callback = null)
     {
         if (! $this->hasDispatched($event)) {
-            return collect();
+            return Collection::make();
         }
 
         $callback = $callback ?: function () {
             return true;
         };
 
-        return collect($this->events[$event])->filter(function ($arguments) use ($callback) {
+        return Collection::make($this->events[$event])->filter(function ($arguments) use ($callback) {
             return $callback(...$arguments);
         });
     }
@@ -226,7 +227,7 @@ class EventFake implements EventDispatcherInterface
             return true;
         }
 
-        return collect($this->eventsToFake)
+        return Collection::make($this->eventsToFake)
             ->filter(function ($event) use ($eventName, $payload) {
                 return $event instanceof Closure
                             ? $event($eventName, $payload)

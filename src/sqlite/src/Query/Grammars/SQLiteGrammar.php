@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Database\Query\Grammars;
 
 use Hyperf\Collection\Arr;
+use Hyperf\Collection\Collection;
 use Hyperf\Database\Query\Builder;
 use Hyperf\Database\Query\Grammars\Grammar;
 use Hyperf\Stringable\Str;
@@ -174,7 +175,7 @@ class SQLiteGrammar extends Grammar
     {
         $jsonGroups = $this->groupJsonColumnsForUpdate($values);
 
-        return collect($values)->reject(function ($value, $key) {
+        return Collection::make($values)->reject(function ($value, $key) {
             return $this->isJsonSelector($key);
         })->merge($jsonGroups)->map(function ($value, $key) use ($jsonGroups) {
             $column = last(explode('.', $key));
@@ -200,7 +201,7 @@ class SQLiteGrammar extends Grammar
 
         $sql .= ' on conflict ('.$this->columnize($uniqueBy).') do update set ';
 
-        $columns = collect($update)->map(function ($value, $key) {
+        $columns = Collection::make($update)->map(function ($value, $key) {
             return is_numeric($key)
                 ? $this->wrap($value).' = '.$this->wrapValue('excluded').'.'.$this->wrap($value)
                 : $this->wrap($key).' = '.$this->parameter($value);
@@ -271,7 +272,7 @@ class SQLiteGrammar extends Grammar
     {
         $groups = $this->groupJsonColumnsForUpdate($values);
 
-        $values = collect($values)->reject(function ($value, $key) {
+        $values = Collection::make($values)->reject(function ($value, $key) {
             return $this->isJsonSelector($key);
         })->merge($groups)->map(function ($value) {
             return is_array($value) ? json_encode($value) : $value;

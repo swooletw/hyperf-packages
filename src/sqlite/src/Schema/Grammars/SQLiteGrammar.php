@@ -79,7 +79,7 @@ class SQLiteGrammar extends Grammar
     {
         $foreigns = $this->getCommandsByName($blueprint, 'foreign');
 
-        return collect($foreigns)->reduce(function ($sql, $foreign) {
+        return Collection::make($foreigns)->reduce(function ($sql, $foreign) {
             // Once we have all the foreign key commands for the table creation statement
             // we'll loop through each of them and add them to the create table SQL we
             // are building, since SQLite needs foreign keys on the tables creation.
@@ -146,7 +146,7 @@ class SQLiteGrammar extends Grammar
     {
         $columns = $this->prefixArray('add column', $this->getColumns($blueprint));
 
-        return collect($columns)->reject(function ($column) {
+        return Collection::make($columns)->reject(function ($column) {
             return preg_match('/as \(.*\) stored/', $column) > 0;
         })->map(function ($column) use ($blueprint) {
             return 'alter table '.$this->wrapTable($blueprint).' '.$column;
