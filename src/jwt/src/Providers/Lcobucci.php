@@ -17,11 +17,11 @@ use Lcobucci\JWT\Signer\Rsa;
 use Lcobucci\JWT\Token\Builder;
 use Lcobucci\JWT\Token\RegisteredClaims;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
-use SwooleTW\Hyperf\JWT\Contracts\JWTContract;
+use SwooleTW\Hyperf\JWT\Contracts\ProviderContract;
 use SwooleTW\Hyperf\JWT\Exceptions\JWTException;
 use SwooleTW\Hyperf\JWT\Exceptions\TokenInvalidException;
 
-class Lcobucci extends Provider implements JWTContract
+class Lcobucci extends Provider implements ProviderContract
 {
     /**
      * \Lcobucci\JWT\Signer.

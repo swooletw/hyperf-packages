@@ -3,6 +3,18 @@
 declare(strict_types=1);
 
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | JWT Driver
+    |--------------------------------------------------------------------------
+    |
+    | The driver you are using to encode, decode and sign your
+    | JWT token, all the drivers must implement:
+    | SwooleTW\Hyperf\JWT\Contracts\ProviderContract::class
+    |
+    */
+
+    'driver' => env('JWT_DRIVER', 'lcobucci'),
 
     /*
     |--------------------------------------------------------------------------
@@ -222,6 +234,17 @@ return [
     */
 
     'blacklist_grace_period' => env('JWT_BLACKLIST_GRACE_PERIOD', 0),
+
+    /*
+    | -------------------------------------------------------------------------
+    | Refresh time to live of blacklist
+    | -------------------------------------------------------------------------
+    |
+    | Number of minutes from issue date in which a JWT can be refreshed.
+    |
+    */
+
+    'blacklist_refresh_ttl' => env('JWT_BLACKLIST_REFRESH_TTL', 20160),
 
     /*
     |--------------------------------------------------------------------------

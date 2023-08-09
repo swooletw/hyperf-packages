@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\JWT\Contracts;
 
-interface JWTContract
+interface ProviderContract
 {
     /**
      * @param  array  $payload

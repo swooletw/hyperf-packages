@@ -6,47 +6,76 @@ namespace SwooleTW\Hyperf\JWT;
 
 use Hyperf\Collection\Collection;
 use Hyperf\Stringable\Str;
-use SwooleTW\Hyperf\JWT\Blacklist;
-use SwooleTW\Hyperf\JWT\Contracts\JWTContract;
+use Psr\Container\ContainerInterface;
+use SwooleTW\Hyperf\JWT\Contracts\BlacklistContract;
+use SwooleTW\Hyperf\JWT\Contracts\ManagerContract;
+use SwooleTW\Hyperf\JWT\Contracts\ProviderContract;
 use SwooleTW\Hyperf\JWT\Contracts\ValidationContract;
 use SwooleTW\Hyperf\JWT\Exceptions\JWTException;
 use SwooleTW\Hyperf\JWT\Exceptions\TokenBlacklistedException;
+use SwooleTW\Hyperf\JWT\Providers\Lcobucci;
+use SwooleTW\Hyperf\Support\Manager;
 
-class JWTManager
+class JWTManager extends Manager implements ManagerContract
 {
-    protected bool $blacklistEnabled = true;
-    protected array $persistentClaims = [];
+    protected ?BlacklistContract $blacklist = null;
+    protected bool $blacklistEnabled = false;
 
+    /**
+     * Create a new manager instance.
+     *
+     * @param  \Psr\Container\ContainerInterface  $container
+     * @return void
+     */
     public function __construct(
-        protected JWTContract $provider,
-        protected Blacklist $blacklist,
-        protected array $config = [],
-        protected array $validations = [],
+        protected ContainerInterface $container
     ) {
-        $this->blacklistEnabled = $config['blacklist_enabled'] ?? $this->blacklistEnabled;
-        $this->persistentClaims = $config['persistent_claims'] ?? $this->persistentClaims;
-        $this->blacklist->setGracePeriod($config['blacklist_grace_period'] ?? 0);
-        $this->blacklist->setRefreshTTL($config['refresh_ttl'] ?? 20160);
+        parent::__construct($container);
+        $this->blacklistEnabled = $this->config->get('jwt.blacklist_enabled', false);
+    }
+
+    /**
+     * Create an instance of the Lcobucci JWT Driver.
+     *
+     * @return \SwooleTW\Hyperf\JWT\Providers\Lcobucci
+     */
+    public function createLcobucciDriver(): Lcobucci
+    {
+        return new Lcobucci(
+            (string) $this->config->get('jwt.secret'),
+            (string) $this->config->get('jwt.algo'),
+            (array) $this->config->get('jwt.keys'),
+        );
+    }
+
+    /**
+     * Get the default driver name.
+     *
+     * @return string
+     */
+    public function getDefaultDriver(): string
+    {
+        return $this->config->get('jwt.driver', 'lcobucci');
     }
 
     public function encode(array $payload): string
     {
-        if ($this->blacklistEnabled) {
+        if ($this->config->get('jwt.blacklist_enabled', false)) {
             $payload['jti'] = (string) Str::uuid();
         }
 
-        return $this->provider->encode($payload);
+        return $this->driver()->encode($payload);
     }
 
     public function decode(string $token, bool $validate = true, bool $checkBlacklist = true): array
     {
-        $payload = $this->provider->decode($token);
+        $payload = $this->driver()->decode($token);
 
         if ($validate) {
             $this->validatePayload($payload);
         }
 
-        if ($this->blacklistEnabled && $checkBlacklist && $this->blacklist->has($payload)) {
+        if ($this->blacklistEnabled && $checkBlacklist && $this->getBlacklist()->has($payload)) {
             throw new TokenBlacklistedException('The token has been blacklisted');
         }
 
@@ -55,7 +84,7 @@ class JWTManager
 
     protected function validatePayload(array $payload): void
     {
-        foreach ($this->config['validations'] as $validation) {
+        foreach ($this->config->get('jwt.validations', []) as $validation) {
             $this->getValidation($validation)
                 ->validate($payload);
         }
@@ -67,10 +96,10 @@ class JWTManager
             return $validation;
         }
 
-        return $this->validations[$class] = new $class($this->config);
+        return $this->validations[$class] = new $class($this->config->get('jwt'));
     }
 
-    public function refresh(string $token, $forceForever = false): string
+    public function refresh(string $token, bool $forceForever = false): string
     {
         $claims = $this->buildRefreshClaims($this->decode($token));
 
@@ -83,14 +112,14 @@ class JWTManager
         return $this->encode($claims);
     }
 
-    public function invalidate(string $token, bool $forceForever = false)
+    public function invalidate(string $token, bool $forceForever = false): bool
     {
         if (! $this->blacklistEnabled) {
             throw new JWTException('You must have the blacklist enabled to invalidate a token.');
         }
 
         return call_user_func(
-            [$this->blacklist, $forceForever ? 'addForever' : 'add'],
+            [$this->getBlacklist(), $forceForever ? 'addForever' : 'add'],
             $this->decode($token, false)
         );
     }
@@ -99,7 +128,7 @@ class JWTManager
     {
         // Get the claims to be persisted from the payload
         $persistentClaims = Collection::make($payload)
-            ->only($this->persistentClaims)
+            ->only($this->config->get('jwt.persistent_claims', []))
             ->toArray();
 
         // persist the relevant claims
@@ -112,32 +141,16 @@ class JWTManager
         );
     }
 
-    public function getJWTProvider(): JWTContract
+    public function getBlacklist(): BlacklistContract
     {
-        return $this->provider;
-    }
+        if ($this->blacklist instanceof BlacklistContract) {
+            return $this->blacklist;
+        }
 
-    public function getBlacklist(): Blacklist
-    {
-        return $this->blacklist;
-    }
-
-    public function setPersistentClaims(array $claims): static
-    {
-        $this->persistentClaims = $claims;
-
-        return $this;
-    }
-
-    public function getConfig(): array
-    {
-        return $this->config;
-    }
-
-    public function setConfig(array $config): static
-    {
-        $this->config = $config;
-
-        return $this;
+        return $this->blacklist = new Blacklist(
+            $this->config->get('jwt.providers.storage'),
+            $this->config->get('jwt.blacklist_grace_period', 0),
+            $this->config->get('jwt.blacklist_refresh_ttl', 20160)
+        );
     }
 }

@@ -5,17 +5,18 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\JWT;
 
 use Carbon\Carbon;
+use SwooleTW\Hyperf\JWT\Contracts\BlacklistContract;
 use SwooleTW\Hyperf\JWT\Contracts\StorageContract;
 use SwooleTW\Hyperf\JWT\Exceptions\TokenInvalidException;
 
-class Blacklist
+class Blacklist implements BlacklistContract
 {
     public function __construct(
         protected StorageContract $storage,
         protected int $gracePeriod = 0,
         protected int $refreshTTL = 20160,
         protected string $key = 'jti'
-    ){}
+    ) {}
 
     /**
      * Add the token (jti claim) to the blacklist.
