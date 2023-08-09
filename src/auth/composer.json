@@ -41,7 +41,7 @@
             "SwooleTW\\Hyperf\\Auth\\": "src/"
         },
         "files": [
-            "src/helpers.php"
+            "src/Functions.php"
         ]
     },
     "extra": {

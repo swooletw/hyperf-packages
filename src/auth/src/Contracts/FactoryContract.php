@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SwooleTW\Hyperf\Auth\Contracts;
 
 use SwooleTW\Hyperf\Auth\Contracts\Guard;

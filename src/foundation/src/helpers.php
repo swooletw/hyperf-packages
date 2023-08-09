@@ -377,3 +377,15 @@ if (! function_exists('route')) {
             ->getPath($name, $variables, $server);
     }
 }
+
+if (! function_exists('auth')) {
+    /**
+     * Get auth guard.
+     * @param string|null $guard
+     * @return SwooleTW\Hyperf\Auth\Contracts\Guard|SwooleTW\Hyperf\Auth\Contracts\FactoryContract
+     */
+    function auth(?string $guard = null): mixed
+    {
+        return \SwooleTW\Hyperf\Auth\auth($guard);
+    }
+}

@@ -9,12 +9,12 @@ use Hyperf\Context\Context;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\Macroable\Macroable;
 use Hyperf\Stringable\Str;
+use Psr\Http\Message\ServerRequestInterface;
 use SwooleTW\Hyperf\Auth\Contracts\Authenticatable;
 use SwooleTW\Hyperf\Auth\Contracts\Guard;
 use SwooleTW\Hyperf\Auth\Contracts\UserProvider;
 use SwooleTW\Hyperf\Auth\Guards\GuardHelpers;
-use SwooleTW\Hyperf\JWT\JWTManager;
-use Psr\Http\Message\ServerRequestInterface;
+use SwooleTW\Hyperf\JWT\Contracts\ManagerContract;
 use Throwable;
 
 class JwtGuard implements Guard
@@ -24,7 +24,7 @@ class JwtGuard implements Guard
     public function __construct(
         protected string $name,
         protected UserProvider $provider,
-        protected JWTManager $jwtManager,
+        protected ManagerContract $jwtManager,
         protected RequestInterface $request,
     ) {}
 

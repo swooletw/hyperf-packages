@@ -83,6 +83,14 @@ class FoundationServiceProvider extends ServiceProvider
             ],
             \SwooleTW\Hyperf\Hashing\Contracts\Hasher::class => ['hash'],
             \SwooleTW\Hyperf\Cookie\CookieManager::class => ['cookie'],
+            \SwooleTW\Hyperf\Auth\Contracts\FactoryContract::class => [
+                'auth',
+                \SwooleTW\Hyperf\Auth\AuthManager::class,
+            ],
+            \SwooleTW\Hyperf\JWT\Contracts\ManagerContract::class => [
+                'jwt',
+                \SwooleTW\Hyperf\JWT\JWTManager::class,
+            ],
         ] as $key => $aliases) {
             foreach ($aliases as $alias) {
                 if ($this->app->bound($alias)) {
