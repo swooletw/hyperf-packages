@@ -9,7 +9,6 @@ use Hyperf\Stringable\Str;
 use Psr\Container\ContainerInterface;
 use SwooleTW\Hyperf\JWT\Contracts\BlacklistContract;
 use SwooleTW\Hyperf\JWT\Contracts\ManagerContract;
-use SwooleTW\Hyperf\JWT\Contracts\ProviderContract;
 use SwooleTW\Hyperf\JWT\Contracts\ValidationContract;
 use SwooleTW\Hyperf\JWT\Exceptions\JWTException;
 use SwooleTW\Hyperf\JWT\Exceptions\TokenBlacklistedException;
