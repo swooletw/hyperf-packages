@@ -22,6 +22,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 use Psr\Log\LoggerInterface;
 use SwooleTW\Hyperf\Cache\Contracts\Repository as CacheContract;
+use SwooleTW\Hyperf\Cookie\Contracts\Cookie as CookieContract;
 use SwooleTW\Hyperf\Router\RouteCollector;
 
 if (! function_exists('base_path')) {
@@ -97,12 +98,12 @@ if (! function_exists('cookie')) {
     /**
      * Create a new cookie instance.
      *
-     * @return Cookie|CookieJarInterface
+     * @return Cookie|CookieContract
      */
     function cookie(?string $name = null, string $value = null, int $minutes = 0, string $path = null, string $domain = null, bool $secure = false, bool $httpOnly = true, bool $raw = false, ?string $sameSite = null)
     {
         if (is_null($name)) {
-            return app(CookieJarInterface::class);
+            return app(CookieContract::class);
         }
 
         $time = ($minutes == 0) ? 0 : $minutes * 60;
