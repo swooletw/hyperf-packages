@@ -277,6 +277,6 @@ return [
         |
         */
 
-        'storage' => SwooleTW\Hyperf\JWT\Storage\HyperfCache::class,
+        'storage' => SwooleTW\Hyperf\JWT\Storage\TaggedCache::class,
     ],
 ];

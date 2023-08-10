@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\JWT\Storage;
 
 use SwooleTW\Hyperf\JWT\Contracts\StorageContract;
-use Psr\SimpleCache\CacheInterface as CacheContract;
+use Psr\SimpleCache\CacheInterface;
 
-class HyperfCache implements StorageContract
+class PsrCache implements StorageContract
 {
     /**
      * Constructor.
@@ -16,7 +16,7 @@ class HyperfCache implements StorageContract
      * @return void
      */
     public function __construct(
-        protected CacheContract $cache
+        protected CacheInterface $cache
     ) {}
 
     /**
