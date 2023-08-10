@@ -17,6 +17,7 @@ return (new PhpCsFixer\Config())
         '@Symfony' => true,
         '@DoctrineAnnotation' => true,
         '@PhpCsFixer' => true,
+        'phpdoc_no_alias_tag' => false,
         'array_syntax' => [
             'syntax' => 'short',
         ],
