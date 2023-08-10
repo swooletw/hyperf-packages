@@ -9,8 +9,9 @@ use Hyperf\HttpMessage\Cookie\Cookie;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\Support\Traits\InteractsWithTime;
 use Psr\Http\Message\ServerRequestInterface;
+use SwooleTW\Hyperf\Cookie\Contracts\Cookie as CookieContract;
 
-class CookieManager
+class CookieManager implements CookieContract
 {
     use InteractsWithTime;
 
