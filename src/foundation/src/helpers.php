@@ -61,6 +61,20 @@ if (! function_exists('database_path')) {
     }
 }
 
+if (! function_exists('config')) {
+    /**
+     * Get config value.
+     *
+     * @param  string  $key
+     * @param  string|null  $default
+     * @return mixed
+     */
+    function config(string $key, mixed $default = null): mixed
+    {
+        return \Hyperf\Config\config($key, $default);
+    }
+}
+
 if (! function_exists('cache')) {
     /**
      * Get / set the specified cache value.
