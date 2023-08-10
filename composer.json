@@ -56,6 +56,7 @@
         "doctrine/dbal": "Required to rename SQLite indexs (^3.5.1)."
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "dev-master",
         "mockery/mockery": "^1.5.1",
         "phpunit/phpunit": "^10.0.7"
     },
