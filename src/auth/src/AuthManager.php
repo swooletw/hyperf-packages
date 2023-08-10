@@ -145,7 +145,8 @@ class AuthManager implements FactoryContract
             $name,
             $this->createUserProvider($config['provider'] ?? null),
             $this->app->make(JWTManager::class),
-            $this->app->make(RequestInterface::class)
+            $this->app->make(RequestInterface::class),
+            $this->config->get('jwt.ttl', 120)
         );
     }
 

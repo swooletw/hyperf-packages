@@ -26,6 +26,7 @@ class JwtGuard implements Guard
         protected UserProvider $provider,
         protected ManagerContract $jwtManager,
         protected RequestInterface $request,
+        protected int $ttl = 120
     ) {}
 
     /**
@@ -72,12 +73,10 @@ class JwtGuard implements Guard
     {
         $now = Carbon::now();
         $claims = Context::get("auth.guards.{$this->name}.claims", []);
-        $token = $this->getJwtManager()->encode(array_merge([
+        $token = $this->jwtManager->encode(array_merge([
             'sub' => $user->getAuthIdentifier(),
             'iat' => $now->copy()->timestamp,
-            'exp' => $now->copy()->addSeconds(
-                $this->jwtManager->getConfig()['ttl'] ?? 120
-            )->timestamp,
+            'exp' => $now->copy()->addSeconds($this->ttl)->timestamp,
         ], $claims));
 
         // if there's no token, then set cache key to `default`
@@ -112,7 +111,7 @@ class JwtGuard implements Guard
         }
 
         try {
-            $payload = $this->getJwtManager()->decode($token);
+            $payload = $this->jwtManager->decode($token);
             $sub = $payload['sub'] ?? null;
             $user = $sub ? $this->provider->retrieveById($sub) : null;
 
@@ -145,7 +144,7 @@ class JwtGuard implements Guard
     public function getPayload(): array
     {
         try {
-            return $this->getJwtManager()
+            return $this->jwtManager
                 ->decode($this->parseToken());
         } catch (Throwable $exception) {
             //
@@ -162,7 +161,7 @@ class JwtGuard implements Guard
 
         Context::set($this->getContextKey($token), null);
 
-        return $this->getJwtManager()->refresh($token);
+        return $this->jwtManager->refresh($token);
     }
 
     /**
@@ -199,15 +198,10 @@ class JwtGuard implements Guard
         Context::set($this->getContextKey($token), null);
 
         if ($token) {
-            $this->getJwtManager()->invalidate($token);
+            $this->jwtManager->invalidate($token);
         }
 
         return true;
-    }
-
-    public function getJwtManager(): JWTManager
-    {
-        return $this->jwtManager;
     }
 
     public function setUser(Authenticatable $user): void
