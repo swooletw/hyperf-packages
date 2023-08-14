@@ -34,7 +34,7 @@ class ServerReloadCommand extends Command
 
         if (! $this->filesystem->exists($file)) {
             $this->warn("pid_file doesn't exist.");
-            return;
+            return 0;
         }
 
         $hasTaskWorkers = (bool) $this->config->get('server.settings.task_worker_num', 0);
@@ -48,7 +48,7 @@ class ServerReloadCommand extends Command
             }
 
             if (! $hasTaskWorkers) {
-                return;
+                return 0;
             }
 
             $this->info('Reloading task workers...');
@@ -61,6 +61,9 @@ class ServerReloadCommand extends Command
             $this->info('Done.');
         } catch (Throwable $e) {
             $this->error('Reload failed.`');
+            return 1;
         }
+
+        return 0;
     }
 }
