@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Database;
+namespace SwooleTW\Hyperf\Foundation\Database;
 
 use Hyperf\Database\Commands\Migrations\FreshCommand;
 use Hyperf\Database\Commands\Migrations\InstallCommand;
@@ -18,7 +18,6 @@ class CommandCollector
     public static function getAllCommands(): array
     {
         return [
-            ModelCommand::class,
             InstallCommand::class,
             MigrateCommand::class,
             FreshCommand::class,

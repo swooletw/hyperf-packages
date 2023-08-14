@@ -9,7 +9,7 @@ use Hyperf\Contract\ConfigInterface;
 use Hyperf\Di\ReflectionManager;
 use Hyperf\Support\Filesystem\Filesystem;
 use Psr\Container\ContainerInterface;
-use SwooleTW\Hyperf\Database\CommandCollector;
+use SwooleTW\Hyperf\Foundation\Database\CommandCollector;
 
 class LoadCommands
 {
@@ -38,6 +38,6 @@ class LoadCommands
         }
 
         $app->get(ConfigInterface::class)
-            ->set('commands', $commands);
+            ->set('commands', array_unique($commands));
     }
 }
