@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\JWT;
 
+use SwooleTW\Hyperf\Auth\BlacklistFactory;
+use SwooleTW\Hyperf\JWT\Contracts\BlacklistContract;
 use SwooleTW\Hyperf\JWT\Contracts\ManagerContract;
 use SwooleTW\Hyperf\JWT\JWTManager;
 
@@ -13,6 +15,7 @@ class ConfigProvider
     {
         return [
             'dependencies' => [
+                BlacklistContract::class => BlacklistFactory::class,
                 ManagerContract::class => JWTManager::class,
             ],
             'publish' => [

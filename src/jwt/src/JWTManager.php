@@ -17,7 +17,7 @@ use SwooleTW\Hyperf\Support\Manager;
 
 class JWTManager extends Manager implements ManagerContract
 {
-    protected ?BlacklistContract $blacklist = null;
+    protected ?BlacklistContract $blacklist;
     protected bool $blacklistEnabled = false;
 
     /**
@@ -30,6 +30,7 @@ class JWTManager extends Manager implements ManagerContract
         protected ContainerInterface $container
     ) {
         parent::__construct($container);
+        $this->blacklist = $container->get(BlacklistContract::class);
         $this->blacklistEnabled = $this->config->get('jwt.blacklist_enabled', false);
     }
 
@@ -137,19 +138,6 @@ class JWTManager extends Manager implements ManagerContract
                 'sub' => $payload['sub'],
                 'iat' => $payload['iat'],
             ]
-        );
-    }
-
-    public function getBlacklist(): BlacklistContract
-    {
-        if ($this->blacklist instanceof BlacklistContract) {
-            return $this->blacklist;
-        }
-
-        return $this->blacklist = new Blacklist(
-            $this->config->get('jwt.providers.storage'),
-            $this->config->get('jwt.blacklist_grace_period', 0),
-            $this->config->get('jwt.blacklist_refresh_ttl', 20160)
         );
     }
 }
