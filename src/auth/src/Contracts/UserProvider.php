@@ -20,8 +20,6 @@ interface UserProvider
 
     /**
      * Validate a user against the given credentials.
-     *
-     * @return bool
      */
-    public function validateCredentials(Authenticatable $user, array $credentials);
+    public function validateCredentials(Authenticatable $user, array $credentials): bool;
 }

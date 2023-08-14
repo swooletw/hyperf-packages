@@ -7,7 +7,6 @@ namespace SwooleTW\Hyperf\Auth\Providers;
 use Closure;
 use Hyperf\Contract\Arrayable;
 use Hyperf\Database\ConnectionInterface;
-use Hyperf\Stringable\Str;
 use SwooleTW\Hyperf\Auth\Contracts\Authenticatable;
 use SwooleTW\Hyperf\Auth\Contracts\UserProvider;
 use SwooleTW\Hyperf\Auth\GenericUser;
@@ -39,9 +38,13 @@ class DatabaseUserProvider implements UserProvider
      */
     public function retrieveByCredentials(array $credentials): ?Authenticatable
     {
-        if (empty($credentials)
-           || (count($credentials) === 1
-            && array_key_exists('password', $credentials))) {
+        $credentials = array_filter(
+            $credentials,
+            fn ($key) => ! str_contains((string) $key, 'password'),
+            ARRAY_FILTER_USE_KEY
+        );
+
+        if (empty($credentials)) {
             return null;
         }
 
@@ -51,10 +54,6 @@ class DatabaseUserProvider implements UserProvider
         $query = $this->connection->table($this->table);
 
         foreach ($credentials as $key => $value) {
-            if (Str::contains($key, 'password')) {
-                continue;
-            }
-
             if (is_array($value) || $value instanceof Arrayable) {
                 $query->whereIn($key, $value);
             } elseif ($value instanceof Closure) {
@@ -64,9 +63,9 @@ class DatabaseUserProvider implements UserProvider
             }
         }
 
-        // Now we are ready to execute the query to see if we have an user matching
-        // the given credentials. If not, we will just return nulls and indicate
-        // that there are no matching users for these given credential arrays.
+        // Now we are ready to execute the query to see if we have a user matching
+        // the given credentials. If not, we will just return null and indicate
+        // that there are no matching users from the given credential arrays.
         $user = $query->first();
 
         return $this->getGenericUser($user);
@@ -88,10 +87,8 @@ class DatabaseUserProvider implements UserProvider
 
     /**
      * Validate a user against the given credentials.
-     *
-     * @return bool
      */
-    public function validateCredentials(Authenticatable $user, array $credentials): ?Authenticatable
+    public function validateCredentials(Authenticatable $user, array $credentials): bool
     {
         return $this->hasher->check(
             $credentials['password'],

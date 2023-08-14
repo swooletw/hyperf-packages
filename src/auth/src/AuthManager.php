@@ -215,7 +215,7 @@ class AuthManager implements FactoryContract
      */
     protected function getConfig(string $name): array
     {
-        return $this->config->get("auth.guards.{$name}");
+        return $this->config->get("auth.guards.{$name}", []);
     }
 
     public function getGuards(): array
