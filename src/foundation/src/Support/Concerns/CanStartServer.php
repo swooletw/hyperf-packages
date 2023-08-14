@@ -8,13 +8,16 @@ use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Engine\Coroutine;
 use Hyperf\Server\ServerFactory;
-use function Hyperf\Support\swoole_hook_flags;
 use Psr\EventDispatcher\EventDispatcherInterface;
+
+use function Hyperf\Support\swoole_hook_flags;
 
 trait CanStartServer
 {
     protected string $serverHost = '127.0.0.1';
+
     protected int $serverPort = 9601;
+
     protected ?array $processes = [];
 
     protected function setProcesses(array $processes = []): void
@@ -33,7 +36,7 @@ trait CanStartServer
         );
 
         Coroutine::set([
-            'hook_flags' => swoole_hook_flags()
+            'hook_flags' => swoole_hook_flags(),
         ]);
 
         $serverFactory->start();

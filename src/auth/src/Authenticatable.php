@@ -8,8 +8,6 @@ trait Authenticatable
 {
     /**
      * Get the name of the unique identifier for the user.
-     *
-     * @return string
      */
     public function getAuthIdentifierName(): string
     {
@@ -18,8 +16,6 @@ trait Authenticatable
 
     /**
      * Get the unique identifier for the user.
-     *
-     * @return mixed
      */
     public function getAuthIdentifier(): mixed
     {
@@ -28,8 +24,6 @@ trait Authenticatable
 
     /**
      * Get the password for the user.
-     *
-     * @return string
      */
     public function getAuthPassword(): string
     {

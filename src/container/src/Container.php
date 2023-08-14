@@ -11,6 +11,7 @@ use Hyperf\Di\Container as HyperfContainer;
 use Hyperf\Di\Definition\DefinitionSource;
 use LogicException;
 use SwooleTW\Hyperf\Container\Contracts\Container as ContainerContract;
+use TypeError;
 
 class Container extends HyperfContainer implements ContainerContract, ArrayAccess
 {
@@ -45,21 +46,21 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
     /**
      * All of the global before resolving callbacks.
      *
-     * @var \Closure[]
+     * @var Closure[]
      */
     protected array $globalBeforeResolvingCallbacks = [];
 
     /**
      * All of the global resolving callbacks.
      *
-     * @var \Closure[]
+     * @var Closure[]
      */
     protected array $globalResolvingCallbacks = [];
 
     /**
      * All of the global after resolving callbacks.
      *
-     * @var \Closure[]
+     * @var Closure[]
      */
     protected array $globalAfterResolvingCallbacks = [];
 
@@ -164,9 +165,6 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
 
     /**
      * Determine if the given abstract type has been bound.
-     *
-     * @param  string  $abstract
-     * @return bool
      */
     public function bound(string $abstract): bool
     {
@@ -192,9 +190,6 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
 
     /**
      * Determine if the given abstract type has been resolved.
-     *
-     * @param  string  $abstract
-     * @return bool
      */
     public function resolved(string $abstract): bool
     {
@@ -207,9 +202,6 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
 
     /**
      * Determine if a given string is an alias.
-     *
-     * @param  string  $name
-     * @return bool
      */
     public function isAlias(string $name): bool
     {
@@ -219,12 +211,9 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
     /**
      * Register a binding with the container.
      *
-     * @param  string  $abstract
-     * @param  \Closure|string|null  $concrete
-     * @param  bool  $shared
-     * @return void
+     * @param null|Closure|string $concrete
      *
-     * @throws \TypeError
+     * @throws TypeError
      */
     public function bind(string $abstract, mixed $concrete = null): void
     {
@@ -247,9 +236,7 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
     /**
      * Register a binding if it hasn't already been registered.
      *
-     * @param  string  $abstract
-     * @param  \Closure|string|null  $concrete
-     * @return void
+     * @param null|Closure|string $concrete
      */
     public function bindIf(string $abstract, mixed $concrete = null): void
     {
@@ -258,13 +245,8 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
         }
     }
 
-
     /**
      * "Extend" an abstract type in the container.
-     *
-     * @param  string  $abstract
-     * @param  \Closure  $closure
-     * @return void
      *
      * @throws \InvalidArgumentException
      */
@@ -282,10 +264,6 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
 
     /**
      * Register an existing instance as shared in the container.
-     *
-     * @param  string  $abstract
-     * @param  mixed  $instance
-     * @return mixed
      */
     public function instance(string $abstract, mixed $instance): mixed
     {
@@ -311,9 +289,6 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
 
     /**
      * Remove an alias from the contextual binding alias cache.
-     *
-     * @param  string  $searched
-     * @return void
      */
     protected function removeAbstractAlias(string $searched): void
     {
@@ -333,11 +308,7 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
     /**
      * Alias a type to a different name.
      *
-     * @param  string  $abstract
-     * @param  string  $alias
-     * @return void
-     *
-     * @throws \LogicException
+     * @throws LogicException
      */
     public function alias(string $abstract, string $alias): void
     {
@@ -352,10 +323,6 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
 
     /**
      * Bind a new callback to an abstract's rebind event.
-     *
-     * @param  string  $abstract
-     * @param  \Closure  $callback
-     * @return mixed
      */
     public function rebinding(string $abstract, Closure $callback): mixed
     {
@@ -370,11 +337,6 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
 
     /**
      * Refresh an instance on the given target and method.
-     *
-     * @param  string  $abstract
-     * @param  mixed  $target
-     * @param  string  $method
-     * @return mixed
      */
     public function refresh(string $abstract, mixed $target, string $method): mixed
     {
@@ -385,9 +347,6 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
 
     /**
      * Fire the "rebound" callbacks for the given abstract type.
-     *
-     * @param  string  $abstract
-     * @return void
      */
     protected function rebound(string $abstract): void
     {
@@ -400,9 +359,6 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
 
     /**
      * Get the rebound callbacks for a given type.
-     *
-     * @param  string  $abstract
-     * @return array
      */
     protected function getReboundCallbacks(string $abstract): array
     {
@@ -412,9 +368,7 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
     /**
      * An alias function name for make().
      *
-     * @param  string|callable  $abstract
-     * @param  array  $parameters
-     * @return mixed
+     * @param callable|string $abstract
      *
      * @throws \Hyperf\Di\Exception\InvalidDefinitionException
      */
@@ -426,9 +380,7 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
     /**
      * Register a new before resolving callback for all types.
      *
-     * @param  \Closure|string  $abstract
-     * @param  \Closure|null  $callback
-     * @return void
+     * @param Closure|string $abstract
      */
     public function beforeResolving($abstract, Closure $callback = null): void
     {
@@ -446,9 +398,7 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
     /**
      * Register a new resolving callback.
      *
-     * @param  \Closure|string  $abstract
-     * @param  \Closure|null  $callback
-     * @return void
+     * @param Closure|string $abstract
      */
     public function resolving($abstract, Closure $callback = null): void
     {
@@ -466,9 +416,7 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
     /**
      * Register a new after resolving callback for all types.
      *
-     * @param  \Closure|string  $abstract
-     * @param  \Closure|null  $callback
-     * @return void
+     * @param Closure|string $abstract
      */
     public function afterResolving($abstract, Closure $callback = null): void
     {
@@ -486,9 +434,8 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
     /**
      * Fire all of the before resolving callbacks.
      *
-     * @param  string  $abstract
-     * @param  array  $parameters
-     * @return void
+     * @param string $abstract
+     * @param array $parameters
      */
     protected function fireBeforeResolvingCallbacks($abstract, $parameters = []): void
     {
@@ -504,10 +451,8 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
     /**
      * Fire an array of callbacks with an object.
      *
-     * @param  string  $abstract
-     * @param  array  $parameters
-     * @param  array  $callbacks
-     * @return void
+     * @param string $abstract
+     * @param array $parameters
      */
     protected function fireBeforeCallbackArray($abstract, $parameters, array $callbacks): void
     {
@@ -519,16 +464,16 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
     /**
      * Fire all of the resolving callbacks.
      *
-     * @param  string  $abstract
-     * @param  mixed  $object
-     * @return void
+     * @param string $abstract
+     * @param mixed $object
      */
     protected function fireResolvingCallbacks($abstract, $object): void
     {
         $this->fireCallbackArray($object, $this->globalResolvingCallbacks);
 
         $this->fireCallbackArray(
-            $object, $this->getCallbacksForType($abstract, $object, $this->resolvingCallbacks)
+            $object,
+            $this->getCallbacksForType($abstract, $object, $this->resolvingCallbacks)
         );
 
         $this->fireAfterResolvingCallbacks($abstract, $object);
@@ -537,26 +482,24 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
     /**
      * Fire all of the after resolving callbacks.
      *
-     * @param  string  $abstract
-     * @param  mixed  $object
-     * @return void
+     * @param string $abstract
+     * @param mixed $object
      */
     protected function fireAfterResolvingCallbacks($abstract, $object): void
     {
         $this->fireCallbackArray($object, $this->globalAfterResolvingCallbacks);
 
         $this->fireCallbackArray(
-            $object, $this->getCallbacksForType($abstract, $object, $this->afterResolvingCallbacks)
+            $object,
+            $this->getCallbacksForType($abstract, $object, $this->afterResolvingCallbacks)
         );
     }
 
     /**
      * Get all callbacks for a given type.
      *
-     * @param  string  $abstract
-     * @param  object  $object
-     * @param  array  $callbacksPerType
-     * @return array
+     * @param string $abstract
+     * @param object $object
      */
     protected function getCallbacksForType($abstract, $object, array $callbacksPerType): array
     {
@@ -574,9 +517,7 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
     /**
      * Fire an array of callbacks with an object.
      *
-     * @param  mixed  $object
-     * @param  array  $callbacks
-     * @return void
+     * @param mixed $object
      */
     protected function fireCallbackArray($object, array $callbacks): void
     {
@@ -587,8 +528,6 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
 
     /**
      * Get the container's bindings.
-     *
-     * @return array
      */
     public function getBindings(): array
     {
@@ -597,9 +536,6 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
 
     /**
      * Get the alias for an abstract if available.
-     *
-     * @param  string  $abstract
-     * @return string
      */
     public function getAlias(string $abstract): string
     {
@@ -610,9 +546,6 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
 
     /**
      * Get the extender callbacks for a given type.
-     *
-     * @param  string  $abstract
-     * @return array
      */
     protected function getExtenders(string $abstract): array
     {
@@ -621,9 +554,6 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
 
     /**
      * Remove all of the extender callbacks for a given type.
-     *
-     * @param  string  $abstract
-     * @return void
      */
     public function forgetExtenders(string $abstract): void
     {
@@ -632,9 +562,6 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
 
     /**
      * Drop all of the stale instances and aliases.
-     *
-     * @param  string  $abstract
-     * @return void
      */
     protected function dropStaleInstances(string $abstract): void
     {
@@ -643,9 +570,6 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
 
     /**
      * Remove a resolved instance from the instance cache.
-     *
-     * @param  string  $abstract
-     * @return void
      */
     public function forgetInstance(string $abstract): void
     {
@@ -654,8 +578,6 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
 
     /**
      * Clear all of the instances from the container.
-     *
-     * @return void
      */
     public function forgetInstances(): void
     {
@@ -664,8 +586,6 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
 
     /**
      * Flush the container of all bindings and resolved instances.
-     *
-     * @return void
      */
     public function flush(): void
     {
@@ -676,8 +596,6 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
 
     /**
      * Get the globally available instance of the container.
-     *
-     * @return ContainerContract
      */
     public static function getInstance(): ContainerContract
     {
@@ -693,7 +611,7 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
     /**
      * Set the shared instance of the container.
      *
-     * @param  \SwooleTW\Hyperf\Contracts\Container\Container  $container
+     * @param \SwooleTW\Hyperf\Contracts\Container\Container $container
      * @return \SwooleTW\Hyperf\Contracts\Container\Container
      */
     public static function setInstance(ContainerContract $container): ContainerContract
@@ -711,7 +629,7 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
         return $this->get($offset);
     }
 
-    public function offsetSet(mixed $offset, mixed $value):  void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->define($offset, $value);
     }
@@ -723,9 +641,6 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
 
     /**
      * Dynamically access container services.
-     *
-     * @param  string  $key
-     * @return mixed
      */
     public function __get(string $key): mixed
     {
@@ -734,10 +649,6 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
 
     /**
      * Dynamically set container services.
-     *
-     * @param  string  $key
-     * @param  mixed  $value
-     * @return void
      */
     public function __set(string $key, mixed $value): void
     {

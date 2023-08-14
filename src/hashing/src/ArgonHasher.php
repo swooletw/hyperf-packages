@@ -11,37 +11,26 @@ class ArgonHasher extends AbstractHasher implements HasherContract
 {
     /**
      * The default memory cost factor.
-     *
-     * @var int
      */
     protected int $memory = 1024;
 
     /**
      * The default time cost factor.
-     *
-     * @var int
      */
     protected int $time = 2;
 
     /**
      * The default threads factor.
-     *
-     * @var int
      */
     protected int $threads = 2;
 
     /**
      * Indicates whether to perform an algorithm check.
-     *
-     * @var bool
      */
     protected bool $verifyAlgorithm = false;
 
     /**
      * Create a new hasher instance.
-     *
-     * @param  array  $options
-     * @return void
      */
     public function __construct(array $options = [])
     {
@@ -54,11 +43,7 @@ class ArgonHasher extends AbstractHasher implements HasherContract
     /**
      * Hash the given value.
      *
-     * @param  string  $value
-     * @param  array  $options
-     * @return string
-     *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function make(string $value, array $options = []): string
     {
@@ -77,8 +62,6 @@ class ArgonHasher extends AbstractHasher implements HasherContract
 
     /**
      * Get the algorithm that should be used for hashing.
-     *
-     * @return int|string
      */
     protected function algorithm(): int|string
     {
@@ -88,12 +71,7 @@ class ArgonHasher extends AbstractHasher implements HasherContract
     /**
      * Check the given plain value against a hash.
      *
-     * @param  string  $value
-     * @param  string|null  $hashedValue
-     * @param  array  $options
-     * @return bool
-     *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function check(string $value, ?string $hashedValue, array $options = []): bool
     {
@@ -106,10 +84,6 @@ class ArgonHasher extends AbstractHasher implements HasherContract
 
     /**
      * Check if the given hash has been hashed using the given options.
-     *
-     * @param  string  $hashedValue
-     * @param  array  $options
-     * @return bool
      */
     public function needsRehash(string $hashedValue, array $options = []): bool
     {
@@ -123,7 +97,6 @@ class ArgonHasher extends AbstractHasher implements HasherContract
     /**
      * Set the default password memory factor.
      *
-     * @param  int  $memory
      * @return $this
      */
     public function setMemory(int $memory): static
@@ -136,7 +109,6 @@ class ArgonHasher extends AbstractHasher implements HasherContract
     /**
      * Set the default password timing factor.
      *
-     * @param  int  $time
      * @return $this
      */
     public function setTime(int $time): static
@@ -149,7 +121,6 @@ class ArgonHasher extends AbstractHasher implements HasherContract
     /**
      * Set the default password threads factor.
      *
-     * @param  int  $threads
      * @return $this
      */
     public function setThreads(int $threads): static
@@ -161,9 +132,6 @@ class ArgonHasher extends AbstractHasher implements HasherContract
 
     /**
      * Extract the memory cost value from the options array.
-     *
-     * @param  array  $options
-     * @return int
      */
     protected function memory(array $options): int
     {
@@ -172,9 +140,6 @@ class ArgonHasher extends AbstractHasher implements HasherContract
 
     /**
      * Extract the time cost value from the options array.
-     *
-     * @param  array  $options
-     * @return int
      */
     protected function time(array $options): int
     {
@@ -183,9 +148,6 @@ class ArgonHasher extends AbstractHasher implements HasherContract
 
     /**
      * Extract the thread's value from the options array.
-     *
-     * @param  array  $options
-     * @return int
      */
     protected function threads(array $options): int
     {

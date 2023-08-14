@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SwooleTW\Hyperf\Tests\Hashing;
 
 use Hyperf\Config\Config;
@@ -13,6 +15,10 @@ use SwooleTW\Hyperf\Hashing\ArgonHasher;
 use SwooleTW\Hyperf\Hashing\BcryptHasher;
 use SwooleTW\Hyperf\Hashing\HashManager;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class HasherTest extends TestCase
 {
     public HashManager $hashManager;
@@ -46,7 +52,7 @@ class HasherTest extends TestCase
 
     public function testBasicBcryptHashing()
     {
-        $hasher = new BcryptHasher;
+        $hasher = new BcryptHasher();
         $value = $hasher->make('password');
         $this->assertNotSame('password', $value);
         $this->assertTrue($hasher->check('password', $value));
@@ -58,7 +64,7 @@ class HasherTest extends TestCase
 
     public function testBasicArgon2iHashing()
     {
-        $hasher = new ArgonHasher;
+        $hasher = new ArgonHasher();
         $value = $hasher->make('password');
         $this->assertNotSame('password', $value);
         $this->assertTrue($hasher->check('password', $value));
@@ -70,7 +76,7 @@ class HasherTest extends TestCase
 
     public function testBasicArgon2idHashing()
     {
-        $hasher = new Argon2IdHasher;
+        $hasher = new Argon2IdHasher();
         $value = $hasher->make('password');
         $this->assertNotSame('password', $value);
         $this->assertTrue($hasher->check('password', $value));
@@ -137,7 +143,7 @@ class HasherTest extends TestCase
                         'threads' => 1,
                         'time' => 4,
                     ],
-                ]
+                ],
             ]));
 
         return $container;

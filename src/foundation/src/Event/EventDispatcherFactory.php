@@ -7,7 +7,6 @@ namespace SwooleTW\Hyperf\Foundation\Event;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\ListenerProviderInterface;
-use SwooleTW\Hyperf\Foundation\Event\EventDispatcher;
 
 class EventDispatcherFactory
 {

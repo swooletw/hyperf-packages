@@ -6,7 +6,6 @@ namespace SwooleTW\Hyperf\Foundation\Model;
 
 use Faker\Factory as FakerFactory;
 use Psr\Container\ContainerInterface;
-use SwooleTW\Hyperf\Foundation\Model\Factory;
 
 class FactoryInvoker
 {

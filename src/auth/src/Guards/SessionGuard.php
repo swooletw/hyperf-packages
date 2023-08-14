@@ -10,12 +10,12 @@ use Hyperf\Macroable\Macroable;
 use SwooleTW\Hyperf\Auth\Contracts\Authenticatable;
 use SwooleTW\Hyperf\Auth\Contracts\StatefulGuard;
 use SwooleTW\Hyperf\Auth\Contracts\UserProvider;
-use SwooleTW\Hyperf\Auth\Guards\GuardHelpers;
 use Throwable;
 
 class SessionGuard implements StatefulGuard
 {
-    use GuardHelpers, Macroable;
+    use GuardHelpers;
+    use Macroable;
 
     public function __construct(
         protected string $name,
@@ -27,9 +27,6 @@ class SessionGuard implements StatefulGuard
 
     /**
      * Attempt to authenticate a user using the given credentials.
-     *
-     * @param  array  $credentials
-     * @return bool
      */
     public function attempt(array $credentials = [], bool $login = true): bool
     {
@@ -48,9 +45,6 @@ class SessionGuard implements StatefulGuard
 
     /**
      * Log a user into the application without sessions or cookies.
-     *
-     * @param  array  $credentials
-     * @return bool
      */
     public function once(array $credentials = []): bool
     {
@@ -72,9 +66,6 @@ class SessionGuard implements StatefulGuard
 
     /**
      * Log the given user ID into the application without sessions or cookies.
-     *
-     * @param  mixed  $id
-     * @return \SwooleTW\Hyperf\Auth\Contracts\Authenticatable|bool
      */
     public function onceUsingId(mixed $id): Authenticatable|bool
     {

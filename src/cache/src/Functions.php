@@ -14,7 +14,7 @@ use SwooleTW\Hyperf\Cache\Exceptions\InvalidArgumentException;
  * If an array is passed, we'll assume you want to put to the cache.
  *
  * @param  dynamic  key|key,default|data,expiration|null
- * @return \SwooleTW\Hyperf\Cache\CacheManager|mixed
+ * @return mixed|\SwooleTW\Hyperf\Cache\CacheManager
  * @throws Exception
  */
 function cache()

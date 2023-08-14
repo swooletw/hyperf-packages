@@ -14,8 +14,6 @@ class HashManager extends Manager implements Hasher
 {
     /**
      * Create an instance of the Bcrypt hash Driver.
-     *
-     * @return \SwooleTW\Hyperf\Hashing\BcryptHasher
      */
     public function createBcryptDriver(): BcryptHasher
     {
@@ -24,8 +22,6 @@ class HashManager extends Manager implements Hasher
 
     /**
      * Create an instance of the Argon2i hash Driver.
-     *
-     * @return \SwooleTW\Hyperf\Hashing\ArgonHasher
      */
     public function createArgonDriver(): ArgonHasher
     {
@@ -34,8 +30,6 @@ class HashManager extends Manager implements Hasher
 
     /**
      * Create an instance of the Argon2id hash Driver.
-     *
-     * @return \SwooleTW\Hyperf\Hashing\Argon2IdHasher
      */
     public function createArgon2idDriver(): Argon2IdHasher
     {
@@ -44,9 +38,6 @@ class HashManager extends Manager implements Hasher
 
     /**
      * Get information about the given hashed value.
-     *
-     * @param  string  $hashedValue
-     * @return array
      */
     public function info(string $hashedValue): array
     {
@@ -55,10 +46,6 @@ class HashManager extends Manager implements Hasher
 
     /**
      * Hash the given value.
-     *
-     * @param  string  $value
-     * @param  array  $options
-     * @return string
      */
     public function make(string $value, array $options = []): string
     {
@@ -67,11 +54,6 @@ class HashManager extends Manager implements Hasher
 
     /**
      * Check the given plain value against a hash.
-     *
-     * @param  string  $value
-     * @param  string|null  $hashedValue
-     * @param  array  $options
-     * @return bool
      */
     public function check(string $value, ?string $hashedValue, array $options = []): bool
     {
@@ -80,10 +62,6 @@ class HashManager extends Manager implements Hasher
 
     /**
      * Check if the given hash has been hashed using the given options.
-     *
-     * @param  string  $hashedValue
-     * @param  array  $options
-     * @return bool
      */
     public function needsRehash(string $hashedValue, array $options = []): bool
     {
@@ -92,9 +70,6 @@ class HashManager extends Manager implements Hasher
 
     /**
      * Determine if a given string is already hashed.
-     *
-     * @param  string  $value
-     * @return bool
      */
     public function isHashed(string $value): bool
     {
@@ -103,8 +78,6 @@ class HashManager extends Manager implements Hasher
 
     /**
      * Get the default driver name.
-     *
-     * @return string
      */
     public function getDefaultDriver(): string
     {

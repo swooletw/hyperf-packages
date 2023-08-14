@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SwooleTW\Hyperf\Tests\Cache;
 
 use ArrayIterator;
@@ -7,16 +9,20 @@ use Carbon\Carbon;
 use DateInterval;
 use DateTime;
 use DateTimeImmutable;
+use Mockery as m;
+use PHPUnit\Framework\TestCase;
+use Psr\EventDispatcher\EventDispatcherInterface as Dispatcher;
 use SwooleTW\Hyperf\Cache\ArrayStore;
 use SwooleTW\Hyperf\Cache\Contracts\Store;
 use SwooleTW\Hyperf\Cache\FileStore;
 use SwooleTW\Hyperf\Cache\RedisStore;
 use SwooleTW\Hyperf\Cache\Repository;
 use SwooleTW\Hyperf\Cache\TaggableStore;
-use Mockery as m;
-use PHPUnit\Framework\TestCase;
-use Psr\EventDispatcher\EventDispatcherInterface as Dispatcher;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class CacheRepositoryTest extends TestCase
 {
     protected function tearDown(): void

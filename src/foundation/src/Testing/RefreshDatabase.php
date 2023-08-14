@@ -7,7 +7,6 @@ namespace SwooleTW\Hyperf\Foundation\Testing;
 use Hyperf\Context\Context;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\DbConnection\Db;
-use SwooleTW\Hyperf\Foundation\Testing\RefreshDatabaseState;
 use SwooleTW\Hyperf\Foundation\Testing\Traits\CanConfigureMigrationCommands;
 
 trait RefreshDatabase
@@ -16,8 +15,6 @@ trait RefreshDatabase
 
     /**
      * Define hooks to migrate the database before and after each test.
-     *
-     * @return void
      */
     public function refreshDatabase(): void
     {
@@ -30,8 +27,6 @@ trait RefreshDatabase
 
     /**
      * Refresh the in-memory database.
-     *
-     * @return void
      */
     protected function refreshInMemoryDatabase(): void
     {
@@ -46,8 +41,6 @@ trait RefreshDatabase
 
     /**
      * Determine if an in-memory database is being used.
-     *
-     * @return bool
      */
     protected function usingInMemoryDatabase(): bool
     {
@@ -58,8 +51,6 @@ trait RefreshDatabase
 
     /**
      * The parameters that should be used when running "migrate".
-     *
-     * @return array
      */
     protected function migrateUsing(): array
     {
@@ -71,8 +62,6 @@ trait RefreshDatabase
 
     /**
      * Refresh a conventional test database.
-     *
-     * @return void
      */
     protected function refreshTestDatabase(): void
     {
@@ -87,8 +76,6 @@ trait RefreshDatabase
 
     /**
      * Begin a database transaction on the testing database.
-     *
-     * @return void
      */
     public function beginDatabaseTransaction(): void
     {
@@ -119,8 +106,6 @@ trait RefreshDatabase
 
     /**
      * The database connections that should have transactions.
-     *
-     * @return array
      */
     protected function connectionsToTransact(): array
     {
@@ -130,8 +115,6 @@ trait RefreshDatabase
 
     /**
      * Perform any work that should take place once the database has finished refreshing.
-     *
-     * @return void
      */
     protected function afterRefreshingDatabase(): void
     {

@@ -11,23 +11,16 @@ class BcryptHasher extends AbstractHasher implements HasherContract
 {
     /**
      * The default cost factor.
-     *
-     * @var int
      */
     protected int $rounds = 10;
 
     /**
      * Indicates whether to perform an algorithm check.
-     *
-     * @var bool
      */
     protected bool $verifyAlgorithm = false;
 
     /**
      * Create a new hasher instance.
-     *
-     * @param  array  $options
-     * @return void
      */
     public function __construct(array $options = [])
     {
@@ -38,11 +31,7 @@ class BcryptHasher extends AbstractHasher implements HasherContract
     /**
      * Hash the given value.
      *
-     * @param  string  $value
-     * @param  array  $options
-     * @return string
-     *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function make(string $value, array $options = []): string
     {
@@ -60,12 +49,7 @@ class BcryptHasher extends AbstractHasher implements HasherContract
     /**
      * Check the given plain value against a hash.
      *
-     * @param  string  $value
-     * @param  string|null  $hashedValue
-     * @param  array  $options
-     * @return bool
-     *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function check(string $value, ?string $hashedValue, array $options = []): bool
     {
@@ -78,10 +62,6 @@ class BcryptHasher extends AbstractHasher implements HasherContract
 
     /**
      * Check if the given hash has been hashed using the given options.
-     *
-     * @param  string  $hashedValue
-     * @param  array  $options
-     * @return bool
      */
     public function needsRehash(string $hashedValue, array $options = []): bool
     {
@@ -93,7 +73,6 @@ class BcryptHasher extends AbstractHasher implements HasherContract
     /**
      * Set the default password work factor.
      *
-     * @param  int  $rounds
      * @return $this
      */
     public function setRounds(int $rounds): static
@@ -105,9 +84,6 @@ class BcryptHasher extends AbstractHasher implements HasherContract
 
     /**
      * Extract the cost value from the options array.
-     *
-     * @param  array  $options
-     * @return int
      */
     protected function cost(array $options = []): int
     {

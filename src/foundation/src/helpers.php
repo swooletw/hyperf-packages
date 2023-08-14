@@ -12,7 +12,6 @@ use Hyperf\Context\ApplicationContext;
 use Hyperf\Contract\SessionInterface;
 use Hyperf\Contract\ValidatorInterface;
 use Hyperf\HttpMessage\Cookie\Cookie;
-use Hyperf\HttpMessage\Cookie\CookieJarInterface;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface;
@@ -38,9 +37,6 @@ if (! function_exists('base_path')) {
 if (! function_exists('app_path')) {
     /**
      * Get the path to the application folder.
-     *
-     * @param  string  $path
-     * @return string
      */
     function app_path(string $path = ''): string
     {
@@ -51,9 +47,6 @@ if (! function_exists('app_path')) {
 if (! function_exists('database_path')) {
     /**
      * Get the path to the database folder.
-     *
-     * @param  string  $path
-     * @return string
      */
     function database_path(string $path = ''): string
     {
@@ -65,9 +58,7 @@ if (! function_exists('config')) {
     /**
      * Get config value.
      *
-     * @param  string  $key
-     * @param  string|null  $default
-     * @return mixed
+     * @param null|string $default
      */
     function config(string $key, mixed $default = null): mixed
     {
@@ -82,7 +73,7 @@ if (! function_exists('cache')) {
      * If an array is passed, we'll assume you want to put to the cache.
      *
      * @param  dynamic  key|key,default|data,expiration|null
-     * @return \SwooleTW\Hyperf\Cache\Contracts\Repository|mixed
+     * @return mixed|\SwooleTW\Hyperf\Cache\Contracts\Repository
      * @throws Exception
      */
     function cache()
@@ -221,9 +212,8 @@ if (! function_exists('logger')) {
     /**
      * Log a debug message to the logs.
      *
-     * @param  string|null  $message
-     * @param  array  $context
-     * @return \SwooleTW\Hyperf\Log\LogManager|null
+     * @param null|string $message
+     * @return null|\SwooleTW\Hyperf\Log\LogManager
      */
     function logger($message = null, array $context = [])
     {
@@ -240,7 +230,7 @@ if (! function_exists('now')) {
     /**
      * Create a new Carbon instance for the current time.
      *
-     * @param DateTimeZone|string|null $tz
+     * @param null|DateTimeZone|string $tz
      */
     function now($tz = null): Carbon
     {
@@ -271,7 +261,7 @@ if (! function_exists('resolve')) {
 if (! function_exists('request')) {
     /**
      * Get an instance of the current request or an input item from the request.
-     * @param array|string|null $key
+     * @param null|array|string $key
      * @param mixed $default
      * @return array|mixed|RequestInterface
      * @throws TypeError
@@ -296,7 +286,7 @@ if (! function_exists('response')) {
     /**
      * Return a new response from the application.
      *
-     * @param array|string|null $content
+     * @param null|array|string $content
      * @param int $status
      * @return PsrResponseInterface|ResponseInterface
      */
@@ -332,7 +322,7 @@ if (! function_exists('session')) {
      *
      * If an array is passed as the key, we will assume you want to set an array of values.
      *
-     * @param array|string|null $key
+     * @param null|array|string $key
      * @param mixed $default
      * @return mixed|SessionInterface
      */
@@ -356,7 +346,7 @@ if (! function_exists('today')) {
     /**
      * Create a new Carbon instance for the current date.
      *
-     * @param \DateTimeZone|string|null $tz
+     * @param null|\DateTimeZone|string $tz
      */
     function today($tz = null): Carbon
     {
@@ -396,8 +386,7 @@ if (! function_exists('route')) {
 if (! function_exists('auth')) {
     /**
      * Get auth guard.
-     * @param string|null $guard
-     * @return SwooleTW\Hyperf\Auth\Contracts\Guard|SwooleTW\Hyperf\Auth\Contracts\FactoryContract
+     * @return SwooleTW\Hyperf\Auth\Contracts\FactoryContract|SwooleTW\Hyperf\Auth\Contracts\Guard
      */
     function auth(?string $guard = null): mixed
     {

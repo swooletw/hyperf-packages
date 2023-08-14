@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Log;
 
 use Psr\Log\LoggerInterface;
-use SwooleTW\Hyperf\Log\LogManager;
 
 class ConfigProvider
 {

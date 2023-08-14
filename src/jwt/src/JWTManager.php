@@ -18,13 +18,11 @@ use SwooleTW\Hyperf\Support\Manager;
 class JWTManager extends Manager implements ManagerContract
 {
     protected ?BlacklistContract $blacklist;
+
     protected bool $blacklistEnabled = false;
 
     /**
      * Create a new manager instance.
-     *
-     * @param  \Psr\Container\ContainerInterface  $container
-     * @return void
      */
     public function __construct(
         protected ContainerInterface $container
@@ -36,8 +34,6 @@ class JWTManager extends Manager implements ManagerContract
 
     /**
      * Create an instance of the Lcobucci JWT Driver.
-     *
-     * @return \SwooleTW\Hyperf\JWT\Providers\Lcobucci
      */
     public function createLcobucciDriver(): Lcobucci
     {
@@ -50,8 +46,6 @@ class JWTManager extends Manager implements ManagerContract
 
     /**
      * Get the default driver name.
-     *
-     * @return string
      */
     public function getDefaultDriver(): string
     {

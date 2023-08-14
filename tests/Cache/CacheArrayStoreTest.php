@@ -1,12 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SwooleTW\Hyperf\Tests\Cache;
 
 use Carbon\Carbon;
-use SwooleTW\Hyperf\Cache\ArrayStore;
 use PHPUnit\Framework\TestCase;
 use stdClass;
+use SwooleTW\Hyperf\Cache\ArrayStore;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class CacheArrayStoreTest extends TestCase
 {
     public function testItemsCanBeSetAndRetrieved()

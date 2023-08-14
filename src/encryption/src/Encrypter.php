@@ -4,25 +4,21 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Encryption;
 
+use RuntimeException;
 use SwooleTW\Hyperf\Encryption\Contracts\Encrypter as EncrypterContract;
 use SwooleTW\Hyperf\Encryption\Contracts\StringEncrypter;
 use SwooleTW\Hyperf\Encryption\Exceptions\DecryptException;
 use SwooleTW\Hyperf\Encryption\Exceptions\EncryptException;
-use RuntimeException;
 
 class Encrypter implements EncrypterContract, StringEncrypter
 {
     /**
      * The encryption key.
-     *
-     * @var string
      */
     protected string $key;
 
     /**
      * The algorithm used for encryption.
-     *
-     * @var string
      */
     protected string $cipher;
 
@@ -41,11 +37,7 @@ class Encrypter implements EncrypterContract, StringEncrypter
     /**
      * Create a new encrypter instance.
      *
-     * @param  string  $key
-     * @param  string  $cipher
-     * @return void
-     *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function __construct(string $key, string $cipher = 'aes-128-cbc')
     {
@@ -63,10 +55,6 @@ class Encrypter implements EncrypterContract, StringEncrypter
 
     /**
      * Determine if the given key and cipher combination is valid.
-     *
-     * @param  string  $key
-     * @param  string  $cipher
-     * @return bool
      */
     public static function supported(string $key, string $cipher): bool
     {
@@ -79,9 +67,6 @@ class Encrypter implements EncrypterContract, StringEncrypter
 
     /**
      * Create a new encryption key for the given cipher.
-     *
-     * @param  string  $cipher
-     * @return string
      */
     public static function generateKey(string $cipher): string
     {
@@ -91,10 +76,6 @@ class Encrypter implements EncrypterContract, StringEncrypter
     /**
      * Encrypt the given value.
      *
-     * @param  mixed  $value
-     * @param  bool  $serialize
-     * @return string
-     *
      * @throws \SwooleTW\Encryption\Exceptions\EncryptException
      */
     public function encrypt(mixed $value, bool $serialize = true): string
@@ -103,7 +84,11 @@ class Encrypter implements EncrypterContract, StringEncrypter
 
         $value = \openssl_encrypt(
             $serialize ? serialize($value) : $value,
-            strtolower($this->cipher), $this->key, 0, $iv, $tag
+            strtolower($this->cipher),
+            $this->key,
+            0,
+            $iv,
+            $tag
         );
 
         if ($value === false) {
@@ -129,9 +114,6 @@ class Encrypter implements EncrypterContract, StringEncrypter
     /**
      * Encrypt a string without serialization.
      *
-     * @param  string  $value
-     * @return string
-     *
      * @throws \SwooleTW\Encryption\Exceptions\EncryptException
      */
     public function encryptString(string $value): string
@@ -141,10 +123,6 @@ class Encrypter implements EncrypterContract, StringEncrypter
 
     /**
      * Decrypt the given value.
-     *
-     * @param  string  $payload
-     * @param  bool  $unserialize
-     * @return mixed
      *
      * @throws \SwooleTW\Encryption\Exceptions\DecryptException
      */
@@ -162,7 +140,12 @@ class Encrypter implements EncrypterContract, StringEncrypter
         // we will then unserialize it and return it out to the caller. If we are
         // unable to decrypt this value we will throw out an exception message.
         $decrypted = \openssl_decrypt(
-            $payload['value'], strtolower($this->cipher), $this->key, 0, $iv, $tag ?? ''
+            $payload['value'],
+            strtolower($this->cipher),
+            $this->key,
+            0,
+            $iv,
+            $tag ?? ''
         );
 
         if ($decrypted === false) {
@@ -175,9 +158,6 @@ class Encrypter implements EncrypterContract, StringEncrypter
     /**
      * Decrypt the given string without unserialization.
      *
-     * @param  string  $payload
-     * @return string
-     *
      * @throws \SwooleTW\Encryption\Exceptions\DecryptException
      */
     public function decryptString(string $payload): string
@@ -187,21 +167,14 @@ class Encrypter implements EncrypterContract, StringEncrypter
 
     /**
      * Create a MAC for the given value.
-     *
-     * @param  string  $iv
-     * @param  mixed  $value
-     * @return string
      */
     protected function hash(string $iv, mixed $value): string
     {
-        return hash_hmac('sha256', $iv.$value, $this->key);
+        return hash_hmac('sha256', $iv . $value, $this->key);
     }
 
     /**
      * Get the JSON array from the given payload.
-     *
-     * @param  string  $payload
-     * @return array
      *
      * @throws \SwooleTW\Encryption\Exceptions\DecryptException
      */
@@ -225,9 +198,6 @@ class Encrypter implements EncrypterContract, StringEncrypter
 
     /**
      * Verify that the encryption payload is valid.
-     *
-     * @param  mixed  $payload
-     * @return bool
      */
     protected function validPayload(mixed $payload): bool
     {
@@ -250,22 +220,17 @@ class Encrypter implements EncrypterContract, StringEncrypter
 
     /**
      * Determine if the MAC for the given payload is valid.
-     *
-     * @param  array  $payload
-     * @return bool
      */
     protected function validMac(array $payload): bool
     {
         return hash_equals(
-            $this->hash($payload['iv'], $payload['value']), $payload['mac']
+            $this->hash($payload['iv'], $payload['value']),
+            $payload['mac']
         );
     }
 
     /**
      * Ensure the given tag is a valid tag given the selected cipher.
-     *
-     * @param  string|null  $tag
-     * @return void
      */
     protected function ensureTagIsValid(?string $tag): void
     {
@@ -280,8 +245,6 @@ class Encrypter implements EncrypterContract, StringEncrypter
 
     /**
      * Get the encryption key that the encrypter is currently using.
-     *
-     * @return string
      */
     public function getKey(): string
     {

@@ -14,16 +14,11 @@ abstract class Facade
 {
     /**
      * The resolved object instances.
-     *
-     * @var array
      */
     protected static array $resolvedInstance;
 
     /**
      * Run a Closure when the facade has been resolved.
-     *
-     * @param  \Closure  $callback
-     * @return void
      */
     public static function resolved(Closure $callback)
     {
@@ -124,14 +119,14 @@ abstract class Facade
     {
         $name = static::getFacadeAccessor();
 
-        return isset(static::$resolvedInstance[$name]) &&
-               static::$resolvedInstance[$name] instanceof LegacyMockInterface;
+        return isset(static::$resolvedInstance[$name])
+               && static::$resolvedInstance[$name] instanceof LegacyMockInterface;
     }
 
     /**
      * Get the mockable class for the bound instance.
      *
-     * @return string|null
+     * @return null|string
      */
     protected static function getMockableClass()
     {
@@ -143,8 +138,7 @@ abstract class Facade
     /**
      * Hotswap the underlying instance behind the facade.
      *
-     * @param  mixed  $instance
-     * @return void
+     * @param mixed $instance
      */
     public static function swap($instance)
     {
@@ -208,8 +202,7 @@ abstract class Facade
     /**
      * Clear a resolved facade instance.
      *
-     * @param  string  $name
-     * @return void
+     * @param string $name
      */
     public static function clearResolvedInstance($name)
     {
@@ -218,8 +211,6 @@ abstract class Facade
 
     /**
      * Clear all of the resolved instances.
-     *
-     * @return void
      */
     public static function clearResolvedInstances()
     {

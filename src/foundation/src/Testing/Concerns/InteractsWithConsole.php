@@ -13,17 +13,11 @@ trait InteractsWithConsole
 {
     /**
      * Indicates if the console output should be mocked.
-     *
-     * @var bool
      */
     public bool $mockConsoleOutput = true;
 
     /**
      * Call hyperf command and return code.
-     *
-     * @param  string  $command
-     * @param  array  $parameters
-     * @return int
      */
     public function command(string $command, array $parameters = []): int
     {

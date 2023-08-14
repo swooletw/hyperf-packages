@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SwooleTW\Hyperf\Tests\Database;
 
 use Hyperf\Database\Connection;
@@ -10,9 +12,13 @@ use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use SwooleTW\Hyperf\Database\Connectors\SQLiteConnector;
-use SwooleTW\Hyperf\Database\SQLiteConnection;
 use SwooleTW\Hyperf\Database\Schema\Grammars\SQLiteGrammar;
+use SwooleTW\Hyperf\Database\SQLiteConnection;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class DatabaseSQLiteSchemaGrammarTest extends TestCase
 {
     protected function tearDown(): void
@@ -926,6 +932,6 @@ class DatabaseSQLiteSchemaGrammarTest extends TestCase
 
     public function getGrammar()
     {
-        return new SQLiteGrammar;
+        return new SQLiteGrammar();
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SwooleTW\Hyperf\Tests\Cache\Stub;
 
 use Hyperf\Config\Config;

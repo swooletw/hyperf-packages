@@ -96,7 +96,7 @@ if (! function_exists('filled')) {
     /**
      * Determine if a value is "filled".
      *
-     * @param  mixed  $value
+     * @param mixed $value
      * @return bool
      */
     function filled($value)
@@ -109,7 +109,7 @@ if (! function_exists('class_basename')) {
     /**
      * Get the class "basename" of the given object / class.
      *
-     * @param  string|object  $class
+     * @param object|string $class
      * @return string
      */
     function class_basename($class)
@@ -122,7 +122,7 @@ if (! function_exists('class_uses_recursive')) {
     /**
      * Returns all traits used by a class, its parent classes and trait of their traits.
      *
-     * @param  object|string  $class
+     * @param object|string $class
      * @return array
      */
     function class_uses_recursive($class)
@@ -135,9 +135,9 @@ if (! function_exists('object_get')) {
     /**
      * Get an item from an object using "dot" notation.
      *
-     * @param  object  $object
-     * @param  string|null  $key
-     * @param  mixed  $default
+     * @param object $object
+     * @param null|string $key
+     * @param mixed $default
      * @return mixed
      */
     function object_get($object, $key, $default = null)
@@ -162,8 +162,7 @@ if (! function_exists('optional')) {
     /**
      * Provide access to optional objects.
      *
-     * @param  mixed  $value
-     * @param  callable|null  $callback
+     * @param mixed $value
      * @return mixed
      */
     function optional($value = null, callable $callback = null)
@@ -190,8 +189,8 @@ if (! function_exists('tap')) {
     /**
      * Call the given Closure with the given value then return the value.
      *
-     * @param  mixed  $value
-     * @param  callable|null  $callback
+     * @param mixed $value
+     * @param null|callable $callback
      * @return mixed
      */
     function tap($value, $callback = null)
@@ -210,10 +209,9 @@ if (! function_exists('transform')) {
     /**
      * Transform the given value if it is present.
      *
-     * @param  mixed  $value
-     * @param  callable  $callback
-     * @param  mixed  $default
-     * @return mixed|null
+     * @param mixed $value
+     * @param mixed $default
+     * @return null|mixed
      */
     function transform($value, callable $callback, $default = null)
     {
@@ -233,8 +231,7 @@ if (! function_exists('with')) {
     /**
      * Return the given value, optionally passed through the given callback.
      *
-     * @param  mixed  $value
-     * @param  callable|null  $callback
+     * @param mixed $value
      * @return mixed
      */
     function with($value, callable $callback = null)

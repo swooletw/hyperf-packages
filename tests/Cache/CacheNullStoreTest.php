@@ -1,10 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SwooleTW\Hyperf\Tests\Cache;
 
-use SwooleTW\Hyperf\Cache\NullStore;
 use PHPUnit\Framework\TestCase;
+use SwooleTW\Hyperf\Cache\NullStore;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class CacheNullStoreTest extends TestCase
 {
     public function testItemsCanNotBeCached()

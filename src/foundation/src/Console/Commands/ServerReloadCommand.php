@@ -14,6 +14,7 @@ use Throwable;
 class ServerReloadCommand extends Command
 {
     protected ?string $signature = 'server:reload';
+
     protected string $description = 'Reload all workers gracefully.';
 
     public function __construct(

@@ -11,8 +11,7 @@ class SQLiteProcessor extends Processor
     /**
      * Process the results of a column listing query.
      *
-     * @param  array  $results
-     * @return array
+     * @param array $results
      */
     public function processColumnListing($results): array
     {

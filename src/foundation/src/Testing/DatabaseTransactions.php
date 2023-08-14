@@ -10,8 +10,6 @@ trait DatabaseTransactions
 {
     /**
      * Handle database transactions on the specified connections.
-     *
-     * @return void
      */
     public function beginDatabaseTransaction(): void
     {
@@ -41,8 +39,6 @@ trait DatabaseTransactions
 
     /**
      * The database connections that should have transactions.
-     *
-     * @return array
      */
     protected function connectionsToTransact(): array
     {

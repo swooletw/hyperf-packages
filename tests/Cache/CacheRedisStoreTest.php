@@ -1,13 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SwooleTW\Hyperf\Tests\Cache;
 
 use Hyperf\Redis\RedisFactory as Factory;
 use Hyperf\Redis\RedisProxy;
-use SwooleTW\Hyperf\Cache\RedisStore;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
+use SwooleTW\Hyperf\Cache\RedisStore;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class CacheRedisStoreTest extends TestCase
 {
     protected function tearDown(): void

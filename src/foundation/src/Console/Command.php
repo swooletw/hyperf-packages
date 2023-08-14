@@ -11,7 +11,7 @@ abstract class Command extends HyperfCommand
     /**
      * Determine if the given argument is present.
      *
-     * @param  string|int  $name
+     * @param int|string $name
      * @return bool
      */
     public function hasArgument($name)
@@ -22,8 +22,8 @@ abstract class Command extends HyperfCommand
     /**
      * Get the value of a command argument.
      *
-     * @param  string|null  $key
-     * @return string|array|null
+     * @param null|string $key
+     * @return null|array|string
      */
     public function argument($key = null)
     {
@@ -47,7 +47,7 @@ abstract class Command extends HyperfCommand
     /**
      * Determine if the given option is present.
      *
-     * @param  string  $name
+     * @param string $name
      * @return bool
      */
     public function hasOption($name)
@@ -58,8 +58,8 @@ abstract class Command extends HyperfCommand
     /**
      * Get the value of a command option.
      *
-     * @param  string|null  $key
-     * @return string|array|bool|null
+     * @param null|string $key
+     * @return null|array|bool|string
      */
     public function option($key = null)
     {

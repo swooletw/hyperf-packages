@@ -13,8 +13,7 @@ class SQLiteBuilder extends Builder
     /**
      * Create a database in the schema.
      *
-     * @param  string  $name
-     * @return bool
+     * @param string $name
      */
     public function createDatabase($name): bool
     {
@@ -25,8 +24,7 @@ class SQLiteBuilder extends Builder
     /**
      * Drop a database from the schema if the database exists.
      *
-     * @param  string  $name
-     * @return bool
+     * @param string $name
      */
     public function dropDatabaseIfExists($name): bool
     {
@@ -39,8 +37,6 @@ class SQLiteBuilder extends Builder
 
     /**
      * Drop all tables from the database.
-     *
-     * @return void
      */
     public function dropAllTables(): void
     {
@@ -59,8 +55,6 @@ class SQLiteBuilder extends Builder
 
     /**
      * Drop all views from the database.
-     *
-     * @return void
      */
     public function dropAllViews(): void
     {
@@ -75,8 +69,6 @@ class SQLiteBuilder extends Builder
 
     /**
      * Empty the database file.
-     *
-     * @return void
      */
     public function refreshDatabaseFile(): void
     {

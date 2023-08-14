@@ -6,8 +6,8 @@ namespace SwooleTW\Hyperf\Router;
 
 use Hyperf\Context\Context;
 use Hyperf\HttpServer\Router\Dispatched;
-use SwooleTW\Hyperf\Router\Exceptions\RequestNotFoundException;
 use Psr\Http\Message\ServerRequestInterface;
+use SwooleTW\Hyperf\Router\Exceptions\RequestNotFoundException;
 
 class RouteContext
 {

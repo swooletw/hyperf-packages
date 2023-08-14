@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Encryption;
 
 use SwooleTW\Hyperf\Encryption\Contracts\Encrypter;
-use SwooleTW\Hyperf\Encryption\EncryptionFactory;
 
 class ConfigProvider
 {

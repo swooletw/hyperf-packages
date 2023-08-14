@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SwooleTW\Hyperf\Tests\Cache;
 
 use Carbon\Carbon;
@@ -9,6 +11,10 @@ use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Cache\FileStore;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class CacheFileStoreTest extends TestCase
 {
     protected function setUp(): void

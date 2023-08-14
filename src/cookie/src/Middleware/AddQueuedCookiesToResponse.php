@@ -6,17 +6,18 @@ namespace SwooleTW\Hyperf\Cookie\Middleware;
 
 use Hyperf\Collection\Arr;
 use Hyperf\Context\Context;
-use SwooleTW\Hyperf\Cookie\Contracts\Cookie as CookieContract;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use SwooleTW\Hyperf\Cookie\Contracts\Cookie as CookieContract;
 
 class AddQueuedCookiesToResponse implements MiddlewareInterface
 {
     public function __construct(
         protected CookieContract $cookie
-    ) {}
+    ) {
+    }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

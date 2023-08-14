@@ -8,9 +8,6 @@ abstract class AbstractHasher
 {
     /**
      * Get information about the given hashed value.
-     *
-     * @param  string  $hashedValue
-     * @return array
      */
     public function info(string $hashedValue): array
     {
@@ -19,11 +16,6 @@ abstract class AbstractHasher
 
     /**
      * Check the given plain value against a hash.
-     *
-     * @param  string  $value
-     * @param  string|null  $hashedValue
-     * @param  array  $options
-     * @return bool
      */
     public function check(string $value, ?string $hashedValue, array $options = []): bool
     {

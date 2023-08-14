@@ -6,6 +6,9 @@ namespace SwooleTW\Hyperf\Container\Contracts;
 
 use Closure;
 use Hyperf\Contract\ContainerInterface as HyperfContainerInterface;
+use InvalidArgumentException;
+use LogicException;
+use TypeError;
 
 interface Container extends HyperfContainerInterface
 {
@@ -16,9 +19,6 @@ interface Container extends HyperfContainerInterface
 
     /**
      * Determine if the given abstract type has been bound.
-     *
-     * @param  string  $abstract
-     * @return bool
      */
     public function bound(string $abstract): bool;
 
@@ -34,97 +34,63 @@ interface Container extends HyperfContainerInterface
 
     /**
      * Determine if the given abstract type has been resolved.
-     *
-     * @param  string  $abstract
-     * @return bool
      */
     public function resolved(string $abstract): bool;
 
     /**
      * Determine if a given string is an alias.
-     *
-     * @param  string  $name
-     * @return bool
      */
     public function isAlias(string $name): bool;
 
     /**
      * Register a binding with the container.
      *
-     * @param  string  $abstract
-     * @param  \Closure|string|null  $concrete
-     * @param  bool  $shared
-     * @return void
+     * @param null|Closure|string $concrete
      *
-     * @throws \TypeError
+     * @throws TypeError
      */
     public function bind(string $abstract, mixed $concrete = null): void;
 
     /**
      * Register a binding if it hasn't already been registered.
      *
-     * @param  string  $abstract
-     * @param  \Closure|string|null  $concrete
-     * @return void
+     * @param null|Closure|string $concrete
      */
     public function bindIf(string $abstract, mixed $concrete = null): void;
 
     /**
      * "Extend" an abstract type in the container.
      *
-     * @param  string  $abstract
-     * @param  \Closure  $closure
-     * @return void
-     *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function extend(string $abstract, Closure $closure): void;
 
     /**
      * Register an existing instance as shared in the container.
-     *
-     * @param  string  $abstract
-     * @param  mixed  $instance
-     * @return mixed
      */
     public function instance(string $abstract, mixed $instance): mixed;
 
     /**
      * Alias a type to a different name.
      *
-     * @param  string  $abstract
-     * @param  string  $alias
-     * @return void
-     *
-     * @throws \LogicException
+     * @throws LogicException
      */
     public function alias(string $abstract, string $alias): void;
 
     /**
      * Bind a new callback to an abstract's rebind event.
-     *
-     * @param  string  $abstract
-     * @param  \Closure  $callback
-     * @return mixed
      */
     public function rebinding(string $abstract, Closure $callback): mixed;
 
     /**
      * Refresh an instance on the given target and method.
-     *
-     * @param  string  $abstract
-     * @param  mixed  $target
-     * @param  string  $method
-     * @return mixed
      */
     public function refresh(string $abstract, mixed $target, string $method): mixed;
 
     /**
      * An alias function name for make().
      *
-     * @param  string|callable  $abstract
-     * @param  array  $parameters
-     * @return mixed
+     * @param callable|string $abstract
      *
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
@@ -133,72 +99,51 @@ interface Container extends HyperfContainerInterface
     /**
      * Register a new before resolving callback for all types.
      *
-     * @param  \Closure|string  $abstract
-     * @param  \Closure|null  $callback
-     * @return void
+     * @param Closure|string $abstract
      */
     public function beforeResolving($abstract, Closure $callback = null): void;
 
     /**
      * Register a new resolving callback.
      *
-     * @param  \Closure|string  $abstract
-     * @param  \Closure|null  $callback
-     * @return void
+     * @param Closure|string $abstract
      */
     public function resolving($abstract, Closure $callback = null): void;
 
     /**
      * Register a new after resolving callback for all types.
      *
-     * @param  \Closure|string  $abstract
-     * @param  \Closure|null  $callback
-     * @return void
+     * @param Closure|string $abstract
      */
     public function afterResolving($abstract, Closure $callback = null): void;
 
     /**
      * Get the container's bindings.
-     *
-     * @return array
      */
     public function getBindings(): array;
 
     /**
      * Get the alias for an abstract if available.
-     *
-     * @param  string  $abstract
-     * @return string
      */
     public function getAlias(string $abstract): string;
 
     /**
      * Remove all of the extender callbacks for a given type.
-     *
-     * @param  string  $abstract
-     * @return void
      */
     public function forgetExtenders(string $abstract): void;
 
     /**
      * Remove a resolved instance from the instance cache.
-     *
-     * @param  string  $abstract
-     * @return void
      */
     public function forgetInstance(string $abstract): void;
 
     /**
      * Clear all of the instances from the container.
-     *
-     * @return void
      */
     public function forgetInstances(): void;
 
     /**
      * Flush the container of all bindings and resolved instances.
-     *
-     * @return void
      */
     public function flush(): void;
 
@@ -211,9 +156,6 @@ interface Container extends HyperfContainerInterface
 
     /**
      * Set the shared instance of the container.
-     *
-     * @param  \SwooleTW\Hyperf\Container\Contracts\Container  $container
-     * @return \SwooleTW\Hyperf\Container\Contracts\Container
      */
     public static function setInstance(Container $container): Container;
 }

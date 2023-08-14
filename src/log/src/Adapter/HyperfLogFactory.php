@@ -6,7 +6,6 @@ namespace SwooleTW\Hyperf\Log\Adapter;
 
 use Hyperf\Contract\ConfigInterface;
 use Psr\Container\ContainerInterface;
-use SwooleTW\Hyperf\Log\Adapter\LogFactoryAdapter;
 
 class HyperfLogFactory
 {

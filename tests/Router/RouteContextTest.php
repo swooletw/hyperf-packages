@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SwooleTW\Hyperf\Tests\Router;
 
 use FastRoute\Dispatcher;
@@ -11,6 +13,10 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use SwooleTW\Hyperf\Router\RouteContext;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class RouteContextTest extends TestCase
 {
     public function tearDown(): void

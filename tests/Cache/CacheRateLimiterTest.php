@@ -1,12 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SwooleTW\Hyperf\Tests\Cache;
 
-use SwooleTW\Hyperf\Cache\Contracts\Repository as Cache;
-use SwooleTW\Hyperf\Cache\RateLimiter;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
+use SwooleTW\Hyperf\Cache\Contracts\Repository as Cache;
+use SwooleTW\Hyperf\Cache\RateLimiter;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class CacheRateLimiterTest extends TestCase
 {
     protected function tearDown(): void

@@ -7,11 +7,11 @@ namespace SwooleTW\Hyperf\Cache;
 use Closure;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Redis\RedisFactory;
-use SwooleTW\Hyperf\Cache\Contracts\Factory as FactoryContract;
-use SwooleTW\Hyperf\Cache\Contracts\Store;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface as DispatcherContract;
+use SwooleTW\Hyperf\Cache\Contracts\Factory as FactoryContract;
+use SwooleTW\Hyperf\Cache\Contracts\Store;
 
 /**
  * @mixin \SwooleTW\Hyperf\Cache\Contracts\Repository
@@ -21,15 +21,11 @@ class CacheManager implements FactoryContract
 {
     /**
      * The array of resolved cache stores.
-     *
-     * @var array
      */
     protected array $stores = [];
 
     /**
      * The registered custom driver creators.
-     *
-     * @var array
      */
     protected array $customCreators = [];
 
@@ -38,7 +34,8 @@ class CacheManager implements FactoryContract
      */
     public function __construct(
         protected ContainerInterface $app
-    ) {}
+    ) {
+    }
 
     /**
      * Dynamically call the default driver instance.
@@ -263,8 +260,6 @@ class CacheManager implements FactoryContract
 
     /**
      * Set the event dispatcher on the given repository instance.
-     *
-     * @param \SwooleTW\Hyperf\Cache\Repository $repository
      */
     protected function setEventDispatcher(Repository $repository)
     {

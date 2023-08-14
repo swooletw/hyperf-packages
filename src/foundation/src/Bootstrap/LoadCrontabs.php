@@ -12,10 +12,7 @@ use SwooleTW\Hyperf\Foundation\Console\Scheduling\Schedule;
 class LoadCrontabs
 {
     /**
-     * Load Crontabs
-     *
-     * @param  \Psr\Container\ContainerInterface  $app
-     * @return void
+     * Load Crontabs.
      */
     public function bootstrap(ContainerInterface $app): void
     {

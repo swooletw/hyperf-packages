@@ -26,10 +26,6 @@ class CountInDatabase extends Constraint
 
     /**
      * Create a new constraint instance.
-     *
-     * @param  \Hyperf\DbConnection\Connection  $database
-     * @param  int  $expectedCount
-     * @return void
      */
     public function __construct(
         protected Connection $database,
@@ -41,8 +37,7 @@ class CountInDatabase extends Constraint
     /**
      * Check if the expected and actual count are equal.
      *
-     * @param  string  $table
-     * @return bool
+     * @param string $table
      */
     public function matches($table): bool
     {
@@ -54,22 +49,22 @@ class CountInDatabase extends Constraint
     /**
      * Get the description of the failure.
      *
-     * @param  string  $table
-     * @return string
+     * @param string $table
      */
     public function failureDescription($table): string
     {
         return sprintf(
             "table [%s] matches expected entries count of %s. Entries found: %s.\n",
-            $table, $this->expectedCount, $this->actualCount
+            $table,
+            $this->expectedCount,
+            $this->actualCount
         );
     }
 
     /**
      * Get a string representation of the object.
      *
-     * @param  int  $options
-     * @return string
+     * @param int $options
      */
     public function toString($options = 0): string
     {

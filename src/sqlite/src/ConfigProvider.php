@@ -6,7 +6,6 @@ namespace SwooleTW\Hyperf\Database;
 
 use Hyperf\Database\Connection;
 use SwooleTW\Hyperf\Database\Connectors\SQLiteConnector;
-use SwooleTW\Hyperf\Database\SQLiteConnection;
 
 class ConfigProvider
 {
@@ -17,7 +16,7 @@ class ConfigProvider
         return [
             'dependencies' => [
                 'db.connector.sqlite' => SQLiteConnector::class,
-            ]
+            ],
         ];
     }
 

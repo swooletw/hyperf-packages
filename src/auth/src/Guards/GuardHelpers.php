@@ -15,8 +15,6 @@ trait GuardHelpers
     /**
      * Determine if the current user is authenticated. If not, throw an exception.
      *
-     * @return \SwooleTW\Hyperf\Auth\Contracts\Authenticatable
-     *
      * @throws \SwooleTW\Hyperf\Auth\AuthenticationException
      */
     public function authenticate(): Authenticatable
@@ -49,9 +47,6 @@ trait GuardHelpers
 
     /**
      * Log the given user ID into the application.
-     *
-     * @param  mixed  $id
-     * @return \SwooleTW\Hyperf\Auth\Contracts\Authenticatable|bool
      */
     public function loginUsingId(mixed $id): Authenticatable|bool
     {
@@ -66,9 +61,6 @@ trait GuardHelpers
 
     /**
      * Validate a user's credentials.
-     *
-     * @param  array  $credentials
-     * @return bool
      */
     public function validate(array $credentials = []): bool
     {
@@ -77,10 +69,6 @@ trait GuardHelpers
 
     /**
      * Determine if the user matches the credentials.
-     *
-     * @param  mixed  $user
-     * @param  array  $credentials
-     * @return bool
      */
     protected function hasValidCredentials(mixed $user, array $credentials): bool
     {

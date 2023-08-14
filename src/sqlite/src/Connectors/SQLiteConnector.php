@@ -7,16 +7,16 @@ namespace SwooleTW\Hyperf\Database\Connectors;
 use Hyperf\Database\Connectors\Connector;
 use Hyperf\Database\Connectors\ConnectorInterface;
 use InvalidArgumentException;
+use PDO;
 
 class SQLiteConnector extends Connector implements ConnectorInterface
 {
     /**
      * Establish a database connection.
      *
-     * @param  array  $config
-     * @return \PDO
+     * @return PDO
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function connect(array $config)
     {

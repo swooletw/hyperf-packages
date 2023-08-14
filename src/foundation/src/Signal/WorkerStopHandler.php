@@ -12,7 +12,7 @@ class WorkerStopHandler extends HyperfWorkerStopHandler
     public function handle(int $signal): void
     {
         Coroutine::set([
-            'enable_deadlock_check' => false
+            'enable_deadlock_check' => false,
         ]);
 
         parent::handle($signal);

@@ -12,17 +12,13 @@ class Kernel implements KernelContract
 {
     public function __construct(
         protected ContainerInterface $app
-    ) {}
+    ) {
+    }
 
     /**
      * Define the application's command schedule.
-     *
-     * @param Schedule $schedule
-     *
-     * @return void
      */
     public function schedule(Schedule $schedule): void
     {
-        //
     }
 }

@@ -11,8 +11,6 @@ trait ParsesLogConfiguration
 {
     /**
      * The Log levels.
-     *
-     * @var array
      */
     protected array $levels = [
         'debug' => Monolog::DEBUG,
@@ -27,18 +25,13 @@ trait ParsesLogConfiguration
 
     /**
      * Get fallback log channel name.
-     *
-     * @return string
      */
     abstract protected function getFallbackChannelName(): string;
 
     /**
      * Parse the string level into a Monolog constant.
      *
-     * @param  array  $config
-     * @return int
-     *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function level(array $config): int
     {
@@ -53,9 +46,6 @@ trait ParsesLogConfiguration
 
     /**
      * Parse the action level from the given configuration.
-     *
-     * @param  array  $config
-     * @return int
      */
     protected function actionLevel(array $config): int
     {
@@ -70,9 +60,6 @@ trait ParsesLogConfiguration
 
     /**
      * Extract the log channel from the given configuration.
-     *
-     * @param  array  $config
-     * @return string
      */
     protected function parseChannel(array $config): string
     {

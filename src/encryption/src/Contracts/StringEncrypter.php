@@ -9,18 +9,12 @@ interface StringEncrypter
     /**
      * Encrypt a string without serialization.
      *
-     * @param  string  $value
-     * @return string
-     *
      * @throws \SwooleTW\Hyperf\Encryption\Exceptions\EncryptException
      */
     public function encryptString(string $value): string;
 
     /**
      * Decrypt the given string without unserialization.
-     *
-     * @param  string  $payload
-     * @return string
      *
      * @throws \SwooleTW\Hyperf\Encryption\Exceptions\DecryptException
      */

@@ -16,13 +16,11 @@ class Blacklist implements BlacklistContract
         protected int $gracePeriod = 0,
         protected int $refreshTTL = 20160,
         protected string $key = 'jti'
-    ) {}
+    ) {
+    }
 
     /**
      * Add the token (jti claim) to the blacklist.
-     *
-     * @param  \array  $payload
-     * @return bool
      */
     public function add(array $payload): bool
     {
@@ -48,9 +46,6 @@ class Blacklist implements BlacklistContract
 
     /**
      * Get the number of minutes until the token expiry.
-     *
-     * @param  \array  $payload
-     * @return int
      */
     protected function getMinutesUntilExpired(array $payload): int
     {
@@ -67,9 +62,6 @@ class Blacklist implements BlacklistContract
 
     /**
      * Add the token (jti claim) to the blacklist indefinitely.
-     *
-     * @param  \array  $payload
-     * @return bool
      */
     public function addForever(array $payload): bool
     {
@@ -80,9 +72,6 @@ class Blacklist implements BlacklistContract
 
     /**
      * Determine whether the token has been blacklisted.
-     *
-     * @param  \array  $payload
-     * @return bool
      */
     public function has(array $payload): bool
     {
@@ -91,7 +80,8 @@ class Blacklist implements BlacklistContract
         // exit early if the token was blacklisted forever,
         if ($value === 'forever') {
             return true;
-        } elseif (! $value) {
+        }
+        if (! $value) {
             return false;
         }
 
@@ -101,9 +91,6 @@ class Blacklist implements BlacklistContract
 
     /**
      * Remove the token (jti claim) from the blacklist.
-     *
-     * @param  \array  $payload
-     * @return bool
      */
     public function remove(array $payload): bool
     {
@@ -112,8 +99,6 @@ class Blacklist implements BlacklistContract
 
     /**
      * Remove all tokens from the blacklist.
-     *
-     * @return bool
      */
     public function clear(): bool
     {
@@ -125,8 +110,6 @@ class Blacklist implements BlacklistContract
     /**
      * Get the timestamp when the blacklist comes into effect
      * This defaults to immediate (0 seconds).
-     *
-     * @return int
      */
     protected function getGraceTimestamp(): int
     {
@@ -136,7 +119,6 @@ class Blacklist implements BlacklistContract
     /**
      * Set the grace period.
      *
-     * @param  int  $gracePeriod
      * @return $this
      */
     public function setGracePeriod(int $gracePeriod): static
@@ -148,8 +130,6 @@ class Blacklist implements BlacklistContract
 
     /**
      * Get the grace period.
-     *
-     * @return int
      */
     public function getGracePeriod(): int
     {
@@ -158,9 +138,6 @@ class Blacklist implements BlacklistContract
 
     /**
      * Get the unique key held within the blacklist.
-     *
-     * @param  \array  $payload
-     * @return mixed
      */
     public function getKey(array $payload): mixed
     {
@@ -174,7 +151,6 @@ class Blacklist implements BlacklistContract
     /**
      * Set the unique key held within the blacklist.
      *
-     * @param  string  $key
      * @return $this
      */
     public function setKey(string $key): static
@@ -187,7 +163,6 @@ class Blacklist implements BlacklistContract
     /**
      * Set the refresh time limit.
      *
-     * @param  int  $ttl
      * @return $this
      */
     public function setRefreshTTL(int $ttl): static
@@ -199,8 +174,6 @@ class Blacklist implements BlacklistContract
 
     /**
      * Get the refresh time limit.
-     *
-     * @return int
      */
     public function getRefreshTTL(): int
     {

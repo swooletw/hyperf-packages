@@ -19,13 +19,13 @@ class DatabaseUserProvider implements UserProvider
         protected ConnectionInterface $connection,
         protected HashContract $hasher,
         protected string $table
-    ) {}
+    ) {
+    }
 
     /**
      * Retrieve a user by their unique identifier.
      *
-     * @param  mixed  $identifier
-     * @return \SwooleTW\Hyperf\Auth\Contracts\Authenticatable|null
+     * @param mixed $identifier
      */
     public function retrieveById($identifier): ?Authenticatable
     {
@@ -36,15 +36,12 @@ class DatabaseUserProvider implements UserProvider
 
     /**
      * Retrieve a user by the given credentials.
-     *
-     * @param  array  $credentials
-     * @return \SwooleTW\Hyperf\Auth\Contracts\Authenticatable|null
      */
     public function retrieveByCredentials(array $credentials): ?Authenticatable
     {
-        if (empty($credentials) ||
-           (count($credentials) === 1 &&
-            array_key_exists('password', $credentials))) {
+        if (empty($credentials)
+           || (count($credentials) === 1
+            && array_key_exists('password', $credentials))) {
             return null;
         }
 
@@ -78,8 +75,7 @@ class DatabaseUserProvider implements UserProvider
     /**
      * Get the generic user.
      *
-     * @param  mixed  $user
-     * @return \SwooleTW\Hyperf\Auth\GenericUser|null
+     * @param mixed $user
      */
     protected function getGenericUser($user): ?GenericUser
     {
@@ -93,14 +89,13 @@ class DatabaseUserProvider implements UserProvider
     /**
      * Validate a user against the given credentials.
      *
-     * @param  \SwooleTW\Hyperf\Auth\Contracts\Authenticatable  $user
-     * @param  array  $credentials
      * @return bool
      */
     public function validateCredentials(Authenticatable $user, array $credentials): ?Authenticatable
     {
         return $this->hasher->check(
-            $credentials['password'], $user->getAuthPassword()
+            $credentials['password'],
+            $user->getAuthPassword()
         );
     }
 }

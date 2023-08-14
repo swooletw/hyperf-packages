@@ -13,13 +13,13 @@ use Psr\Http\Message\ServerRequestInterface;
 use SwooleTW\Hyperf\Auth\Contracts\Authenticatable;
 use SwooleTW\Hyperf\Auth\Contracts\Guard;
 use SwooleTW\Hyperf\Auth\Contracts\UserProvider;
-use SwooleTW\Hyperf\Auth\Guards\GuardHelpers;
 use SwooleTW\Hyperf\JWT\Contracts\ManagerContract;
 use Throwable;
 
 class JwtGuard implements Guard
 {
-    use GuardHelpers, Macroable;
+    use GuardHelpers;
+    use Macroable;
 
     public function __construct(
         protected string $name,
@@ -27,13 +27,11 @@ class JwtGuard implements Guard
         protected ManagerContract $jwtManager,
         protected RequestInterface $request,
         protected int $ttl = 120
-    ) {}
+    ) {
+    }
 
     /**
      * Attempt to authenticate a user using the given credentials.
-     *
-     * @param  array  $credentials
-     * @return bool
      */
     public function attempt(array $credentials = [], bool $login = true): bool
     {
@@ -126,7 +124,6 @@ class JwtGuard implements Guard
     /**
      * Add any custom claims.
      *
-     * @param  array  $claims
      * @return $this
      */
     public function claims(array $claims): static
@@ -147,7 +144,6 @@ class JwtGuard implements Guard
             return $this->jwtManager
                 ->decode($this->parseToken());
         } catch (Throwable $exception) {
-            //
         }
 
         return [];
@@ -166,9 +162,6 @@ class JwtGuard implements Guard
 
     /**
      * Log a user into the application using their credentials.
-     *
-     * @param  array  $credentials
-     * @return bool
      */
     public function once(array $credentials = []): bool
     {
@@ -178,7 +171,6 @@ class JwtGuard implements Guard
     /**
      * Log the given User into the application.
      *
-     * @param  mixed  $id
      * @return bool
      */
     public function onceUsingId(mixed $id): Authenticatable|bool

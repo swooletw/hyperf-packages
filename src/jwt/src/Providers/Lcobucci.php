@@ -35,12 +35,6 @@ class Lcobucci extends Provider implements ProviderContract
 
     /**
      * Create the Lcobucci provider.
-     *
-     * @param  string  $secret
-     * @param  string  $algo
-     * @param  array  $keys
-     * @param  \Lcobucci\JWT\Configuration|null  $config
-     * @return void
      */
     public function __construct(string $secret, string $algo, array $keys, ?Configuration $config = null)
     {
@@ -52,8 +46,6 @@ class Lcobucci extends Provider implements ProviderContract
 
     /**
      * Signers that this provider supports.
-     *
-     * @var array
      */
     protected array $signers = [
         self::ALGO_HS256 => \SwooleTW\Hyperf\JWT\Signers\HmacSha256::class,
@@ -70,9 +62,6 @@ class Lcobucci extends Provider implements ProviderContract
     /**
      * Create a JSON Web Token.
      *
-     * @param  array  $payload
-     * @return string
-     *
      * @throws \SwooleTW\Hyperf\JWT\Exceptions\JWTException
      */
     public function encode(array $payload): string
@@ -84,15 +73,12 @@ class Lcobucci extends Provider implements ProviderContract
                 ->getToken($this->config->signer(), $this->config->signingKey())
                 ->toString();
         } catch (Exception $e) {
-            throw new JWTException('Could not create token: '.$e->getMessage(), $e->getCode(), $e);
+            throw new JWTException('Could not create token: ' . $e->getMessage(), $e->getCode(), $e);
         }
     }
 
     /**
      * Decode a JSON Web Token.
-     *
-     * @param  string  $token
-     * @return array
      *
      * @throws \SwooleTW\Hyperf\JWT\Exceptions\JWTException
      */
@@ -102,7 +88,7 @@ class Lcobucci extends Provider implements ProviderContract
             /** @var \Lcobucci\JWT\Token\Plain */
             $token = $this->config->parser()->parse($token);
         } catch (Exception $e) {
-            throw new TokenInvalidException('Could not decode token: '.$e->getMessage(), $e->getCode(), $e);
+            throw new TokenInvalidException('Could not decode token: ' . $e->getMessage(), $e->getCode(), $e);
         }
 
         if (! $this->config->validator()->validate($token, ...$this->config->validationConstraints())) {
@@ -124,9 +110,6 @@ class Lcobucci extends Provider implements ProviderContract
 
     /**
      * Create an instance of the builder with all of the claims applied.
-     *
-     * @param  array  $payload
-     * @return \Lcobucci\JWT\Token\Builder
      */
     protected function getBuilderFromClaims(array $payload): Builder
     {
@@ -165,8 +148,6 @@ class Lcobucci extends Provider implements ProviderContract
 
     /**
      * Build the configuration.
-     *
-     * @return \Lcobucci\JWT\Configuration
      */
     protected function buildConfig(): Configuration
     {
@@ -188,8 +169,6 @@ class Lcobucci extends Provider implements ProviderContract
     /**
      * Get the signer instance.
      *
-     * @return \Lcobucci\JWT\Signer
-     *
      * @throws \SwooleTW\Hyperf\JWT\Exceptions\JWTException
      */
     protected function getSigner(): Signer
@@ -207,9 +186,6 @@ class Lcobucci extends Provider implements ProviderContract
         return new $signer();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function isAsymmetric(): bool
     {
         return is_subclass_of($this->signer, Rsa::class)
@@ -217,10 +193,6 @@ class Lcobucci extends Provider implements ProviderContract
     }
 
     /**
-     * {@inheritdoc}
-     *
-     * @return \Lcobucci\JWT\Signer\Key
-     *
      * @throws \SwooleTW\Hyperf\JWT\Exceptions\JWTException
      */
     protected function getSigningKey(): Key
@@ -241,10 +213,6 @@ class Lcobucci extends Provider implements ProviderContract
     }
 
     /**
-     * {@inheritdoc}
-     *
-     * @return \Lcobucci\JWT\Signer\Key
-     *
      * @throws \SwooleTW\Hyperf\JWT\Exceptions\JWTException
      */
     protected function getVerificationKey(): Key

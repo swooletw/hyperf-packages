@@ -9,7 +9,6 @@ use Hyperf\Database\Connectors\ConnectionFactory as HyperfConnectionFactory;
 use Hyperf\Database\Connectors\MySqlConnector;
 use Hyperf\Database\MySqlConnection;
 use InvalidArgumentException;
-use SwooleTW\Hyperf\Database\Connectors\SQLiteConnector;
 use SwooleTW\Hyperf\Database\SQLiteConnection;
 
 class ConnectionFactory extends HyperfConnectionFactory

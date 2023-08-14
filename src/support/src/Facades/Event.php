@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Support\Facades;
 
 use Hyperf\Database\Model\Register;
-use SwooleTW\Hyperf\Support\Facades\Facade;
-use SwooleTW\Hyperf\Support\Testing\Fakes\EventFake;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use SwooleTW\Hyperf\Support\Testing\Fakes\EventFake;
 
 /**
  * @mixin EventDispatcher
@@ -17,7 +16,7 @@ class Event extends Facade
     /**
      * Replace the bound instance with a fake.
      *
-     * @param  array|string  $eventsToFake
+     * @param array|string $eventsToFake
      * @return \SwooleTW\Hyperf\Support\Testing\Fakes\EventFake
      */
     public static function fake($eventsToFake = [])
@@ -32,7 +31,7 @@ class Event extends Facade
     /**
      * Replace the bound instance with a fake that fakes all events except the given events.
      *
-     * @param  string[]|string  $eventsToAllow
+     * @param string|string[] $eventsToAllow
      * @return \SwooleTW\Hyperf\Support\Testing\Fakes\EventFake
      */
     public static function fakeExcept($eventsToAllow)
@@ -47,8 +46,6 @@ class Event extends Facade
     /**
      * Replace the bound instance with a fake during the given callable's execution.
      *
-     * @param  callable  $callable
-     * @param  array  $eventsToFake
      * @return mixed
      */
     public static function fakeFor(callable $callable, array $eventsToFake = [])
@@ -67,8 +64,6 @@ class Event extends Facade
     /**
      * Replace the bound instance with a fake during the given callable's execution.
      *
-     * @param  callable  $callable
-     * @param  array  $eventsToAllow
      * @return mixed
      */
     public static function fakeExceptFor(callable $callable, array $eventsToAllow = [])

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SwooleTW\Hyperf\Tests\Database;
 
 use Hyperf\Context\ApplicationContext;
@@ -10,6 +12,10 @@ use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use SwooleTW\Hyperf\Database\Schema\SQLiteBuilder;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class DatabaseSQLiteBuilderTest extends TestCase
 {
     public function testCreateDatabase()

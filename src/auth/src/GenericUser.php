@@ -10,16 +10,11 @@ class GenericUser implements Authenticatable
 {
     /**
      * All of the user's attributes.
-     *
-     * @var array
      */
     protected array $attributes;
 
     /**
      * Create a new generic User object.
-     *
-     * @param  array  $attributes
-     * @return void
      */
     public function __construct(array $attributes)
     {
@@ -28,8 +23,6 @@ class GenericUser implements Authenticatable
 
     /**
      * Get the name of the unique identifier for the user.
-     *
-     * @return string
      */
     public function getAuthIdentifierName(): string
     {
@@ -38,8 +31,6 @@ class GenericUser implements Authenticatable
 
     /**
      * Get the unique identifier for the user.
-     *
-     * @return mixed
      */
     public function getAuthIdentifier(): mixed
     {
@@ -48,8 +39,6 @@ class GenericUser implements Authenticatable
 
     /**
      * Get the password for the user.
-     *
-     * @return string
      */
     public function getAuthPassword(): string
     {
@@ -59,7 +48,7 @@ class GenericUser implements Authenticatable
     /**
      * Dynamically access the user's attributes.
      *
-     * @param  string  $key
+     * @param string $key
      * @return mixed
      */
     public function __get($key)
@@ -70,9 +59,8 @@ class GenericUser implements Authenticatable
     /**
      * Dynamically set an attribute on the user.
      *
-     * @param  string  $key
-     * @param  mixed  $value
-     * @return void
+     * @param string $key
+     * @param mixed $value
      */
     public function __set($key, $value)
     {
@@ -82,7 +70,7 @@ class GenericUser implements Authenticatable
     /**
      * Dynamically check if a value is set on the user.
      *
-     * @param  string  $key
+     * @param string $key
      * @return bool
      */
     public function __isset($key)
@@ -93,8 +81,7 @@ class GenericUser implements Authenticatable
     /**
      * Dynamically unset a value on the user.
      *
-     * @param  string  $key
-     * @return void
+     * @param string $key
      */
     public function __unset($key)
     {

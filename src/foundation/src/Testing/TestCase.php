@@ -11,47 +11,40 @@ use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithContainer;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithDatabase;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\MakesHttpRequests;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\MocksApplicationServices;
-use SwooleTW\Hyperf\Foundation\Testing\DatabaseMigrations;
-use SwooleTW\Hyperf\Foundation\Testing\DatabaseTransactions;
-use SwooleTW\Hyperf\Foundation\Testing\RefreshDatabase;
-use SwooleTW\Hyperf\Foundation\Testing\WithoutEvents;
-use SwooleTW\Hyperf\Foundation\Testing\WithoutMiddleware;
 use SwooleTW\Hyperf\Support\Facades\Facade;
 use Throwable;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class TestCase extends \PHPUnit\Framework\TestCase
 {
-    use InteractsWithContainer,
-        MakesHttpRequests,
-        MocksApplicationServices,
-        InteractsWithConsole,
-        InteractsWithDatabase;
+    use InteractsWithContainer;
+    use MakesHttpRequests;
+    use MocksApplicationServices;
+    use InteractsWithConsole;
+    use InteractsWithDatabase;
 
     /**
      * The callbacks that should be run after the application is created.
-     *
-     * @var array
      */
     protected array $afterApplicationCreatedCallbacks = [];
 
     /**
      * The callbacks that should be run before the application is destroyed.
-     *
-     * @var array
      */
     protected array $beforeApplicationDestroyedCallbacks = [];
 
     /**
      * The exception thrown while running an application destruction callback.
      *
-     * @var \Throwable
+     * @var Throwable
      */
     protected ?Throwable $callbackException = null;
 
     /**
      * Indicates if we have made it through the base setUp function.
-     *
-     * @var bool
      */
     protected bool $setUpHasRun = false;
 
@@ -133,9 +126,6 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
     /**
      * Register a callback to be run after the application is created.
-     *
-     * @param  callable  $callback
-     * @return void
      */
     public function afterApplicationCreated(callable $callback)
     {
@@ -148,9 +138,6 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
     /**
      * Register a callback to be run before the application is destroyed.
-     *
-     * @param  callable  $callback
-     * @return void
      */
     protected function beforeApplicationDestroyed(callable $callback)
     {
@@ -159,8 +146,6 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
     /**
      * Execute the application's pre-destruction callbacks.
-     *
-     * @return void
      */
     protected function callBeforeApplicationDestroyedCallbacks()
     {

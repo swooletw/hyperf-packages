@@ -55,7 +55,7 @@ trait MakesHttpRequests
     /**
      * Disable middleware for the test.
      *
-     * @param  string|array|null  $middleware
+     * @param null|array|string $middleware
      * @return $this
      */
     protected function withoutMiddleware($middleware = null): static
@@ -76,7 +76,7 @@ trait MakesHttpRequests
     /**
      * Enable the given middleware for the test.
      *
-     * @param  string|array|null  $middleware
+     * @param null|array|string $middleware
      * @return $this
      */
     public function withMiddleware($middleware = null): static

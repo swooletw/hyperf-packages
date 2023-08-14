@@ -21,8 +21,6 @@ class TaggedCache extends Repository
 
     /**
      * Create a new tagged cache instance.
-     *
-     * @param \SwooleTW\Hyperf\Cache\TagSet $tags
      */
     public function __construct(Store $store, TagSet $tags)
     {

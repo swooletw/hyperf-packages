@@ -1,15 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SwooleTW\Hyperf\Tests\Cache;
 
 use Hyperf\Config\Config;
 use Hyperf\Contract\ConfigInterface;
-use SwooleTW\Hyperf\Cache\ArrayStore;
-use SwooleTW\Hyperf\Cache\CacheManager;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
+use SwooleTW\Hyperf\Cache\ArrayStore;
+use SwooleTW\Hyperf\Cache\CacheManager;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class CacheManagerTest extends TestCase
 {
     protected function tearDown(): void

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Cookie;
 
+use DateTimeInterface;
 use Hyperf\HttpMessage\Cookie\Cookie as HyperfCookie;
+use InvalidArgumentException;
 
 class Cookie extends HyperfCookie
 {
@@ -37,7 +39,7 @@ class Cookie extends HyperfCookie
     /**
      * Creates a cookie copy with a new time the cookie expires.
      *
-     * @param int|string|\DateTimeInterface $expire
+     * @param DateTimeInterface|int|string $expire
      *
      * @return static
      */
@@ -52,18 +54,18 @@ class Cookie extends HyperfCookie
     /**
      * Converts expires formats to a unix timestamp.
      *
-     * @param int|string|\DateTimeInterface $expire
+     * @param DateTimeInterface|int|string $expire
      */
     private static function expiresTimestamp($expire = 0): int
     {
         // convert expiration time to a Unix timestamp
-        if ($expire instanceof \DateTimeInterface) {
+        if ($expire instanceof DateTimeInterface) {
             $expire = $expire->format('U');
-        } elseif (!is_numeric($expire)) {
+        } elseif (! is_numeric($expire)) {
             $expire = strtotime($expire);
 
-            if (false === $expire) {
-                throw new \InvalidArgumentException('The cookie expiration time is not valid.');
+            if ($expire === false) {
+                throw new InvalidArgumentException('The cookie expiration time is not valid.');
             }
         }
 
@@ -78,7 +80,7 @@ class Cookie extends HyperfCookie
     public function withPath(string $path): self
     {
         $cookie = clone $this;
-        $cookie->path = '' === $path ? '/' : $path;
+        $cookie->path = $path === '' ? '/' : $path;
 
         return $cookie;
     }

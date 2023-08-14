@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SwooleTW\Hyperf\Tests\Encryption;
 
 use PHPUnit\Framework\TestCase;
@@ -7,6 +9,10 @@ use RuntimeException;
 use SwooleTW\Hyperf\Encryption\Encrypter;
 use SwooleTW\Hyperf\Encryption\Exceptions\DecryptException;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class EncrypterTest extends TestCase
 {
     public function testEncryption()
@@ -37,7 +43,7 @@ class EncrypterTest extends TestCase
     {
         $e = new Encrypter(str_repeat('a', 16));
         $lengths = [];
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < 100; ++$i) {
             $lengths[] = strlen($e->encrypt('foo'));
         }
         $this->assertSame(min($lengths), max($lengths));
@@ -223,6 +229,7 @@ class EncrypterTest extends TestCase
 
     /**
      * @dataProvider provideTamperedData
+     * @param mixed $payload
      */
     public function testTamperedPayloadWillGetRejected($payload)
     {

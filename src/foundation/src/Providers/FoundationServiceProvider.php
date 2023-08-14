@@ -7,11 +7,9 @@ namespace SwooleTW\Hyperf\Foundation\Providers;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Database\ConnectionResolverInterface;
 use Hyperf\HttpServer\Request;
-use Hyperf\HttpServer\Router\DispatcherFactory;
 use Psr\Container\ContainerInterface;
 use SwooleTW\Hyperf\Database\Connectors\SQLiteConnector;
 use SwooleTW\Hyperf\Foundation\Macros\RequestMacro;
-use SwooleTW\Hyperf\Foundation\Router\RouteCollector;
 use SwooleTW\Hyperf\Support\ServiceProvider;
 
 class FoundationServiceProvider extends ServiceProvider
@@ -32,8 +30,6 @@ class FoundationServiceProvider extends ServiceProvider
 
     /**
      * Register any application services.
-     *
-     * @return void
      */
     public function register(): void
     {

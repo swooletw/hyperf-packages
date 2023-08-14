@@ -15,18 +15,13 @@ trait CreatesUserProviders
 {
     /**
      * The registered custom provider creators.
-     *
-     * @var array
      */
     protected array $customProviderCreators = [];
 
     /**
      * Create the user provider implementation for the driver.
      *
-     * @param  string|null  $provider
-     * @return \SwooleTW\Hyperf\Auth\Contracts\UserProvider|null
-     *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function createUserProvider(?string $provider = null): ?UserProvider
     {
@@ -36,7 +31,9 @@ trait CreatesUserProviders
 
         if (isset($this->customProviderCreators[$driver = ($config['driver'] ?? null)])) {
             return call_user_func(
-                $this->customProviderCreators[$driver], $this->app, $config
+                $this->customProviderCreators[$driver],
+                $this->app,
+                $config
             );
         }
 
@@ -52,8 +49,7 @@ trait CreatesUserProviders
     /**
      * Get the user provider configuration.
      *
-     * @param  string|null  $provider
-     * @return array|null
+     * @param null|string $provider
      */
     protected function getProviderConfiguration($provider): ?array
     {
@@ -66,9 +62,6 @@ trait CreatesUserProviders
 
     /**
      * Create an instance of the database user provider.
-     *
-     * @param  array  $config
-     * @return \SwooleTW\Hyperf\Auth\Providers\DatabaseUserProvider
      */
     protected function createDatabaseProvider(array $config): DatabaseUserProvider
     {
@@ -82,12 +75,8 @@ trait CreatesUserProviders
         );
     }
 
-
     /**
      * Create an instance of the Eloquent user provider.
-     *
-     * @param  array  $config
-     * @return \SwooleTW\Hyperf\Auth\Providers\EloquentUserProvider
      */
     protected function createEloquentProvider(array $config): EloquentUserProvider
     {
@@ -99,8 +88,6 @@ trait CreatesUserProviders
 
     /**
      * Get the default user provider name.
-     *
-     * @return string
      */
     public function getDefaultUserProvider(): string
     {

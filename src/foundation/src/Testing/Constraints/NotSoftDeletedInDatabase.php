@@ -11,57 +11,51 @@ class NotSoftDeletedInDatabase extends Constraint
 {
     /**
      * Number of records that will be shown in the console in case of failure.
-     *
-     * @var int
      */
     protected int $show = 3;
 
     /**
      * Create a new constraint instance.
-     *
-     * @param  \Hyperf\DbConnection\Connection  $database
-     * @param  array  $data
-     * @param  string  $deletedAtColumn
-     * @return void
      */
     public function __construct(
         protected Connection $database,
-        array $data, 
+        array $data,
         string $deletedAtColumn
-    ) {}
+    ) {
+    }
 
     /**
      * Check if the data is found in the given table.
      *
-     * @param  string  $table
-     * @return bool
+     * @param string $table
      */
     public function matches($table): bool
     {
         return $this->database->table($table)
-                ->where($this->data)
-                ->whereNull($this->deletedAtColumn)
-                ->count() > 0;
+            ->where($this->data)
+            ->whereNull($this->deletedAtColumn)
+            ->count() > 0;
     }
 
     /**
      * Get the description of the failure.
      *
-     * @param  string  $table
-     * @return string
+     * @param string $table
      */
     public function failureDescription($table): string
     {
         return sprintf(
             "any existing row in the table [%s] matches the attributes %s.\n\n%s",
-            $table, $this->toString(), $this->getAdditionalInfo($table)
+            $table,
+            $this->toString(),
+            $this->getAdditionalInfo($table)
         );
     }
 
     /**
      * Get additional info about the records found in the database table.
      *
-     * @param  string  $table
+     * @param string $table
      * @return string
      */
     protected function getAdditionalInfo($table)
@@ -74,7 +68,7 @@ class NotSoftDeletedInDatabase extends Constraint
             return 'The table is empty';
         }
 
-        $description = 'Found: '.json_encode($results, JSON_PRETTY_PRINT);
+        $description = 'Found: ' . json_encode($results, JSON_PRETTY_PRINT);
 
         if ($query->count() > $this->show) {
             $description .= sprintf(' and %s others', $query->count() - $this->show);
@@ -85,8 +79,6 @@ class NotSoftDeletedInDatabase extends Constraint
 
     /**
      * Get a string representation of the object.
-     *
-     * @return string
      */
     public function toString(): string
     {

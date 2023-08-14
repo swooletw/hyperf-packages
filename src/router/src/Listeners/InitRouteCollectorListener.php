@@ -14,7 +14,8 @@ class InitRouteCollectorListener implements ListenerInterface
 {
     public function __construct(
         protected ContainerInterface $container
-    ) {}
+    ) {
+    }
 
     public function listen(): array
     {

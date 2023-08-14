@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Queue\Console;
 
-use SwooleTW\Hyperf\Foundation\Support\Concerns\CanStartServer;
 use Psr\Container\ContainerInterface;
+use SwooleTW\Hyperf\Foundation\Support\Concerns\CanStartServer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

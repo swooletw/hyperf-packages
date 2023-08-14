@@ -8,34 +8,37 @@ use Hyperf\Collection\Arr;
 
 abstract class Provider
 {
-    const ALGO_HS256 = 'HS256';
-    const ALGO_HS384 = 'HS384';
-    const ALGO_HS512 = 'HS512';
-    const ALGO_RS256 = 'RS256';
-    const ALGO_RS384 = 'RS384';
-    const ALGO_RS512 = 'RS512';
-    const ALGO_ES256 = 'ES256';
-    const ALGO_ES384 = 'ES384';
-    const ALGO_ES512 = 'ES512';
+    public const ALGO_HS256 = 'HS256';
+
+    public const ALGO_HS384 = 'HS384';
+
+    public const ALGO_HS512 = 'HS512';
+
+    public const ALGO_RS256 = 'RS256';
+
+    public const ALGO_RS384 = 'RS384';
+
+    public const ALGO_RS512 = 'RS512';
+
+    public const ALGO_ES256 = 'ES256';
+
+    public const ALGO_ES384 = 'ES384';
+
+    public const ALGO_ES512 = 'ES512';
 
     /**
      * Constructor.
-     *
-     * @param  string  $secret
-     * @param  string  $algo
-     * @param  array  $keys
-     * @return void
      */
     public function __construct(
         protected string $secret,
         protected string $algo,
         protected array $keys
-    ){}
+    ) {
+    }
 
     /**
      * Set the algorithm used to sign the token.
      *
-     * @param  string  $algo
      * @return $this
      */
     public function setAlgo(string $algo): static
@@ -47,8 +50,6 @@ abstract class Provider
 
     /**
      * Get the algorithm used to sign the token.
-     *
-     * @return string
      */
     public function getAlgo(): string
     {
@@ -58,7 +59,6 @@ abstract class Provider
     /**
      * Set the secret used to sign the token.
      *
-     * @param  string  $secret
      * @return $this
      */
     public function setSecret(string $secret): static
@@ -70,8 +70,6 @@ abstract class Provider
 
     /**
      * Get the secret used to sign the token.
-     *
-     * @return string
      */
     public function getSecret(): string
     {
@@ -81,7 +79,6 @@ abstract class Provider
     /**
      * Set the keys used to sign the token.
      *
-     * @param  array  $keys
      * @return $this
      */
     public function setKeys(array $keys): static
@@ -93,8 +90,6 @@ abstract class Provider
 
     /**
      * Get the array of keys used to sign tokens with an asymmetric algorithm.
-     *
-     * @return array
      */
     public function getKeys(): array
     {
@@ -103,8 +98,6 @@ abstract class Provider
 
     /**
      * Get the public key used to sign tokens with an asymmetric algorithm.
-     *
-     * @return string|null
      */
     public function getPublicKey(): ?string
     {
@@ -113,8 +106,6 @@ abstract class Provider
 
     /**
      * Get the private key used to sign tokens with an asymmetric algorithm.
-     *
-     * @return string|null
      */
     public function getPrivateKey(): ?string
     {
@@ -124,8 +115,6 @@ abstract class Provider
     /**
      * Get the passphrase used to sign tokens
      * with an asymmetric algorithm.
-     *
-     * @return string|null
      */
     public function getPassphrase(): ?string
     {
@@ -135,7 +124,7 @@ abstract class Provider
     /**
      * Get the key used to sign the tokens.
      *
-     * @return string|null
+     * @return null|string
      */
     protected function getSigningKey(): mixed
     {
@@ -145,7 +134,7 @@ abstract class Provider
     /**
      * Get the key used to verify the tokens.
      *
-     * @return string|null
+     * @return null|string
      */
     protected function getVerificationKey(): mixed
     {
@@ -154,8 +143,6 @@ abstract class Provider
 
     /**
      * Determine if the algorithm is asymmetric, and thus requires a public/private key combo.
-     *
-     * @return bool
      */
     abstract protected function isAsymmetric(): bool;
 }

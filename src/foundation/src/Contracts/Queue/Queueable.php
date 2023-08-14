@@ -6,5 +6,4 @@ namespace SwooleTW\Hyperf\Foundation\Contracts\Queue;
 
 interface Queueable
 {
-    //
 }

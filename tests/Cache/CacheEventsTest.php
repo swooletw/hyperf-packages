@@ -1,7 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SwooleTW\Hyperf\Tests\Cache;
 
+use Mockery as m;
+use PHPUnit\Framework\TestCase;
+use Psr\EventDispatcher\EventDispatcherInterface as Dispatcher;
 use SwooleTW\Hyperf\Cache\ArrayStore;
 use SwooleTW\Hyperf\Cache\Contracts\Store;
 use SwooleTW\Hyperf\Cache\Events\CacheHit;
@@ -9,10 +14,11 @@ use SwooleTW\Hyperf\Cache\Events\CacheMissed;
 use SwooleTW\Hyperf\Cache\Events\KeyForgotten;
 use SwooleTW\Hyperf\Cache\Events\KeyWritten;
 use SwooleTW\Hyperf\Cache\Repository;
-use Mockery as m;
-use PHPUnit\Framework\TestCase;
-use Psr\EventDispatcher\EventDispatcherInterface as Dispatcher;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class CacheEventsTest extends TestCase
 {
     protected function tearDown(): void

@@ -12,13 +12,13 @@ use DateInterval;
 use DateTimeInterface;
 use Hyperf\Macroable\Macroable;
 use Hyperf\Support\Traits\InteractsWithTime;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use SwooleTW\Hyperf\Cache\Contracts\Repository as CacheContract;
 use SwooleTW\Hyperf\Cache\Contracts\Store;
 use SwooleTW\Hyperf\Cache\Events\CacheHit;
 use SwooleTW\Hyperf\Cache\Events\CacheMissed;
 use SwooleTW\Hyperf\Cache\Events\KeyForgotten;
 use SwooleTW\Hyperf\Cache\Events\KeyWritten;
-use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @mixin \SwooleTW\Hyperf\Cache\Contracts\Store
@@ -85,9 +85,6 @@ class Repository implements ArrayAccess, CacheContract
 
     /**
      * Determine if an item exists in the cache.
-     *
-     * @param string $key
-     * @return bool
      */
     public function has(string $key): bool
     {
@@ -108,9 +105,7 @@ class Repository implements ArrayAccess, CacheContract
     /**
      * Retrieve an item from the cache by key.
      *
-     * @param string|array $key
      * @param mixed $default
-     * @return mixed
      */
     public function get(string|array $key, mixed $default = null): mixed
     {
@@ -209,7 +204,7 @@ class Repository implements ArrayAccess, CacheContract
         return $result;
     }
 
-    public function set(string $key, mixed $value, null|int|\DateInterval $ttl = null): bool
+    public function set(string $key, mixed $value, null|int|DateInterval $ttl = null): bool
     {
         return $this->put($key, $value, $ttl);
     }
@@ -243,7 +238,7 @@ class Repository implements ArrayAccess, CacheContract
         return $result;
     }
 
-    public function setMultiple(iterable $values, null|int|\DateInterval $ttl = null): bool
+    public function setMultiple(iterable $values, null|int|DateInterval $ttl = null): bool
     {
         return $this->putMany(is_array($values) ? $values : iterator_to_array($values), $ttl);
     }

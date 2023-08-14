@@ -11,7 +11,6 @@ use Psr\EventDispatcher\ListenerProviderInterface;
 use Psr\EventDispatcher\StoppableEventInterface;
 use Psr\Log\LoggerInterface;
 use SwooleTW\Hyperf\Foundation\Contracts\Queue\Queueable;
-use SwooleTW\Hyperf\Foundation\Event\QueableListener;
 
 class EventDispatcher implements EventDispatcherInterface
 {
@@ -20,7 +19,8 @@ class EventDispatcher implements EventDispatcherInterface
     public function __construct(
         protected ListenerProviderInterface $listeners,
         protected ?LoggerInterface $logger = null
-    ) {}
+    ) {
+    }
 
     /**
      * Provide all listeners with an event to process.

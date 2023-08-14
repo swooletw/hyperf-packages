@@ -1,15 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SwooleTW\Hyperf\Tests\Database;
 
 use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Database\Query\Processors\SQLiteProcessor;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class DatabaseSQLiteProcessorTest extends TestCase
 {
     public function testProcessColumnListing()
     {
-        $processor = new SQLiteProcessor;
+        $processor = new SQLiteProcessor();
 
         $listing = [['name' => 'id'], ['name' => 'name'], ['name' => 'email']];
         $expected = ['id', 'name', 'email'];

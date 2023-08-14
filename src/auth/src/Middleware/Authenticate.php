@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Auth\Middleware;
 
-use SwooleTW\Hyperf\Auth\AuthManager;
-use SwooleTW\Hyperf\Auth\AuthenticationException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use SwooleTW\Hyperf\Auth\AuthenticationException;
+use SwooleTW\Hyperf\Auth\AuthManager;
 
 class Authenticate implements MiddlewareInterface
 {
@@ -17,7 +17,8 @@ class Authenticate implements MiddlewareInterface
 
     public function __construct(
         protected AuthManager $auth
-    ) {}
+    ) {
+    }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -29,9 +30,7 @@ class Authenticate implements MiddlewareInterface
     /**
      * Determine if the user is logged in to any of the given guards.
      *
-     * @param  \Psr\Http\Server\RequestHandlerInterface  $request
-     * @param  array  $guards
-     * @return void
+     * @param \Psr\Http\Server\RequestHandlerInterface $request
      *
      * @throws \Illuminate\Auth\AuthenticationException
      */
@@ -49,16 +48,15 @@ class Authenticate implements MiddlewareInterface
     /**
      * Handle an unauthenticated user.
      *
-     * @param  \Psr\Http\Server\RequestHandlerInterface  $request
-     * @param  array  $guards
-     * @return void
+     * @param \Psr\Http\Server\RequestHandlerInterface $request
      *
      * @throws \Illuminate\Auth\AuthenticationException
      */
     protected function unauthenticated($request, array $guards): void
     {
         throw new AuthenticationException(
-            'Unauthenticated.', $guards
+            'Unauthenticated.',
+            $guards
         );
     }
 }

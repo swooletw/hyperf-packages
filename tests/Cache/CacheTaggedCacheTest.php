@@ -1,17 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SwooleTW\Hyperf\Tests\Cache;
 
 use DateInterval;
 use DateTime;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 use SwooleTW\Hyperf\Cache\ArrayStore;
 use SwooleTW\Hyperf\Cache\Contracts\Store;
 use SwooleTW\Hyperf\Cache\RedisTaggedCache;
 use SwooleTW\Hyperf\Cache\TagSet;
-use stdClass;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class CacheTaggedCacheTest extends TestCase
 {
     protected function tearDown(): void

@@ -11,12 +11,7 @@ class Argon2IdHasher extends ArgonHasher
     /**
      * Check the given plain value against a hash.
      *
-     * @param  string  $value
-     * @param  string|null  $hashedValue
-     * @param  array  $options
-     * @return bool
-     *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function check(string $value, ?string $hashedValue, array $options = []): bool
     {
@@ -33,8 +28,6 @@ class Argon2IdHasher extends ArgonHasher
 
     /**
      * Get the algorithm that should be used for hashing.
-     *
-     * @return int|string
      */
     protected function algorithm(): int|string
     {

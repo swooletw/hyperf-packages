@@ -18,34 +18,31 @@ class EloquentUserProvider implements UserProvider
     public function __construct(
         protected HashContract $hasher,
         protected string $model
-    ) {}
+    ) {
+    }
 
     /**
      * Retrieve a user by their unique identifier.
      *
-     * @param  mixed  $identifier
-     * @return \SwooleTW\Hyperf\Auth\Contracts\Authenticatable|null
+     * @param mixed $identifier
      */
     public function retrieveById($identifier): ?Authenticatable
     {
         $model = $this->createModel();
 
         return $this->newModelQuery($model)
-                    ->where($model->getAuthIdentifierName(), $identifier)
-                    ->first();
+            ->where($model->getAuthIdentifierName(), $identifier)
+            ->first();
     }
 
     /**
      * Retrieve a user by the given credentials.
-     *
-     * @param  array  $credentials
-     * @return \SwooleTW\Hyperf\Auth\Contracts\Authenticatable|null
      */
     public function retrieveByCredentials(array $credentials): ?Authenticatable
     {
-        if (empty($credentials) ||
-           (count($credentials) === 1 &&
-            Str::contains($this->firstCredentialKey($credentials), 'password'))) {
+        if (empty($credentials)
+           || (count($credentials) === 1
+            && Str::contains($this->firstCredentialKey($credentials), 'password'))) {
             return null;
         }
 
@@ -74,8 +71,7 @@ class EloquentUserProvider implements UserProvider
     /**
      * Get the first key from the credential array.
      *
-     * @param  array  $credentials
-     * @return string|null
+     * @return null|string
      */
     protected function firstCredentialKey(array $credentials)
     {
@@ -87,8 +83,6 @@ class EloquentUserProvider implements UserProvider
     /**
      * Validate a user against the given credentials.
      *
-     * @param  \SwooleTW\Hyperf\Auth\Contracts\Authenticatable  $user
-     * @param  array  $credentials
      * @return bool
      */
     public function validateCredentials(Authenticatable $user, array $credentials)
@@ -100,9 +94,6 @@ class EloquentUserProvider implements UserProvider
 
     /**
      * Get a new query builder for the model instance.
-     *
-     * @param  \Hyperf\Database\Model\Model|null  $model
-     * @return \Hyperf\Database\Model\Builder
      */
     protected function newModelQuery(?Model $model = null): Builder
     {
@@ -113,20 +104,16 @@ class EloquentUserProvider implements UserProvider
 
     /**
      * Create a new instance of the model.
-     *
-     * @return \Hyperf\Database\Model\Model
      */
     public function createModel(): Model
     {
-        $class = '\\'.ltrim($this->model, '\\');
+        $class = '\\' . ltrim($this->model, '\\');
 
-        return new $class;
+        return new $class();
     }
 
     /**
      * Gets the hasher implementation.
-     *
-     * @return \SwooleTW\Hyperf\Hashing\Contracts\Hasher
      */
     public function getHasher(): HashContract
     {
@@ -136,7 +123,6 @@ class EloquentUserProvider implements UserProvider
     /**
      * Sets the hasher implementation.
      *
-     * @param  \SwooleTW\Hyperf\Hashing\Contracts\Hasher  $hasher
      * @return $this
      */
     public function setHasher(HashContract $hasher): static
@@ -148,8 +134,6 @@ class EloquentUserProvider implements UserProvider
 
     /**
      * Gets the name of the Eloquent user model.
-     *
-     * @return string
      */
     public function getModel(): string
     {
@@ -159,7 +143,6 @@ class EloquentUserProvider implements UserProvider
     /**
      * Sets the name of the Eloquent user model.
      *
-     * @param  string  $model
      * @return $this
      */
     public function setModel(string $model): static

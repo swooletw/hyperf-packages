@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Database;
 
+use Closure;
 use Doctrine\DBAL\Driver\PDO\SQLite\Driver as DoctrineDriver;
 use Hyperf\Database\Connection;
 use Hyperf\Database\Query\Grammars\Grammar as HyperfQueryGrammar;
 use Hyperf\Database\Query\Processors\Processor;
 use Hyperf\Database\Schema\Builder as SchemaBuilder;
 use Hyperf\Database\Schema\Grammars\Grammar as HyperfSchemaGrammar;
+use PDO;
 use SwooleTW\Hyperf\Database\Query\Grammars\SQLiteGrammar as QueryGrammar;
 use SwooleTW\Hyperf\Database\Query\Processors\SQLiteProcessor;
 use SwooleTW\Hyperf\Database\Schema\Grammars\SQLiteGrammar as SchemaGrammar;
@@ -20,11 +22,9 @@ class SQLiteConnection extends Connection
     /**
      * Create a new database connection instance.
      *
-     * @param  \PDO|\Closure  $pdo
-     * @param  string  $database
-     * @param  string  $tablePrefix
-     * @param  array  $config
-     * @return void
+     * @param Closure|PDO $pdo
+     * @param string $database
+     * @param string $tablePrefix
      */
     public function __construct($pdo, $database = '', $tablePrefix = '', array $config = [])
     {
@@ -82,7 +82,7 @@ class SQLiteConnection extends Connection
      */
     protected function getDefaultPostProcessor(): Processor
     {
-        return new SQLiteProcessor;
+        return new SQLiteProcessor();
     }
 
     /**
@@ -92,13 +92,13 @@ class SQLiteConnection extends Connection
      */
     protected function getDoctrineDriver()
     {
-        return new DoctrineDriver;
+        return new DoctrineDriver();
     }
 
     /**
      * Get the database connection foreign key constraints configuration option.
      *
-     * @return bool|null
+     * @return null|bool
      */
     protected function getForeignKeyConstraintsConfigurationValue()
     {

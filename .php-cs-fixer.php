@@ -75,7 +75,11 @@ return (new PhpCsFixer\Config())
         'no_unused_imports' => true,
         'not_operator_with_successor_space' => true,
         'not_operator_with_space' => false,
-        'ordered_class_elements' => true,
+        'ordered_class_elements' => [
+            'order' => [
+                'use_trait'
+            ],
+        ],
         'php_unit_strict' => false,
         'phpdoc_separation' => false,
         'single_quote' => true,

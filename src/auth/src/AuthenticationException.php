@@ -10,17 +10,13 @@ class AuthenticationException extends Exception
 {
     /**
      * All of the guards that were checked.
-     *
-     * @var array
      */
     protected array $guards;
 
     /**
      * Create a new authentication exception.
      *
-     * @param  string  $message
-     * @param  array  $guards
-     * @return void
+     * @param string $message
      */
     public function __construct($message = 'Unauthenticated.', array $guards = [])
     {

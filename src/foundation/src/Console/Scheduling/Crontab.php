@@ -6,7 +6,6 @@ namespace SwooleTW\Hyperf\Foundation\Console\Scheduling;
 
 use Carbon\Carbon;
 use Hyperf\Crontab\Crontab as HyperfCrontab;
-use SwooleTW\Hyperf\Foundation\Console\Scheduling\ManagesFrequencies;
 
 class Crontab extends HyperfCrontab
 {

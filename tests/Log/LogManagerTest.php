@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SwooleTW\Hyperf\Tests\Log;
 
 use Hyperf\Config\Config;
@@ -24,10 +26,14 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use ReflectionProperty;
 use RuntimeException;
-use SwooleTW\Hyperf\Log\LogManager;
 use SwooleTW\Hyperf\Log\Logger;
+use SwooleTW\Hyperf\Log\LogManager;
 use SwooleTW\Hyperf\Support\Environment;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class LogManagerTest extends TestCase
 {
     public function testLogManagerCachesLoggerInstances()
@@ -47,7 +53,7 @@ class LogManagerTest extends TestCase
             ->set('logging.default', 'single');
         $this->assertEmpty($manager->getChannels());
 
-        //we don't specify any channel name
+        // we don't specify any channel name
         $manager->channel();
         $this->assertCount(1, $manager->getChannels());
         $this->assertEquals('single', $manager->getDefaultDriver());
@@ -157,7 +163,6 @@ class LogManagerTest extends TestCase
             'formatter' => 'default',
         ]);
 
-
         // create logger with handler specified from configuration
         $logger = $manager->channel('newrelic');
         $handler = $logger->getLogger()->getHandlers()[0];
@@ -247,8 +252,7 @@ class LogManagerTest extends TestCase
 
     public function testItUtilisesTheNullDriverDuringTestsWhenNullDriverUsed()
     {
-        $manager = new class($container = $this->getContainer()) extends LogManager
-        {
+        $manager = new class($container = $this->getContainer()) extends LogManager {
             protected function createEmergencyLogger(): LoggerInterface
             {
                 throw new RuntimeException('Emergency logger was created.');
@@ -286,7 +290,7 @@ class LogManagerTest extends TestCase
         $config->set('logging.channels.defaultsingle', [
             'driver' => 'single',
             'name' => 'ds',
-            'path' => $path = __DIR__ .  '/logs/laravel.log',
+            'path' => $path = __DIR__ . '/logs/laravel.log',
             'replace_placeholders' => true,
         ]);
 
@@ -330,7 +334,7 @@ class LogManagerTest extends TestCase
         $config->set('logging.channels.defaultdaily', [
             'driver' => 'daily',
             'name' => 'dd',
-            'path' => $path = __DIR__ .  '/logs/laravel.log',
+            'path' => $path = __DIR__ . '/logs/laravel.log',
             'replace_placeholders' => true,
         ]);
 
@@ -447,11 +451,10 @@ class LogManagerTest extends TestCase
         $container->get(ConfigInterface::class)
             ->set('logging.channels.test', [
                 'driver' => 'single',
-                'path' => $path = __DIR__ . '/logs/custom.log'
+                'path' => $path = __DIR__ . '/logs/custom.log',
             ]);
 
-        $factory = new class()
-        {
+        $factory = new class() {
             public function __invoke()
             {
                 return new Monolog(
@@ -583,7 +586,7 @@ class LogManagerTest extends TestCase
             ->set('logging.channels.custom', [
                 'driver' => 'single',
                 'tap' => [CustomizeFormatter::class],
-                'path' => __DIR__ . '/logs/custom.log'
+                'path' => __DIR__ . '/logs/custom.log',
             ]);
 
         $logger = $manager->channel('custom');
@@ -596,7 +599,8 @@ class LogManagerTest extends TestCase
 
         $this->assertEquals(
             '[%datetime%] %channel%.%level_name%: %message% %context% %extra%',
-            rtrim($format->getValue($formatter)));
+            rtrim($format->getValue($formatter))
+        );
     }
 
     protected function getContainer(array $logConfig = [])
@@ -606,18 +610,16 @@ class LogManagerTest extends TestCase
                 'channels' => [
                     'single' => [
                         'driver' => 'single',
-                        'path' => __DIR__
+                        'path' => __DIR__,
                     ],
-                ]
-            ], $logConfig)
+                ],
+            ], $logConfig),
         ]);
-        $container = new Container(
+        return new Container(
             new DefinitionSource([
-                ConfigInterface::class => fn () => $config
+                ConfigInterface::class => fn () => $config,
             ])
         );
-
-        return $container;
     }
 }
 

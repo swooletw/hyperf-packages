@@ -8,5 +8,4 @@ use Hyperf\Server\Exception\ServerException;
 
 class RouteNotFoundException extends ServerException
 {
-    //
 }

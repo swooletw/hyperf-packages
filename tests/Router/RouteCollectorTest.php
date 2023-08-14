@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SwooleTW\Hyperf\Tests\Router;
 
 use Hyperf\HttpServer\Router\DispatcherFactory;
@@ -8,6 +10,10 @@ use Monolog\Test\TestCase;
 use SwooleTW\Hyperf\Router\RouteCollector;
 use SwooleTW\Hyperf\Tests\Router\Stub\ContainerStub;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class RouteCollectorTest extends TestCase
 {
     public function tearDown(): void

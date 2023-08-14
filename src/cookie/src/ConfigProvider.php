@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Cookie;
 
 use SwooleTW\Hyperf\Cookie\Contracts\Cookie as CookieContract;
-use SwooleTW\Hyperf\Cookie\CookieManager;
 
 class ConfigProvider
 {

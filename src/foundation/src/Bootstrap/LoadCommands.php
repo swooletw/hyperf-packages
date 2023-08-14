@@ -13,10 +13,7 @@ use Psr\Container\ContainerInterface;
 class LoadCommands
 {
     /**
-     * Load App Commands
-     *
-     * @param  \Psr\Container\ContainerInterface  $app
-     * @return void
+     * Load App Commands.
      */
     public function bootstrap(ContainerInterface $app): void
     {

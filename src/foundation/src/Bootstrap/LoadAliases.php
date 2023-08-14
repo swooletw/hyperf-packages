@@ -10,10 +10,7 @@ use Psr\Container\ContainerInterface;
 class LoadAliases
 {
     /**
-     * Load Class Aliases
-     *
-     * @param  \Psr\Container\ContainerInterface  $app
-     * @return void
+     * Load Class Aliases.
      */
     public function bootstrap(ContainerInterface $app): void
     {

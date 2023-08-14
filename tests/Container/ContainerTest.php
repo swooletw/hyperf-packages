@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SwooleTW\Hyperf\Tests\Container;
 
 use Closure;
@@ -8,9 +10,13 @@ use Hyperf\Di\Exception\InvalidDefinitionException;
 use Hyperf\Di\Exception\NotFoundException;
 use Mockery;
 use PHPUnit\Framework\TestCase;
-use SwooleTW\Hyperf\Container\Container;
 use stdClass;
+use SwooleTW\Hyperf\Container\Container;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class ContainerTest extends TestCase
 {
     protected function tearDown(): void
@@ -77,11 +83,11 @@ class ContainerTest extends TestCase
     {
         $container = $this->getContainer();
         $container->bind('class', function () {
-            return new stdClass;
+            return new stdClass();
         });
         $firstInstantiation = $container->get('class');
         $container->bindIf('class', function () {
-            return new ContainerConcreteStub;
+            return new ContainerConcreteStub();
         });
         $secondInstantiation = $container->get('class');
         $this->assertSame($firstInstantiation, $secondInstantiation);
@@ -91,10 +97,10 @@ class ContainerTest extends TestCase
     {
         $container = $this->getContainer();
         $container->bind('class', function () {
-            return new stdClass;
+            return new stdClass();
         });
         $container->bindIf('otherClass', function () {
-            return new ContainerConcreteStub;
+            return new ContainerConcreteStub();
         });
         $firstInstantiation = $container->get('otherClass');
         $secondInstantiation = $container->get('otherClass');
@@ -105,7 +111,7 @@ class ContainerTest extends TestCase
     {
         $container = $this->getContainer();
         $container->bind('class', function () {
-            return new stdClass;
+            return new stdClass();
         });
         $firstInstantiation = $container->get('class');
         $secondInstantiation = $container->get('class');
@@ -168,7 +174,7 @@ class ContainerTest extends TestCase
         unset($container['something']);
         $this->assertTrue(isset($container['something']));
 
-        //test offsetSet when it's not instanceof Closure
+        // test offsetSet when it's not instanceof Closure
         $container = $this->getContainer();
         $container['something'] = 'text';
         $this->assertFalse(isset($container['something']));
@@ -213,7 +219,7 @@ class ContainerTest extends TestCase
     {
         $container = $this->getContainer();
 
-        $bound = new stdClass;
+        $bound = new stdClass();
         $resolved = $container->instance('foo', $bound);
 
         $this->assertInstanceOf(Closure::class, $resolved);
@@ -223,7 +229,7 @@ class ContainerTest extends TestCase
     public function testBindingAnInstanceAsShared()
     {
         $container = $this->getContainer();
-        $bound = new stdClass;
+        $bound = new stdClass();
         $container->instance('foo', $bound);
         $object = $container->get('foo');
         $this->assertSame($bound, $object);
@@ -241,7 +247,6 @@ class ContainerTest extends TestCase
     {
         $container = $this->getContainer();
         $container->bind(ContainerConcreteStub::class, function () {
-            //
         });
         $this->assertTrue($container->bound(ContainerConcreteStub::class));
         $this->assertFalse($container->bound(IContainerContractStub::class));
@@ -255,7 +260,7 @@ class ContainerTest extends TestCase
     public function testUnsetRemoveBoundInstances()
     {
         $container = $this->getContainer();
-        $container->instance('object', new stdClass);
+        $container->instance('object', new stdClass());
         unset($container['object']);
 
         $this->assertTrue($container->bound('object'));
@@ -264,7 +269,7 @@ class ContainerTest extends TestCase
     public function testBoundInstanceAndAliasCheckViaArrayAccess()
     {
         $container = $this->getContainer();
-        $container->instance('object', new stdClass);
+        $container->instance('object', new stdClass());
         $container->alias('object', 'alias');
 
         $this->assertTrue(isset($container['object']));
@@ -277,13 +282,11 @@ class ContainerTest extends TestCase
 
         $container = $this->getContainer();
         $container->bind('foo', function () {
-            //
         });
         $container->rebinding('foo', function () {
             $_SERVER['__test.rebind'] = true;
         });
         $container->bind('foo', function () {
-            //
         });
 
         $this->assertTrue($_SERVER['__test.rebind']);
@@ -295,13 +298,11 @@ class ContainerTest extends TestCase
 
         $container = $this->getContainer();
         $container->instance('foo', function () {
-            //
         });
         $container->rebinding('foo', function () {
             $_SERVER['__test.rebind'] = true;
         });
         $container->instance('foo', function () {
-            //
         });
 
         $this->assertTrue($_SERVER['__test.rebind']);
@@ -316,7 +317,6 @@ class ContainerTest extends TestCase
             $_SERVER['__test.rebind'] = true;
         });
         $container->instance('foo', function () {
-            //
         });
 
         $this->assertFalse($_SERVER['__test.rebind']);
@@ -361,7 +361,7 @@ class ContainerTest extends TestCase
     public function testForgetInstanceForgetsInstance()
     {
         $container = $this->getContainer();
-        $containerConcreteStub = new ContainerConcreteStub;
+        $containerConcreteStub = new ContainerConcreteStub();
         $container->instance(ContainerConcreteStub::class, $containerConcreteStub);
         $container->get(ContainerConcreteStub::class);
         $this->assertTrue($container->resolved(ContainerConcreteStub::class));
@@ -372,9 +372,9 @@ class ContainerTest extends TestCase
     public function testForgetInstancesForgetsAllInstances()
     {
         $container = $this->getContainer();
-        $containerConcreteStub1 = new ContainerConcreteStub;
-        $containerConcreteStub2 = new ContainerConcreteStub;
-        $containerConcreteStub3 = new ContainerConcreteStub;
+        $containerConcreteStub1 = new ContainerConcreteStub();
+        $containerConcreteStub2 = new ContainerConcreteStub();
+        $containerConcreteStub3 = new ContainerConcreteStub();
         $container->instance('Instance1', $containerConcreteStub1);
         $container->instance('Instance2', $containerConcreteStub2);
         $container->instance('Instance3', $containerConcreteStub3);
@@ -394,7 +394,7 @@ class ContainerTest extends TestCase
     {
         $container = $this->getContainer();
         $container->bind('ConcreteStub', function () {
-            return new ContainerConcreteStub;
+            return new ContainerConcreteStub();
         });
         $container->alias('ConcreteStub', 'ContainerConcreteStub');
         $container->get('ConcreteStub');
@@ -412,7 +412,7 @@ class ContainerTest extends TestCase
     {
         $container = $this->getContainer();
         $container->bind('ConcreteStub', function () {
-            return new ContainerConcreteStub;
+            return new ContainerConcreteStub();
         });
         $container->alias('ConcreteStub', 'foo');
 
@@ -461,9 +461,9 @@ class ContainerTest extends TestCase
             ->getMock();
 
         $mock->expects($this->once())
-             ->method('make')
-             ->with(ContainerDefaultValueStub::class, ['default' => 'laurence'])
-             ->willReturn(new stdClass);
+            ->method('make')
+            ->with(ContainerDefaultValueStub::class, ['default' => 'laurence'])
+            ->willReturn(new stdClass());
 
         $result = $mock->makeWith(ContainerDefaultValueStub::class, ['default' => 'laurence']);
 
@@ -607,7 +607,6 @@ class CircularAStub
 {
     public function __construct(CircularBStub $b)
     {
-        //
     }
 }
 
@@ -615,7 +614,6 @@ class CircularBStub
 {
     public function __construct(CircularCStub $c)
     {
-        //
     }
 }
 
@@ -623,28 +621,23 @@ class CircularCStub
 {
     public function __construct(CircularAStub $a)
     {
-        //
     }
 }
 
 class ContainerConcreteStub
 {
-    //
 }
 
 interface IContainerContractStub
 {
-    //
 }
 
 class ContainerImplementationStub implements IContainerContractStub
 {
-    //
 }
 
 class ContainerImplementationStubTwo implements IContainerContractStub
 {
-    //
 }
 
 class ContainerDependentStub
@@ -670,6 +663,7 @@ class ContainerNestedDependentStub
 class ContainerDefaultValueStub
 {
     public $stub;
+
     public $default;
 
     public function __construct(ContainerConcreteStub $stub, $default = 'taylor')
@@ -682,7 +676,9 @@ class ContainerDefaultValueStub
 class ContainerMixedPrimitiveStub
 {
     public $first;
+
     public $last;
+
     public $stub;
 
     public function __construct($first, ContainerConcreteStub $stub, $last)

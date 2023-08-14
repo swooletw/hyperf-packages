@@ -1,13 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SwooleTW\Hyperf\Tests\Cache;
 
-use SwooleTW\Hyperf\Tests\Cache\Stub\InteractsWithRedis;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Cache\RedisStore;
 use SwooleTW\Hyperf\Cache\Repository;
+use SwooleTW\Hyperf\Tests\Cache\Stub\InteractsWithRedis;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class RedisCacheIntegrationTest extends TestCase
 {
     use InteractsWithRedis;

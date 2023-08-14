@@ -6,14 +6,9 @@ namespace SwooleTW\Hyperf\JWT\Validations;
 
 use Carbon\Carbon;
 use SwooleTW\Hyperf\JWT\Exceptions\TokenInvalidException;
-use SwooleTW\Hyperf\JWT\Validations\AbstractValidation;
 
 class IssuedAtClaim extends AbstractValidation
 {
-    /**
-     * @param  array  $payload
-     * @return void
-     */
     public function validate(array $payload): void
     {
         if (! $iat = ($payload['iat'] ?? null)) {

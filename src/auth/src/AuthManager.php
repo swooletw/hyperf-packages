@@ -10,16 +10,15 @@ use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\SessionInterface;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use InvalidArgumentException;
-use SwooleTW\Hyperf\JWT\JWTManager;
 use Psr\Container\ContainerInterface;
 use SwooleTW\Hyperf\Auth\Contracts\FactoryContract;
 use SwooleTW\Hyperf\Auth\Contracts\Guard;
 use SwooleTW\Hyperf\Auth\Contracts\StatefulGuard;
-use SwooleTW\Hyperf\Auth\CreatesUserProviders;
 use SwooleTW\Hyperf\Auth\Exceptions\GuardException;
 use SwooleTW\Hyperf\Auth\Exceptions\UserProviderException;
 use SwooleTW\Hyperf\Auth\Guards\JwtGuard;
 use SwooleTW\Hyperf\Auth\Guards\SessionGuard;
+use SwooleTW\Hyperf\JWT\JWTManager;
 
 class AuthManager implements FactoryContract
 {
@@ -27,15 +26,11 @@ class AuthManager implements FactoryContract
 
     /**
      * The array of created "drivers".
-     *
-     * @var array
      */
     protected array $guards = [];
 
     /**
      * The registered custom driver creators.
-     *
-     * @var array
      */
     protected array $customCreators = [];
 
@@ -43,8 +38,6 @@ class AuthManager implements FactoryContract
      * The user resolver shared by various services.
      *
      * Determines the default user for Authenticatable contract.
-     *
-     * @var \Closure
      */
     protected Closure $userResolver;
 
@@ -78,10 +71,7 @@ class AuthManager implements FactoryContract
     /**
      * Resolve the given guard.
      *
-     * @param  string  $name
-     * @return \SwooleTW\Hyperf\Auth\Contracts\Guard
-     *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function resolve(string $name): Guard
     {
@@ -106,10 +96,6 @@ class AuthManager implements FactoryContract
 
     /**
      * Call a custom driver creator.
-     *
-     * @param  string  $name
-     * @param  array  $config
-     * @return mixed
      */
     protected function callCustomCreator(string $name, array $config): mixed
     {
@@ -118,10 +104,6 @@ class AuthManager implements FactoryContract
 
     /**
      * Create a session based authentication guard.
-     *
-     * @param  string  $name
-     * @param  array  $config
-     * @return \SwooleTW\Hyperf\Auth\Guards\SessionGuard
      */
     public function createSessionDriver(string $name, array $config): SessionGuard
     {
@@ -134,10 +116,6 @@ class AuthManager implements FactoryContract
 
     /**
      * Create a jwt based authentication guard.
-     *
-     * @param  string  $name
-     * @param  array  $config
-     * @return \SwooleTW\Hyperf\Auth\Guards\JwtGuard
      */
     public function createJwtDriver(string $name, array $config): JwtGuard
     {
@@ -153,8 +131,6 @@ class AuthManager implements FactoryContract
     /**
      * Register a custom driver creator Closure.
      *
-     * @param  string  $driver
-     * @param  \Closure  $callback
      * @return $this
      */
     public function extend(string $driver, Closure $callback): static
@@ -167,8 +143,6 @@ class AuthManager implements FactoryContract
     /**
      * Register a custom provider creator Closure.
      *
-     * @param  string  $name
-     * @param  \Closure  $callback
      * @return $this
      */
     public function provider(string $name, Closure $callback): static
@@ -180,12 +154,10 @@ class AuthManager implements FactoryContract
 
     /**
      * Get the default authentication driver name.
-     *
-     * @return string
      */
     public function getDefaultDriver(): string
     {
-        if ($driver = Context::get("auth.defaults.guard")) {
+        if ($driver = Context::get('auth.defaults.guard')) {
             return $driver;
         }
 
@@ -194,9 +166,6 @@ class AuthManager implements FactoryContract
 
     /**
      * Set the default guard the factory should serve.
-     *
-     * @param  string  $name
-     * @return void
      */
     public function shouldUse(string $name): void
     {
@@ -211,23 +180,18 @@ class AuthManager implements FactoryContract
 
     /**
      * Set the default authentication driver name.
-     *
-     * @param  string  $name
-     * @return void
      */
     public function setDefaultDriver(string $name): void
     {
-        Context::set("auth.defaults.guard", $name);
+        Context::set('auth.defaults.guard', $name);
     }
 
     /**
      * Get the user resolver callback.
-     *
-     * @return \Closure
      */
     public function userResolver(): Closure
     {
-        if ($resolver = Context::get("auth.resolver")) {
+        if ($resolver = Context::get('auth.resolver')) {
             return $resolver;
         }
 
@@ -237,21 +201,17 @@ class AuthManager implements FactoryContract
     /**
      * Get the user resolver callback.
      *
-     * @param  \Closure  $userResolver
      * @return $this
      */
     public function resolveUsersUsing(Closure $userResolver): static
     {
-        Context::set("auth.resolver", $userResolver);
+        Context::set('auth.resolver', $userResolver);
 
         return $this;
     }
 
     /**
      * Get the guard configuration.
-     *
-     * @param  string  $name
-     * @return array
      */
     protected function getConfig(string $name): array
     {
@@ -266,7 +226,6 @@ class AuthManager implements FactoryContract
     /**
      * Set the application instance used by the manager.
      *
-     * @param  \Psr\Container\ContainerInterface  $app
      * @return $this
      */
     public function setApplication(ContainerInterface $app): static
@@ -279,8 +238,8 @@ class AuthManager implements FactoryContract
     /**
      * Dynamically call the default driver instance.
      *
-     * @param  string  $method
-     * @param  array  $parameters
+     * @param string $method
+     * @param array $parameters
      * @return mixed
      */
     public function __call($method, $parameters)

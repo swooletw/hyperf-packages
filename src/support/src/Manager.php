@@ -14,30 +14,21 @@ abstract class Manager
 {
     /**
      * The configuration repository instance.
-     *
-     * @var \Hyperf\Contract\ConfigInterface
      */
     protected ConfigInterface $config;
 
     /**
      * The registered custom driver creators.
-     *
-     * @var array
      */
     protected array $customCreators = [];
 
     /**
      * The array of created "drivers".
-     *
-     * @var array
      */
     protected array $drivers = [];
 
     /**
      * Create a new manager instance.
-     *
-     * @param  \Psr\Container\ContainerInterface  $container
-     * @return void
      */
     public function __construct(
         protected ContainerInterface $container
@@ -47,18 +38,13 @@ abstract class Manager
 
     /**
      * Get the default driver name.
-     *
-     * @return string
      */
     abstract public function getDefaultDriver(): string;
 
     /**
      * Get a driver instance.
      *
-     * @param  string|null  $driver
-     * @return mixed
-     *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function driver(?string $driver = null): mixed
     {
@@ -66,7 +52,8 @@ abstract class Manager
 
         if (is_null($driver)) {
             throw new InvalidArgumentException(sprintf(
-                'Unable to resolve NULL driver for [%s].', static::class
+                'Unable to resolve NULL driver for [%s].',
+                static::class
             ));
         }
 
@@ -83,10 +70,7 @@ abstract class Manager
     /**
      * Create a new driver instance.
      *
-     * @param  string  $driver
-     * @return mixed
-     *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function createDriver(string $driver): mixed
     {
@@ -97,20 +81,17 @@ abstract class Manager
             return $this->callCustomCreator($driver);
         }
 
-        $method = 'create'.Str::studly($driver).'Driver';
+        $method = 'create' . Str::studly($driver) . 'Driver';
 
         if (method_exists($this, $method)) {
-            return $this->$method();
+            return $this->{$method}();
         }
 
-        throw new InvalidArgumentException("Driver [$driver] not supported.");
+        throw new InvalidArgumentException("Driver [{$driver}] not supported.");
     }
 
     /**
      * Call a custom driver creator.
-     *
-     * @param  string  $driver
-     * @return mixed
      */
     protected function callCustomCreator(string $driver): mixed
     {
@@ -120,8 +101,6 @@ abstract class Manager
     /**
      * Register a custom driver creator Closure.
      *
-     * @param  string  $driver
-     * @param  \Closure  $callback
      * @return $this
      */
     public function extend(string $driver, Closure $callback): ContainerInterface
@@ -133,8 +112,6 @@ abstract class Manager
 
     /**
      * Get all of the created "drivers".
-     *
-     * @return array
      */
     public function getDrivers(): array
     {
@@ -143,8 +120,6 @@ abstract class Manager
 
     /**
      * Get the container instance used by the manager.
-     *
-     * @return \Psr\Container\ContainerInterface
      */
     public function getContainer(): ContainerInterface
     {
@@ -154,7 +129,6 @@ abstract class Manager
     /**
      * Set the container instance used by the manager.
      *
-     * @param  \Psr\Container\ContainerInterface  $container
      * @return $this
      */
     public function setContainer(ContainerInterface $container): static
@@ -179,12 +153,12 @@ abstract class Manager
     /**
      * Dynamically call the default driver instance.
      *
-     * @param  string  $method
-     * @param  array  $parameters
+     * @param string $method
+     * @param array $parameters
      * @return mixed
      */
     public function __call($method, $parameters)
     {
-        return $this->driver()->$method(...$parameters);
+        return $this->driver()->{$method}(...$parameters);
     }
 }

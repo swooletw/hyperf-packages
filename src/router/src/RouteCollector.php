@@ -9,9 +9,9 @@ use Hyperf\Contract\ConfigInterface;
 use Hyperf\HttpServer\Router\DispatcherFactory;
 use Hyperf\HttpServer\Router\Handler;
 use Hyperf\Server\Server;
+use Psr\Container\ContainerInterface;
 use SwooleTW\Hyperf\Foundation\Router\Exceptions\RouteInvalidException;
 use SwooleTW\Hyperf\Foundation\Router\Exceptions\RouteNotFoundException;
-use Psr\Container\ContainerInterface;
 
 class RouteCollector
 {

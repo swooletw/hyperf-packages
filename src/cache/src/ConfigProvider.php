@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Cache;
 
-use SwooleTW\Hyperf\Cache\CacheManager;
 use SwooleTW\Hyperf\Cache\Contracts\Repository;
 
 class ConfigProvider

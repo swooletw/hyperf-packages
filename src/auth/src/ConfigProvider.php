@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Auth;
 
-use SwooleTW\Hyperf\Auth\AuthManager;
 use SwooleTW\Hyperf\Auth\Contracts\Authenticatable;
 use SwooleTW\Hyperf\Auth\Contracts\FactoryContract;
-use SwooleTW\Hyperf\Auth\UserResolver;
 
 class ConfigProvider
 {

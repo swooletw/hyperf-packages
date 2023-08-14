@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Testing\Concerns;
 
+use Exception;
 use Hyperf\Database\Model\Register;
 use Mockery;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -13,8 +14,6 @@ trait MocksApplicationServices
 {
     /**
      * All of the fired events.
-     *
-     * @var array
      */
     protected array $firedEvents = [];
 
@@ -23,10 +22,10 @@ trait MocksApplicationServices
      *
      * These events will be mocked, so that handlers will not actually be executed.
      *
-     * @param  array|string  $events
+     * @param array|string $events
      * @return $this
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function expectsEvents($events)
     {
@@ -39,7 +38,7 @@ trait MocksApplicationServices
 
             $this->assertEmpty(
                 $eventsNotFired = array_diff($events, $fired),
-                'These expected events were not fired: ['.implode(', ', $eventsNotFired).']'
+                'These expected events were not fired: [' . implode(', ', $eventsNotFired) . ']'
             );
         });
 
@@ -51,7 +50,7 @@ trait MocksApplicationServices
      *
      * These events will be mocked, so that handlers will not actually be executed.
      *
-     * @param  array|string  $events
+     * @param array|string $events
      * @return $this
      */
     public function doesntExpectEvents($events)
@@ -63,7 +62,7 @@ trait MocksApplicationServices
         $this->beforeApplicationDestroyed(function () use ($events) {
             $this->assertEmpty(
                 $fired = $this->getFiredEvents($events),
-                'These unexpected events were fired: ['.implode(', ', $fired).']'
+                'These unexpected events were fired: [' . implode(', ', $fired) . ']'
             );
         });
 
@@ -94,7 +93,6 @@ trait MocksApplicationServices
     /**
      * Filter the given events against the fired events.
      *
-     * @param  array  $events
      * @return array
      */
     protected function getFiredEvents(array $events)
@@ -105,8 +103,6 @@ trait MocksApplicationServices
     /**
      * Filter the given classes against an array of dispatched classes.
      *
-     * @param  array  $classes
-     * @param  array  $dispatched
      * @return array
      */
     protected function getDispatched(array $classes, array $dispatched)
@@ -119,15 +115,14 @@ trait MocksApplicationServices
     /**
      * Check if the given class exists in an array of dispatched classes.
      *
-     * @param  string  $needle
-     * @param  array  $haystack
+     * @param string $needle
      * @return bool
      */
     protected function wasDispatched($needle, array $haystack)
     {
         foreach ($haystack as $dispatched) {
-            if ((is_string($dispatched) && ($dispatched === $needle || is_subclass_of($dispatched, $needle))) ||
-                $dispatched instanceof $needle) {
+            if ((is_string($dispatched) && ($dispatched === $needle || is_subclass_of($dispatched, $needle)))
+                || $dispatched instanceof $needle) {
                 return true;
             }
         }
