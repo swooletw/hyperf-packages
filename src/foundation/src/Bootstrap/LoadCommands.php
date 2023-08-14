@@ -9,6 +9,7 @@ use Hyperf\Contract\ConfigInterface;
 use Hyperf\Di\ReflectionManager;
 use Hyperf\Support\Filesystem\Filesystem;
 use Psr\Container\ContainerInterface;
+use SwooleTW\Hyperf\Database\CommandCollector;
 
 class LoadCommands
 {
@@ -27,6 +28,7 @@ class LoadCommands
 
         $commands = $app->get(ConfigInterface::class)
             ->get('commands', []);
+        $commands = array_merge($commands, CommandCollector::getAllCommands());
         foreach ($reflections as $reflection) {
             $command = $reflection->getName();
             if (! is_subclass_of($command, Command::class)) {
