@@ -11,7 +11,6 @@ use Hyperf\Database\ConnectionInterface;
 use Hyperf\Database\ConnectionResolverInterface;
 use Hyperf\Di\Container;
 use Hyperf\Di\Definition\DefinitionSource;
-use Hyperf\Engine\Coroutine;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Auth\AuthManager;
@@ -19,6 +18,8 @@ use SwooleTW\Hyperf\Auth\Contracts\Guard;
 use SwooleTW\Hyperf\Auth\Contracts\UserProvider;
 use SwooleTW\Hyperf\Auth\Providers\DatabaseUserProvider;
 use SwooleTW\Hyperf\Hashing\Contracts\Hasher as HashContract;
+
+use function Hyperf\Coroutine\run;
 
 /**
  * @internal
@@ -41,13 +42,11 @@ class AuthMangerTest extends TestCase
 
         Context::set('auth.defaults.guard', 'foo');
 
-        Coroutine::create(function () use ($manager) {
+        run(function () use ($manager) {
             Context::set('auth.defaults.guard', 'bar');
 
             $this->assertSame('bar', $manager->getDefaultDriver());
         });
-
-        \Swoole\Event::wait();
 
         $this->assertSame('foo', $manager->getDefaultDriver());
     }
@@ -129,13 +128,11 @@ class AuthMangerTest extends TestCase
 
         $manager->resolveUsersUsing(fn () => 'foo');
 
-        Coroutine::create(function () use ($manager) {
+        run(function () use ($manager) {
             $manager->resolveUsersUsing(fn () => 'bar');
 
             $this->assertSame('bar', $manager->userResolver()());
         });
-
-        \Swoole\Event::wait();
 
         $this->assertSame('foo', $manager->userResolver()());
     }
