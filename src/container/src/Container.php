@@ -172,7 +172,7 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
             $abstract = $this->getAlias($abstract);
         }
 
-        return (bool) ($this->getDefinitionSource()->getDefinitions()[$abstract] ?? false);
+        return (bool) ($this->definitionSource->getDefinitions()[$abstract] ?? false);
     }
 
     /**
@@ -531,7 +531,7 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
      */
     public function getBindings(): array
     {
-        return $this->getDefinitionSource()->getDefinitions();
+        return $this->definitionSource->getDefinitions();
     }
 
     /**
