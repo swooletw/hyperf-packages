@@ -266,7 +266,7 @@ trait ManagesFrequencies
     /**
      * Schedule the event to run every two hours.
      *
-     * @param  array|string|int  $offset
+     * @param array|int|string $offset
      * @return $this
      */
     public function everyOddHour($offset = 0): static
@@ -277,7 +277,7 @@ trait ManagesFrequencies
     /**
      * Schedule the event to run every two hours.
      *
-     * @param  array|string|int  $offset
+     * @param array|int|string $offset
      * @return $this
      */
     public function everyTwoHours($offset = 0): static
@@ -288,7 +288,7 @@ trait ManagesFrequencies
     /**
      * Schedule the event to run every three hours.
      *
-     * @param  array|string|int  $offset
+     * @param array|int|string $offset
      * @return $this
      */
     public function everyThreeHours($offset = 0): static
@@ -299,7 +299,7 @@ trait ManagesFrequencies
     /**
      * Schedule the event to run every four hours.
      *
-     * @param  array|string|int  $offset
+     * @param array|int|string $offset
      * @return $this
      */
     public function everyFourHours($offset = 0): static
@@ -310,7 +310,7 @@ trait ManagesFrequencies
     /**
      * Schedule the event to run every six hours.
      *
-     * @param  array|string|int  $offset
+     * @param array|int|string $offset
      * @return $this
      */
     public function everySixHours($offset = 0): static
@@ -364,8 +364,8 @@ trait ManagesFrequencies
     /**
      * Schedule the event to run at the given minutes and hours.
      *
-     * @param  array|string|int  $minutes
-     * @param  array|string|int  $hours
+     * @param array|int|string $minutes
+     * @param array|int|string $hours
      * @return $this
      */
     protected function hourBasedSchedule($minutes, $hours): static
@@ -375,20 +375,17 @@ trait ManagesFrequencies
         $hours = is_array($hours) ? implode(',', $hours) : $hours;
 
         return $this->spliceIntoPosition(1, $minutes)
-                    ->spliceIntoPosition(2, $hours);
+            ->spliceIntoPosition(2, $hours);
     }
 
     /**
      * Schedule the event to run twice daily at a given offset.
      *
-     * @param  int  $first
-     * @param  int  $second
-     * @param  int  $offset
      * @return $this
      */
     public function twiceDailyAt(int $first = 1, int $second = 13, int $offset = 0): static
     {
-        $hours = $first.','.$second;
+        $hours = $first . ',' . $second;
 
         return $this->hourBasedSchedule($offset, $hours);
     }
@@ -587,9 +584,6 @@ trait ManagesFrequencies
     /**
      * Schedule the event to run yearly on a given month, day, and time.
      *
-     * @param  int  $month
-     * @param  int|string  $dayOfMonth
-     * @param  string  $time
      * @return $this
      */
     public function yearlyOn(int $month = 1, int|string $dayOfMonth = 1, string $time = '0:0'): static

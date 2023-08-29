@@ -6,7 +6,6 @@ namespace SwooleTW\Hyperf\Foundation\Console\Scheduling;
 
 use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;
-use SwooleTW\Hyperf\Foundation\Console\Scheduling\Crontab;
 
 /**
  * @internal
