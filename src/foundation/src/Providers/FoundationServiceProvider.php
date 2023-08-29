@@ -63,7 +63,7 @@ class FoundationServiceProvider extends ServiceProvider
             \Hyperf\HttpServer\Router\DispatcherFactory::class => ['router'],
             \Hyperf\Contract\StdoutLoggerInterface::class => ['log'],
             \SwooleTW\Hyperf\Encryption\Encrypter::class => ['encrypt'],
-            \SwooleTW\Hyperf\Cache\Contracts\Repository::class => [
+            \SwooleTW\Hyperf\Cache\Contracts\Factory::class => [
                 'cache',
                 \SwooleTW\Hyperf\Cache\CacheManager::class,
             ],

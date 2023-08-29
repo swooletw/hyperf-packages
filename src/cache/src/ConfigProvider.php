@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Cache;
 
-use SwooleTW\Hyperf\Cache\Contracts\Repository;
+use SwooleTW\Hyperf\Cache\Contracts\Factory;
 
 class ConfigProvider
 {
@@ -12,7 +12,7 @@ class ConfigProvider
     {
         return [
             'dependencies' => [
-                Repository::class => CacheManager::class,
+                Factory::class => CacheManager::class,
             ],
             'publish' => [
                 [
