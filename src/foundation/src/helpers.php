@@ -20,7 +20,7 @@ use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 use Psr\Log\LoggerInterface;
-use SwooleTW\Hyperf\Cache\Contracts\Repository as CacheContract;
+use SwooleTW\Hyperf\Cache\Contracts\Factory as CacheManager;
 use SwooleTW\Hyperf\Cookie\Contracts\Cookie as CookieContract;
 use SwooleTW\Hyperf\Router\RouteCollector;
 
@@ -79,7 +79,7 @@ if (! function_exists('cache')) {
     function cache()
     {
         $arguments = func_get_args();
-        $manager = app(CacheContract::class);
+        $manager = app(CacheManager::class);
 
         if (empty($arguments)) {
             return $manager;

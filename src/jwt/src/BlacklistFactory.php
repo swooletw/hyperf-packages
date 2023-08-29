@@ -6,7 +6,7 @@ namespace SwooleTW\Hyperf\JWT;
 
 use Hyperf\Contract\ConfigInterface;
 use Psr\Container\ContainerInterface;
-use SwooleTW\Hyperf\Cache\Contracts\Repository as CacheContract;
+use SwooleTW\Hyperf\Cache\Contracts\Factory as CacheManager;
 use SwooleTW\Hyperf\JWT\Contracts\BlacklistContract;
 use SwooleTW\Hyperf\JWT\Storage\TaggedCache;
 
@@ -18,7 +18,7 @@ class BlacklistFactory
 
         $storageClass = $config->get('jwt.providers.storage');
         $storage = match ($storageClass) {
-            TaggedCache::class => new TaggedCache($container->get(CacheContract::class)->driver()),
+            TaggedCache::class => new TaggedCache($container->get(CacheManager::class)->driver()),
             default => $container->get($storageClass),
         };
 
