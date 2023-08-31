@@ -6,6 +6,7 @@ namespace SwooleTW\Hyperf\Auth;
 
 use SwooleTW\Hyperf\Auth\Contracts\Authenticatable;
 use SwooleTW\Hyperf\Auth\Contracts\FactoryContract;
+use SwooleTW\Hyperf\Auth\Contracts\Guard;
 
 class ConfigProvider
 {
@@ -15,6 +16,7 @@ class ConfigProvider
             'dependencies' => [
                 FactoryContract::class => AuthManager::class,
                 Authenticatable::class => UserResolver::class,
+                Guard::class => fn ($container) => $container->get(FactoryContract::class)->guard(),
             ],
             'publish' => [
                 [

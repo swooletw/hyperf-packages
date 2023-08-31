@@ -67,6 +67,10 @@ class FoundationServiceProvider extends ServiceProvider
                 'cache',
                 \SwooleTW\Hyperf\Cache\CacheManager::class,
             ],
+            \SwooleTW\Hyperf\Cache\Contracts\Store::class => [
+                'cache.store',
+                \SwooleTW\Hyperf\Cache\Repository::class,
+            ],
             \League\Flysystem\Filesystem::class => ['files'],
             \Hyperf\Contract\TranslatorInterface::class => ['translator'],
             \Hyperf\Validation\Contract\ValidatorFactoryInterface::class => ['validator'],
@@ -76,6 +80,9 @@ class FoundationServiceProvider extends ServiceProvider
             \SwooleTW\Hyperf\Auth\Contracts\FactoryContract::class => [
                 'auth',
                 \SwooleTW\Hyperf\Auth\AuthManager::class,
+            ],
+            \SwooleTW\Hyperf\Auth\Contracts\Guard::class => [
+                'auth.driver',
             ],
             \SwooleTW\Hyperf\Hashing\Contracts\Hasher::class => ['hash'],
             \SwooleTW\Hyperf\Cookie\CookieManager::class => ['cookie'],
