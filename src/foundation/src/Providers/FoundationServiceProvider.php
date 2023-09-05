@@ -96,9 +96,6 @@ class FoundationServiceProvider extends ServiceProvider
             ],
         ] as $key => $aliases) {
             foreach ($aliases as $alias) {
-                if ($this->app->bound($alias)) {
-                    $this->app->unbind($alias);
-                }
                 $this->app->alias($key, $alias);
             }
         }

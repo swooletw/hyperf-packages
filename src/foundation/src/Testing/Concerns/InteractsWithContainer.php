@@ -6,11 +6,11 @@ namespace SwooleTW\Hyperf\Foundation\Testing\Concerns;
 
 use Closure;
 use Hyperf\Context\ApplicationContext;
-use Hyperf\Di\Definition\DefinitionSourceFactory;
 use Hyperf\Dispatcher\HttpDispatcher;
 use Mockery;
 use Psr\Container\ContainerInterface;
 use SwooleTW\Hyperf\Container\Container;
+use SwooleTW\Hyperf\Container\DefinitionSourceFactory;
 use SwooleTW\Hyperf\Foundation\ProvidersLoader;
 use SwooleTW\Hyperf\Foundation\Testing\Dispatcher\HttpDispatcher as TestingHttpDispatcher;
 

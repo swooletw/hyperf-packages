@@ -164,6 +164,20 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
     }
 
     /**
+     * Remove an arbitrary binding.
+     */
+    public function remove(string $name): void
+    {
+        if ($this->isAlias($name)) {
+            $name = $this->getAlias($name);
+        }
+
+        parent::unbind($name);
+
+        $this->definitionSource->removeDefinition($name);
+    }
+
+    /**
      * Determine if the given abstract type has been bound.
      */
     public function bound(string $abstract): bool
@@ -636,7 +650,7 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
 
     public function offsetUnset(mixed $offset): void
     {
-        $this->unbind($offset);
+        $this->remove($offset);
     }
 
     /**
