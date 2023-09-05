@@ -10,7 +10,8 @@ class PhpSerializerPacker implements PackerInterface
 {
     public function pack($data): string
     {
-        return is_numeric($data) && ! in_array($data, [INF, -INF]) && ! is_nan($data) ? $data : serialize($data);
+        // is_nan() doesn't work in strict mode
+        return is_numeric($value) && ! in_array($value, [INF, -INF]) && ($value === $value) ? $value : serialize($value);
     }
 
     public function unpack(string $data)
