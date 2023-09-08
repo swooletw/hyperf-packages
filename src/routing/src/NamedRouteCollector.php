@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Routing;
 
+use Closure;
 use Hyperf\HttpServer\MiddlewareManager;
 use Hyperf\HttpServer\Router\Handler;
 use Hyperf\HttpServer\Router\RouteCollector;
@@ -19,6 +20,9 @@ class NamedRouteCollector extends RouteCollector
     {
         $route = $this->currentGroupPrefix . $route;
         $routeDataList = $this->routeParser->parse($route);
+
+        [$handler, $options] = $this->parseHandlerAndOptions($handler, $options);
+
         $options = $this->mergeOptions($this->currentGroupOptions, $options);
 
         foreach ((array) $httpMethod as $method) {
@@ -53,5 +57,34 @@ class NamedRouteCollector extends RouteCollector
         unset($origin['as']);
 
         return array_merge_recursive($origin, $options);
+    }
+
+    private function parseHandlerAndOptions(mixed $handler, array $options): array
+    {
+        if (! is_array($handler) || ! empty($options)) {
+            return [$handler, $options];
+        }
+
+        $options = $handler;
+        $handler = $this->parseAction($options);
+        $options = $this->cleanOptions($options);
+
+        return [$handler, $options];
+    }
+
+    private function parseAction(array $options): mixed
+    {
+        if (isset($options['uses'])) {
+            return $options['uses'];
+        }
+
+        if (isset($options[0]) && $options[0] instanceof Closure) {
+            return $options[0];
+        }
+    }
+
+    private function cleanOptions(array $options): array
+    {
+        return array_diff_key($options, array_flip([0, 'uses']));
     }
 }

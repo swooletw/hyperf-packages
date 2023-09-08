@@ -186,4 +186,40 @@ class NamedRouteCollectorTest extends TestCase
         $this->assertSame(['/foo/bar'], $namedRoutes['foo.bar']);
         $this->assertSame(['/foo/baz/boom'], $namedRoutes['foo.baz.boom']);
     }
+
+    public function testHandlerInOptions()
+    {
+        $parser = new Std();
+        $generator = new DataGenerator();
+        $collector = new NamedRouteCollector($parser, $generator);
+
+        $collector->get('/', [
+            'as' => 'get',
+            'uses' => 'Handler::Get',
+        ]);
+
+        $data = $collector->getData()[0];
+        $this->assertSame('Handler::Get', $data['GET']['/']->callback);
+
+        $namedRoutes = $collector->getNamedRoutes();
+        $this->assertSame(['/'], $namedRoutes['get']);
+    }
+
+    public function testClosureHandlerInOptions()
+    {
+        $parser = new Std();
+        $generator = new DataGenerator();
+        $collector = new NamedRouteCollector($parser, $generator);
+
+        $collector->get('/', [
+            'as' => 'get',
+            $action = function () {},
+        ]);
+
+        $data = $collector->getData()[0];
+        $this->assertSame($action, $data['GET']['/']->callback);
+
+        $namedRoutes = $collector->getNamedRoutes();
+        $this->assertSame(['/'], $namedRoutes['get']);
+    }
 }
