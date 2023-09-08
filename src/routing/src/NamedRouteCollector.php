@@ -43,4 +43,15 @@ class NamedRouteCollector extends RouteCollector
     {
         return $this->namedRoutes;
     }
+
+    protected function mergeOptions(array $origin, array $options): array
+    {
+        if (isset($origin['as'])) {
+            $options['as'] = $origin['as'] . (isset($options['as']) ? '.' . $options['as'] : '');
+        }
+
+        unset($origin['as']);
+
+        return array_merge_recursive($origin, $options);
+    }
 }

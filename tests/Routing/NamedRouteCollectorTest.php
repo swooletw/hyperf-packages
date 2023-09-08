@@ -167,4 +167,23 @@ class NamedRouteCollectorTest extends TestCase
         $this->assertSame(['/foo/', ['bar', '[^/]+']], $namedRoutes['params']);
         $this->assertSame(['/foo/', ['bar', '[^/]+'], '/', ['baz', '[0-9]+']], $namedRoutes['regex']);
     }
+
+    public function testNamedRouteWithGroup()
+    {
+        $parser = new Std();
+        $generator = new DataGenerator();
+        $collector = new NamedRouteCollector($parser, $generator);
+
+        $collector->addGroup('/foo', function ($collector) {
+            $collector->get('/bar', 'Handler::Bar', ['as' => 'bar']);
+            $collector->addGroup('/baz', function ($collector) {
+                $collector->get('/boom', 'Handler::Boom', ['as' => 'boom']);
+            }, ['as' => 'baz']);
+        }, ['as' => 'foo']);
+
+        $namedRoutes = $collector->getNamedRoutes();
+
+        $this->assertSame(['/foo/bar'], $namedRoutes['foo.bar']);
+        $this->assertSame(['/foo/baz/boom'], $namedRoutes['foo.baz.boom']);
+    }
 }
