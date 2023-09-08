@@ -6,7 +6,6 @@ namespace SwooleTW\Hyperf\Container;
 
 use Hyperf\Config\ProviderConfig;
 use Hyperf\Di\Exception\Exception;
-use SwooleTW\Hyperf\Container\DefinitionSource;
 
 class DefinitionSourceFactory
 {

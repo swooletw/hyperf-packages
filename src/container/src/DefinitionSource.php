@@ -9,7 +9,7 @@ use Hyperf\Di\Definition\DefinitionSource as HyperfDefinitionSource;
 class DefinitionSource extends HyperfDefinitionSource
 {
     /**
-     * Remove specific defined source
+     * Remove specific defined source.
      */
     public function removeDefinition(string $name): void
     {
