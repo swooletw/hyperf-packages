@@ -74,6 +74,10 @@ class NamedRouteCollector extends RouteCollector
 
     private function parseAction(array $options): mixed
     {
+        if (count($options) === 2 && array_keys($options) === [0, 1]) {
+            return $options;
+        }
+
         if (isset($options['uses'])) {
             return $options['uses'];
         }

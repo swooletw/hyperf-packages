@@ -222,4 +222,16 @@ class NamedRouteCollectorTest extends TestCase
         $namedRoutes = $collector->getNamedRoutes();
         $this->assertSame(['/'], $namedRoutes['get']);
     }
+
+    public function testCallableHandler()
+    {
+        $parser = new Std();
+        $generator = new DataGenerator();
+        $collector = new NamedRouteCollector($parser, $generator);
+
+        $collector->get('/', ['class', 'method']);
+
+        $data = $collector->getData()[0];
+        $this->assertSame(['class', 'method'], $data['GET']['/']->callback);
+    }
 }
