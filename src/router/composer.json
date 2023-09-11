@@ -37,6 +37,9 @@
         "sort-packages": true
     },
     "extra": {
+        "hyperf": {
+            "config": "SwooleTW\\Hyperf\\Router\\ConfigProvider"
+        },
         "branch-alias": {
             "dev-main": "3.1-dev"
         }
