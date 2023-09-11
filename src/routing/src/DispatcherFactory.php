@@ -11,6 +11,11 @@ use Hyperf\HttpServer\Router\RouteCollector;
 
 class DispatcherFactory extends BaseDispatcherFactory
 {
+    protected array $routes = [
+        BASE_PATH . '/routes/web.php',
+        BASE_PATH . '/routes/api.php',
+    ];
+
     public function getRouter(string $serverName): RouteCollector
     {
         if (isset($this->routers[$serverName])) {
