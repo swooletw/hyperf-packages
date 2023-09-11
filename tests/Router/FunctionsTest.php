@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Tests\Routing;
+namespace SwooleTW\Hyperf\Tests\Router;
 
 use Hyperf\Context\ApplicationContext;
 use Hyperf\Contract\ContainerInterface;
 use Mockery;
 use PHPUnit\Framework\TestCase;
-use SwooleTW\Hyperf\Routing\UrlGenerator;
+use SwooleTW\Hyperf\Router\UrlGenerator;
 
-use function SwooleTW\Hyperf\Routing\route;
+use function SwooleTW\Hyperf\Router\route;
 
 /**
  * @internal

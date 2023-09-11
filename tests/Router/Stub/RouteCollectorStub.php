@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Tests\Routing\Stub;
+namespace SwooleTW\Hyperf\Tests\Router\Stub;
 
 use Hyperf\HttpServer\Router\RouteCollector;
 

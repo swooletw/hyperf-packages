@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Routing;
+namespace SwooleTW\Hyperf\Router;
 
 use Hyperf\Contract\ContainerInterface;
 use Hyperf\HttpServer\Router\DispatcherFactory;

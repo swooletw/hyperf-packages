@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Tests\Routing;
+namespace SwooleTW\Hyperf\Tests\Router;
 
 use FastRoute\DataGenerator\GroupCountBased as DataGenerator;
 use FastRoute\RouteParser\Std;
 use Hyperf\HttpServer\MiddlewareManager;
 use Mockery;
 use PHPUnit\Framework\TestCase;
-use SwooleTW\Hyperf\Routing\NamedRouteCollector;
-use SwooleTW\Hyperf\Tests\Routing\Stub\RouteCollectorStub;
+use SwooleTW\Hyperf\Router\NamedRouteCollector;
+use SwooleTW\Hyperf\Tests\Router\Stub\RouteCollectorStub;
 
 /**
  * @internal

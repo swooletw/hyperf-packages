@@ -1,12 +1,12 @@
 {
-    "name": "swooletw/hyperf-routing",
+    "name": "swooletw/hyperf-router",
     "type": "library",
-    "description": "The routing package for Hyperf.",
+    "description": "The router package for Hyperf.",
     "license": "MIT",
     "keywords": [
         "php",
         "hyperf",
-        "routing",
+        "router",
         "swoole"
     ],
     "authors": [
@@ -22,7 +22,7 @@
     },
     "autoload": {
         "psr-4": {
-            "SwooleTW\\Hyperf\\Routing\\": "src/"
+            "SwooleTW\\Hyperf\\Router\\": "src/"
         },
         "files": [
             "src/Functions.php"

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Tests\Routing;
+namespace SwooleTW\Hyperf\Tests\Router;
 
 use Hyperf\Context\ApplicationContext;
 use Hyperf\Contract\ContainerInterface;
@@ -11,8 +11,8 @@ use Hyperf\HttpServer\Router\Router;
 use InvalidArgumentException;
 use Mockery;
 use PHPUnit\Framework\TestCase;
-use SwooleTW\Hyperf\Routing\DispatcherFactory;
-use SwooleTW\Hyperf\Routing\UrlGenerator;
+use SwooleTW\Hyperf\Router\DispatcherFactory;
+use SwooleTW\Hyperf\Router\UrlGenerator;
 
 /**
  * @internal

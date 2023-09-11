@@ -44,7 +44,7 @@
         "swooletw/hyperf-hashing": "@dev",
         "swooletw/hyperf-jwt": "@dev",
         "swooletw/hyperf-log": "@dev",
-        "swooletw/hyperf-routing": "@dev",
+        "swooletw/hyperf-router": "@dev",
         "swooletw/hyperf-sqlite": "@dev",
         "swooletw/hyperf-support": "@dev"
     },

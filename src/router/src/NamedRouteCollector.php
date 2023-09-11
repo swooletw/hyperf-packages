@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Routing;
+namespace SwooleTW\Hyperf\Router;
 
 use Closure;
 use Hyperf\HttpServer\MiddlewareManager;
