@@ -50,7 +50,7 @@ class ConstantFrequency implements LowFrequencyInterface
         $recycleCount = floor($this->recycleRatio * $this->pool->getObjectNumberInPool());
         $recycleCount = $recycleCount > 1 ?: 1;
 
-        for ($i = 0; $i <= $recycleCount; $i++) {
+        for ($i = 0; $i <= $recycleCount; ++$i) {
             $this->pool->flushOne();
         }
     }

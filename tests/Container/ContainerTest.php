@@ -9,9 +9,9 @@ use Hyperf\Di\Exception\InvalidDefinitionException;
 use Hyperf\Di\Exception\NotFoundException;
 use Mockery;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 use SwooleTW\Hyperf\Container\Container;
 use SwooleTW\Hyperf\Container\DefinitionSource;
-use stdClass;
 
 /**
  * @internal
