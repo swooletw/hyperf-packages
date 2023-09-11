@@ -22,7 +22,6 @@ use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 use Psr\Log\LoggerInterface;
 use SwooleTW\Hyperf\Cache\Contracts\Factory as CacheManager;
 use SwooleTW\Hyperf\Cookie\Contracts\Cookie as CookieContract;
-use SwooleTW\Hyperf\Routing\UrlGenerator;
 
 if (! function_exists('base_path')) {
     /**
