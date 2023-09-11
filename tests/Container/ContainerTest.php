@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Tests\Container;
 
 use Closure;
-use Hyperf\Di\Definition\DefinitionSource;
 use Hyperf\Di\Exception\InvalidDefinitionException;
 use Hyperf\Di\Exception\NotFoundException;
 use Mockery;
 use PHPUnit\Framework\TestCase;
-use stdClass;
 use SwooleTW\Hyperf\Container\Container;
+use SwooleTW\Hyperf\Container\DefinitionSource;
+use stdClass;
 
 /**
  * @internal
@@ -172,7 +172,7 @@ class ContainerTest extends TestCase
         $this->assertNotEmpty($container['something']);
         $this->assertSame('foo', $container['something']);
         unset($container['something']);
-        $this->assertTrue(isset($container['something']));
+        $this->assertFalse(isset($container['something']));
 
         // test offsetSet when it's not instanceof Closure
         $container = $this->getContainer();
@@ -257,13 +257,24 @@ class ContainerTest extends TestCase
         $this->assertFalse($container->bound(ContainerConcreteStub::class));
     }
 
+    public function testUnsetUnbinddInstances()
+    {
+        $container = $this->getContainer();
+        $container->instance('object', new stdClass());
+
+        // keep original behaviour in hyperf
+        $container->unbind('object');
+        $this->assertTrue($container->bound('object'));
+    }
+
     public function testUnsetRemoveBoundInstances()
     {
         $container = $this->getContainer();
         $container->instance('object', new stdClass());
-        unset($container['object']);
 
-        $this->assertTrue($container->bound('object'));
+        // extended remove function
+        unset($container['object']);
+        $this->assertFalse($container->bound('object'));
     }
 
     public function testBoundInstanceAndAliasCheckViaArrayAccess()
