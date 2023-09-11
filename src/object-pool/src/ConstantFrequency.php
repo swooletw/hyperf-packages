@@ -14,13 +14,15 @@ class ConstantFrequency implements LowFrequencyInterface
 
     protected int $interval = 10;
 
+    protected float $recycleRatio = 0.2;
+
     public function __construct(protected ?ObjectPool $pool = null)
     {
         $this->timer = new Timer();
         if ($pool) {
             $this->timerId = $this->timer->tick(
                 $this->interval,
-                fn () => $this->pool->flushOne()
+                fn () => $this->recycleObjects()
             );
         }
     }
@@ -41,5 +43,15 @@ class ConstantFrequency implements LowFrequencyInterface
     public function isLowFrequency(): bool
     {
         return false;
+    }
+
+    protected function recycleObjects(): void
+    {
+        $recycleCount = floor($this->recycleRatio * $this->pool->getObjectNumberInPool());
+        $recycleCount = $recycleCount > 1 ?: 1;
+
+        for ($i = 0; $i <= $recycleCount; $i++) {
+            $this->pool->flushOne();
+        }
     }
 }
