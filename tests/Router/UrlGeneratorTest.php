@@ -37,6 +37,11 @@ class UrlGeneratorTest extends TestCase
         $this->mockContainer();
     }
 
+    protected function tearDown(): void
+    {
+        Mockery::close();
+    }
+
     public function testRoute()
     {
         $this->mockDispatcherFactory();

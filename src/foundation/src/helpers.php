@@ -383,6 +383,26 @@ if (! function_exists('route')) {
     }
 }
 
+if (! function_exists('url')) {
+    /**
+     * Generate a url for the application.
+     */
+    function url(string $path, array $extra = [], bool $secure = null): string
+    {
+        return \SwooleTW\Hyperf\Router\url($path, $extra, $secure);
+    }
+}
+
+if (! function_exists('secure_url')) {
+    /**
+     * Generate a secure, absolute URL to the given path.
+     */
+    function url(string $path, array $extra = []): string
+    {
+        return \SwooleTW\Hyperf\Router\secure_url($path, $extra);
+    }
+}
+
 if (! function_exists('auth')) {
     /**
      * Get auth guard.
