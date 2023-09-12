@@ -10,6 +10,7 @@ use Hyperf\HttpServer\Router\DispatcherFactory as HyperfDispatcherFactory;
 use Hyperf\HttpServer\Router\Router;
 use InvalidArgumentException;
 use Mockery;
+use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Router\DispatcherFactory;
 use SwooleTW\Hyperf\Router\UrlGenerator;
@@ -20,23 +21,20 @@ use SwooleTW\Hyperf\Router\UrlGenerator;
  */
 class UrlGeneratorTest extends TestCase
 {
+    /**
+     * @var ContainerInterface|MockInterface
+     */
     private ContainerInterface $container;
 
     protected function setUp(): void
     {
-        ! defined('BASE_PATH') && define('BASE_PATH', __DIR__);
-
-        $this->container = Mockery::mock(ContainerInterface::class);
-
-        $this->container->shouldReceive('get')
-            ->with(HyperfDispatcherFactory::class)
-            ->andReturn(new DispatcherFactory());
-
-        ApplicationContext::setContainer($this->container);
+        $this->mockContainer();
     }
 
     public function testRoute()
     {
+        $this->mockDispatcherFactory();
+
         Router::get('/foo', 'Handler::Foo', ['as' => 'foo']);
         Router::get('/foo/{bar}', 'Handler::Bar', ['as' => 'bar']);
         Router::get('/foo/{bar}/baz', 'Handler::Bar', ['as' => 'baz']);
@@ -54,6 +52,8 @@ class UrlGeneratorTest extends TestCase
 
     public function testRouteWithNotDefined()
     {
+        $this->mockDispatcherFactory();
+
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Route [foo] not defined.');
 
@@ -63,6 +63,8 @@ class UrlGeneratorTest extends TestCase
 
     public function testRouteWithGroup()
     {
+        $this->mockDispatcherFactory();
+
         Router::addGroup('/foo', function () {
             Router::get('/', 'Handler::Foo', ['as' => 'foo']);
             Router::addGroup('/bar', function () {
@@ -78,5 +80,21 @@ class UrlGeneratorTest extends TestCase
         $this->assertEquals('/foo', $urlGenerator->route('foo'));
         $this->assertEquals('/foo/bar', $urlGenerator->route('bar'));
         $this->assertEquals('/foo/bar/baz', $urlGenerator->route('baz'));
+    }
+
+    private function mockContainer()
+    {
+        ! defined('BASE_PATH') && define('BASE_PATH', __DIR__);
+
+        $this->container = Mockery::mock(ContainerInterface::class);
+
+        ApplicationContext::setContainer($this->container);
+    }
+
+    private function mockDispatcherFactory()
+    {
+        $this->container->shouldReceive('get')
+            ->with(HyperfDispatcherFactory::class)
+            ->andReturn(new DispatcherFactory());
     }
 }
