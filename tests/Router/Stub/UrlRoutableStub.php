@@ -2,7 +2,7 @@
 
 namespace SwooleTW\Hyperf\Tests\Router\Stub;
 
-use SwooleTW\Hyperf\router\src\Contracts\UrlRoutable;
+use SwooleTW\Hyperf\Router\Contracts\UrlRoutable;
 
 class UrlRoutableStub implements UrlRoutable
 {

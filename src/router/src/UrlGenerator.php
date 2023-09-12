@@ -10,7 +10,7 @@ use Hyperf\HttpMessage\Uri\Uri;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Router\DispatcherFactory;
 use InvalidArgumentException;
-use SwooleTW\Hyperf\router\src\Contracts\UrlRoutable;
+use SwooleTW\Hyperf\Router\Contracts\UrlRoutable;
 
 class UrlGenerator
 {

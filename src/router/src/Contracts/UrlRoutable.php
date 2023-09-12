@@ -1,6 +1,6 @@
 <?php
 
-namespace SwooleTW\Hyperf\router\src\Contracts;
+namespace SwooleTW\Hyperf\Router\Contracts;
 
 interface UrlRoutable
 {
