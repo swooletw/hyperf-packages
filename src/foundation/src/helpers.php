@@ -397,7 +397,7 @@ if (! function_exists('secure_url')) {
     /**
      * Generate a secure, absolute URL to the given path.
      */
-    function url(string $path, array $extra = []): string
+    function secure_url(string $path, array $extra = []): string
     {
         return \SwooleTW\Hyperf\Router\secure_url($path, $extra);
     }
