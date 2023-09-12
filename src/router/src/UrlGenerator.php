@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Router;
 
+use Hyperf\Context\Context;
 use Hyperf\Contract\ContainerInterface;
+use Hyperf\HttpMessage\Uri\Uri;
+use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Router\DispatcherFactory;
 use InvalidArgumentException;
+use SwooleTW\Hyperf\router\src\Contracts\UrlRoutable;
 
 class UrlGenerator
 {
@@ -48,8 +52,85 @@ class UrlGenerator
         return $uri;
     }
 
-    private function trimPath(string $path): string
+    /**
+     * Generate a url for the application.
+     */
+    public function to(string $path, array $extra = [], bool $secure = null): string
     {
-        return '/' . trim($path, '/');
+        if ($this->isValidUrl($path)) {
+            return $path;
+        }
+
+        $extra = $this->formatParameters($extra);
+        $tail = implode('/', array_map('rawurlencode', $extra));
+        $root = $this->getRootUrl($this->getSchemeForUrl($secure));
+
+        return $this->trimUrl($root, $path, $tail);
+    }
+
+    /**
+     * Generate a secure, absolute URL to the given path.
+     */
+    public function secure(string $path, array $extra = []): string
+    {
+        return $this->to($path, $extra, true);
+    }
+
+    private function trimPath(string $path, string $tail = ''): string
+    {
+        return '/' . trim($path . '/' . $tail, '/');
+    }
+
+    private function trimUrl(string $root, string $path, string $tail = ''): string
+    {
+        return trim($root . $this->trimPath($path, $tail), '/');
+    }
+
+    private function isValidUrl($path): bool
+    {
+        foreach (['#', '//', 'mailto:', 'tel:', 'sms:', 'http://', 'https://'] as $value) {
+            if (str_starts_with($path, $value)) {
+                return true;
+            }
+        }
+
+        return filter_var($path, FILTER_VALIDATE_URL) !== false;
+    }
+
+    private function formatParameters(array $parameters): array
+    {
+        foreach ($parameters as $key => $parameter) {
+            if ($parameter instanceof UrlRoutable) {
+                $parameters[$key] = $parameter->getRouteKey();
+            }
+        }
+
+        return $parameters;
+    }
+
+    private function getSchemeForUrl(?bool $secure): string
+    {
+        if (is_null($secure)) {
+            return $this->getRequestUri()->getScheme();
+        }
+
+        return $secure ? 'https' : 'http';
+    }
+
+    private function getRootUrl(string $scheme): string
+    {
+        $root = Context::getOrSet('request.root', function () {
+            $requestUri = $this->getRequestUri()->toString();
+            $root = preg_replace(';^(.+://.+?)((/|\?|#).*)?$;', '\1', $requestUri);
+
+            return new Uri($root);
+        });
+
+        return $root->withScheme($scheme)->toString();
+    }
+
+    private function getRequestUri(): Uri
+    {
+        return $this->container->get(RequestInterface::class)->getUri();
     }
 }
