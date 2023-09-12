@@ -39,7 +39,7 @@ class UrlGenerator
             return $uri . $value;
         }, '');
 
-        $uri = $this->trimUri($uri);
+        $uri = $this->trimPath($uri);
 
         if (! empty($parameters)) {
             $uri .= '?' . http_build_query($parameters);
@@ -48,8 +48,8 @@ class UrlGenerator
         return $uri;
     }
 
-    private function trimUri(string $uri): string
+    private function trimPath(string $path): string
     {
-        return '/' . trim($uri, '/');
+        return '/' . trim($path, '/');
     }
 }
