@@ -379,7 +379,7 @@ if (! function_exists('route')) {
      */
     function route(string $name, array $parameters = [], string $server = 'http'): string
     {
-        return \SwooleTW\Hyperf\Routing\route($name, $parameters, $server);
+        return \SwooleTW\Hyperf\Router\route($name, $parameters, $server);
     }
 }
 
