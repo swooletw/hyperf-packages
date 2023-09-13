@@ -21,6 +21,8 @@ class JWTManager extends Manager implements ManagerContract
 
     protected bool $blacklistEnabled = false;
 
+    protected array $validations = [];
+
     /**
      * Create a new manager instance.
      */
