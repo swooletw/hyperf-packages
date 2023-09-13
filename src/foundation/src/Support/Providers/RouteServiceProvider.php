@@ -15,7 +15,7 @@ class RouteServiceProvider extends ServiceProvider
     protected array $routes = [
     ];
 
-    public function register(): void
+    public function boot(): void
     {
         DispatcherFactory::setRouteFiles($this->routes);
     }
