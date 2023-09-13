@@ -10,7 +10,9 @@ use Hyperf\HttpServer\Router\RouteCollector;
 
 class DispatcherFactory extends BaseDispatcherFactory
 {
-    protected static array $routeFiles = [];
+    protected static array $routeFiles = [
+        BASE_PATH . '/config/routes.php',
+    ];
 
     public function __construct(protected ContainerInterface $container)
     {
