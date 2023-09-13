@@ -22,7 +22,6 @@ use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 use Psr\Log\LoggerInterface;
 use SwooleTW\Hyperf\Cache\Contracts\Factory as CacheManager;
 use SwooleTW\Hyperf\Cookie\Contracts\Cookie as CookieContract;
-use SwooleTW\Hyperf\Router\RouteCollector;
 
 if (! function_exists('base_path')) {
     /**
@@ -374,12 +373,33 @@ if (! function_exists('validator')) {
 
 if (! function_exists('route')) {
     /**
-     * Get the path by the route name.
+     * Get the URL to a named route.
+     *
+     * @throws InvalidArgumentException
      */
-    function route(string $name, array $variables = [], string $server = 'http'): string
+    function route(string $name, array $parameters = [], string $server = 'http'): string
     {
-        return app(RouteCollector::class)
-            ->getPath($name, $variables, $server);
+        return \SwooleTW\Hyperf\Router\route($name, $parameters, $server);
+    }
+}
+
+if (! function_exists('url')) {
+    /**
+     * Generate a url for the application.
+     */
+    function url(string $path, array $extra = [], bool $secure = null): string
+    {
+        return \SwooleTW\Hyperf\Router\url($path, $extra, $secure);
+    }
+}
+
+if (! function_exists('secure_url')) {
+    /**
+     * Generate a secure, absolute URL to the given path.
+     */
+    function secure_url(string $path, array $extra = []): string
+    {
+        return \SwooleTW\Hyperf\Router\secure_url($path, $extra);
     }
 }
 
