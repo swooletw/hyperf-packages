@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Tests\Router;
 
+use Hyperf\Context\ApplicationContext;
+use Hyperf\Contract\ContainerInterface;
+use Hyperf\HttpServer\Router\RouteCollector;
+use Mockery;
+use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Router\DispatcherFactory;
 use SwooleTW\Hyperf\Router\NamedRouteCollector;
@@ -21,8 +26,22 @@ class DispatcherFactoryTest extends TestCase
 
     public function testGetRouter()
     {
-        $factory = new DispatcherFactory();
+        /** @var ContainerInterface|MockInterface */
+        $container = Mockery::mock(ContainerInterface::class);
 
-        $this->assertInstanceOf(NamedRouteCollector::class, $factory->getRouter('http'));
+        /** @var NamedRouteCollector|MockInterface */
+        $router = Mockery::mock(NamedRouteCollector::class);
+
+        $container
+            ->shouldReceive('make')
+            ->with(RouteCollector::class, ['server' => 'http'])
+            ->once()
+            ->andReturn($router);
+
+        ApplicationContext::setContainer($container);
+
+        $factory = new DispatcherFactory($container);
+
+        $this->assertEquals($router, $factory->getRouter('http'));
     }
 }

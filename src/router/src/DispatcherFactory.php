@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Router;
 
-use FastRoute\DataGenerator\GroupCountBased as DataGenerator;
-use FastRoute\RouteParser\Std;
+use Hyperf\Contract\ContainerInterface;
 use Hyperf\HttpServer\Router\DispatcherFactory as BaseDispatcherFactory;
 use Hyperf\HttpServer\Router\RouteCollector;
 
@@ -16,15 +15,17 @@ class DispatcherFactory extends BaseDispatcherFactory
         BASE_PATH . '/routes/api.php',
     ];
 
+    public function __construct(protected ContainerInterface $container)
+    {
+        parent::__construct();
+    }
+
     public function getRouter(string $serverName): RouteCollector
     {
         if (isset($this->routers[$serverName])) {
             return $this->routers[$serverName];
         }
 
-        $parser = new Std();
-        $generator = new DataGenerator();
-
-        return $this->routers[$serverName] = new NamedRouteCollector($parser, $generator, $serverName);
+        return $this->routers[$serverName] = $this->container->make(RouteCollector::class, ['server' => $serverName]);
     }
 }

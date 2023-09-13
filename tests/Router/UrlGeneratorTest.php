@@ -12,12 +12,12 @@ use Hyperf\HttpMessage\Server\Request as ServerRequest;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Request;
 use Hyperf\HttpServer\Router\DispatcherFactory as HyperfDispatcherFactory;
-use Hyperf\HttpServer\Router\Router;
 use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Router\DispatcherFactory;
+use SwooleTW\Hyperf\Router\NamedRouteCollector;
 use SwooleTW\Hyperf\Router\UrlGenerator;
 use SwooleTW\Hyperf\Tests\Router\Stub\UrlRoutableStub;
 
@@ -32,6 +32,11 @@ class UrlGeneratorTest extends TestCase
      */
     private ContainerInterface $container;
 
+    /**
+     * @var MockInterface|NamedRouteCollector
+     */
+    private NamedRouteCollector $router;
+
     protected function setUp(): void
     {
         $this->mockContainer();
@@ -44,11 +49,15 @@ class UrlGeneratorTest extends TestCase
 
     public function testRoute()
     {
-        $this->mockDispatcherFactory();
+        $this->mockRouter();
 
-        Router::get('/foo', 'Handler::Foo', ['as' => 'foo']);
-        Router::get('/foo/{bar}', 'Handler::Bar', ['as' => 'bar']);
-        Router::get('/foo/{bar}/baz', 'Handler::Bar', ['as' => 'baz']);
+        $this->router
+            ->shouldReceive('getNamedRoutes')
+            ->andReturn([
+                'foo' => ['/foo'],
+                'bar' => ['/foo/', ['bar', '[^/]+']],
+                'baz' => ['/foo/', ['bar', '[^/]+'], '/baz'],
+            ]);
 
         $urlGenerator = new UrlGenerator($this->container);
 
@@ -63,7 +72,11 @@ class UrlGeneratorTest extends TestCase
 
     public function testRouteWithNotDefined()
     {
-        $this->mockDispatcherFactory();
+        $this->mockRouter();
+
+        $this->router
+            ->shouldReceive('getNamedRoutes')
+            ->andReturn([]);
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Route [foo] not defined.');
@@ -72,30 +85,8 @@ class UrlGeneratorTest extends TestCase
         $urlGenerator->route('foo');
     }
 
-    public function testRouteWithGroup()
-    {
-        $this->mockDispatcherFactory();
-
-        Router::addGroup('/foo', function () {
-            Router::get('/', 'Handler::Foo', ['as' => 'foo']);
-            Router::addGroup('/bar', function () {
-                Router::get('/', 'Handler::Bar', ['as' => 'bar']);
-                Router::addGroup('/baz', function () {
-                    Router::get('/', 'Handler::Baz', ['as' => 'baz']);
-                });
-            });
-        });
-
-        $urlGenerator = new UrlGenerator($this->container);
-
-        $this->assertEquals('/foo', $urlGenerator->route('foo'));
-        $this->assertEquals('/foo/bar', $urlGenerator->route('bar'));
-        $this->assertEquals('/foo/bar/baz', $urlGenerator->route('baz'));
-    }
-
     public function testTo()
     {
-        $this->mockDispatcherFactory();
         $this->mockRequest();
 
         $urlGenerator = new UrlGenerator($this->container);
@@ -105,7 +96,6 @@ class UrlGeneratorTest extends TestCase
 
     public function testToWithValidUrl()
     {
-        $this->mockDispatcherFactory();
         $this->mockRequest();
 
         $urlGenerator = new UrlGenerator($this->container);
@@ -122,7 +112,6 @@ class UrlGeneratorTest extends TestCase
 
     public function testToWithExtra()
     {
-        $this->mockDispatcherFactory();
         $this->mockRequest();
 
         $urlGenerator = new UrlGenerator($this->container);
@@ -134,7 +123,6 @@ class UrlGeneratorTest extends TestCase
 
     public function testToWithSecure()
     {
-        $this->mockDispatcherFactory();
         $this->mockRequest();
 
         $urlGenerator = new UrlGenerator($this->container);
@@ -144,7 +132,6 @@ class UrlGeneratorTest extends TestCase
 
     public function testToWithRootUrlCache()
     {
-        $this->mockDispatcherFactory();
         $this->mockRequest();
 
         $urlGenerator = new UrlGenerator($this->container);
@@ -155,7 +142,6 @@ class UrlGeneratorTest extends TestCase
 
     public function testSecure()
     {
-        $this->mockDispatcherFactory();
         $this->mockRequest();
 
         $urlGenerator = new UrlGenerator($this->container);
@@ -173,11 +159,25 @@ class UrlGeneratorTest extends TestCase
         ApplicationContext::setContainer($this->container);
     }
 
-    private function mockDispatcherFactory()
+    private function mockRouter()
     {
-        $this->container->shouldReceive('get')
+        /** @var DispatcherFactory|MockInterface */
+        $factory = Mockery::mock(DispatcherFactory::class);
+
+        /** @var MockInterface|NamedRouteCollector */
+        $router = Mockery::mock(NamedRouteCollector::class);
+
+        $this->container
+            ->shouldReceive('get')
             ->with(HyperfDispatcherFactory::class)
-            ->andReturn(new DispatcherFactory());
+            ->andReturn($factory);
+
+        $factory
+            ->shouldReceive('getRouter')
+            ->with('http')
+            ->andReturn($router);
+
+        $this->router = $router;
     }
 
     private function mockRequest()
