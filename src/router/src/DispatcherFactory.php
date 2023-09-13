@@ -10,14 +10,18 @@ use Hyperf\HttpServer\Router\RouteCollector;
 
 class DispatcherFactory extends BaseDispatcherFactory
 {
-    protected array $routes = [
-        BASE_PATH . '/routes/web.php',
-        BASE_PATH . '/routes/api.php',
-    ];
+    protected static array $routeFiles = [];
 
     public function __construct(protected ContainerInterface $container)
     {
         parent::__construct();
+    }
+
+    public function initConfigRoute()
+    {
+        $this->routes = static::$routeFiles;
+
+        parent::initConfigRoute();
     }
 
     public function getRouter(string $serverName): RouteCollector
@@ -27,5 +31,15 @@ class DispatcherFactory extends BaseDispatcherFactory
         }
 
         return $this->routers[$serverName] = $this->container->make(RouteCollector::class, ['server' => $serverName]);
+    }
+
+    public static function addRouteFile(string $path): void
+    {
+        static::$routeFiles = array_unique(array_merge(static::$routeFiles, [$path]));
+    }
+
+    public static function setRouteFiles(array $routes): void
+    {
+        static::$routeFiles = $routes;
     }
 }
