@@ -19,7 +19,7 @@ class ConfigProvider
             'publish' => [
                 [
                     'id' => 'config',
-                    'description' => 'The config for cache.',
+                    'description' => 'The config for jwt.',
                     'source' => __DIR__ . '/../publish/jwt.php',
                     'destination' => BASE_PATH . '/config/autoload/jwt.php',
                 ],
