@@ -7,12 +7,27 @@ namespace SwooleTW\Hyperf\Router;
 use Hyperf\Context\ApplicationContext;
 
 /**
- * Get the path by the route name.
+ * Get the URL to a named route.
+ *
+ * @throws InvalidArgumentException
  */
-function route(string $name, array $variables = [], string $server = 'http'): string
+function route(string $name, array $parameters = [], string $server = 'http'): string
 {
-    $container = ApplicationContext::getContainer();
-    $collector = $container->get(RouteCollector::class);
+    return ApplicationContext::getContainer()->get(UrlGenerator::class)->route($name, $parameters, $server);
+}
 
-    return $collector->getPath($name, $variables, $server);
+/**
+ * Generate a url for the application.
+ */
+function url(string $path, array $extra = [], bool $secure = null): string
+{
+    return ApplicationContext::getContainer()->get(UrlGenerator::class)->to($path, $extra, $secure);
+}
+
+/**
+ * Generate a secure, absolute URL to the given path.
+ */
+function secure_url(string $path, array $extra = []): string
+{
+    return ApplicationContext::getContainer()->get(UrlGenerator::class)->secure($path, $extra);
 }
