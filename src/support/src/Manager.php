@@ -103,7 +103,7 @@ abstract class Manager
      *
      * @return $this
      */
-    public function extend(string $driver, Closure $callback): ContainerInterface
+    public function extend(string $driver, Closure $callback): static
     {
         $this->customCreators[$driver] = $callback;
 
