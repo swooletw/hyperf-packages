@@ -27,6 +27,7 @@
         "lcobucci/jwt": "^5.0",
         "psr/simple-cache": "^3.0",
         "hyperf/stringable": "^3.1",
+        "ramsey/uuid": "^4.7",
         "swooletw/hyperf-cache": "^3.1|dev-master"
     },
     "autoload": {
