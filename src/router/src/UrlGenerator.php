@@ -36,7 +36,7 @@ class UrlGenerator
                 return $uri . $segment;
             }
 
-            $value = $parameters[$segment[0]];
+            $value = $parameters[$segment[0]] ?? '';
 
             unset($parameters[$segment[0]]);
 
