@@ -21,6 +21,8 @@ class JWTManager extends Manager implements ManagerContract
 
     protected bool $blacklistEnabled = false;
 
+    protected array $validations = [];
+
     /**
      * Create a new manager instance.
      */
@@ -54,7 +56,7 @@ class JWTManager extends Manager implements ManagerContract
 
     public function encode(array $payload): string
     {
-        if ($this->config->get('jwt.blacklist_enabled', false)) {
+        if ($this->blacklistEnabled) {
             $payload['jti'] = (string) Str::uuid();
         }
 
@@ -69,7 +71,7 @@ class JWTManager extends Manager implements ManagerContract
             $this->validatePayload($payload);
         }
 
-        if ($this->blacklistEnabled && $checkBlacklist && $this->getBlacklist()->has($payload)) {
+        if ($this->blacklistEnabled && $checkBlacklist && $this->blacklist->has($payload)) {
             throw new TokenBlacklistedException('The token has been blacklisted');
         }
 
@@ -113,7 +115,7 @@ class JWTManager extends Manager implements ManagerContract
         }
 
         return call_user_func(
-            [$this->getBlacklist(), $forceForever ? 'addForever' : 'add'],
+            [$this->blacklist, $forceForever ? 'addForever' : 'add'],
             $this->decode($token, false)
         );
     }

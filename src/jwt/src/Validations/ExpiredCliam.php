@@ -15,7 +15,7 @@ class ExpiredCliam extends AbstractValidation
             return;
         }
 
-        if (Carbon::now() > $this->timestamp($exp)->addSecond($payload['leeway'] ?? 0)) {
+        if (Carbon::now() > $this->timestamp($exp)->addSecond($this->config['leeway'] ?? 0)) {
             throw new TokenExpiredException('Token has expired');
         }
     }
