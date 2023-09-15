@@ -64,6 +64,7 @@ class UrlGeneratorTest extends TestCase
         $this->assertEquals('/foo', $urlGenerator->route('foo'));
         $this->assertEquals('/foo?bar=1', $urlGenerator->route('foo', ['bar' => 1]));
         $this->assertEquals('/foo?bar=1&baz=2', $urlGenerator->route('foo', ['bar' => 1, 'baz' => 2]));
+        $this->assertEquals('/foo', $urlGenerator->route('bar'));
         $this->assertEquals('/foo/1', $urlGenerator->route('bar', ['bar' => 1]));
         $this->assertEquals('/foo/1?baz=2', $urlGenerator->route('bar', ['bar' => 1, 'baz' => 2]));
         $this->assertEquals('/foo/1/baz', $urlGenerator->route('baz', ['bar' => 1]));
