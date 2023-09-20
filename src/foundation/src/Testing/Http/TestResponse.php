@@ -18,21 +18,23 @@ class TestResponse extends HyperfTestResponse
     /**
      * Asserts that the response contains the given header and equals the optional value.
      *
-     * @param  string  $headerName
-     * @param  mixed  $value
+     * @param string $headerName
+     * @param mixed $value
      * @return $this
      */
     public function assertHeader($headerName, $value = null)
     {
         PHPUnit::assertTrue(
-            $this->hasHeader($headerName), "Header [{$headerName}] not present on response."
+            $this->hasHeader($headerName),
+            "Header [{$headerName}] not present on response."
         );
 
         $actual = $this->getHeader($headerName)[0] ?? null;
 
         if (! is_null($value)) {
             PHPUnit::assertEquals(
-                $value, $actual,
+                $value,
+                $actual,
                 "Header [{$headerName}] was found, but value [{$actual}] does not match [{$value}]."
             );
         }
@@ -43,13 +45,14 @@ class TestResponse extends HyperfTestResponse
     /**
      * Asserts that the response does not contain the given header.
      *
-     * @param  string  $headerName
+     * @param string $headerName
      * @return $this
      */
     public function assertHeaderMissing($headerName)
     {
         PHPUnit::assertFalse(
-            $this->hasHeader($headerName), "Unexpected header [{$headerName}] is present on response."
+            $this->hasHeader($headerName),
+            "Unexpected header [{$headerName}] is present on response."
         );
 
         return $this;
@@ -58,7 +61,7 @@ class TestResponse extends HyperfTestResponse
     /**
      * Assert that the response offers a file download.
      *
-     * @param  string|null  $filename
+     * @param null|string $filename
      * @return $this
      */
     public function assertDownload($filename = null)
@@ -67,17 +70,17 @@ class TestResponse extends HyperfTestResponse
 
         if (trim($contentDisposition[0]) !== 'attachment') {
             PHPUnit::fail(
-                'Response does not offer a file download.'.PHP_EOL.
-                'Disposition ['.trim($contentDisposition[0]).'] found in header, [attachment] expected.'
+                'Response does not offer a file download.' . PHP_EOL .
+                'Disposition [' . trim($contentDisposition[0]) . '] found in header, [attachment] expected.'
             );
         }
 
         if (! is_null($filename)) {
-            if (isset($contentDisposition[1]) &&
-                trim(explode('=', $contentDisposition[1])[0]) !== 'filename') {
+            if (isset($contentDisposition[1])
+                && trim(explode('=', $contentDisposition[1])[0]) !== 'filename') {
                 PHPUnit::fail(
-                    'Unsupported Content-Disposition header provided.'.PHP_EOL.
-                    'Disposition ['.trim(explode('=', $contentDisposition[1])[0]).'] found in header, [filename] expected.'
+                    'Unsupported Content-Disposition header provided.' . PHP_EOL .
+                    'Disposition [' . trim(explode('=', $contentDisposition[1])[0]) . '] found in header, [filename] expected.'
                 );
             }
 
@@ -106,8 +109,8 @@ class TestResponse extends HyperfTestResponse
     /**
      * Asserts that the response contains the given cookie and equals the optional value.
      *
-     * @param  string  $cookieName
-     * @param  mixed  $value
+     * @param string $cookieName
+     * @param mixed $value
      * @return $this
      */
     public function assertPlainCookie($cookieName, $value = null)
@@ -118,8 +121,8 @@ class TestResponse extends HyperfTestResponse
     /**
      * Asserts that the response contains the given cookie and equals the optional value.
      *
-     * @param  string  $cookieName
-     * @param  mixed  $value
+     * @param string $cookieName
+     * @param mixed $value
      * @return $this
      */
     public function assertCookie($cookieName, $value = null)
@@ -136,7 +139,8 @@ class TestResponse extends HyperfTestResponse
         $cookieValue = $cookie->getValue();
 
         PHPUnit::assertEquals(
-            $value, $cookieValue,
+            $value,
+            $cookieValue,
             "Cookie [{$cookieName}] was found, but value [{$cookieValue}] does not match [{$value}]."
         );
 
@@ -146,7 +150,7 @@ class TestResponse extends HyperfTestResponse
     /**
      * Asserts that the response contains the given cookie and is expired.
      *
-     * @param  string  $cookieName
+     * @param string $cookieName
      * @return $this
      */
     public function assertCookieExpired($cookieName)
@@ -169,7 +173,7 @@ class TestResponse extends HyperfTestResponse
     /**
      * Asserts that the response contains the given cookie and is not expired.
      *
-     * @param  string  $cookieName
+     * @param string $cookieName
      * @return $this
      */
     public function assertCookieNotExpired($cookieName)
@@ -192,7 +196,7 @@ class TestResponse extends HyperfTestResponse
     /**
      * Asserts that the response does not contain the given cookie.
      *
-     * @param  string  $cookieName
+     * @param string $cookieName
      * @return $this
      */
     public function assertCookieMissing($cookieName)
@@ -208,8 +212,8 @@ class TestResponse extends HyperfTestResponse
     /**
      * Get the given cookie from the response.
      *
-     * @param  string  $cookieName
-     * @return \SwooleTW\Hyperf\Cookie\Cookie|null
+     * @param string $cookieName
+     * @return null|\SwooleTW\Hyperf\Cookie\Cookie
      */
     public function getCookie($cookieName)
     {
@@ -225,8 +229,8 @@ class TestResponse extends HyperfTestResponse
     /**
      * Assert that the given keys do not have validation errors.
      *
-     * @param  string|array|null  $keys
-     * @param  string  $responseKey
+     * @param null|array|string $keys
+     * @param string $responseKey
      * @return $this
      */
     public function assertValid($keys = null, $responseKey = 'errors')
@@ -237,8 +241,8 @@ class TestResponse extends HyperfTestResponse
     /**
      * Assert that the response has the given validation errors.
      *
-     * @param  string|array|null  $errors
-     * @param  string  $responseKey
+     * @param null|array|string $errors
+     * @param string $responseKey
      * @return $this
      */
     public function assertInvalid($errors = null, $responseKey = 'errors')
@@ -250,7 +254,7 @@ class TestResponse extends HyperfTestResponse
     {
         $container = ApplicationContext::getContainer();
         if (! $container->has(SessionInterface::class)) {
-            throw new RuntimeException("Package `hyperf/session` is not installed.");
+            throw new RuntimeException('Package `hyperf/session` is not installed.');
         }
 
         return $container->get(SessionInterface::class);
@@ -259,8 +263,8 @@ class TestResponse extends HyperfTestResponse
     /**
      * Assert that the session has a given value.
      *
-     * @param  string|array  $key
-     * @param  mixed  $value
+     * @param array|string $key
+     * @param mixed $value
      * @return $this
      */
     public function assertSessionHas($key, $value = null)
@@ -286,7 +290,6 @@ class TestResponse extends HyperfTestResponse
     /**
      * Assert that the session has a given list of values.
      *
-     * @param  array  $bindings
      * @return $this
      */
     public function assertSessionHasAll(array $bindings)
@@ -305,7 +308,7 @@ class TestResponse extends HyperfTestResponse
     /**
      * Assert that the session does not have a given key.
      *
-     * @param  string|array  $key
+     * @param array|string $key
      * @return $this
      */
     public function assertSessionMissing($key)

@@ -14,7 +14,9 @@ use SwooleTW\Hyperf\Router\Contracts\UrlRoutable;
 
 class UrlGenerator
 {
-    public function __construct(protected ContainerInterface $container) {}
+    public function __construct(protected ContainerInterface $container)
+    {
+    }
 
     /**
      * Get the URL to a named route.
