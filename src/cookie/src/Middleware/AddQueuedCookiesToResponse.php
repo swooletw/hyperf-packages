@@ -21,17 +21,17 @@ class AddQueuedCookiesToResponse implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        $response = $handler->handle($request);
         if (! $cookies = $this->cookie->getQueuedCookies()) {
-            return $handler->handle($request);
+            return $response;
         }
 
-        $response = Context::get(ResponseInterface::class);
         foreach (Arr::flatten($cookies) as $cookie) {
             $response = $response->withCookie($cookie);
         }
 
         Context::set(ResponseInterface::class, $response);
 
-        return $handler->handle($request);
+        return $response;
     }
 }
