@@ -8,9 +8,8 @@ use Hyperf\Database\Commands\Migrations\BaseCommand as MigrationBaseCommand;
 use Hyperf\Database\Commands\Seeders\BaseCommand as SeederBaseCommand;
 use Hyperf\Database\Migrations\Migration;
 use Hyperf\Database\Model\Factory as DatabaseFactory;
-use Hyperf\HttpServer\CoreMiddleware as HyperfCoreMiddleware;
+use Hyperf\HttpMessage\Server\ResponsePlusProxy;
 use SwooleTW\Hyperf\Foundation\Console\Commands\ServerReloadCommand;
-use SwooleTW\Hyperf\Foundation\HttpServer\CoreMiddleware;
 use SwooleTW\Hyperf\Foundation\Model\FactoryInvoker;
 use SwooleTW\Hyperf\Foundation\Queue\Console\QueueWorkCommand;
 
@@ -21,7 +20,6 @@ class ConfigProvider
         return [
             'dependencies' => [
                 DatabaseFactory::class => FactoryInvoker::class,
-                HyperfCoreMiddleware::class => CoreMiddleware::class,
             ],
             'commands' => [
                 QueueWorkCommand::class,
@@ -33,6 +31,7 @@ class ConfigProvider
                         Migration::class => __DIR__ . '/../class_map/Database/Migrations/Migration.php',
                         MigrationBaseCommand::class => __DIR__ . '/../class_map/Database/Commands/Migrations/BaseCommand.php',
                         SeederBaseCommand::class => __DIR__ . '/../class_map/Database/Commands/Seeders/BaseCommand.php',
+                        ResponsePlusProxy::class => __DIR__ . '/../class_map/HttpMessage/ResponsePlusProxy.php',
                     ],
                 ],
             ],
