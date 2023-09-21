@@ -9,12 +9,12 @@ use FriendsOfHyperf\Support\AsyncQueue\ClosureJob;
 use Hyperf\AsyncQueue\Driver\DriverFactory;
 use Hyperf\AsyncQueue\JobInterface;
 use Hyperf\Context\ApplicationContext;
+use Hyperf\Context\Context;
 use Hyperf\Contract\SessionInterface;
 use Hyperf\Contract\ValidatorInterface;
 use Hyperf\HttpMessage\Cookie\Cookie;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\HttpServer\Contract\RequestInterface;
-use Hyperf\HttpServer\Contract\ResponseInterface;
 use Hyperf\Validation\Contract\ValidatorFactoryInterface;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -292,7 +292,7 @@ if (! function_exists('response')) {
     function response($content = '', $status = 200, array $headers = [])
     {
         /** @var PsrResponseInterface|ResponseInterface $response */
-        $response = app(ResponseInterface::class);
+        $response = Context::get(PsrResponseInterface::class);
 
         if (func_num_args() === 0) {
             return $response;
