@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Auth;
 
+use SwooleTW\Hyperf\Auth\Access\GateFactory;
 use SwooleTW\Hyperf\Auth\Contracts\Authenticatable;
 use SwooleTW\Hyperf\Auth\Contracts\FactoryContract;
+use SwooleTW\Hyperf\Auth\Contracts\Gate as GateContract;
 use SwooleTW\Hyperf\Auth\Contracts\Guard;
 
 class ConfigProvider
@@ -17,6 +19,7 @@ class ConfigProvider
                 FactoryContract::class => AuthManager::class,
                 Authenticatable::class => UserResolver::class,
                 Guard::class => fn ($container) => $container->get(FactoryContract::class)->guard(),
+                GateContract::class => GateFactory::class,
             ],
             'publish' => [
                 [
