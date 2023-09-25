@@ -9,33 +9,17 @@ use SwooleTW\Hyperf\Auth\Contracts\Authenticatable;
 class GateEvaluated
 {
     /**
-     * The authenticatable model.
-     */
-    public ?Authenticatable $user;
-
-    /**
-     * The ability being evaluated.
-     */
-    public string $ability;
-
-    /**
-     * The result of the evaluation.
-     */
-    public ?bool $result;
-
-    /**
-     * The arguments given during evaluation.
-     */
-    public array $arguments;
-
-    /**
      * Create a new event instance.
+     *
+     * @param null|Authenticatable $user the authenticatable model
+     * @param string $ability the ability being evaluated
+     * @param null|bool $result the result of the evaluation
+     * @param array $arguments the arguments given during evaluation
      */
-    public function __construct(?Authenticatable $user, string $ability, ?bool $result, array $arguments)
-    {
-        $this->user = $user;
-        $this->ability = $ability;
-        $this->result = $result;
-        $this->arguments = $arguments;
-    }
+    public function __construct(
+        public ?Authenticatable $user,
+        public string $ability,
+        public ?bool $result,
+        public array $arguments
+    ) {}
 }

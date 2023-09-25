@@ -25,36 +25,6 @@ class Gate implements GateContract
     use HandlesAuthorization;
 
     /**
-     * The container instance.
-     */
-    protected ContainerInterface $container;
-
-    /**
-     * The user resolver callable.
-     */
-    protected Closure $userResolver;
-
-    /**
-     * All of the defined abilities.
-     */
-    protected array $abilities = [];
-
-    /**
-     * All of the defined policies.
-     */
-    protected array $policies = [];
-
-    /**
-     * All of the registered before callbacks.
-     */
-    protected array $beforeCallbacks = [];
-
-    /**
-     * All of the registered after callbacks.
-     */
-    protected array $afterCallbacks = [];
-
-    /**
      * All of the defined abilities using class@method notation.
      */
     protected array $stringCallbacks = [];
@@ -66,22 +36,22 @@ class Gate implements GateContract
 
     /**
      * Create a new gate instance.
+     *
+     * @param ContainerInterface $container the container instance
+     * @param Closure $userResolver the user resolver callable
+     * @param array $abilities all of the defined abilities
+     * @param array $policies all of the defined policies
+     * @param array $beforeCallbacks all of the registered before callbacks
+     * @param array $afterCallbacks all of the registered after callbacks
      */
     public function __construct(
-        ContainerInterface $container,
-        Closure $userResolver,
-        array $abilities = [],
-        array $policies = [],
-        array $beforeCallbacks = [],
-        array $afterCallbacks = []
-    ) {
-        $this->policies = $policies;
-        $this->container = $container;
-        $this->abilities = $abilities;
-        $this->userResolver = $userResolver;
-        $this->afterCallbacks = $afterCallbacks;
-        $this->beforeCallbacks = $beforeCallbacks;
-    }
+        protected ContainerInterface $container,
+        protected Closure $userResolver,
+        protected array $abilities = [],
+        protected array $policies = [],
+        protected array $beforeCallbacks = [],
+        protected array $afterCallbacks = []
+    ) {}
 
     /**
      * Determine if a given ability has been defined.

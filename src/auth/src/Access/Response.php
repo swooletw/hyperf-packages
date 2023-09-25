@@ -10,30 +10,22 @@ use Stringable;
 class Response implements Arrayable, Stringable
 {
     /**
-     * Indicates whether the response was allowed.
-     */
-    protected bool $allowed;
-
-    /**
-     * The response message.
-     */
-    protected ?string $message;
-
-    /**
-     * The response code.
-     */
-    protected int|string|null $code;
-
-    /**
      * The HTTP response status code.
      */
     protected ?int $status = null;
 
     /**
      * Create a new response.
+     *
+     * @param bool $allowed Indicates whether the response was allowed
+     * @param null|string $message The response message
+     * @param null|int|string $code The response code
      */
-    public function __construct(bool $allowed, ?string $message = '', int|string|null $code = null)
-    {
+    public function __construct(
+        protected bool $allowed,
+        protected ?string $message = '',
+        protected int|string|null $code = null
+    ) {
         $this->code = $code;
         $this->allowed = $allowed;
         $this->message = $message;
