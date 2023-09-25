@@ -29,14 +29,10 @@ class Gate implements GateContract
      */
     protected ContainerInterface $container;
 
-    // callable is not supported for typed properties
-    // SEE: https://wiki.php.net/rfc/typed_properties_v2#callable_type
     /**
      * The user resolver callable.
-     *
-     * @var callable
      */
-    protected $userResolver;
+    protected Closure $userResolver;
 
     /**
      * All of the defined abilities.
@@ -73,7 +69,7 @@ class Gate implements GateContract
      */
     public function __construct(
         ContainerInterface $container,
-        callable $userResolver,
+        Closure $userResolver,
         array $abilities = [],
         array $policies = [],
         array $beforeCallbacks = [],
