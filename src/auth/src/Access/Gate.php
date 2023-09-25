@@ -485,7 +485,7 @@ class Gate implements GateContract
             return;
         }
 
-        $this->container->make(EventDispatcherInterface::class)->dispatch(
+        $this->container->get(EventDispatcherInterface::class)->dispatch(
             new GateEvaluated($user, $ability, $result, $arguments)
         );
     }
@@ -551,7 +551,7 @@ class Gate implements GateContract
      */
     public function resolvePolicy(string $class): mixed
     {
-        return $this->container->make($class);
+        return $this->container->get($class);
     }
 
     /**
