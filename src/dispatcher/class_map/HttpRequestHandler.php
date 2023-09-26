@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Dispatcher;
+namespace Hyperf\Dispatcher;
 
 use Hyperf\Dispatcher\AbstractRequestHandler;
 use InvalidArgumentException;
