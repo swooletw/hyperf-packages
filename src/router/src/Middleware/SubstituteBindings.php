@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Router\Middleware;
 
+use BackedEnum;
 use Closure;
 use Hyperf\Database\Model\Model;
+use Hyperf\Database\Model\ModelNotFoundException;
 use Hyperf\Di\ClosureDefinitionCollectorInterface;
 use Hyperf\Di\MethodDefinitionCollectorInterface;
 use Hyperf\Di\ReflectionType;
@@ -15,6 +17,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use SwooleTW\Hyperf\Router\Exceptions\BackedEnumCaseNotFoundException;
 
 use function Hyperf\Support\make;
 
@@ -85,14 +88,57 @@ class SubstituteBindings implements MiddlewareInterface
     {
         foreach ($definitions as $definition) {
             $name = $definition->getMeta('name');
-            $class = $definition->getName();
 
-            if (is_a($class, Model::class, true) && array_key_exists($name, $params)) {
-                $routeKey = $params[$name];
-                $params[$name] = $class::where(make($class)->getRouteKeyName(), $routeKey)->firstOrFail();
+            if (! array_key_exists($name, $params)) {
+                continue;
+            }
+
+            if ($binding = $this->resolveBinding($definition, $params, $name)) {
+                $params[$name] = $binding;
             }
         }
 
         return $params;
+    }
+
+    /**
+     * @throws ModelNotFoundException
+     * @throws BackedEnumCaseNotFoundException
+     */
+    protected function resolveBinding(ReflectionType $definition, array $params, string $name)
+    {
+        $class = $definition->getName();
+
+        if (is_a($class, Model::class, true)) {
+            return $this->resolveModel($class, $params[$name]);
+        }
+
+        if (is_a($class, BackedEnum::class, true)) {
+            return $this->resolveBackedEnum($class, $params[$name]);
+        }
+    }
+
+    /**
+     * @param class-string<Model> $class
+     * @throws ModelNotFoundException
+     */
+    protected function resolveModel(string $class, string $routeKey): Model
+    {
+        return $class::where(make($class)->getRouteKeyName(), $routeKey)->firstOrFail();
+    }
+
+    /**
+     * @param class-string<BackedEnum> $class
+     * @throws BackedEnumCaseNotFoundException
+     */
+    protected function resolveBackedEnum(string $class, string $value): BackedEnum
+    {
+        $enum = $class::tryFrom((string) $value);
+
+        if (is_null($enum)) {
+            throw new BackedEnumCaseNotFoundException($class, $value);
+        }
+
+        return $enum;
     }
 }
