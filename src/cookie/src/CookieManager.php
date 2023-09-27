@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Cookie;
 
 use Hyperf\Context\Context;
+use Hyperf\Context\RequestContext;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\Support\Traits\InteractsWithTime;
-use Psr\Http\Message\ServerRequestInterface;
 use SwooleTW\Hyperf\Cookie\Contracts\Cookie as CookieContract;
 
 class CookieManager implements CookieContract
@@ -26,7 +26,7 @@ class CookieManager implements CookieContract
 
     public function get(string $key, ?string $default = null): ?string
     {
-        if (! Context::has(ServerRequestInterface::class)) {
+        if (! RequestContext::has()) {
             return null;
         }
 

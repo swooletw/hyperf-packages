@@ -6,10 +6,10 @@ namespace SwooleTW\Hyperf\Auth\Guards;
 
 use Carbon\Carbon;
 use Hyperf\Context\Context;
+use Hyperf\Context\RequestContext;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\Macroable\Macroable;
 use Hyperf\Stringable\Str;
-use Psr\Http\Message\ServerRequestInterface;
 use SwooleTW\Hyperf\Auth\Contracts\Authenticatable;
 use SwooleTW\Hyperf\Auth\Contracts\Guard;
 use SwooleTW\Hyperf\Auth\Contracts\UserProvider;
@@ -51,7 +51,7 @@ class JwtGuard implements Guard
     public function parseToken(): ?string
     {
         // prevent nullalbe request
-        if (! Context::has(ServerRequestInterface::class)) {
+        if (! RequestContext::has()) {
             return null;
         }
 
