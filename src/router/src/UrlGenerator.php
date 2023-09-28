@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Router;
 
 use Hyperf\Context\Context;
+use Hyperf\Context\RequestContext;
+use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\ContainerInterface;
 use Hyperf\HttpMessage\Uri\Uri;
 use Hyperf\HttpServer\Contract\RequestInterface;
@@ -14,9 +16,7 @@ use SwooleTW\Hyperf\Router\Contracts\UrlRoutable;
 
 class UrlGenerator
 {
-    public function __construct(protected ContainerInterface $container)
-    {
-    }
+    public function __construct(protected ContainerInterface $container) {}
 
     /**
      * Get the URL to a named route.
@@ -133,6 +133,10 @@ class UrlGenerator
 
     private function getRequestUri(): Uri
     {
-        return $this->container->get(RequestInterface::class)->getUri();
+        if (RequestContext::has()) {
+            return $this->container->get(RequestInterface::class)->getUri();
+        }
+
+        return new Uri($this->container->get(ConfigInterface::class)->get('app.url'));
     }
 }
