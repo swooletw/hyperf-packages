@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Tests\Encryption;
 
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use SwooleTW\Hyperf\Encryption\Encrypter;
 use SwooleTW\Hyperf\Encryption\Exceptions\DecryptException;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal

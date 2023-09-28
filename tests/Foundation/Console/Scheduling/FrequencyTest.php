@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Foundation\Console\Scheduling;
 
 use Carbon\Carbon;
-use PHPUnit\Framework\TestCase;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal

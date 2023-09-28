@@ -9,10 +9,10 @@ use Hyperf\Contract\ContainerInterface;
 use Hyperf\Database\Model\Model;
 use Mockery;
 use Mockery\MockInterface;
-use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Auth\Access\Response;
 use SwooleTW\Hyperf\Auth\Contracts\Gate;
 use SwooleTW\Hyperf\Tests\Auth\Stub\AuthorizesRequestsStub;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal
@@ -20,11 +20,6 @@ use SwooleTW\Hyperf\Tests\Auth\Stub\AuthorizesRequestsStub;
  */
 class AuthorizesRequestsTest extends TestCase
 {
-    protected function tearDown(): void
-    {
-        Mockery::close();
-    }
-
     public function testAuthorize()
     {
         $response = Mockery::mock(Response::class);

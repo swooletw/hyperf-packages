@@ -9,7 +9,6 @@ use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\ContainerInterface;
 use Mockery;
 use Mockery\MockInterface;
-use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidFactoryInterface;
 use Ramsey\Uuid\UuidInterface;
@@ -19,6 +18,7 @@ use SwooleTW\Hyperf\JWT\Exceptions\TokenBlacklistedException;
 use SwooleTW\Hyperf\JWT\JWTManager;
 use SwooleTW\Hyperf\JWT\Providers\Lcobucci;
 use SwooleTW\Hyperf\Tests\JWT\Stub\ValidationStub;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal
@@ -61,11 +61,11 @@ class JWTManagerTest extends TestCase
 
     protected function tearDown(): void
     {
+        parent::tearDown();
+
         if (isset($this->originalUuidFactory)) {
             Uuid::setFactory($this->originalUuidFactory);
         }
-
-        Mockery::close();
     }
 
     public function testEncodeAPayload()

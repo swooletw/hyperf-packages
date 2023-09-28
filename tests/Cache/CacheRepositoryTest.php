@@ -10,7 +10,6 @@ use DateInterval;
 use DateTime;
 use DateTimeImmutable;
 use Mockery as m;
-use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface as Dispatcher;
 use SwooleTW\Hyperf\Cache\ArrayStore;
 use SwooleTW\Hyperf\Cache\Contracts\Store;
@@ -18,6 +17,7 @@ use SwooleTW\Hyperf\Cache\FileStore;
 use SwooleTW\Hyperf\Cache\RedisStore;
 use SwooleTW\Hyperf\Cache\Repository;
 use SwooleTW\Hyperf\Cache\TaggableStore;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal
@@ -25,12 +25,6 @@ use SwooleTW\Hyperf\Cache\TaggableStore;
  */
 class CacheRepositoryTest extends TestCase
 {
-    protected function tearDown(): void
-    {
-        m::close();
-        Carbon::setTestNow();
-    }
-
     public function testGetReturnsValueFromCache()
     {
         $repo = $this->getRepository();

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Tests\JWT\Validations;
 
-use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\JWT\Exceptions\TokenInvalidException;
 use SwooleTW\Hyperf\JWT\Validations\RequiredClaims;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal

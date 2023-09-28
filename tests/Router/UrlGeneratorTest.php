@@ -15,11 +15,11 @@ use Hyperf\HttpServer\Router\DispatcherFactory as HyperfDispatcherFactory;
 use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
-use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Router\DispatcherFactory;
 use SwooleTW\Hyperf\Router\NamedRouteCollector;
 use SwooleTW\Hyperf\Router\UrlGenerator;
 use SwooleTW\Hyperf\Tests\Router\Stub\UrlRoutableStub;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal
@@ -40,11 +40,6 @@ class UrlGeneratorTest extends TestCase
     protected function setUp(): void
     {
         $this->mockContainer();
-    }
-
-    protected function tearDown(): void
-    {
-        Mockery::close();
     }
 
     public function testRoute()

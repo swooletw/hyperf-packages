@@ -7,8 +7,8 @@ namespace SwooleTW\Hyperf\Tests\Cache;
 use Hyperf\Redis\RedisFactory as Factory;
 use Hyperf\Redis\RedisProxy;
 use Mockery as m;
-use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Cache\RedisStore;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal
@@ -16,11 +16,6 @@ use SwooleTW\Hyperf\Cache\RedisStore;
  */
 class CacheRedisStoreTest extends TestCase
 {
-    protected function tearDown(): void
-    {
-        m::close();
-    }
-
     public function testGetReturnsNullWhenNotFound()
     {
         $redis = $this->getRedis();

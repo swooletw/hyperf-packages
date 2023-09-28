@@ -8,8 +8,8 @@ use Hyperf\Context\ApplicationContext;
 use Hyperf\Contract\ContainerInterface;
 use Mockery;
 use Mockery\MockInterface;
-use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Router\UrlGenerator;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 use function SwooleTW\Hyperf\Router\route;
 use function SwooleTW\Hyperf\Router\secure_url;
@@ -21,11 +21,6 @@ use function SwooleTW\Hyperf\Router\url;
  */
 class FunctionsTest extends TestCase
 {
-    protected function tearDown(): void
-    {
-        Mockery::close();
-    }
-
     public function testRoute()
     {
         $urlGenerator = $this->mockUrlGenerator();
