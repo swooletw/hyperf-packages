@@ -7,11 +7,11 @@ namespace SwooleTW\Hyperf\Tests\Auth;
 use Hyperf\Database\ConnectionInterface;
 use Hyperf\Database\Query\Builder;
 use Mockery as m;
-use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Auth\Contracts\Authenticatable;
 use SwooleTW\Hyperf\Auth\GenericUser;
 use SwooleTW\Hyperf\Auth\Providers\DatabaseUserProvider;
 use SwooleTW\Hyperf\Hashing\Contracts\Hasher;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal
@@ -19,11 +19,6 @@ use SwooleTW\Hyperf\Hashing\Contracts\Hasher;
  */
 class AuthDatabaseUserProviderTest extends TestCase
 {
-    protected function tearDown(): void
-    {
-        m::close();
-    }
-
     public function testRetrieveByIDReturnsUserWhenUserIsFound()
     {
         $builder = m::mock(Builder::class);

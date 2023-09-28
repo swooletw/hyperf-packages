@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Tests\Cache;
 
 use Mockery as m;
-use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Cache\RedisStore;
 use SwooleTW\Hyperf\Cache\Repository;
 use SwooleTW\Hyperf\Tests\Cache\Stub\InteractsWithRedis;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal
@@ -28,7 +28,6 @@ class RedisCacheIntegrationTest extends TestCase
     {
         parent::tearDown();
         $this->tearDownRedis();
-        m::close();
     }
 
     public function testRedisCacheAddTwice()

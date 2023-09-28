@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Tests\Cache;
 
-use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Cache\NullStore;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal

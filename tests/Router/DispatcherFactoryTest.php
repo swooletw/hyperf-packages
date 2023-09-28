@@ -9,9 +9,9 @@ use Hyperf\Contract\ContainerInterface;
 use Hyperf\HttpServer\Router\RouteCollector;
 use Mockery;
 use Mockery\MockInterface;
-use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Router\DispatcherFactory;
 use SwooleTW\Hyperf\Router\NamedRouteCollector;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal
@@ -27,11 +27,6 @@ class DispatcherFactoryTest extends TestCase
     protected function setUp(): void
     {
         $this->mockContainer();
-    }
-
-    protected function tearDown(): void
-    {
-        Mockery::close();
     }
 
     public function testGetRouter()

@@ -7,10 +7,10 @@ namespace SwooleTW\Hyperf\Tests\Cache;
 use Hyperf\Config\Config;
 use Hyperf\Contract\ConfigInterface;
 use Mockery as m;
-use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use SwooleTW\Hyperf\Cache\ArrayStore;
 use SwooleTW\Hyperf\Cache\CacheManager;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal
@@ -18,11 +18,6 @@ use SwooleTW\Hyperf\Cache\CacheManager;
  */
 class CacheManagerTest extends TestCase
 {
-    protected function tearDown(): void
-    {
-        m::close();
-    }
-
     public function testCustomDriverClosureBoundObjectIsCacheManager()
     {
         $app = m::mock(ContainerInterface::class);

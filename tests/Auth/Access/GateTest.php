@@ -8,7 +8,6 @@ use Hyperf\Di\Container;
 use Hyperf\Di\Definition\DefinitionSource;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Auth\Access\AuthorizationException;
 use SwooleTW\Hyperf\Auth\Access\Gate;
 use SwooleTW\Hyperf\Auth\Access\Response;
@@ -36,6 +35,7 @@ use SwooleTW\Hyperf\Tests\Auth\Stub\AccessGateTestPolicyWithNoPermissions;
 use SwooleTW\Hyperf\Tests\Auth\Stub\AccessGateTestResource;
 use SwooleTW\Hyperf\Tests\Auth\Stub\AccessGateTestStaticClass;
 use SwooleTW\Hyperf\Tests\Auth\Stub\AccessGateTestSubDummy;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal

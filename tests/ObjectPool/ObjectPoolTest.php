@@ -6,11 +6,11 @@ namespace SwooleTW\Hyperf\Tests\ObjectPool;
 
 use Hyperf\Context\ApplicationContext;
 use Mockery;
-use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
 use stdClass;
 use SwooleTW\Hyperf\Tests\ObjectPool\Stub\FooPool;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 use function Hyperf\Coroutine\run;
 
@@ -20,11 +20,6 @@ use function Hyperf\Coroutine\run;
  */
 class ObjectPoolTest extends TestCase
 {
-    protected function tearDown(): void
-    {
-        Mockery::close();
-    }
-
     public function testPoolFlush()
     {
         $container = $this->getContainer();

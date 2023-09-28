@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Tests\Database;
 
-use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Database\Query\Processors\SQLiteProcessor;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal

@@ -12,12 +12,12 @@ use Hyperf\Database\ConnectionResolverInterface;
 use Hyperf\Di\Container;
 use Hyperf\Di\Definition\DefinitionSource;
 use Mockery as m;
-use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Auth\AuthManager;
 use SwooleTW\Hyperf\Auth\Contracts\Guard;
 use SwooleTW\Hyperf\Auth\Contracts\UserProvider;
 use SwooleTW\Hyperf\Auth\Providers\DatabaseUserProvider;
 use SwooleTW\Hyperf\Hashing\Contracts\Hasher as HashContract;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 use function Hyperf\Coroutine\run;
 

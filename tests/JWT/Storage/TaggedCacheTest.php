@@ -6,9 +6,9 @@ namespace SwooleTW\Hyperf\Tests\JWT\Storage;
 
 use Mockery;
 use Mockery\MockInterface;
-use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Cache\Contracts\Repository as CacheRepository;
 use SwooleTW\Hyperf\JWT\Storage\TaggedCache;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal
@@ -32,11 +32,6 @@ class TaggedCacheTest extends TestCase
         $this->storage = new TaggedCache($this->cache);
 
         $this->cache->shouldReceive('tags')->with(['jwt_blacklist'])->once()->andReturnSelf();
-    }
-
-    protected function tearDown(): void
-    {
-        Mockery::close();
     }
 
     public function testAddTheItemToTaggedStorage()

@@ -9,11 +9,11 @@ use Hyperf\Database\ConnectionResolver;
 use Hyperf\Database\Schema\Blueprint;
 use Hyperf\Database\Schema\ForeignIdColumnDefinition;
 use Mockery as m;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use SwooleTW\Hyperf\Database\Connectors\SQLiteConnector;
 use SwooleTW\Hyperf\Database\Schema\Grammars\SQLiteGrammar;
 use SwooleTW\Hyperf\Database\SQLiteConnection;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal
@@ -21,11 +21,6 @@ use SwooleTW\Hyperf\Database\SQLiteConnection;
  */
 class DatabaseSQLiteSchemaGrammarTest extends TestCase
 {
-    protected function tearDown(): void
-    {
-        m::close();
-    }
-
     public function testBasicCreateTable()
     {
         $blueprint = new Blueprint('users');

@@ -8,9 +8,9 @@ use FastRoute\DataGenerator\GroupCountBased as DataGenerator;
 use FastRoute\RouteParser\Std;
 use Hyperf\HttpServer\MiddlewareManager;
 use Mockery;
-use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Router\NamedRouteCollector;
 use SwooleTW\Hyperf\Tests\Router\Stub\RouteCollectorStub;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal
@@ -20,7 +20,8 @@ class NamedRouteCollectorTest extends TestCase
 {
     protected function tearDown(): void
     {
-        Mockery::close();
+        parent::tearDown();
+
         MiddlewareManager::$container = [];
     }
 

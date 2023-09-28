@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Tests\JWT\Providers;
 
-use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Tests\JWT\Stub\ProviderStub;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal

@@ -6,9 +6,9 @@ namespace SwooleTW\Hyperf\Tests\JWT\Storage;
 
 use Mockery;
 use Mockery\MockInterface;
-use PHPUnit\Framework\TestCase;
 use Psr\SimpleCache\CacheInterface;
 use SwooleTW\Hyperf\JWT\Storage\PsrCache;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal
@@ -27,11 +27,6 @@ class PsrCacheTest extends TestCase
     {
         $this->cache = Mockery::mock(CacheInterface::class);
         $this->storage = new PsrCache($this->cache);
-    }
-
-    protected function tearDown(): void
-    {
-        Mockery::close();
     }
 
     public function testAddTheItemToStorage()

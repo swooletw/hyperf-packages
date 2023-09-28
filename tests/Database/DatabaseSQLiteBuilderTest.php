@@ -8,9 +8,9 @@ use Hyperf\Context\ApplicationContext;
 use Hyperf\Database\Connection;
 use Hyperf\Support\Filesystem\Filesystem;
 use Mockery as m;
-use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use SwooleTW\Hyperf\Database\Schema\SQLiteBuilder;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal
