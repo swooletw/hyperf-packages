@@ -22,7 +22,7 @@ jobs:
           - php: "8.2"
             swoole: "5.0.3"
 
-    name: PHP ${{ matrix.php }} (swoole-(${{ matrix.swoole }})
+    name: PHP ${{ matrix.php }} (swoole-${{ matrix.swoole }})
 
     steps:
       - name: Setup PHP
