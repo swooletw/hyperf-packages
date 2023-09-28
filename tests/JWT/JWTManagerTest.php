@@ -9,6 +9,7 @@ use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\ContainerInterface;
 use Mockery;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\JWT\Contracts\BlacklistContract;
 use SwooleTW\Hyperf\JWT\Exceptions\JWTException;
@@ -59,6 +60,7 @@ class JWTManagerTest extends TestCase
         Mockery::close();
     }
 
+    #[RunInSeparateProcess]
     public function testEncodeAPayload()
     {
         $jti = 'foo';
@@ -125,6 +127,7 @@ class JWTManagerTest extends TestCase
         $this->createManager()->decode($token);
     }
 
+    #[RunInSeparateProcess]
     public function testRefreshAToken()
     {
         $token = 'foo.bar.baz';
