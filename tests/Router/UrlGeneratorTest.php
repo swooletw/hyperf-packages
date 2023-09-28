@@ -49,7 +49,7 @@ class UrlGeneratorTest extends TestCase
     {
         parent::tearDown();
 
-        Context::destroy('request.root');
+        Context::destroy('__request.root.uri');
         Context::destroy(ServerRequestInterface::class);
     }
 
@@ -144,7 +144,7 @@ class UrlGeneratorTest extends TestCase
         $urlGenerator = new UrlGenerator($this->container);
 
         $this->assertEquals('http://example.com/foo', $urlGenerator->to('foo'));
-        $this->assertEquals('http://example.com', Context::get('request.root')->toString());
+        $this->assertEquals('http://example.com', Context::get('__request.root.uri')->toString());
     }
 
     public function testSecure()

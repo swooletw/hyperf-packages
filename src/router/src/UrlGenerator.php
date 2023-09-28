@@ -121,7 +121,7 @@ class UrlGenerator
 
     private function getRootUrl(string $scheme): string
     {
-        $root = Context::getOrSet('request.root', function () {
+        $root = Context::getOrSet('__request.root.uri', function () {
             $requestUri = $this->getRequestUri()->toString();
             $root = preg_replace(';^(.+://.+?)((/|\?|#).*)?$;', '\1', $requestUri);
 
