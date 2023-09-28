@@ -20,6 +20,11 @@ use SwooleTW\Hyperf\Tests\Auth\Stub\AuthorizesRequestsStub;
  */
 class AuthorizesRequestsTest extends TestCase
 {
+    protected function tearDown(): void
+    {
+        Mockery::close();
+    }
+
     public function testAuthorize()
     {
         $response = Mockery::mock(Response::class);

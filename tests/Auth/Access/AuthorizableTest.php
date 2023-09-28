@@ -18,6 +18,11 @@ use SwooleTW\Hyperf\Tests\Auth\Stub\AuthorizableStub;
  */
 class AuthorizableTest extends TestCase
 {
+    protected function tearDown(): void
+    {
+        Mockery::close();
+    }
+
     public function testCan()
     {
         $user = new AuthorizableStub();
