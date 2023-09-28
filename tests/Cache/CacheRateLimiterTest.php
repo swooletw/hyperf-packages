@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Tests\Cache;
 
 use Mockery as m;
-use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Cache\Contracts\Repository as Cache;
 use SwooleTW\Hyperf\Cache\RateLimiter;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal
@@ -15,11 +15,6 @@ use SwooleTW\Hyperf\Cache\RateLimiter;
  */
 class CacheRateLimiterTest extends TestCase
 {
-    protected function tearDown(): void
-    {
-        m::close();
-    }
-
     public function testTooManyAttemptsReturnTrueIfAlreadyLockedOut()
     {
         $cache = m::mock(Cache::class);

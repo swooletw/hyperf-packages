@@ -8,10 +8,10 @@ use Carbon\Carbon;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\JWT\Blacklist;
 use SwooleTW\Hyperf\JWT\Contracts\StorageContract;
 use SwooleTW\Hyperf\JWT\Exceptions\TokenInvalidException;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal
@@ -35,11 +35,6 @@ class BlacklistTest extends TestCase
         $this->testNowTimestamp = Carbon::now()->timestamp;
         $this->storage = Mockery::mock(StorageContract::class);
         $this->blacklist = new Blacklist($this->storage);
-    }
-
-    protected function tearDown(): void
-    {
-        Mockery::close();
     }
 
     public function testAddAValidTokenToTheBlacklist()

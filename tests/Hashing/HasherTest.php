@@ -8,12 +8,12 @@ use Hyperf\Config\Config;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\ContainerInterface;
 use Mockery;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use SwooleTW\Hyperf\Hashing\Argon2IdHasher;
 use SwooleTW\Hyperf\Hashing\ArgonHasher;
 use SwooleTW\Hyperf\Hashing\BcryptHasher;
 use SwooleTW\Hyperf\Hashing\HashManager;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal

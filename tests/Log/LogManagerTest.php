@@ -22,13 +22,13 @@ use Monolog\Logger as Monolog;
 use Monolog\Processor\MemoryUsageProcessor;
 use Monolog\Processor\PsrLogMessageProcessor;
 use Monolog\Processor\UidProcessor;
-use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use ReflectionProperty;
 use RuntimeException;
 use SwooleTW\Hyperf\Log\Logger;
 use SwooleTW\Hyperf\Log\LogManager;
 use SwooleTW\Hyperf\Support\Environment;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal

@@ -6,11 +6,11 @@ namespace SwooleTW\Hyperf\Tests\JWT\Providers;
 
 use Carbon\Carbon;
 use Mockery;
-use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\JWT\Exceptions\JWTException;
 use SwooleTW\Hyperf\JWT\Exceptions\TokenInvalidException;
 use SwooleTW\Hyperf\JWT\Providers\Lcobucci;
 use SwooleTW\Hyperf\JWT\Providers\Provider;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal
@@ -25,11 +25,6 @@ class LcobucciTest extends TestCase
         Carbon::setTestNow('2000-01-01T00:00:00.000000Z');
 
         $this->testNowTimestamp = Carbon::now()->timestamp;
-    }
-
-    protected function tearDown(): void
-    {
-        Mockery::close();
     }
 
     public function testEncodeClaimsUsingASymmetricKey()

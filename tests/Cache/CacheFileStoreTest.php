@@ -8,8 +8,8 @@ use Carbon\Carbon;
 use Hyperf\Support\Filesystem\FileNotFoundException;
 use Hyperf\Support\Filesystem\Filesystem;
 use Mockery as m;
-use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Cache\FileStore;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal
@@ -22,13 +22,6 @@ class CacheFileStoreTest extends TestCase
         parent::setUp();
 
         Carbon::setTestNow(Carbon::now());
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-
-        Carbon::setTestNow(null);
     }
 
     public function testNullIsReturnedIfFileDoesntExist()

@@ -8,9 +8,9 @@ use Hyperf\Context\ApplicationContext;
 use Hyperf\Contract\ContainerInterface;
 use Mockery;
 use Mockery\MockInterface;
-use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Auth\Contracts\Gate;
 use SwooleTW\Hyperf\Tests\Auth\Stub\AuthorizableStub;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Tests\Cache;
 
 use Carbon\Carbon;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 use SwooleTW\Hyperf\Cache\ArrayStore;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal

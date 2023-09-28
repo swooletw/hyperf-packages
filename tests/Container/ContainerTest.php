@@ -8,10 +8,10 @@ use Closure;
 use Hyperf\Di\Exception\InvalidDefinitionException;
 use Hyperf\Di\Exception\NotFoundException;
 use Mockery;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 use SwooleTW\Hyperf\Container\Container;
 use SwooleTW\Hyperf\Container\DefinitionSource;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal
@@ -21,6 +21,8 @@ class ContainerTest extends TestCase
 {
     protected function tearDown(): void
     {
+        parent::tearDown();
+
         Container::setInstance(
             Mockery::mock(Container::class)
         );

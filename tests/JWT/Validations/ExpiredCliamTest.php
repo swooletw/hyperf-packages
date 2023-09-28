@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Tests\JWT\Validations;
 
 use Carbon\Carbon;
-use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\JWT\Exceptions\TokenExpiredException;
 use SwooleTW\Hyperf\JWT\Validations\ExpiredCliam;
+use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal
