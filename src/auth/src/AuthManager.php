@@ -157,7 +157,7 @@ class AuthManager implements FactoryContract
      */
     public function getDefaultDriver(): string
     {
-        if ($driver = Context::get('auth.defaults.guard')) {
+        if ($driver = Context::get('__auth.defaults.guard')) {
             return $driver;
         }
 
@@ -183,7 +183,7 @@ class AuthManager implements FactoryContract
      */
     public function setDefaultDriver(string $name): void
     {
-        Context::set('auth.defaults.guard', $name);
+        Context::set('__auth.defaults.guard', $name);
     }
 
     /**
@@ -191,7 +191,7 @@ class AuthManager implements FactoryContract
      */
     public function userResolver(): Closure
     {
-        if ($resolver = Context::get('auth.resolver')) {
+        if ($resolver = Context::get('__auth.resolver')) {
             return $resolver;
         }
 
@@ -205,7 +205,7 @@ class AuthManager implements FactoryContract
      */
     public function resolveUsersUsing(Closure $userResolver): static
     {
-        Context::set('auth.resolver', $userResolver);
+        Context::set('__auth.resolver', $userResolver);
 
         return $this;
     }

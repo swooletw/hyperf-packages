@@ -40,10 +40,10 @@ class AuthMangerTest extends TestCase
     {
         $manager = new AuthManager($this->getContainer());
 
-        Context::set('auth.defaults.guard', 'foo');
+        Context::set('__auth.defaults.guard', 'foo');
 
         run(function () use ($manager) {
-            Context::set('auth.defaults.guard', 'bar');
+            Context::set('__auth.defaults.guard', 'bar');
 
             $this->assertSame('bar', $manager->getDefaultDriver());
         });
