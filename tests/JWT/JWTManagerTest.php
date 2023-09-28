@@ -270,11 +270,11 @@ class JWTManagerTest extends TestCase
             $this->originalUuidFactory = Uuid::getFactory();
         }
 
-        /** @var UuidFactoryInterface|MockInterface */
+        /** @var MockInterface|UuidFactoryInterface */
         $factory = Mockery::mock(UuidFactoryInterface::class);
 
         // Ignore Serializable interface deprecation warnings in PHP 8.1+
-        /** @var UuidInterface|MockInterface */
+        /** @var MockInterface|UuidInterface */
         $uuid = $this->runInSpecifyErrorReportingLevel(
             E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED,
             fn () => Mockery::mock(UuidInterface::class)
