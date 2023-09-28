@@ -9,8 +9,10 @@ use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\ContainerInterface;
 use Mockery;
 use Mockery\MockInterface;
-use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidFactoryInterface;
+use Ramsey\Uuid\UuidInterface;
 use SwooleTW\Hyperf\JWT\Contracts\BlacklistContract;
 use SwooleTW\Hyperf\JWT\Exceptions\JWTException;
 use SwooleTW\Hyperf\JWT\Exceptions\TokenBlacklistedException;
@@ -46,6 +48,8 @@ class JWTManagerTest extends TestCase
 
     private int $testNowTimestamp;
 
+    private UuidFactoryInterface $originalUuidFactory;
+
     protected function setUp(): void
     {
         $this->setTestNow();
@@ -57,10 +61,13 @@ class JWTManagerTest extends TestCase
 
     protected function tearDown(): void
     {
+        if (isset($this->originalUuidFactory)) {
+            Uuid::setFactory($this->originalUuidFactory);
+        }
+
         Mockery::close();
     }
 
-    #[RunInSeparateProcess]
     public function testEncodeAPayload()
     {
         $jti = 'foo';
@@ -127,7 +134,6 @@ class JWTManagerTest extends TestCase
         $this->createManager()->decode($token);
     }
 
-    #[RunInSeparateProcess]
     public function testRefreshAToken()
     {
         $token = 'foo.bar.baz';
@@ -260,7 +266,35 @@ class JWTManagerTest extends TestCase
 
     private function mockUuid(string $value)
     {
-        $uuid = Mockery::mock('overload:Hyperf\Stringable\Str');
-        $uuid->shouldReceive('uuid')->andReturn($value);
+        if (! isset($this->originalUuidFactory)) {
+            $this->originalUuidFactory = Uuid::getFactory();
+        }
+
+        /** @var UuidFactoryInterface|MockInterface */
+        $factory = Mockery::mock(UuidFactoryInterface::class);
+
+        // Ignore Serializable interface deprecation warnings in PHP 8.1+
+        /** @var UuidInterface|MockInterface */
+        $uuid = $this->runInSpecifyErrorReportingLevel(
+            E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED,
+            fn () => Mockery::mock(UuidInterface::class)
+        );
+
+        $uuid->shouldReceive('__toString')->andReturn($value);
+
+        $factory->shouldReceive('uuid4')->andReturn($uuid);
+
+        Uuid::setFactory($factory);
+    }
+
+    private function runInSpecifyErrorReportingLevel(int $level, callable $callback)
+    {
+        $originalLevel = error_reporting($level);
+
+        $result = $callback();
+
+        error_reporting($originalLevel);
+
+        return $result;
     }
 }
