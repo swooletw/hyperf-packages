@@ -36,4 +36,5 @@ jobs:
             COMPOSER_MEMORY_LIMIT=-1 composer install --prefer-dist -n -o
 
       - name: Execute tests
-        run: vendor/bin/phpunit
+        run: |
+            vendor/bin/phpunit -c phpunit.xml.dist.xml

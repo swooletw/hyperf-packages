@@ -5,9 +5,10 @@
          processIsolation="false"
          stopOnError="false"
          stopOnFailure="false"
-         backupStaticProperties="false">
+         backupStaticProperties="false"
+         displayDetailsOnTestsThatTriggerDeprecations="true">
     <testsuites>
-        <testsuite name="Laravel Test Suite">
+        <testsuite name="Hyperf Packages Test Suite">
             <directory suffix="Test.php">./tests</directory>
         </testsuite>
     </testsuites>
