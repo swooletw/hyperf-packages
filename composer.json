@@ -22,8 +22,28 @@
     },
     "autoload": {
         "psr-4": {
-            "SwooleTW\\Hyperf\\": "src/"
-        }
+            "SwooleTW\\Hyperf\\Auth\\": "src/auth/src/",
+            "SwooleTW\\Hyperf\\Cache\\": "src/cache/src/",
+            "SwooleTW\\Hyperf\\Container\\": "src/container/src/",
+            "SwooleTW\\Hyperf\\Cookie\\": "src/cookie/src/",
+            "SwooleTW\\Hyperf\\Database\\": "src/sqlite/src/",
+            "SwooleTW\\Hyperf\\Dispatcher\\": "src/dispatcher/src/",
+            "SwooleTW\\Hyperf\\Encryption\\": "src/encryption/src/",
+            "SwooleTW\\Hyperf\\Foundation\\": "src/foundation/src/",
+            "SwooleTW\\Hyperf\\Hashing\\": "src/hashing/src/",
+            "SwooleTW\\Hyperf\\JWT\\": "src/jwt/src/",
+            "SwooleTW\\Hyperf\\Log\\": "src/log/src/",
+            "SwooleTW\\Hyperf\\ObjectPool\\": "src/object-pool/src/",
+            "SwooleTW\\Hyperf\\Router\\": "src/router/src/",
+            "SwooleTW\\Hyperf\\Support\\": "src/support/src/"
+        },
+        "files": [
+            "src/auth/src/Functions.php",
+            "src/cache/src/Functions.php",
+            "src/foundation/src/helpers.php",
+            "src/router/src/Functions.php",
+            "src/support/src/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
@@ -32,29 +52,59 @@
     },
     "require": {
         "php": "^8.1",
+        "ext-hash": "*",
+        "ext-mbstring": "*",
+        "ext-openssl": "*",
+        "hyperf/async-queue": "^3.1",
+        "hyperf/collection": "^3.1",
+        "hyperf/command": "^3.1",
+        "hyperf/config": "^3.1",
         "hyperf/context": "^3.1",
+        "hyperf/contract": "^3.1",
+        "hyperf/coordinator": "^3.1",
+        "hyperf/coroutine": "^3.1",
+        "hyperf/crontab": "^3.1",
+        "hyperf/database": "^3.1",
+        "hyperf/db-connection": "^3.1",
         "hyperf/di": "^3.1",
-        "hyperf/redis": "^3.1",
-        "swooletw/hyperf-auth": "@dev",
-        "swooletw/hyperf-cache": "@dev",
-        "swooletw/hyperf-container": "@dev",
-        "swooletw/hyperf-cookie": "@dev",
-        "swooletw/hyperf-dispatcher": "@dev",
-        "swooletw/hyperf-encryption": "@dev",
-        "swooletw/hyperf-foundation": "@dev",
-        "swooletw/hyperf-hashing": "@dev",
-        "swooletw/hyperf-jwt": "@dev",
-        "swooletw/hyperf-log": "@dev",
-        "swooletw/hyperf-object-pool": "@dev",
-        "swooletw/hyperf-router": "@dev",
-        "swooletw/hyperf-sqlite": "@dev",
-        "swooletw/hyperf-support": "@dev"
+        "hyperf/engine": "^2.1",
+        "hyperf/http-message": "^3.1",
+        "hyperf/http-server": "^3.1",
+        "hyperf/macroable": "^3.1",
+        "hyperf/signal": "^3.1",
+        "hyperf/stringable": "^3.1",
+        "hyperf/support": "^3.1",
+        "hyperf/tappable": "^3.1",
+        "lcobucci/jwt": "^5.0",
+        "monolog/monolog": "^3.1",
+        "nesbot/carbon": "^2.16",
+        "psr/simple-cache": "^3.0",
+        "ramsey/uuid": "^4.7"
+    },
+    "replace": {
+        "swooletw/hyperf-auth": "self.version",
+        "swooletw/hyperf-cache": "self.version",
+        "swooletw/hyperf-container": "self.version",
+        "swooletw/hyperf-cookie": "self.version",
+        "swooletw/hyperf-dispatcher": "self.version",
+        "swooletw/hyperf-encryption": "self.version",
+        "swooletw/hyperf-foundation": "self.version",
+        "swooletw/hyperf-hashing": "self.version",
+        "swooletw/hyperf-jwt": "self.version",
+        "swooletw/hyperf-log": "self.version",
+        "swooletw/hyperf-object-pool": "self.version",
+        "swooletw/hyperf-router": "self.version",
+        "swooletw/hyperf-sqlite": "self.version",
+        "swooletw/hyperf-support": "self.version"
     },
     "suggest": {
-        "doctrine/dbal": "Required to rename SQLite indexs (^3.5.1)."
+        "doctrine/dbal": "Required to rename SQLite indexs (^3.5.1).",
+        "hyperf/redis": "Required to use redis driver. (^3.1)",
+        "hyperf/session": "Required to use session guard. (^3.1)"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "dev-master",
+        "hyperf/redis": "^3.1",
         "mockery/mockery": "^1.5.1",
         "phpunit/phpunit": "^10.0.7"
     },
@@ -62,18 +112,22 @@
         "sort-packages": true
     },
     "extra": {
+        "hyperf": [
+            "SwooleTW\\Hyperf\\Auth\\ConfigProvider",
+            "SwooleTW\\Hyperf\\Cache\\ConfigProvider",
+            "SwooleTW\\Hyperf\\Cookie\\ConfigProvider",
+            "SwooleTW\\Hyperf\\Database\\ConfigProvider",
+            "SwooleTW\\Hyperf\\Dispatcher\\ConfigProvider",
+            "SwooleTW\\Hyperf\\Encryption\\ConfigProvider",
+            "SwooleTW\\Hyperf\\Foundation\\ConfigProvider",
+            "SwooleTW\\Hyperf\\Hashing\\ConfigProvider",
+            "SwooleTW\\Hyperf\\JWT\\ConfigProvider",
+            "SwooleTW\\Hyperf\\Log\\ConfigProvider",
+            "SwooleTW\\Hyperf\\Router\\ConfigProvider"
+        ],
         "branch-alias": {
             "dev-main": "3.1-dev"
         }
     },
-    "minimum-stability": "dev",
-    "repositories": [
-        {
-            "type": "path",
-            "url": "src/*",
-            "options": {
-                "symlink": true
-            }
-        }
-    ]
+    "minimum-stability": "dev"
 }
