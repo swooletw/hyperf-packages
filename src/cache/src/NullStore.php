@@ -16,9 +16,7 @@ class NullStore extends TaggableStore implements LockProvider
      * @param string $key
      * @return mixed
      */
-    public function get($key)
-    {
-    }
+    public function get($key) {}
 
     /**
      * Store an item in the cache for a given number of seconds.

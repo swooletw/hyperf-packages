@@ -104,8 +104,6 @@ class Repository implements ArrayAccess, CacheContract
 
     /**
      * Retrieve an item from the cache by key.
-     *
-     * @param mixed $default
      */
     public function get(string|array $key, mixed $default = null): mixed
     {

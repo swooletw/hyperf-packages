@@ -12,15 +12,11 @@ class CountInDatabase extends Constraint
 {
     /**
      * The expected table entries count that will be checked against the actual count.
-     *
-     * @var int
      */
     protected ?int $expectedCount;
 
     /**
      * The actual table entries count that will be checked against the expected count.
-     *
-     * @var int
      */
     protected ?int $actualCount;
 

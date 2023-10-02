@@ -16,8 +16,7 @@ class TaggedCache implements StorageContract
      */
     public function __construct(
         protected CacheContract $cache
-    ) {
-    }
+    ) {}
 
     /**
      * Add a new item into storage.

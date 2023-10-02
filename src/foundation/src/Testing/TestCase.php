@@ -38,8 +38,6 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
     /**
      * The exception thrown while running an application destruction callback.
-     *
-     * @var Throwable
      */
     protected ?Throwable $callbackException = null;
 

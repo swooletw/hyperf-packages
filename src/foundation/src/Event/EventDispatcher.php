@@ -19,8 +19,7 @@ class EventDispatcher implements EventDispatcherInterface
     public function __construct(
         protected ListenerProviderInterface $listeners,
         protected ?LoggerInterface $logger = null
-    ) {
-    }
+    ) {}
 
     /**
      * Provide all listeners with an event to process.

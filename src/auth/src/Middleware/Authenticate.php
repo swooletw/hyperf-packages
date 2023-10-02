@@ -17,8 +17,7 @@ class Authenticate implements MiddlewareInterface
 
     public function __construct(
         protected AuthManager $auth
-    ) {
-    }
+    ) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

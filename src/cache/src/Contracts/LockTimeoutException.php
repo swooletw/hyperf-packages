@@ -6,6 +6,4 @@ namespace SwooleTW\Hyperf\Cache\Contracts;
 
 use Exception;
 
-class LockTimeoutException extends Exception
-{
-}
+class LockTimeoutException extends Exception {}

@@ -468,8 +468,6 @@ class LogManager implements LoggerInterface
 
     /**
      * Parse the driver name.
-     *
-     * @return string
      */
     protected function parseDriver(?string $driver): ?string
     {

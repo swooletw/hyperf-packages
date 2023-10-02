@@ -9,6 +9,7 @@ declare(strict_types=1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
+
 namespace Hyperf\HttpMessage\Server;
 
 use Psr\Http\Message\ResponseInterface;
@@ -18,9 +19,7 @@ use Swow\Psr7\Message\ResponsePlusInterface;
 
 class ResponsePlusProxy implements ResponsePlusInterface, Stringable
 {
-    public function __construct(protected ResponseInterface $response)
-    {
-    }
+    public function __construct(protected ResponseInterface $response) {}
 
     public function __toString(): string
     {
