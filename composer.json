@@ -112,19 +112,21 @@
         "sort-packages": true
     },
     "extra": {
-        "hyperf": [
-            "SwooleTW\\Hyperf\\Auth\\ConfigProvider",
-            "SwooleTW\\Hyperf\\Cache\\ConfigProvider",
-            "SwooleTW\\Hyperf\\Cookie\\ConfigProvider",
-            "SwooleTW\\Hyperf\\Database\\ConfigProvider",
-            "SwooleTW\\Hyperf\\Dispatcher\\ConfigProvider",
-            "SwooleTW\\Hyperf\\Encryption\\ConfigProvider",
-            "SwooleTW\\Hyperf\\Foundation\\ConfigProvider",
-            "SwooleTW\\Hyperf\\Hashing\\ConfigProvider",
-            "SwooleTW\\Hyperf\\JWT\\ConfigProvider",
-            "SwooleTW\\Hyperf\\Log\\ConfigProvider",
-            "SwooleTW\\Hyperf\\Router\\ConfigProvider"
-        ],
+        "hyperf": {
+            "config": [
+                "SwooleTW\\Hyperf\\Auth\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Cache\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Cookie\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Database\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Dispatcher\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Encryption\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Foundation\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Hashing\\ConfigProvider",
+                "SwooleTW\\Hyperf\\JWT\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Log\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Router\\ConfigProvider"
+            ]
+        },
         "branch-alias": {
             "dev-main": "3.1-dev"
         }
