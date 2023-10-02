@@ -34,9 +34,6 @@
         "hyperf/support": "^3.1",
         "psr/simple-cache": "^3.0"
     },
-    "require-dev": {
-        "hyperf/redis": "^3.1"
-    },
     "suggest": {
         "hyperf/redis": "Required to use redis driver. (^3.1)"
     },
