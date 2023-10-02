@@ -37,4 +37,5 @@ jobs:
 
       - name: Execute tests
         run: |
+            vendor/bin/php-cs-fixer fix --dry-run --diff
             vendor/bin/phpunit -c phpunit.xml.dist.xml
