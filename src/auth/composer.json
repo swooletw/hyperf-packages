@@ -30,11 +30,11 @@
         "hyperf/config": "^3.1",
         "hyperf/database": "^3.1",
         "hyperf/http-server": "^3.1",
-        "swooletw/hyperf-hashing": "^3.1|dev-master",
-        "swooletw/hyperf-jwt": "^3.1|dev-master"
+        "swooletw/hyperf-hashing": "^3.1",
+        "swooletw/hyperf-jwt": "^3.1"
     },
     "suggest": {
-        "hyperf/session": "Required to use session guard."
+        "hyperf/session": "Required to use session guard. (^3.1)"
     },
     "autoload": {
         "psr-4": {

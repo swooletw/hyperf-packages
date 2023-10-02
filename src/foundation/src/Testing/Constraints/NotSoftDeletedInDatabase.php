@@ -21,8 +21,7 @@ class NotSoftDeletedInDatabase extends Constraint
         protected Connection $database,
         array $data,
         string $deletedAtColumn
-    ) {
-    }
+    ) {}
 
     /**
      * Check if the data is found in the given table.

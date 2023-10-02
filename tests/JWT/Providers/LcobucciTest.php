@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Tests\JWT\Providers;
 
 use Carbon\Carbon;
-use Mockery;
 use SwooleTW\Hyperf\JWT\Exceptions\JWTException;
 use SwooleTW\Hyperf\JWT\Exceptions\TokenInvalidException;
 use SwooleTW\Hyperf\JWT\Providers\Lcobucci;

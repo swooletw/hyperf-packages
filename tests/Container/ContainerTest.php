@@ -248,8 +248,7 @@ class ContainerTest extends TestCase
     public function testBound()
     {
         $container = $this->getContainer();
-        $container->bind(ContainerConcreteStub::class, function () {
-        });
+        $container->bind(ContainerConcreteStub::class, function () {});
         $this->assertTrue($container->bound(ContainerConcreteStub::class));
         $this->assertFalse($container->bound(IContainerContractStub::class));
 
@@ -294,13 +293,11 @@ class ContainerTest extends TestCase
         unset($_SERVER['__test.rebind']);
 
         $container = $this->getContainer();
-        $container->bind('foo', function () {
-        });
+        $container->bind('foo', function () {});
         $container->rebinding('foo', function () {
             $_SERVER['__test.rebind'] = true;
         });
-        $container->bind('foo', function () {
-        });
+        $container->bind('foo', function () {});
 
         $this->assertTrue($_SERVER['__test.rebind']);
     }
@@ -310,13 +307,11 @@ class ContainerTest extends TestCase
         unset($_SERVER['__test.rebind']);
 
         $container = $this->getContainer();
-        $container->instance('foo', function () {
-        });
+        $container->instance('foo', function () {});
         $container->rebinding('foo', function () {
             $_SERVER['__test.rebind'] = true;
         });
-        $container->instance('foo', function () {
-        });
+        $container->instance('foo', function () {});
 
         $this->assertTrue($_SERVER['__test.rebind']);
     }
@@ -329,8 +324,7 @@ class ContainerTest extends TestCase
         $container->rebinding('foo', function () {
             $_SERVER['__test.rebind'] = true;
         });
-        $container->instance('foo', function () {
-        });
+        $container->instance('foo', function () {});
 
         $this->assertFalse($_SERVER['__test.rebind']);
     }
@@ -618,40 +612,26 @@ class ContainerTest extends TestCase
 
 class CircularAStub
 {
-    public function __construct(CircularBStub $b)
-    {
-    }
+    public function __construct(CircularBStub $b) {}
 }
 
 class CircularBStub
 {
-    public function __construct(CircularCStub $c)
-    {
-    }
+    public function __construct(CircularCStub $c) {}
 }
 
 class CircularCStub
 {
-    public function __construct(CircularAStub $a)
-    {
-    }
+    public function __construct(CircularAStub $a) {}
 }
 
-class ContainerConcreteStub
-{
-}
+class ContainerConcreteStub {}
 
-interface IContainerContractStub
-{
-}
+interface IContainerContractStub {}
 
-class ContainerImplementationStub implements IContainerContractStub
-{
-}
+class ContainerImplementationStub implements IContainerContractStub {}
 
-class ContainerImplementationStubTwo implements IContainerContractStub
-{
-}
+class ContainerImplementationStubTwo implements IContainerContractStub {}
 
 class ContainerDependentStub
 {
@@ -724,9 +704,7 @@ class ContainerInjectVariableStubWithInterfaceImplementation implements IContain
 
 class ContainerContextualBindingCallTarget
 {
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function work(IContainerContractStub $stub)
     {
