@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Tests\Router;
 
+use Hyperf\Config\Config;
 use Hyperf\Context\ApplicationContext;
 use Hyperf\Context\Context;
 use Hyperf\Context\RequestContext;
+use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\ContainerInterface;
 use Hyperf\HttpMessage\Server\Request as ServerRequest;
 use Hyperf\HttpServer\Contract\RequestInterface;
@@ -15,6 +17,7 @@ use Hyperf\HttpServer\Router\DispatcherFactory as HyperfDispatcherFactory;
 use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use SwooleTW\Hyperf\Router\DispatcherFactory;
 use SwooleTW\Hyperf\Router\NamedRouteCollector;
 use SwooleTW\Hyperf\Router\UrlGenerator;
@@ -40,6 +43,14 @@ class UrlGeneratorTest extends TestCase
     protected function setUp(): void
     {
         $this->mockContainer();
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        Context::destroy('__request.root.uri');
+        Context::destroy(ServerRequestInterface::class);
     }
 
     public function testRoute()
@@ -133,7 +144,7 @@ class UrlGeneratorTest extends TestCase
         $urlGenerator = new UrlGenerator($this->container);
 
         $this->assertEquals('http://example.com/foo', $urlGenerator->to('foo'));
-        $this->assertEquals('http://example.com', Context::get('request.root')->toString());
+        $this->assertEquals('http://example.com', Context::get('__request.root.uri')->toString());
     }
 
     public function testSecure()
@@ -146,13 +157,33 @@ class UrlGeneratorTest extends TestCase
         $this->assertEquals('https://example.com/foo/bar', $urlGenerator->secure('foo', ['bar']));
     }
 
+    public function testNoRequestContext()
+    {
+        $urlGenerator = new UrlGenerator($this->container);
+
+        $this->container->shouldReceive('get')->with(ConfigInterface::class)->andReturn(new Config([
+            'app' => [
+                'url' => 'http://localhost',
+            ],
+        ]));
+
+        $this->assertEquals('http://localhost/foo', $urlGenerator->to('foo'));
+    }
+
     private function mockContainer()
     {
         ! defined('BASE_PATH') && define('BASE_PATH', __DIR__);
 
-        $this->container = Mockery::mock(ContainerInterface::class);
+        /** @var ContainerInterface|MockInterface */
+        $container = Mockery::mock(ContainerInterface::class);
 
-        ApplicationContext::setContainer($this->container);
+        $container->shouldReceive('get')
+            ->with(RequestInterface::class)
+            ->andReturn(new Request());
+
+        ApplicationContext::setContainer($container);
+
+        $this->container = $container;
     }
 
     private function mockRouter()
@@ -178,10 +209,6 @@ class UrlGeneratorTest extends TestCase
 
     private function mockRequest()
     {
-        $this->container->shouldReceive('get')
-            ->with(RequestInterface::class)
-            ->andReturn(new Request());
-
         RequestContext::set(new ServerRequest('GET', 'http://example.com/foo?bar=baz#boom'));
     }
 }
