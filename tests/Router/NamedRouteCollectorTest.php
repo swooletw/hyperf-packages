@@ -7,7 +7,6 @@ namespace SwooleTW\Hyperf\Tests\Router;
 use FastRoute\DataGenerator\GroupCountBased as DataGenerator;
 use FastRoute\RouteParser\Std;
 use Hyperf\HttpServer\MiddlewareManager;
-use Mockery;
 use SwooleTW\Hyperf\Router\NamedRouteCollector;
 use SwooleTW\Hyperf\Tests\Router\Stub\RouteCollectorStub;
 use SwooleTW\Hyperf\Tests\TestCase;

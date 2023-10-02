@@ -21,8 +21,7 @@ class Logger implements LoggerInterface
      */
     public function __construct(
         protected LoggerInterface $logger
-    ) {
-    }
+    ) {}
 
     /**
      * Log an emergency message to the logs.

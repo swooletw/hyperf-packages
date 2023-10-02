@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Hyperf\Dispatcher;
 
-use Hyperf\Dispatcher\AbstractRequestHandler;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

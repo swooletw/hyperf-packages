@@ -28,8 +28,7 @@ class Schedule
 
     public function __construct(
         protected ContainerInterface $app
-    ) {
-    }
+    ) {}
 
     /**
      * Add a new crontab.

@@ -6,6 +6,4 @@ namespace SwooleTW\Hyperf\Cache\Exceptions;
 
 use RuntimeException;
 
-class NotSupportedException extends RuntimeException
-{
-}
+class NotSupportedException extends RuntimeException {}

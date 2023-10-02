@@ -10,13 +10,10 @@ abstract class ServiceProvider
 {
     public function __construct(
         protected ContainerInterface $app
-    ) {
-    }
+    ) {}
 
     /**
      * Register any application services.
      */
-    public function register(): void
-    {
-    }
+    public function register(): void {}
 }
