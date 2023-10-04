@@ -413,3 +413,24 @@ if (! function_exists('auth')) {
         return \SwooleTW\Hyperf\Auth\auth($guard);
     }
 }
+
+if (! function_exists('trans')) {
+    function trans(string $key, array $replace = [], ?string $locale = null)
+    {
+        return \Hyperf\Translation\trans($key, $replace, $locale);
+    }
+}
+
+if (! function_exists('trans_choice')) {
+    function trans(string $key, $number, array $replace = [], ?string $locale = null): string
+    {
+        return \Hyperf\Translation\trans_choice($key, $number, $replace, $locale);
+    }
+}
+
+if (! function_exists('__')) {
+    function trans(string $key, array $replace = [], ?string $locale = null)
+    {
+        return \Hyperf\Translation\trans($key, $replace, $locale);
+    }
+}
