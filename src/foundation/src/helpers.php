@@ -422,14 +422,14 @@ if (! function_exists('trans')) {
 }
 
 if (! function_exists('trans_choice')) {
-    function trans(string $key, $number, array $replace = [], ?string $locale = null): string
+    function trans_choice(string $key, $number, array $replace = [], ?string $locale = null): string
     {
         return \Hyperf\Translation\trans_choice($key, $number, $replace, $locale);
     }
 }
 
 if (! function_exists('__')) {
-    function trans(string $key, array $replace = [], ?string $locale = null)
+    function __(string $key, array $replace = [], ?string $locale = null)
     {
         return \Hyperf\Translation\trans($key, $replace, $locale);
     }
