@@ -57,7 +57,7 @@ if (! function_exists('storage_path')) {
     /**
      * Get the path to the storage folder.
      */
-    function database_path(string $path = ''): string
+    function storage_path(string $path = ''): string
     {
         return base_path("storage/{$path}");
     }
