@@ -8,12 +8,9 @@ trait RetrievesMultipleKeys
 {
     /**
      * Retrieve multiple items from the cache by key.
-     *
      * Items not found in the cache will have a null value.
-     *
-     * @return array
      */
-    public function many(array $keys)
+    public function many(array $keys): array
     {
         $return = [];
 
@@ -26,11 +23,8 @@ trait RetrievesMultipleKeys
 
     /**
      * Store multiple items in the cache for a given number of seconds.
-     *
-     * @param int $seconds
-     * @return bool
      */
-    public function putMany(array $values, $seconds)
+    public function putMany(array $values, int $seconds): bool
     {
         $manyResult = null;
 

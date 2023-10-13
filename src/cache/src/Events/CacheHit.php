@@ -8,18 +8,13 @@ class CacheHit extends CacheEvent
 {
     /**
      * The value that was retrieved.
-     *
-     * @var mixed
      */
-    public $value;
+    public mixed $value;
 
     /**
      * Create a new event instance.
-     *
-     * @param string $key
-     * @param mixed $value
      */
-    public function __construct($key, $value, array $tags = [])
+    public function __construct(string $key, mixed $value, array $tags = [])
     {
         parent::__construct($key, $tags);
 

@@ -11,7 +11,10 @@ use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface as DispatcherContract;
 use SwooleTW\Hyperf\Cache\Contracts\Factory as FactoryContract;
+use SwooleTW\Hyperf\Cache\Contracts\Repository as RepositoryContract;
 use SwooleTW\Hyperf\Cache\Contracts\Store;
+
+use function Hyperf\Support\make;
 
 /**
  * @mixin \SwooleTW\Hyperf\Cache\Contracts\Repository
@@ -38,23 +41,16 @@ class CacheManager implements FactoryContract
 
     /**
      * Dynamically call the default driver instance.
-     *
-     * @param string $method
-     * @param array $parameters
-     * @return mixed
      */
-    public function __call($method, $parameters)
+    public function __call(string $method, array $parameters): mixed
     {
         return $this->store()->{$method}(...$parameters);
     }
 
     /**
      * Get a cache store instance by name, wrapped in a repository.
-     *
-     * @param null|string $name
-     * @return \SwooleTW\Hyperf\Cache\Contracts\Repository
      */
-    public function store($name = null)
+    public function store(?string $name = null): RepositoryContract
     {
         $name = $name ?: $this->getDefaultDriver();
 
@@ -63,21 +59,16 @@ class CacheManager implements FactoryContract
 
     /**
      * Get a cache driver instance.
-     *
-     * @param null|string $driver
-     * @return \SwooleTW\Hyperf\Cache\Contracts\Repository
      */
-    public function driver($driver = null)
+    public function driver(?string $driver = null): RepositoryContract
     {
         return $this->store($driver);
     }
 
     /**
      * Create a new cache repository with the given implementation.
-     *
-     * @return \SwooleTW\Hyperf\Cache\Repository
      */
-    public function repository(Store $store)
+    public function repository(Store $store): Repository
     {
         return tap(new Repository($store), function ($repository) {
             $this->setEventDispatcher($repository);
@@ -87,17 +78,15 @@ class CacheManager implements FactoryContract
     /**
      * Re-set the event dispatcher on all resolved cache repositories.
      */
-    public function refreshEventDispatcher()
+    public function refreshEventDispatcher(): void
     {
         array_map([$this, 'setEventDispatcher'], $this->stores);
     }
 
     /**
      * Get the default cache driver name.
-     *
-     * @return string
      */
-    public function getDefaultDriver()
+    public function getDefaultDriver(): string
     {
         return $this->app->get(ConfigInterface::class)
             ->get('laravel_cache.default', 'file');
@@ -105,10 +94,8 @@ class CacheManager implements FactoryContract
 
     /**
      * Set the default cache driver name.
-     *
-     * @param string $name
      */
-    public function setDefaultDriver($name)
+    public function setDefaultDriver(string $name): void
     {
         $this->app->get(ConfigInterface::class)
             ->set('laravel_cache.default', $name);
@@ -116,11 +103,8 @@ class CacheManager implements FactoryContract
 
     /**
      * Unset the given driver instances.
-     *
-     * @param null|array|string $name
-     * @return $this
      */
-    public function forgetDriver($name = null)
+    public function forgetDriver(null|array|string $name = null): static
     {
         $name = $name ?? $this->getDefaultDriver();
 
@@ -135,10 +119,8 @@ class CacheManager implements FactoryContract
 
     /**
      * Disconnect the given driver and remove from local cache.
-     *
-     * @param null|string $name
      */
-    public function purge($name = null)
+    public function purge(?string $name = null): void
     {
         $name = $name ?? $this->getDefaultDriver();
 
@@ -147,11 +129,8 @@ class CacheManager implements FactoryContract
 
     /**
      * Register a custom driver creator Closure.
-     *
-     * @param string $driver
-     * @return $this
      */
-    public function extend($driver, Closure $callback)
+    public function extend(string $driver, Closure $callback): static
     {
         $this->customCreators[$driver] = $callback->bindTo($this, $this);
 
@@ -160,11 +139,8 @@ class CacheManager implements FactoryContract
 
     /**
      * Attempt to get the store from the local cache.
-     *
-     * @param string $name
-     * @return \SwooleTW\Hyperf\Cache\Contracts\Repository
      */
-    protected function get($name)
+    protected function get(string $name): RepositoryContract
     {
         return $this->stores[$name] ?? $this->resolve($name);
     }
@@ -172,11 +148,9 @@ class CacheManager implements FactoryContract
     /**
      * Resolve the given store.
      *
-     * @param string $name
-     * @return \SwooleTW\Hyperf\Cache\Contracts\Repository
      * @throws InvalidArgumentException
      */
-    protected function resolve($name)
+    protected function resolve(string $name): RepositoryContract
     {
         $config = $this->getConfig($name);
 
@@ -197,54 +171,45 @@ class CacheManager implements FactoryContract
 
     /**
      * Call a custom driver creator.
-     *
-     * @return mixed
      */
-    protected function callCustomCreator(array $config)
+    protected function callCustomCreator(array $config): RepositoryContract
     {
         return $this->customCreators[$config['driver']]($this->app, $config);
     }
 
     /**
      * Create an instance of the array cache driver.
-     *
-     * @return \SwooleTW\Hyperf\Cache\Repository
      */
-    protected function createArrayDriver(array $config)
+    protected function createArrayDriver(array $config): Repository
     {
         return $this->repository(new ArrayStore($config['serialize'] ?? false));
     }
 
     /**
      * Create an instance of the file cache driver.
-     *
-     * @return \SwooleTW\Hyperf\Cache\Repository
      */
-    protected function createFileDriver(array $config)
+    protected function createFileDriver(array $config): Repository
     {
         $store = make(FileStore::class, [
             'directory' => $config['path'],
             'filePermission' => $config['permission'] ?? null,
         ]);
+
         return $this->repository($store);
     }
 
     /**
      * Create an instance of the Null cache driver.
-     *
-     * @return \SwooleTW\Hyperf\Cache\Repository
      */
-    protected function createNullDriver()
+    protected function createNullDriver(): Repository
     {
         return $this->repository(new NullStore());
     }
 
     /**
      * Create an instance of the Redis cache driver.
-     *
-     * @return \SwooleTW\Hyperf\Cache\Repository
      */
-    protected function createRedisDriver(array $config)
+    protected function createRedisDriver(array $config): Repository
     {
         $redis = $this->app->get(RedisFactory::class);
 
@@ -260,7 +225,7 @@ class CacheManager implements FactoryContract
     /**
      * Set the event dispatcher on the given repository instance.
      */
-    protected function setEventDispatcher(Repository $repository)
+    protected function setEventDispatcher(Repository $repository): void
     {
         if (! $this->app->has(DispatcherContract::class)) {
             return;
@@ -273,21 +238,16 @@ class CacheManager implements FactoryContract
 
     /**
      * Get the cache prefix.
-     *
-     * @return string
      */
-    protected function getPrefix(array $config)
+    protected function getPrefix(array $config): string
     {
         return $config['prefix'] ?? $this->app->get(ConfigInterface::class)->get('laravel_cache.prefix');
     }
 
     /**
      * Get the cache connection configuration.
-     *
-     * @param string $name
-     * @return array
      */
-    protected function getConfig($name)
+    protected function getConfig(string $name): array
     {
         if (! is_null($name) && $name !== 'null') {
             return $this->app->get(ConfigInterface::class)->get("laravel_cache.stores.{$name}");

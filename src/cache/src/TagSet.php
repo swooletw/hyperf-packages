@@ -10,17 +10,13 @@ class TagSet
 {
     /**
      * The cache store implementation.
-     *
-     * @var \SwooleTW\Hyperf\Cache\Contracts\Store
      */
-    protected $store;
+    protected Store $store;
 
     /**
      * The tag names.
-     *
-     * @var array
      */
-    protected $names = [];
+    protected array $names = [];
 
     /**
      * Create a new TagSet instance.
@@ -41,11 +37,8 @@ class TagSet
 
     /**
      * Reset the tag and return the new tag identifier.
-     *
-     * @param string $name
-     * @return string
      */
-    public function resetTag($name)
+    public function resetTag(string $name): string
     {
         $this->store->forever($this->tagKey($name), $id = str_replace('.', '', uniqid('', true)));
 
@@ -54,52 +47,40 @@ class TagSet
 
     /**
      * Get a unique namespace that changes when any of the tags are flushed.
-     *
-     * @return string
      */
-    public function getNamespace()
+    public function getNamespace(): string
     {
         return implode('|', $this->tagIds());
     }
 
     /**
      * Get the unique tag identifier for a given tag.
-     *
-     * @param string $name
-     * @return string
      */
-    public function tagId($name)
+    public function tagId(string $name): string
     {
         return $this->store->get($this->tagKey($name)) ?: $this->resetTag($name);
     }
 
     /**
      * Get the tag identifier key for a given tag.
-     *
-     * @param string $name
-     * @return string
      */
-    public function tagKey($name)
+    public function tagKey(string $name): string
     {
         return 'tag:' . $name . ':key';
     }
 
     /**
      * Get all of the tag names in the set.
-     *
-     * @return array
      */
-    public function getNames()
+    public function getNames(): array
     {
         return $this->names;
     }
 
     /**
      * Get an array of tag identifiers for all of the tags in the set.
-     *
-     * @return array
      */
-    protected function tagIds()
+    protected function tagIds(): array
     {
         return array_map([$this, 'tagId'], $this->names);
     }

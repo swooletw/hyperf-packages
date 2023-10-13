@@ -4,42 +4,34 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Cache\RateLimiting;
 
+use Closure;
+
 class Limit
 {
     /**
      * The rate limit signature key.
-     *
-     * @var mixed|string
      */
-    public $key;
+    public string $key;
 
     /**
      * The maximum number of attempts allowed within the given number of minutes.
-     *
-     * @var int
      */
-    public $maxAttempts;
+    public int $maxAttempts;
 
     /**
      * The number of minutes until the rate limit is reset.
-     *
-     * @var int
      */
-    public $decayMinutes;
+    public int $decayMinutes;
 
     /**
      * The response generator callback.
-     *
-     * @var callable
      */
-    public $responseCallback;
+    public Closure $responseCallback;
 
     /**
      * Create a new limit instance.
-     *
-     * @param mixed|string $key
      */
-    public function __construct($key = '', int $maxAttempts = 60, int $decayMinutes = 1)
+    public function __construct(string $key = '', int $maxAttempts = 60, int $decayMinutes = 1)
     {
         $this->key = $key;
         $this->maxAttempts = $maxAttempts;
@@ -48,56 +40,40 @@ class Limit
 
     /**
      * Create a new rate limit.
-     *
-     * @param int $maxAttempts
-     * @return static
      */
-    public static function perMinute($maxAttempts)
+    public static function perMinute(int $maxAttempts): static
     {
         return new static('', $maxAttempts);
     }
 
     /**
      * Create a new rate limit using hours as decay time.
-     *
-     * @param int $maxAttempts
-     * @param int $decayHours
-     * @return static
      */
-    public static function perHour($maxAttempts, $decayHours = 1)
+    public static function perHour(int $maxAttempts, int $decayHours = 1): static
     {
         return new static('', $maxAttempts, 60 * $decayHours);
     }
 
     /**
      * Create a new rate limit using days as decay time.
-     *
-     * @param int $maxAttempts
-     * @param int $decayDays
-     * @return static
      */
-    public static function perDay($maxAttempts, $decayDays = 1)
+    public static function perDay(int $maxAttempts, int $decayDays = 1): static
     {
         return new static('', $maxAttempts, 60 * 24 * $decayDays);
     }
 
     /**
      * Create a new unlimited rate limit.
-     *
-     * @return static
      */
-    public static function none()
+    public static function none(): static
     {
         return new Unlimited();
     }
 
     /**
      * Set the key of the rate limit.
-     *
-     * @param string $key
-     * @return $this
      */
-    public function by($key)
+    public function by(string $key): static
     {
         $this->key = $key;
 
@@ -106,10 +82,8 @@ class Limit
 
     /**
      * Set the callback that should generate the response when the limit is exceeded.
-     *
-     * @return $this
      */
-    public function response(callable $callback)
+    public function response(Closure $callback): static
     {
         $this->responseCallback = $callback;
 

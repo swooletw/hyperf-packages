@@ -100,18 +100,18 @@ class CacheRedisStoreTest extends TestCase
     {
         $redis = $this->getRedis();
         $redis->getRedis()->shouldReceive('get')->once()->with('default')->andReturn($proxy = $this->getRedisProxy());
-        $proxy->shouldReceive('incrby')->once()->with('prefix:foo', 5);
-        $redis->increment('foo', 5);
-        $this->assertTrue(true);
+        $proxy->shouldReceive('incrby')->once()->with('prefix:foo', 5)->andReturn(6);
+        $result = $redis->increment('foo', 5);
+        $this->assertEquals(6, $result);
     }
 
     public function testDecrementMethodProperlyCallsRedis()
     {
         $redis = $this->getRedis();
         $redis->getRedis()->shouldReceive('get')->once()->with('default')->andReturn($proxy = $this->getRedisProxy());
-        $proxy->shouldReceive('decrby')->once()->with('prefix:foo', 5);
-        $redis->decrement('foo', 5);
-        $this->assertTrue(true);
+        $proxy->shouldReceive('decrby')->once()->with('prefix:foo', 5)->andReturn(4);
+        $result = $redis->decrement('foo', 5);
+        $this->assertEquals(4, $result);
     }
 
     public function testStoreItemForeverProperlyCallsRedis()
@@ -147,7 +147,7 @@ class CacheRedisStoreTest extends TestCase
         $this->assertSame('prefix:', $redis->getPrefix());
         $redis->setPrefix('foo');
         $this->assertSame('foo:', $redis->getPrefix());
-        $redis->setPrefix(null);
+        $redis->setPrefix('');
         $this->assertEmpty($redis->getPrefix());
     }
 

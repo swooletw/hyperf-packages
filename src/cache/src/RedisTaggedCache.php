@@ -11,27 +11,18 @@ class RedisTaggedCache extends TaggedCache
 {
     /**
      * Forever reference key.
-     *
-     * @var string
      */
     public const REFERENCE_KEY_FOREVER = 'forever_ref';
 
     /**
      * Standard reference key.
-     *
-     * @var string
      */
     public const REFERENCE_KEY_STANDARD = 'standard_ref';
 
     /**
      * Store an item in the cache.
-     *
-     * @param string $key
-     * @param mixed $value
-     * @param null|DateInterval|DateTimeInterface|int $ttl
-     * @return bool
      */
-    public function put($key, $value, $ttl = null)
+    public function put(string $key, mixed $value, null|DateInterval|DateTimeInterface|int $ttl = null): bool
     {
         if ($ttl === null) {
             return $this->forever($key, $value);
@@ -44,12 +35,8 @@ class RedisTaggedCache extends TaggedCache
 
     /**
      * Increment the value of an item in the cache.
-     *
-     * @param string $key
-     * @param mixed $value
-     * @return bool|int
      */
-    public function increment($key, $value = 1)
+    public function increment(string $key, int $value = 1): bool|int
     {
         $this->pushStandardKeys($this->tags->getNamespace(), $key);
 
@@ -58,12 +45,8 @@ class RedisTaggedCache extends TaggedCache
 
     /**
      * Decrement the value of an item in the cache.
-     *
-     * @param string $key
-     * @param mixed $value
-     * @return bool|int
      */
-    public function decrement($key, $value = 1)
+    public function decrement(string $key, int $value = 1): bool|int
     {
         $this->pushStandardKeys($this->tags->getNamespace(), $key);
 
@@ -72,12 +55,8 @@ class RedisTaggedCache extends TaggedCache
 
     /**
      * Store an item in the cache indefinitely.
-     *
-     * @param string $key
-     * @param mixed $value
-     * @return bool
      */
-    public function forever($key, $value)
+    public function forever(string $key, mixed $value): bool
     {
         $this->pushForeverKeys($this->tags->getNamespace(), $key);
 
@@ -86,10 +65,8 @@ class RedisTaggedCache extends TaggedCache
 
     /**
      * Remove all items from the cache.
-     *
-     * @return bool
      */
-    public function flush()
+    public function flush(): true
     {
         $this->deleteForeverKeys();
         $this->deleteStandardKeys();
@@ -99,34 +76,24 @@ class RedisTaggedCache extends TaggedCache
 
     /**
      * Store standard key references into store.
-     *
-     * @param string $namespace
-     * @param string $key
      */
-    protected function pushStandardKeys($namespace, $key)
+    protected function pushStandardKeys(string $namespace, string $key): void
     {
         $this->pushKeys($namespace, $key, self::REFERENCE_KEY_STANDARD);
     }
 
     /**
      * Store forever key references into store.
-     *
-     * @param string $namespace
-     * @param string $key
      */
-    protected function pushForeverKeys($namespace, $key)
+    protected function pushForeverKeys(string $namespace, string $key): void
     {
         $this->pushKeys($namespace, $key, self::REFERENCE_KEY_FOREVER);
     }
 
     /**
      * Store a reference to the cache key against the reference key.
-     *
-     * @param string $namespace
-     * @param string $key
-     * @param string $reference
      */
-    protected function pushKeys($namespace, $key, $reference)
+    protected function pushKeys(string $namespace, string $key, string $reference): void
     {
         $fullKey = $this->store->getPrefix() . sha1($namespace) . ':' . $key;
 
@@ -153,10 +120,8 @@ class RedisTaggedCache extends TaggedCache
 
     /**
      * Find and delete all of the items that were stored against a reference.
-     *
-     * @param string $reference
      */
-    protected function deleteKeysByReference($reference)
+    protected function deleteKeysByReference(string $reference): void
     {
         foreach (explode('|', $this->tags->getNamespace()) as $segment) {
             $this->deleteValues($segment = $this->referenceKey($segment, $reference));
@@ -167,10 +132,8 @@ class RedisTaggedCache extends TaggedCache
 
     /**
      * Delete item keys that have been stored against a reference.
-     *
-     * @param string $referenceKey
      */
-    protected function deleteValues($referenceKey)
+    protected function deleteValues(string $referenceKey): void
     {
         $values = array_unique($this->store->connection()->smembers($referenceKey));
 
@@ -183,12 +146,8 @@ class RedisTaggedCache extends TaggedCache
 
     /**
      * Get the reference key for the segment.
-     *
-     * @param string $segment
-     * @param string $suffix
-     * @return string
      */
-    protected function referenceKey($segment, $suffix)
+    protected function referenceKey(string $segment, string $suffix): string
     {
         return $this->store->getPrefix() . $segment . ':' . $suffix;
     }

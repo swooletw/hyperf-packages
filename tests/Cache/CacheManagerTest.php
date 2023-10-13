@@ -8,8 +8,8 @@ use Hyperf\Config\Config;
 use Hyperf\Contract\ConfigInterface;
 use Mockery as m;
 use Psr\Container\ContainerInterface;
-use SwooleTW\Hyperf\Cache\ArrayStore;
 use SwooleTW\Hyperf\Cache\CacheManager;
+use SwooleTW\Hyperf\Cache\Contracts\Repository;
 use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
@@ -31,11 +31,10 @@ class CacheManagerTest extends TestCase
             ],
         ]));
         $cacheManager = new CacheManager($app);
-        $driver = function () {
-            return $this;
-        };
+        $repository = m::mock(Repository::class);
+        $driver = fn () => $repository;
         $cacheManager->extend('foo', $driver);
-        $this->assertEquals($cacheManager, $cacheManager->store('foo'));
+        $this->assertEquals($repository, $cacheManager->store('foo'));
     }
 
     public function testForgetDriver()
@@ -47,7 +46,7 @@ class CacheManagerTest extends TestCase
         $cacheManager->shouldReceive('resolve')
             ->withArgs(['array'])
             ->times(4)
-            ->andReturn(new ArrayStore());
+            ->andReturn(m::mock(Repository::class));
 
         $cacheManager->shouldReceive('getDefaultDriver')
             ->once()
@@ -76,9 +75,25 @@ class CacheManagerTest extends TestCase
                 ],
             ],
         ]));
+
+        $count = 0;
+
         $cacheManager = new CacheManager($app);
-        $cacheManager->extend('forget', function () {
-            return new ArrayStore();
+        $cacheManager->extend('forget', function () use (&$count) {
+            if ($count++ === 0) {
+                $repository = m::mock(Repository::class);
+
+                $repository->shouldReceive('forever')->with('foo', 'bar')->once();
+                $repository->shouldReceive('get')->with('foo')->once()->andReturn('bar');
+
+                return $repository;
+            }
+
+            $repository = m::mock(Repository::class);
+
+            $repository->shouldReceive('get')->with('foo')->once()->andReturnNull();
+
+            return $repository;
         });
 
         $cacheManager->store('forget')->forever('foo', 'bar');
