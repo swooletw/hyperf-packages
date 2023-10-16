@@ -43,9 +43,27 @@ class RateLimiter
     /**
      * Get the given named rate limiter.
      */
-    public function limiter(string $name): Closure
+    public function limiter(string $name): ?Closure
     {
         return $this->limiters[$name] ?? null;
+    }
+
+    /**
+     * Attempts to execute a callback if it's not limited.
+     */
+    public function attempt(string $key, int $maxAttempts, Closure $callback, int $decaySeconds = 60): mixed
+    {
+        if ($this->tooManyAttempts($key, $maxAttempts)) {
+            return false;
+        }
+
+        if (is_null($result = $callback())) {
+            $result = true;
+        }
+
+        return tap($result, function () use ($key, $decaySeconds) {
+            $this->hit($key, $decaySeconds);
+        });
     }
 
     /**
@@ -54,7 +72,7 @@ class RateLimiter
     public function tooManyAttempts(string $key, int $maxAttempts): bool
     {
         if ($this->attempts($key) >= $maxAttempts) {
-            if ($this->cache->has($key . ':timer')) {
+            if ($this->cache->has($this->cleanRateLimiterKey($key) . ':timer')) {
                 return true;
             }
 
@@ -69,6 +87,8 @@ class RateLimiter
      */
     public function hit(string $key, int $decaySeconds = 60): int
     {
+        $key = $this->cleanRateLimiterKey($key);
+
         $this->cache->add(
             $key . ':timer',
             $this->availableAt($decaySeconds),
@@ -86,22 +106,36 @@ class RateLimiter
         return $hits;
     }
 
-    // TODO: return type should be int?
     /**
      * Get the number of attempts for the given key.
      */
     public function attempts(string $key): mixed
     {
+        $key = $this->cleanRateLimiterKey($key);
+
         return $this->cache->get($key, 0);
     }
 
-    // TODO: return type should be int?
     /**
      * Reset the number of attempts for the given key.
      */
     public function resetAttempts(string $key): mixed
     {
+        $key = $this->cleanRateLimiterKey($key);
+
         return $this->cache->forget($key);
+    }
+
+    /**
+     * Get the number of retries left for the given key.
+     */
+    public function remaining(string $key, int $maxAttempts): int
+    {
+        $key = $this->cleanRateLimiterKey($key);
+
+        $attempts = $this->attempts($key);
+
+        return $maxAttempts - $attempts;
     }
 
     /**
@@ -109,9 +143,7 @@ class RateLimiter
      */
     public function retriesLeft(string $key, int $maxAttempts): int
     {
-        $attempts = $this->attempts($key);
-
-        return $maxAttempts - $attempts;
+        return $this->remaining($key, $maxAttempts);
     }
 
     /**
@@ -119,6 +151,8 @@ class RateLimiter
      */
     public function clear(string $key): void
     {
+        $key = $this->cleanRateLimiterKey($key);
+
         $this->resetAttempts($key);
 
         $this->cache->forget($key . ':timer');
@@ -129,6 +163,16 @@ class RateLimiter
      */
     public function availableIn(string $key): int
     {
-        return $this->cache->get($key . ':timer') - $this->currentTime();
+        $key = $this->cleanRateLimiterKey($key);
+
+        return max(0, $this->cache->get($key . ':timer') - $this->currentTime());
+    }
+
+    /**
+     * Clean the rate limiter key from unicode characters.
+     */
+    public function cleanRateLimiterKey(string $key): string
+    {
+        return preg_replace('/&([a-z])[a-z]+;/i', '$1', htmlentities($key));
     }
 }

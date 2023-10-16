@@ -10,25 +10,31 @@ use DateTimeInterface;
 class RedisTaggedCache extends TaggedCache
 {
     /**
-     * Forever reference key.
+     * Store an item in the cache if the key does not exist.
      */
-    public const REFERENCE_KEY_FOREVER = 'forever_ref';
+    public function add(string $key, mixed $value, null|DateInterval|DateTimeInterface|int $ttl = null): bool
+    {
+        $this->tags->addEntry(
+            $this->itemKey($key),
+            ! is_null($ttl) ? $this->getSeconds($ttl) : 0
+        );
 
-    /**
-     * Standard reference key.
-     */
-    public const REFERENCE_KEY_STANDARD = 'standard_ref';
+        return parent::add($key, $value, $ttl);
+    }
 
     /**
      * Store an item in the cache.
      */
     public function put(string $key, mixed $value, null|DateInterval|DateTimeInterface|int $ttl = null): bool
     {
-        if ($ttl === null) {
+        if (is_null($ttl)) {
             return $this->forever($key, $value);
         }
 
-        $this->pushStandardKeys($this->tags->getNamespace(), $key);
+        $this->tags->addEntry(
+            $this->itemKey($key),
+            $this->getSeconds($ttl)
+        );
 
         return parent::put($key, $value, $ttl);
     }
@@ -38,7 +44,7 @@ class RedisTaggedCache extends TaggedCache
      */
     public function increment(string $key, int $value = 1): bool|int
     {
-        $this->pushStandardKeys($this->tags->getNamespace(), $key);
+        $this->tags->addEntry($this->itemKey($key), updateWhen: 'NX');
 
         return parent::increment($key, $value);
     }
@@ -48,7 +54,7 @@ class RedisTaggedCache extends TaggedCache
      */
     public function decrement(string $key, int $value = 1): bool|int
     {
-        $this->pushStandardKeys($this->tags->getNamespace(), $key);
+        $this->tags->addEntry($this->itemKey($key), updateWhen: 'NX');
 
         return parent::decrement($key, $value);
     }
@@ -58,7 +64,7 @@ class RedisTaggedCache extends TaggedCache
      */
     public function forever(string $key, mixed $value): bool
     {
-        $this->pushForeverKeys($this->tags->getNamespace(), $key);
+        $this->tags->addEntry($this->itemKey($key));
 
         return parent::forever($key, $value);
     }
@@ -68,87 +74,33 @@ class RedisTaggedCache extends TaggedCache
      */
     public function flush(): true
     {
-        $this->deleteForeverKeys();
-        $this->deleteStandardKeys();
+        $this->flushValues();
+        $this->tags->flush();
 
-        return parent::flush();
+        return true;
     }
 
     /**
-     * Store standard key references into store.
+     * Flush the individual cache entries for the tags.
      */
-    protected function pushStandardKeys(string $namespace, string $key): void
+    protected function flushValues(): void
     {
-        $this->pushKeys($namespace, $key, self::REFERENCE_KEY_STANDARD);
-    }
+        $entries = $this->tags->entries()
+            ->map(fn (string $key) => $this->store->getPrefix() . $key)
+            ->chunk(1000);
 
-    /**
-     * Store forever key references into store.
-     */
-    protected function pushForeverKeys(string $namespace, string $key): void
-    {
-        $this->pushKeys($namespace, $key, self::REFERENCE_KEY_FOREVER);
-    }
-
-    /**
-     * Store a reference to the cache key against the reference key.
-     */
-    protected function pushKeys(string $namespace, string $key, string $reference): void
-    {
-        $fullKey = $this->store->getPrefix() . sha1($namespace) . ':' . $key;
-
-        foreach (explode('|', $namespace) as $segment) {
-            $this->store->connection()->sadd($this->referenceKey($segment, $reference), $fullKey);
+        foreach ($entries as $cacheKeys) {
+            $this->store->connection()->del(...$cacheKeys);
         }
     }
 
     /**
-     * Delete all of the items that were stored forever.
+     * Remove all stale reference entries from the tag set.
      */
-    protected function deleteForeverKeys()
+    public function flushStale(): true
     {
-        $this->deleteKeysByReference(self::REFERENCE_KEY_FOREVER);
-    }
+        $this->tags->flushStaleEntries();
 
-    /**
-     * Delete all standard items.
-     */
-    protected function deleteStandardKeys()
-    {
-        $this->deleteKeysByReference(self::REFERENCE_KEY_STANDARD);
-    }
-
-    /**
-     * Find and delete all of the items that were stored against a reference.
-     */
-    protected function deleteKeysByReference(string $reference): void
-    {
-        foreach (explode('|', $this->tags->getNamespace()) as $segment) {
-            $this->deleteValues($segment = $this->referenceKey($segment, $reference));
-
-            $this->store->connection()->del($segment);
-        }
-    }
-
-    /**
-     * Delete item keys that have been stored against a reference.
-     */
-    protected function deleteValues(string $referenceKey): void
-    {
-        $values = array_unique($this->store->connection()->smembers($referenceKey));
-
-        if (count($values) > 0) {
-            foreach (array_chunk($values, 1000) as $valuesChunk) {
-                $this->store->connection()->del(...$valuesChunk);
-            }
-        }
-    }
-
-    /**
-     * Get the reference key for the segment.
-     */
-    protected function referenceKey(string $segment, string $suffix): string
-    {
-        return $this->store->getPrefix() . $segment . ':' . $suffix;
+        return true;
     }
 }

@@ -46,9 +46,9 @@ class ArrayStore extends TaggableStore implements LockProvider
 
         $item = $this->storage[$key];
 
-        $expiresAt = $item['expiresAt'] ?? 0;
+        $expiresAt = $item['expiresAt'] ?? 0.0;
 
-        if ($expiresAt !== 0 && $this->currentTime() > $expiresAt) {
+        if ($expiresAt !== 0.0 && (now()->getPreciseTimestamp(3) / 1000) >= $expiresAt) {
             $this->forget($key);
 
             return null;
@@ -155,16 +155,16 @@ class ArrayStore extends TaggableStore implements LockProvider
     /**
      * Get the expiration time of the key.
      */
-    protected function calculateExpiration(int $seconds): int
+    protected function calculateExpiration(int $seconds): float
     {
         return $this->toTimestamp($seconds);
     }
 
     /**
-     * Get the UNIX timestamp for the given number of seconds.
+     * Get the UNIX timestamp, with milliseconds, for the given number of seconds in the future.
      */
-    protected function toTimestamp(int $seconds): int
+    protected function toTimestamp(int $seconds): float
     {
-        return $seconds > 0 ? $this->availableAt($seconds) : 0;
+        return $seconds > 0 ? (now()->getPreciseTimestamp(3) / 1000) + $seconds : 0;
     }
 }

@@ -54,7 +54,7 @@ class CacheManager implements FactoryContract
     {
         $name = $name ?: $this->getDefaultDriver();
 
-        return $this->stores[$name] = $this->get($name);
+        return $this->stores[$name] ??= $this->resolve($name);
     }
 
     /**
@@ -106,7 +106,7 @@ class CacheManager implements FactoryContract
      */
     public function forgetDriver(null|array|string $name = null): static
     {
-        $name = $name ?? $this->getDefaultDriver();
+        $name ??= $this->getDefaultDriver();
 
         foreach ((array) $name as $cacheName) {
             if (isset($this->stores[$cacheName])) {
@@ -122,7 +122,7 @@ class CacheManager implements FactoryContract
      */
     public function purge(?string $name = null): void
     {
-        $name = $name ?? $this->getDefaultDriver();
+        $name ??= $this->getDefaultDriver();
 
         unset($this->stores[$name]);
     }
@@ -133,6 +133,16 @@ class CacheManager implements FactoryContract
     public function extend(string $driver, Closure $callback): static
     {
         $this->customCreators[$driver] = $callback->bindTo($this, $this);
+
+        return $this;
+    }
+
+    /**
+     * Set the application instance used by the manager.
+     */
+    public function setApplication(ContainerInterface $app): static
+    {
+        $this->app = $app;
 
         return $this;
     }
@@ -161,11 +171,13 @@ class CacheManager implements FactoryContract
         if (isset($this->customCreators[$config['driver']])) {
             return $this->callCustomCreator($config);
         }
+
         $driverMethod = 'create' . ucfirst($config['driver']) . 'Driver';
 
         if (method_exists($this, $driverMethod)) {
             return $this->{$driverMethod}($config);
         }
+
         throw new InvalidArgumentException("Driver [{$config['driver']}] is not supported.");
     }
 
@@ -193,7 +205,7 @@ class CacheManager implements FactoryContract
         $store = make(FileStore::class, [
             'directory' => $config['path'],
             'filePermission' => $config['permission'] ?? null,
-        ]);
+        ])->setLockDirectory($config['lock_path'] ?? null);
 
         return $this->repository($store);
     }
@@ -247,7 +259,7 @@ class CacheManager implements FactoryContract
     /**
      * Get the cache connection configuration.
      */
-    protected function getConfig(string $name): array
+    protected function getConfig(string $name): ?array
     {
         if (! is_null($name) && $name !== 'null') {
             return $this->app->get(ConfigInterface::class)->get("laravel_cache.stores.{$name}");

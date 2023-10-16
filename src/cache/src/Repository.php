@@ -76,7 +76,7 @@ class Repository implements ArrayAccess, CacheContract
     /**
      * Determine if an item exists in the cache.
      */
-    public function has(string $key): bool
+    public function has(string|array $key): bool
     {
         return ! is_null($this->get($key));
     }
@@ -91,6 +91,11 @@ class Repository implements ArrayAccess, CacheContract
 
     /**
      * Retrieve an item from the cache by key.
+     *
+     * @template TCacheValue
+     *
+     * @param (Closure(): TCacheValue)|TCacheValue $default
+     * @return (TCacheValue is null ? mixed : TCacheValue)
      */
     public function get(string|array $key, mixed $default = null): mixed
     {
@@ -142,6 +147,11 @@ class Repository implements ArrayAccess, CacheContract
 
     /**
      * Retrieve an item from the cache and delete it.
+     *
+     * @template TCacheValue
+     *
+     * @param (Closure(): TCacheValue)|TCacheValue $default
+     * @return (TCacheValue is null ? mixed : TCacheValue)
      */
     public function pull(string $key, mixed $default = null): mixed
     {
@@ -285,6 +295,11 @@ class Repository implements ArrayAccess, CacheContract
 
     /**
      * Get an item from the cache, or execute the given Closure and store the result.
+     *
+     * @template TCacheValue
+     *
+     * @param Closure(): TCacheValue $callback
+     * @return TCacheValue
      */
     public function remember(string $key, null|DateInterval|DateTimeInterface|int $ttl, Closure $callback): mixed
     {
@@ -304,6 +319,11 @@ class Repository implements ArrayAccess, CacheContract
 
     /**
      * Get an item from the cache, or execute the given Closure and store the result forever.
+     *
+     * @template TCacheValue
+     *
+     * @param Closure(): TCacheValue $callback
+     * @return TCacheValue
      */
     public function sear(string $key, Closure $callback): mixed
     {
@@ -312,6 +332,11 @@ class Repository implements ArrayAccess, CacheContract
 
     /**
      * Get an item from the cache, or execute the given Closure and store the result forever.
+     *
+     * @template TCacheValue
+     *
+     * @param Closure(): TCacheValue $callback
+     * @return TCacheValue
      */
     public function rememberForever(string $key, Closure $callback): mixed
     {
@@ -421,7 +446,7 @@ class Repository implements ArrayAccess, CacheContract
     /**
      * Get the event dispatcher instance.
      */
-    public function getEventDispatcher(): EventDispatcherInterface
+    public function getEventDispatcher(): ?EventDispatcherInterface
     {
         return $this->events;
     }
@@ -486,7 +511,7 @@ class Repository implements ArrayAccess, CacheContract
         if (is_null($value)) {
             $this->event(new CacheMissed($key));
 
-            return isset($keys[$key]) ? value($keys[$key]) : null;
+            return (isset($keys[$key]) && ! array_is_list($keys)) ? value($keys[$key]) : null;
         }
 
         // If we found a valid value we will fire the "hit" event and return the value

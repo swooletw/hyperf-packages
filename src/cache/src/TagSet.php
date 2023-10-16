@@ -46,6 +46,24 @@ class TagSet
     }
 
     /**
+     * Flush all the tags in the set.
+     */
+    public function flush(): void
+    {
+        array_walk($this->names, [$this, 'flushTag']);
+    }
+
+    /**
+     * Flush the tag from the cache.
+     */
+    public function flushTag(string $name): string
+    {
+        $this->store->forget($key = $this->tagKey($name));
+
+        return $key;
+    }
+
+    /**
      * Get a unique namespace that changes when any of the tags are flushed.
      */
     public function getNamespace(): string

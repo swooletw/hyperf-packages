@@ -43,6 +43,7 @@ return [
         'file' => [
             'driver' => 'file',
             'path' => BASE_PATH . '/storage/cache/data',
+            'lock_path' => BASE_PATH . '/storage/cache/data',
         ],
 
         'redis' => [
