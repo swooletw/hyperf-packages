@@ -235,6 +235,16 @@ class CacheManager implements FactoryContract
     }
 
     /**
+     * Create an instance of the Swoole cache driver.
+     */
+    protected function createSwooleDriver(array $config): Repository
+    {
+        $cacheTable = $this->app->get(SwooleTableManager::class)->get($config['table']);
+
+        return $this->repository(new SwooleStore($cacheTable));
+    }
+
+    /**
      * Set the event dispatcher on the given repository instance.
      */
     protected function setEventDispatcher(Repository $repository): void
