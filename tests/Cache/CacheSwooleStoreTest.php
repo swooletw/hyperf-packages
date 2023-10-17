@@ -6,9 +6,10 @@ namespace SwooleTW\Hyperf\Tests\Cache;
 
 use Carbon\Carbon;
 use Hyperf\Stringable\Str;
-use Swoole\Table;
+use Mockery as m;
+use Psr\Container\ContainerInterface;
 use SwooleTW\Hyperf\Cache\SwooleStore;
-use SwooleTW\Hyperf\Cache\SwooleTable;
+use SwooleTW\Hyperf\Cache\SwooleTableManager;
 use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
@@ -17,7 +18,7 @@ use SwooleTW\Hyperf\Tests\TestCase;
  */
 class CacheSwooleStoreTest extends TestCase
 {
-    public function testCanRetrieveItemsFromStore(): void
+    public function testCanRetrieveItemsFromStore()
     {
         $table = $this->createSwooleTable();
 
@@ -170,15 +171,51 @@ class CacheSwooleStoreTest extends TestCase
         $this->assertEquals('bar', $store->get('foo'));
     }
 
+    public function testExpiredAtWithMicrosecond()
+    {
+        $table = $this->createSwooleTable();
+
+        $store = new SwooleStore($table);
+
+        Carbon::setTestNow('2000-01-01 00:00:00.500000');
+        $store->put('foo', 'bar', 1);
+
+        Carbon::setTestNow('2000-01-01 00:00:01.499999');
+        $this->assertSame('bar', $store->get('foo'));
+
+        Carbon::setTestNow('2000-01-01 00:00:01.500000');
+        $this->assertNull($store->get('foo'));
+    }
+
+    public function testCanRemoveExpiredRecordFromTable()
+    {
+        $table = $this->createSwooleTable();
+
+        $table->set('foo', ['value' => serialize('bar'), 'expiration' => time() - 100]);
+
+        $store = new SwooleStore($table);
+
+        $this->assertNull($store->get('foo'));
+        $this->assertFalse($table->get('foo'));
+    }
+
+    public function testAutoRemoveRecordWhenTableIsfull()
+    {
+        $table = $this->createSwooleTable();
+
+        $store = new SwooleStore($table);
+
+        for ($i = 0; $i < 2000; ++$i) {
+            $store->put(sha1("key:{$i}"), $i, 100);
+        }
+
+        $this->assertNull($store->get(sha1('key:0')));
+        $this->assertSame(1999, $store->get(sha1('key:1999')));
+        $this->assertLessThanOrEqual(1024, $table->count());
+    }
+
     private function createSwooleTable()
     {
-        $cacheTable = new SwooleTable(1000);
-
-        $cacheTable->column('value', Table::TYPE_STRING, 10000);
-        $cacheTable->column('expiration', Table::TYPE_INT);
-
-        $cacheTable->create();
-
-        return $cacheTable;
+        return (new SwooleTableManager(m::mock(ContainerInterface::class)))->createTable(1024, 10240, 0.2);
     }
 }

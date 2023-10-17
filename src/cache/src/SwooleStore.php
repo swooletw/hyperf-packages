@@ -14,6 +14,8 @@ class SwooleStore implements Store
 {
     protected const ONE_YEAR = 31536000;
 
+    protected const CAPACITY_BUFFER = 10;
+
     /**
      * All of the registered interval caches.
      */
@@ -39,6 +41,8 @@ class SwooleStore implements Store
             && ! is_null($interval = $this->getInterval($key))) {
             return $interval['resolver']();
         }
+
+        $this->forget($key);
 
         return null;
     }
@@ -67,10 +71,18 @@ class SwooleStore implements Store
      */
     public function put(string $key, mixed $value, int $seconds): bool
     {
-        return $this->table->set($key, [
+        $now = $this->getCurrentTimestamp();
+
+        $result = $this->table->set($key, [
             'value' => serialize($value),
-            'expiration' => Carbon::now()->getTimestamp() + $seconds,
+            'expiration' => $now + $seconds,
         ]);
+
+        while ($this->tableIsFull()) {
+            $this->removeAlmostExpireRecords();
+        }
+
+        return $result;
     }
 
     /**
@@ -97,7 +109,10 @@ class SwooleStore implements Store
         }
 
         return tap((int) (unserialize($record['value']) + $value), function ($value) use ($key, $record) {
-            $this->put($key, $value, $record['expiration'] - Carbon::now()->getTimestamp());
+            $this->table->set($key, [
+                'value' => serialize($value),
+                'expiration' => $record['expiration'],
+            ]);
         });
     }
 
@@ -194,7 +209,7 @@ class SwooleStore implements Store
      */
     protected function recordIsFalseOrExpired(array|false $record): bool
     {
-        return $record === false || $record['expiration'] <= Carbon::now()->getTimestamp();
+        return $record === false || $record['expiration'] <= $this->getCurrentTimestamp();
     }
 
     /**
@@ -203,5 +218,34 @@ class SwooleStore implements Store
     public function getPrefix(): string
     {
         return '';
+    }
+
+    /**
+     * Get the current UNIX timestamp, with microsecond.
+     */
+    protected function getCurrentTimestamp(): float
+    {
+        return Carbon::now()->getPreciseTimestamp(6) / 1000000;
+    }
+
+    /**
+     * Determine if the table is full.
+     */
+    protected function tableIsFull(): bool
+    {
+        return $this->table->stats()['available_slice_num'] < static::CAPACITY_BUFFER
+                    || $this->table->getSize() - static::CAPACITY_BUFFER < $this->table->stats()['num'];
+    }
+
+    /**
+     * Remove the almost expire records.
+     */
+    protected function removeAlmostExpireRecords(): void
+    {
+        collect($this->table)
+            ->map(fn ($record) => $record['expiration'])
+            ->sort()
+            ->take(static::CAPACITY_BUFFER)
+            ->each(fn ($_, $key) => $this->forget($key));
     }
 }

@@ -17,6 +17,18 @@ class SwooleTableManager
         protected ContainerInterface $app
     ) {}
 
+    public function createTable(int $rows, int $bytes, float $conflictProportion): Table
+    {
+        $table = new SwooleTable($rows, $conflictProportion);
+
+        $table->column('value', Table::TYPE_STRING, $bytes);
+        $table->column('expiration', Table::TYPE_FLOAT);
+
+        $table->create();
+
+        return $table;
+    }
+
     public function get(string $name): Table
     {
         return $this->tables[$name] ?? $this->resolve($name);
@@ -30,14 +42,11 @@ class SwooleTableManager
             throw new InvalidArgumentException("Swoole table [{$name}] is not defined.");
         }
 
-        $table = new SwooleTable($config['rows']);
-
-        $table->column('value', Table::TYPE_STRING, $config['bytes']);
-        $table->column('expiration', Table::TYPE_INT);
-
-        $table->create();
-
-        return $table;
+        return $this->createTable(
+            $config['rows'] ?? 1024,
+            $config['bytes'] ?? 10240,
+            $config['conflict_proportion'] ?? 0.2
+        );
     }
 
     protected function getConfig(string $name): ?array
