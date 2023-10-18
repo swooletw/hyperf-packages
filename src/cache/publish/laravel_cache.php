@@ -29,7 +29,7 @@ return [
     | well as their drivers. You may even define multiple stores for the
     | same cache driver to group types of items stored in your caches.
     |
-    | Supported drivers: "array", "file", "redis", "swoole", "null"
+    | Supported drivers: "array", "file", "redis", "swoole", "stack", "null"
     |
     */
 
@@ -54,6 +54,11 @@ return [
         'swoole' => [
             'driver' => 'swoole',
             'table' => 'default',
+        ],
+
+        'stack' => [
+            'driver' => 'stack',
+            'stores' => ['swoole', 'redis'],
         ],
     ],
 

@@ -245,6 +245,16 @@ class CacheManager implements FactoryContract
     }
 
     /**
+     * Create an instance of the Stack cache driver.
+     */
+    protected function createStackDriver(array $config): Repository
+    {
+        $stores = array_map(fn ($store) => $this->store($store)->getStore(), $config['stores']);
+
+        return $this->repository(new StackStore($stores));
+    }
+
+    /**
      * Set the event dispatcher on the given repository instance.
      */
     protected function setEventDispatcher(Repository $repository): void
