@@ -72,7 +72,7 @@ class RedisTaggedCache extends TaggedCache
     /**
      * Remove all items from the cache.
      */
-    public function flush(): true
+    public function flush(): bool
     {
         $this->flushValues();
         $this->tags->flush();
@@ -97,7 +97,7 @@ class RedisTaggedCache extends TaggedCache
     /**
      * Remove all stale reference entries from the tag set.
      */
-    public function flushStale(): true
+    public function flushStale(): bool
     {
         $this->tags->flushStaleEntries();
 

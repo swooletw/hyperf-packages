@@ -191,7 +191,7 @@ class SwooleStore implements Store
     /**
      * Remove all items from the cache.
      */
-    public function flush(): true
+    public function flush(): bool
     {
         foreach ($this->table as $key => $record) {
             if (str_starts_with($key, 'interval-')) {

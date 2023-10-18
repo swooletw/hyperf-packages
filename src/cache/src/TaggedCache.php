@@ -60,7 +60,7 @@ class TaggedCache extends Repository
     /**
      * Remove all items from the cache.
      */
-    public function flush(): true
+    public function flush(): bool
     {
         $this->tags->reset();
 

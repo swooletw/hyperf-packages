@@ -168,7 +168,7 @@ class RedisStore extends TaggableStore implements LockProvider
     /**
      * Remove all items from the cache.
      */
-    public function flush(): true
+    public function flush(): bool
     {
         $this->connection()->flushdb();
 
