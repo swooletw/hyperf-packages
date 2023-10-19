@@ -6,9 +6,24 @@ namespace SwooleTW\Hyperf\Cache;
 
 use DateInterval;
 use DateTimeInterface;
+use SwooleTW\Hyperf\Cache\Contracts\Store;
 
 class RedisTaggedCache extends TaggedCache
 {
+    /**
+     * The cache store implementation.
+     *
+     * @var RedisStore
+     */
+    protected Store $store;
+
+    /**
+     * The tag set instance.
+     *
+     * @var RedisTagSet
+     */
+    protected TagSet $tags;
+
     /**
      * Store an item in the cache if the key does not exist.
      */

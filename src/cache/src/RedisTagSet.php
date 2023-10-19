@@ -5,9 +5,17 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Cache;
 
 use Hyperf\Collection\Collection;
+use SwooleTW\Hyperf\Cache\Contracts\Store;
 
 class RedisTagSet extends TagSet
 {
+    /**
+     * The cache store implementation.
+     *
+     * @var RedisStore
+     */
+    protected Store $store;
+
     /**
      * Add a reference entry to the tag set's underlying sorted set.
      */
