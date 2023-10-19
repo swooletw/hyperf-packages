@@ -142,14 +142,13 @@ class CacheRepositoryTest extends TestCase
         $this->assertSame('bar', $result);
     }
 
-    // FIXME: RedisTaggedCache $key dosent support array
-    // public function testPuttingMultipleItemsInCache()
-    // {
-    //     $repo = $this->getRepository();
-    //     $repo->getStore()->shouldReceive('putMany')->once()->with(['foo' => 'bar', 'bar' => 'baz'], 1);
-    //     $repo->put(['foo' => 'bar', 'bar' => 'baz'], 1);
-    //     $this->assertTrue(true);
-    // }
+    public function testPuttingMultipleItemsInCache()
+    {
+        $repo = $this->getRepository();
+        $repo->getStore()->shouldReceive('putMany')->once()->with(['foo' => 'bar', 'bar' => 'baz'], 1);
+        $repo->put(['foo' => 'bar', 'bar' => 'baz'], 1);
+        $this->assertTrue(true);
+    }
 
     public function testSettingMultipleItemsInCacheArray()
     {

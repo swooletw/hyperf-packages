@@ -25,8 +25,12 @@ class RedisTaggedCache extends TaggedCache
     /**
      * Store an item in the cache.
      */
-    public function put(string $key, mixed $value, null|DateInterval|DateTimeInterface|int $ttl = null): bool
+    public function put(array|string $key, mixed $value, null|DateInterval|DateTimeInterface|int $ttl = null): bool
     {
+        if (is_array($key)) {
+            return $this->putMany($key, $value);
+        }
+
         if (is_null($ttl)) {
             return $this->forever($key, $value);
         }

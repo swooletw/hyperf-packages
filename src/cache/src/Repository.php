@@ -163,12 +163,11 @@ class Repository implements ArrayAccess, CacheContract
     /**
      * Store an item in the cache.
      */
-    public function put(string $key, mixed $value, null|DateInterval|DateTimeInterface|int $ttl = null): bool
+    public function put(array|string $key, mixed $value, null|DateInterval|DateTimeInterface|int $ttl = null): bool
     {
-        // FIXME: RedisTaggedCache $key dosent support array
-        // if (is_array($key)) {
-        //     return $this->putMany($key, $value);
-        // }
+        if (is_array($key)) {
+            return $this->putMany($key, $value);
+        }
 
         if ($ttl === null) {
             return $this->forever($key, $value);

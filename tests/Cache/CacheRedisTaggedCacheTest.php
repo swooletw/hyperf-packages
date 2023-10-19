@@ -70,18 +70,12 @@ class CacheRedisTaggedCacheTest extends TestCase
 
     public function testTagEntriesCanBeIncremented()
     {
-        Carbon::setTestNow('2000-01-01 00:00:00');
-
         $key = sha1('tag:votes:entries') . ':person-1';
-        $this->redisProxy->shouldReceive('zadd')->once()->with('prefix:tag:votes:entries', now()->timestamp + 5, $key)->andReturn('OK');
-        $this->redisProxy->shouldReceive('setex')->once()->with("prefix:{$key}", 5, 0)->andReturn('OK');
         $this->redisProxy->shouldReceive('zadd')->times(4)->with('prefix:tag:votes:entries', 'NX', -1, $key)->andReturn('OK');
         $this->redisProxy->shouldReceive('incrby')->once()->with("prefix:{$key}", 1)->andReturn(1);
         $this->redisProxy->shouldReceive('incrby')->once()->with("prefix:{$key}", 1)->andReturn(2);
         $this->redisProxy->shouldReceive('decrby')->once()->with("prefix:{$key}", 1)->andReturn(1);
         $this->redisProxy->shouldReceive('decrby')->once()->with("prefix:{$key}", 1)->andReturn(0);
-
-        $this->redis->tags(['votes'])->put('person-1', 0, 5);
 
         $this->assertSame(1, $this->redis->tags(['votes'])->increment('person-1'));
         $this->assertSame(2, $this->redis->tags(['votes'])->increment('person-1'));
@@ -103,6 +97,45 @@ class CacheRedisTaggedCacheTest extends TestCase
         });
 
         $this->redis->tags(['people'])->flushStale();
+    }
+
+    public function testPut()
+    {
+        Carbon::setTestNow('2000-01-01 00:00:00');
+
+        $key = sha1('tag:people:entries|tag:author:entries') . ':name';
+        $this->redisProxy->shouldReceive('zadd')->once()->with('prefix:tag:people:entries', now()->timestamp + 5, $key)->andReturn('OK');
+        $this->redisProxy->shouldReceive('zadd')->once()->with('prefix:tag:author:entries', now()->timestamp + 5, $key)->andReturn('OK');
+        $this->redisProxy->shouldReceive('setex')->once()->with("prefix:{$key}", 5, serialize('Sally'))->andReturn('OK');
+
+        $this->redis->tags(['people', 'author'])->put('name', 'Sally', 5);
+
+        $key = sha1('tag:people:entries|tag:author:entries') . ':age';
+        $this->redisProxy->shouldReceive('zadd')->once()->with('prefix:tag:people:entries', now()->timestamp + 5, $key)->andReturn('OK');
+        $this->redisProxy->shouldReceive('zadd')->once()->with('prefix:tag:author:entries', now()->timestamp + 5, $key)->andReturn('OK');
+        $this->redisProxy->shouldReceive('setex')->once()->with("prefix:{$key}", 5, 30)->andReturn('OK');
+
+        $this->redis->tags(['people', 'author'])->put('age', 30, 5);
+    }
+
+    public function testPutWithArray()
+    {
+        Carbon::setTestNow('2000-01-01 00:00:00');
+
+        $key = sha1('tag:people:entries|tag:author:entries') . ':name';
+        $this->redisProxy->shouldReceive('zadd')->once()->with('prefix:tag:people:entries', now()->timestamp + 5, $key)->andReturn('OK');
+        $this->redisProxy->shouldReceive('zadd')->once()->with('prefix:tag:author:entries', now()->timestamp + 5, $key)->andReturn('OK');
+        $this->redisProxy->shouldReceive('setex')->once()->with("prefix:{$key}", 5, serialize('Sally'))->andReturn('OK');
+
+        $key = sha1('tag:people:entries|tag:author:entries') . ':age';
+        $this->redisProxy->shouldReceive('zadd')->once()->with('prefix:tag:people:entries', now()->timestamp + 5, $key)->andReturn('OK');
+        $this->redisProxy->shouldReceive('zadd')->once()->with('prefix:tag:author:entries', now()->timestamp + 5, $key)->andReturn('OK');
+        $this->redisProxy->shouldReceive('setex')->once()->with("prefix:{$key}", 5, 30)->andReturn('OK');
+
+        $this->redis->tags(['people', 'author'])->put([
+            'name' => 'Sally',
+            'age' => 30,
+        ], 5);
     }
 
     private function mockRedis()
