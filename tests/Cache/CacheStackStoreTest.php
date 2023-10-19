@@ -161,14 +161,14 @@ class CacheStackStoreTest extends TestCase
 
         $this->swoole->shouldReceive('get')->once()->with($key)->andReturn(null);
         $this->redis->shouldReceive('get')->once()->with($key)->andReturn(null);
-        $this->swoole->shouldReceive('forever')->once()->with($key, ['value' => 1, 'expiration' => 0])->andReturn(true);
-        $this->redis->shouldReceive('forever')->once()->with($key, ['value' => 1, 'expiration' => 0])->andReturn(true);
-        $this->swoole->shouldReceive('get')->once()->with($key)->andReturn(['value' => 1, 'expiration' => 0]);
-        $this->swoole->shouldReceive('forever')->once()->with($key, ['value' => 3, 'expiration' => 0])->andReturn(true);
-        $this->redis->shouldReceive('forever')->once()->with($key, ['value' => 3, 'expiration' => 0])->andReturn(true);
+        $this->swoole->shouldReceive('forever')->once()->with($key, ['value' => 1])->andReturn(true);
+        $this->redis->shouldReceive('forever')->once()->with($key, ['value' => 1])->andReturn(true);
+        $this->swoole->shouldReceive('get')->once()->with($key)->andReturn(['value' => 1]);
+        $this->swoole->shouldReceive('forever')->once()->with($key, ['value' => 3])->andReturn(true);
+        $this->redis->shouldReceive('forever')->once()->with($key, ['value' => 3])->andReturn(true);
 
-        $this->store->increment($key);
-        $this->store->increment($key, 2);
+        $this->assertSame(1, $this->store->increment($key));
+        $this->assertSame(3, $this->store->increment($key, 2));
     }
 
     public function testIncrementWithTTL()
@@ -183,7 +183,7 @@ class CacheStackStoreTest extends TestCase
         $this->swoole->shouldReceive('put')->once()->with($key, ['value' => 2, 'expiration' => $expiration], $ttl)->andReturn(true);
         $this->redis->shouldReceive('put')->once()->with($key, ['value' => 2, 'expiration' => $expiration], $ttl)->andReturn(true);
 
-        $this->store->increment($key);
+        $this->assertSame(2, $this->store->increment($key));
     }
 
     public function testDecrement()
@@ -194,14 +194,14 @@ class CacheStackStoreTest extends TestCase
 
         $this->swoole->shouldReceive('get')->once()->with($key)->andReturn(null);
         $this->redis->shouldReceive('get')->once()->with($key)->andReturn(null);
-        $this->swoole->shouldReceive('forever')->once()->with($key, ['value' => -1, 'expiration' => 0])->andReturn(true);
-        $this->redis->shouldReceive('forever')->once()->with($key, ['value' => -1, 'expiration' => 0])->andReturn(true);
-        $this->swoole->shouldReceive('get')->once()->with($key)->andReturn(['value' => -1, 'expiration' => 0]);
-        $this->swoole->shouldReceive('forever')->once()->with($key, ['value' => -3, 'expiration' => 0])->andReturn(true);
-        $this->redis->shouldReceive('forever')->once()->with($key, ['value' => -3, 'expiration' => 0])->andReturn(true);
+        $this->swoole->shouldReceive('forever')->once()->with($key, ['value' => -1])->andReturn(true);
+        $this->redis->shouldReceive('forever')->once()->with($key, ['value' => -1])->andReturn(true);
+        $this->swoole->shouldReceive('get')->once()->with($key)->andReturn(['value' => -1]);
+        $this->swoole->shouldReceive('forever')->once()->with($key, ['value' => -3])->andReturn(true);
+        $this->redis->shouldReceive('forever')->once()->with($key, ['value' => -3])->andReturn(true);
 
-        $this->store->decrement($key);
-        $this->store->decrement($key, 2);
+        $this->assertSame(-1, $this->store->decrement($key));
+        $this->assertSame(-3, $this->store->decrement($key, 2));
     }
 
     public function testDecrementWithTTL()
@@ -216,15 +216,15 @@ class CacheStackStoreTest extends TestCase
         $this->swoole->shouldReceive('put')->once()->with($key, ['value' => 1, 'expiration' => $expiration], $ttl)->andReturn(true);
         $this->redis->shouldReceive('put')->once()->with($key, ['value' => 1, 'expiration' => $expiration], $ttl)->andReturn(true);
 
-        $this->store->decrement($key);
+        $this->assertSame(1, $this->store->decrement($key));
     }
 
     public function testForever()
     {
         $this->createStores();
 
-        $this->swoole->shouldReceive('forever')->once()->with('foo', ['value' => 'bar', 'expiration' => 0])->andReturn(true);
-        $this->redis->shouldReceive('forever')->once()->with('foo', ['value' => 'bar', 'expiration' => 0])->andReturn(true);
+        $this->swoole->shouldReceive('forever')->once()->with('foo', ['value' => 'bar'])->andReturn(true);
+        $this->redis->shouldReceive('forever')->once()->with('foo', ['value' => 'bar'])->andReturn(true);
 
         $this->assertTrue($this->store->forever('foo', 'bar'));
     }
@@ -233,7 +233,7 @@ class CacheStackStoreTest extends TestCase
     {
         $this->createStores();
 
-        $this->swoole->shouldReceive('forever')->once()->with('foo', ['value' => 'bar', 'expiration' => 0])->andReturn(false);
+        $this->swoole->shouldReceive('forever')->once()->with('foo', ['value' => 'bar'])->andReturn(false);
 
         $this->assertFalse($this->store->forever('foo', 'bar'));
     }
@@ -321,6 +321,20 @@ class CacheStackStoreTest extends TestCase
         $array->shouldReceive('put')->once()->with($key, $record, $ttl)->andReturn(true);
         $swoole->shouldReceive('put')->once()->with($key, $record, $ttl)->andReturn(false);
         $this->assertFalse($store->put($key, $value, $ttl));
+    }
+
+    public function testInvalidRecord()
+    {
+        $this->createStores();
+
+        $key = 'foo';
+
+        $this->swoole->shouldReceive('get')->once()->with($key)->andReturn('invalid record');
+        $this->assertNull($this->store->get($key));
+
+        $this->swoole->shouldReceive('get')->once()->with($key)->andReturn(null);
+        $this->redis->shouldReceive('get')->once()->with($key)->andReturn('invalid record');
+        $this->assertNull($this->store->get($key));
     }
 
     private function createStores()

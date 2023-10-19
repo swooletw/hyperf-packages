@@ -19,7 +19,7 @@ class StackStore implements Store
     {
         $record = $this->getOrRestoreRecord($key);
 
-        return $record ? $record['value'] : null;
+        return $record['value'] ?? null;
     }
 
     public function many(array $keys): array
@@ -56,17 +56,11 @@ class StackStore implements Store
             return tap($value, fn ($value) => $this->forever($key, $value));
         }
 
-        $newRecord = [
-            'value' => $record['value'] + $value,
-            'expiration' => $record['expiration'],
-        ];
+        $newValue = $record['value'] + $value;
+        $newRecord = ['value' => $newValue] + $record;
 
-        if ($newRecord['expiration'] > 0) {
-            return $this->putRecord($key, $newRecord);
-        }
-
-        if ($this->forever($key, $newRecord['value'])) {
-            return $newRecord['value'];
+        if ($this->putRecord($key, $newRecord)) {
+            return $newValue;
         }
 
         return false;
@@ -79,8 +73,7 @@ class StackStore implements Store
 
     public function forever(string $key, mixed $value): bool
     {
-        $expiration = 0;
-        $record = compact('value', 'expiration');
+        $record = compact('value');
 
         return $this->buildStoresCallStack(
             static function (Store $store, Closure $next, string $key, array $record): bool {
@@ -132,16 +125,18 @@ class StackStore implements Store
         return $this->buildStoresCallStack(
             static function (Store $store, Closure $next, string $key, Closure $putToStore): ?array {
                 if (! is_null($record = $store->get($key))) {
-                    return $record;
+                    return (array) $record;
                 }
 
                 if (is_null($record = $next($key, $putToStore))) {
                     return null;
                 }
 
-                $putToStore($store, $key, $record);
+                if ($putToStore($store, $key, $record)) {
+                    return $record;
+                }
 
-                return $record;
+                return null;
             },
             static fn () => null
         )($key, $this->putToStore());
@@ -164,6 +159,14 @@ class StackStore implements Store
     protected function putToStore(): Closure
     {
         return static function (Store $store, string $key, array $record): bool {
+            if (! array_key_exists('value', $record)) {
+                return false;
+            }
+
+            if (! array_key_exists('expiration', $record) && ! array_key_exists('ttl', $record)) {
+                return $store->forever($key, $record);
+            }
+
             $currentTimestamp = Carbon::now()->getTimestamp();
             $value = $record['value'];
             $expiration = $record['expiration'] ?? $currentTimestamp + $record['ttl'];
