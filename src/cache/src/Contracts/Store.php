@@ -6,7 +6,6 @@ namespace SwooleTW\Hyperf\Cache\Contracts;
 
 interface Store
 {
-    // TODO: $key should support array?
     /**
      * Retrieve an item from the cache by key.
      */
