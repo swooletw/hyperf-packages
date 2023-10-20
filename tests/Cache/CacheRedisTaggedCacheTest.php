@@ -58,7 +58,9 @@ class CacheRedisTaggedCacheTest extends TestCase
             ->andReturn(['0', ['tag:author:entries:name' => 0, 'tag:author:entries:age' => 0]]);
         $this->redisProxy->shouldReceive('del')->once()->with(
             'prefix:tag:people:entries:name',
-            'prefix:tag:people:entries:age',
+            'prefix:tag:people:entries:age'
+        )->andReturn('OK');
+        $this->redisProxy->shouldReceive('del')->once()->with(
             'prefix:tag:author:entries:name',
             'prefix:tag:author:entries:age'
         )->andReturn('OK');

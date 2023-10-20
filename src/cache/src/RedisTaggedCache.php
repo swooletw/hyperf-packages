@@ -104,12 +104,9 @@ class RedisTaggedCache extends TaggedCache
      */
     protected function flushValues(): void
     {
-        $entries = $this->tags->entries()
-            ->map(fn (string $key) => $this->store->getPrefix() . $key)
-            ->chunk(1000);
-
-        foreach ($entries as $cacheKeys) {
-            $this->store->connection()->del(...$cacheKeys);
+        foreach ($this->tags->chunkedEntries() as $entries) {
+            $keys = array_map(fn (string $key) => $this->store->getPrefix() . $key, $entries);
+            $this->store->connection()->del(...$keys);
         }
     }
 

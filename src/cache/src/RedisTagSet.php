@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Cache;
 
-use Hyperf\Collection\Collection;
 use SwooleTW\Hyperf\Cache\Contracts\Store;
 
 class RedisTagSet extends TagSet
@@ -35,38 +34,9 @@ class RedisTagSet extends TagSet
     /**
      * Get all of the cache entry keys for the tag set.
      */
-    public function entries(): Collection
+    public function chunkedEntries(): RedisTaggedCacheChunkedEntries
     {
-        // TODO: Lazy Collection
-        $collection = collect();
-
-        foreach ($this->tagIds() as $tagKey) {
-            $cursor = $defaultCursorValue = '0';
-
-            do {
-                [$cursor, $entries] = $this->store->connection()->zscan(
-                    $this->store->getPrefix() . $tagKey,
-                    $cursor,
-                    ['match' => '*', 'count' => 1000]
-                );
-
-                if (! is_array($entries)) {
-                    break;
-                }
-
-                $entries = array_unique(array_keys($entries));
-
-                if (count($entries) === 0) {
-                    continue;
-                }
-
-                foreach ($entries as $entry) {
-                    $collection[] = $entry;
-                }
-            } while (((string) $cursor) !== $defaultCursorValue);
-        }
-
-        return $collection;
+        return new RedisTaggedCacheChunkedEntries($this->store, $this->tagIds());
     }
 
     /**
