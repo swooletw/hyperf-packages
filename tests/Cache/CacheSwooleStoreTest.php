@@ -12,9 +12,6 @@ use SwooleTW\Hyperf\Cache\SwooleStore;
 use SwooleTW\Hyperf\Cache\SwooleTableManager;
 use SwooleTW\Hyperf\Tests\TestCase;
 
-use function Hyperf\Coroutine\go;
-use function Hyperf\Coroutine\run;
-
 /**
  * @internal
  * @coversNothing
@@ -58,9 +55,7 @@ class CacheSwooleStoreTest extends TestCase
 
         $store = new SwooleStore($table);
 
-        run(function () use ($store) {
-            $store->interval('foo', fn () => 'bar', 1);
-        });
+        $store->interval('foo', fn () => 'bar', 1);
 
         $this->assertEquals('bar', $store->get('foo'));
     }
@@ -83,7 +78,7 @@ class CacheSwooleStoreTest extends TestCase
 
         $store = new SwooleStore($table);
 
-        run(fn () => $store->put('foo', 'bar', 5));
+        $store->put('foo', 'bar', 5);
 
         $this->assertEquals('bar', $store->get('foo'));
     }
@@ -94,7 +89,7 @@ class CacheSwooleStoreTest extends TestCase
 
         $store = new SwooleStore($table);
 
-        run(fn () => $store->putMany(['foo' => 'bar', 'bar' => 'baz'], 5));
+        $store->putMany(['foo' => 'bar', 'bar' => 'baz'], 5);
 
         $this->assertEquals('bar', $store->get('foo'));
         $this->assertEquals('baz', $store->get('bar'));
@@ -106,13 +101,13 @@ class CacheSwooleStoreTest extends TestCase
 
         $store = new SwooleStore($table);
 
-        run(fn () => $store->increment('counter'));
+        $store->increment('counter');
         $this->assertEquals(1, $store->get('counter'));
 
-        run(fn () => $store->increment('counter', 2));
+        $store->increment('counter', 2);
         $this->assertEquals(3, $store->get('counter'));
 
-        run(fn () => $store->decrement('counter', 2));
+        $store->decrement('counter', 2);
         $this->assertEquals(1, $store->get('counter'));
     }
 
@@ -122,7 +117,7 @@ class CacheSwooleStoreTest extends TestCase
 
         $store = new SwooleStore($table);
 
-        run(fn () => $store->forever('foo', 'bar'));
+        $store->forever('foo', 'bar');
 
         $this->assertEquals('bar', $store->get('foo'));
     }
@@ -133,15 +128,13 @@ class CacheSwooleStoreTest extends TestCase
 
         $store = new SwooleStore($table);
 
-        run(function () use ($store) {
-            $store->interval('foo', fn () => Str::random(10), 1);
-        });
+        $store->interval('foo', fn () => Str::random(10), 1);
 
         $this->assertTrue(is_string($first = $store->get('foo')));
 
         Carbon::setTestNow(now()->addMinutes(1));
 
-        run(fn () => $store->refreshIntervalCaches());
+        $store->refreshIntervalCaches();
 
         $this->assertTrue(is_string($second = $store->get('foo')));
         $this->assertNotEquals($first, $second);
@@ -155,12 +148,12 @@ class CacheSwooleStoreTest extends TestCase
 
         $store = new SwooleStore($table);
 
-        run(fn () => $store->put('foo', 'bar', 5));
+        $store->put('foo', 'bar', 5);
         $this->assertTrue($store->forget('foo'));
 
         $this->assertNull($store->get('foo'));
 
-        run(fn () => $store->put('foo', 'bar', 5));
+        $store->put('foo', 'bar', 5);
         $this->assertTrue($store->flush());
 
         $this->assertNull($store->get('foo'));
@@ -172,10 +165,7 @@ class CacheSwooleStoreTest extends TestCase
 
         $store = new SwooleStore($table);
 
-        run(function () use ($store) {
-            $store->interval('foo', fn () => 'bar', 1);
-        });
-
+        $store->interval('foo', fn () => 'bar', 1);
         $this->assertTrue($store->flush());
 
         $this->assertEquals('bar', $store->get('foo'));
@@ -188,7 +178,7 @@ class CacheSwooleStoreTest extends TestCase
         $store = new SwooleStore($table);
 
         Carbon::setTestNow('2000-01-01 00:00:00.500000');
-        run(fn () => $store->put('foo', 'bar', 1));
+        $store->put('foo', 'bar', 1);
 
         Carbon::setTestNow('2000-01-01 00:00:01.499999');
         $this->assertSame('bar', $store->get('foo'));
@@ -215,16 +205,9 @@ class CacheSwooleStoreTest extends TestCase
 
         $store = new SwooleStore($table);
 
-        run(function () use ($store) {
-            for ($i = 0; $i < 200; ++$i) {
-                go(function () use ($store, $i) {
-                    for ($j = 0; $j < 10; ++$j) {
-                        $count = $i * 10 + $j;
-                        $store->put(sha1("key:{$count}"), $count, 100);
-                    }
-                });
-            }
-        });
+        for ($i = 0; $i < 2000; ++$i) {
+            $store->put(sha1("key:{$i}"), $i, 100);
+        }
 
         $this->assertNull($store->get(sha1('key:0')));
         $this->assertSame(1999, $store->get(sha1('key:1999')));

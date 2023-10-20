@@ -10,8 +10,6 @@ use Laravel\SerializableClosure\SerializableClosure;
 use Swoole\Table;
 use SwooleTW\Hyperf\Cache\Contracts\Store;
 
-use function Hyperf\Coroutine\defer;
-
 class SwooleStore implements Store
 {
     protected const ONE_YEAR = 31536000;
@@ -80,11 +78,9 @@ class SwooleStore implements Store
             'expiration' => $now + $seconds,
         ]);
 
-        defer(function () {
-            while ($this->tableIsFull()) {
-                $this->removeAlmostExpireRecords();
-            }
-        });
+        while ($this->tableIsFull()) {
+            $this->removeAlmostExpireRecords();
+        }
 
         return $result;
     }
