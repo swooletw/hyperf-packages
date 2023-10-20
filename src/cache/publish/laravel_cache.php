@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Hyperf\Stringable\Str;
+use SwooleTW\Hyperf\Cache\SwooleStore;
 
 use function Hyperf\Support\env;
 
@@ -55,7 +56,7 @@ return [
             'driver' => 'swoole',
             'table' => 'default',
             'memory_limit_buffer' => 0.05,
-            'eviction_policy' => 'lru', // lru, lfu, ttl, noeviction
+            'eviction_policy' => SwooleStore::EVICTION_POLICY_LRU,
             'eviction_quantity' => 10,
             'eviction_interval' => 10000, // milliseconds
         ],
