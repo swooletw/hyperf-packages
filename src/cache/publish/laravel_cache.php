@@ -54,6 +54,10 @@ return [
         'swoole' => [
             'driver' => 'swoole',
             'table' => 'default',
+            'memory_limit_buffer' => 0.05,
+            'eviction_policy' => 'lru', // lru, lfu, ttl, noeviction
+            'eviction_quantity' => 10,
+            'eviction_interval' => 10000, // milliseconds
         ],
 
         'stack' => [

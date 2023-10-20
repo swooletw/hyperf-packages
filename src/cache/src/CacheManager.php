@@ -10,6 +10,7 @@ use Hyperf\Redis\RedisFactory;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface as DispatcherContract;
+use Swoole\Timer;
 use SwooleTW\Hyperf\Cache\Contracts\Factory as FactoryContract;
 use SwooleTW\Hyperf\Cache\Contracts\Repository as RepositoryContract;
 use SwooleTW\Hyperf\Cache\Contracts\Store;
@@ -240,8 +241,18 @@ class CacheManager implements FactoryContract
     protected function createSwooleDriver(array $config): Repository
     {
         $cacheTable = $this->app->get(SwooleTableManager::class)->get($config['table']);
+        $store = new SwooleStore($cacheTable);
+        $repository = $this->repository($store);
 
-        return $this->repository(new SwooleStore($cacheTable));
+        Timer::tick($config['eviction_interval'] ?? 10000, function () use ($store, $config) {
+            $store->evictRecordsWhenMemoryLimitIsReached(
+                $config['memory_limit_buffer'] ?? 0.05,
+                $config['eviction_policy'] ?? SwooleStore::EVICTION_POLICY_LRU,
+                $config['eviction_quantity'] ?? 10
+            );
+        });
+
+        return $repository;
     }
 
     /**

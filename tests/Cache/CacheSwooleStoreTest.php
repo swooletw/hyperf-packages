@@ -20,6 +20,8 @@ class CacheSwooleStoreTest extends TestCase
 {
     public function testCanRetrieveItemsFromStore()
     {
+        Carbon::setTestNow(now());
+
         $table = $this->createSwooleTable();
 
         $table->set('foo', ['value' => serialize('bar'), 'expiration' => time() + 100]);
@@ -27,6 +29,14 @@ class CacheSwooleStoreTest extends TestCase
         $store = new SwooleStore($table);
 
         $this->assertEquals('bar', $store->get('foo'));
+        $this->assertEquals($this->getCurrentTimestamp(), $table->get('foo')['last_used_at']);
+        $this->assertEquals(1, $table->get('foo')['used_count']);
+
+        Carbon::setTestNow(now()->addMinutes(1));
+
+        $store->get('foo');
+        $this->assertEquals($this->getCurrentTimestamp(), $table->get('foo')['last_used_at']);
+        $this->assertEquals(2, $table->get('foo')['used_count']);
     }
 
     public function testMissingItemsReturnNull()
@@ -199,14 +209,19 @@ class CacheSwooleStoreTest extends TestCase
         $this->assertFalse($table->get('foo'));
     }
 
-    public function testAutoRemoveRecordWhenTableIsfull()
+    public function testEvictRecordsWhenMemoryLimitIsReached()
     {
         $table = $this->createSwooleTable();
 
         $store = new SwooleStore($table);
 
-        for ($i = 0; $i < 2000; ++$i) {
-            $store->put(sha1("key:{$i}"), $i, 100);
+        for ($i = 0; $i < 200; ++$i) {
+            for ($j = 0; $j < 10; ++$j) {
+                $count = $i * 10 + $j;
+                $store->put(sha1("key:{$count}"), $count, 100);
+            }
+
+            $store->evictRecordsWhenMemoryLimitIsReached(0.05, SwooleStore::EVICTION_POLICY_TTL, 10);
         }
 
         $this->assertNull($store->get(sha1('key:0')));
@@ -217,5 +232,10 @@ class CacheSwooleStoreTest extends TestCase
     private function createSwooleTable()
     {
         return (new SwooleTableManager(m::mock(ContainerInterface::class)))->createTable(1024, 10240, 0.2);
+    }
+
+    private function getCurrentTimestamp()
+    {
+        return Carbon::now()->getPreciseTimestamp(6) / 1000000;
     }
 }

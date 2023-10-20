@@ -23,6 +23,8 @@ class SwooleTableManager
 
         $table->column('value', Table::TYPE_STRING, $bytes);
         $table->column('expiration', Table::TYPE_FLOAT);
+        $table->column('last_used_at', Table::TYPE_FLOAT);
+        $table->column('used_count', Table::TYPE_INT);
 
         $table->create();
 

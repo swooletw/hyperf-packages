@@ -6,15 +6,22 @@ namespace SwooleTW\Hyperf\Cache;
 
 use Carbon\Carbon;
 use Closure;
+use InvalidArgumentException;
 use Laravel\SerializableClosure\SerializableClosure;
 use Swoole\Table;
 use SwooleTW\Hyperf\Cache\Contracts\Store;
 
 class SwooleStore implements Store
 {
-    protected const ONE_YEAR = 31536000;
+    public const EVICTION_POLICY_LRU = 'lru';
 
-    protected const CAPACITY_BUFFER = 10;
+    public const EVICTION_POLICY_LFU = 'lfu';
+
+    public const EVICTION_POLICY_TTL = 'ttl';
+
+    public const EVICTION_POLICY_NOEVICTION = 'noeviction';
+
+    protected const ONE_YEAR = 31536000;
 
     /**
      * All of the registered interval caches.
@@ -31,7 +38,7 @@ class SwooleStore implements Store
      */
     public function get(string $key): mixed
     {
-        $record = $this->table->get($key);
+        $record = $this->getRecord($key);
 
         if (! $this->recordIsFalseOrExpired($record)) {
             return unserialize($record['value']);
@@ -73,16 +80,10 @@ class SwooleStore implements Store
     {
         $now = $this->getCurrentTimestamp();
 
-        $result = $this->table->set($key, [
+        return $this->table->set($key, [
             'value' => serialize($value),
             'expiration' => $now + $seconds,
         ]);
-
-        while ($this->tableIsFull()) {
-            $this->removeAlmostExpireRecords();
-        }
-
-        return $result;
     }
 
     /**
@@ -102,7 +103,7 @@ class SwooleStore implements Store
      */
     public function increment(string $key, int $value = 1): int
     {
-        $record = $this->table->get($key);
+        $record = $this->getRecord($key);
 
         if ($this->recordIsFalseOrExpired($record)) {
             return tap($value, fn ($value) => $this->put($key, $value, static::ONE_YEAR));
@@ -221,6 +222,38 @@ class SwooleStore implements Store
     }
 
     /**
+     * Evict records when memory limit is reached.
+     */
+    public function evictRecordsWhenMemoryLimitIsReached(
+        float $memoryLimitBuffer,
+        string $evictionPolicy,
+        int $evictionQuantity
+    ): void {
+        while ($this->memoryLimitIsReached($memoryLimitBuffer)) {
+            $this->evictRecords($evictionPolicy, $evictionQuantity);
+        }
+    }
+
+    /**
+     * Retrieve an record from the table and write used info by key.
+     */
+    protected function getRecord(string $key): array|false
+    {
+        $record = $this->table->get($key);
+
+        if (! $record) {
+            return false;
+        }
+
+        $record['last_used_at'] = $this->getCurrentTimestamp();
+        $record['used_count'] = ($record['used_count'] ?? 0) + 1;
+
+        $this->table->set($key, $record);
+
+        return $record;
+    }
+
+    /**
      * Get the current UNIX timestamp, with microsecond.
      */
     protected function getCurrentTimestamp(): float
@@ -229,23 +262,63 @@ class SwooleStore implements Store
     }
 
     /**
-     * Determine if the table is full.
+     * Determine if the memory limit is reached.
      */
-    protected function tableIsFull(): bool
+    protected function memoryLimitIsReached(float $memoryLimitBuffer): bool
     {
-        return $this->table->stats()['available_slice_num'] < static::CAPACITY_BUFFER
-                    || $this->table->getSize() - static::CAPACITY_BUFFER < $this->table->stats()['num'];
+        $stats = $this->table->stats();
+        $conflictRate = 1 - ($stats['available_slice_num'] / $stats['total_slice_num']);
+        $memoryUsage = $this->table->stats()['num'] / $this->table->getSize();
+        $allowedMemoryUsage = 1 - $memoryLimitBuffer;
+
+        return $conflictRate > $allowedMemoryUsage || $memoryUsage > $allowedMemoryUsage;
     }
 
     /**
-     * Remove the almost expire records.
+     * Evict records.
      */
-    protected function removeAlmostExpireRecords(): void
+    protected function evictRecords(string $policy, int $quantity)
+    {
+        if ($policy === static::EVICTION_POLICY_NOEVICTION) {
+            return;
+        }
+
+        if ($policy === static::EVICTION_POLICY_LRU) {
+            return $this->evictRecordsByLRU($quantity);
+        }
+
+        if ($policy === static::EVICTION_POLICY_LFU) {
+            return $this->evictRecordsByLFU($quantity);
+        }
+
+        if ($policy === static::EVICTION_POLICY_TTL) {
+            return $this->evictRecordsByTTL($quantity);
+        }
+
+        throw new InvalidArgumentException("Eviction policy [{$policy}] is not supported.");
+    }
+
+    protected function evictRecordsByLRU(int $quantity): void
+    {
+        $this->handleRecordsEviction($quantity, 'last_used_at');
+    }
+
+    protected function evictRecordsByLFU(int $quantity): void
+    {
+        $this->handleRecordsEviction($quantity, 'used_count');
+    }
+
+    protected function evictRecordsByTTL(int $quantity): void
+    {
+        $this->handleRecordsEviction($quantity, 'expiration');
+    }
+
+    protected function handleRecordsEviction(int $quantity, string $column): void
     {
         collect($this->table)
-            ->map(fn ($record) => $record['expiration'])
+            ->map(fn ($record) => $record[$column])
             ->sort()
-            ->take(static::CAPACITY_BUFFER)
+            ->take($quantity)
             ->each(fn ($_, $key) => $this->forget($key));
     }
 }
