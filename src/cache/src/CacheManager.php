@@ -249,7 +249,7 @@ class CacheManager implements FactoryContract
      */
     protected function createStackDriver(array $config): Repository
     {
-        $stores = array_map(fn ($store) => $this->store($store)->getStore(), $config['stores']);
+        $stores = array_map(fn ($store) => $this->get($store)->getStore(), $config['stores']);
 
         return $this->repository(new StackStore($stores));
     }
