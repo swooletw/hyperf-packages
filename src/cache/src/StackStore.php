@@ -75,44 +75,23 @@ class StackStore implements Store
     {
         $record = compact('value');
 
-        return $this->buildStoresCallStack(
-            static function (Store $store, Closure $next, string $key, array $record): bool {
-                if (! $store->forever($key, $record)) {
-                    return false;
-                }
-
-                return $next($key, $record);
-            },
-            static fn () => true
-        )($key, $record);
+        return $this->callStores(
+            fn (Store $store) => $store->forever($key, $record),
+        );
     }
 
     public function forget(string $key): bool
     {
-        return $this->buildStoresCallStack(
-            static function (Store $store, Closure $next, string $key): bool {
-                if (! $store->forget($key)) {
-                    return false;
-                }
-
-                return $next($key);
-            },
-            static fn () => true
-        )($key);
+        return $this->callStores(
+            fn (Store $store) => $store->forget($key),
+        );
     }
 
     public function flush(): bool
     {
-        return $this->buildStoresCallStack(
-            static function (Store $store, Closure $next): bool {
-                if (! $store->flush()) {
-                    return false;
-                }
-
-                return $next();
-            },
-            static fn () => true
-        )();
+        return $this->callStores(
+            static fn (Store $store) => $store->flush(),
+        );
     }
 
     public function getPrefix(): string
@@ -122,67 +101,69 @@ class StackStore implements Store
 
     protected function getOrRestoreRecord(string $key): mixed
     {
-        return $this->buildStoresCallStack(
-            static function (Store $store, Closure $next, string $key, Closure $putToStore): ?array {
+        return $this->callStoresStacked(
+            function (Store $store, Closure $next) use ($key): ?array {
                 if (! is_null($record = $store->get($key))) {
                     return (array) $record;
                 }
 
-                if (is_null($record = $next($key, $putToStore))) {
+                if (is_null($record = $next())) {
                     return null;
                 }
 
-                if ($putToStore($store, $key, $record)) {
+                if ($this->putToStore($store, $key, $record)) {
                     return $record;
                 }
 
                 return null;
             },
             static fn () => null
-        )($key, $this->putToStore());
+        );
     }
 
     protected function putRecord(string $key, array $record): bool
     {
-        return $this->buildStoresCallStack(
-            static function (Store $store, Closure $next, string $key, array $record, Closure $putToStore): bool {
-                if (! $putToStore($store, $key, $record)) {
-                    return false;
-                }
-
-                return $next($key, $record, $putToStore);
-            },
-            static fn () => true
-        )($key, $record, $this->putToStore());
+        return $this->callStores(
+            fn (Store $store) => $this->putToStore($store, $key, $record),
+        );
     }
 
-    protected function putToStore(): Closure
+    protected function putToStore(Store $store, string $key, array $record): bool
     {
-        return static function (Store $store, string $key, array $record): bool {
-            if (! array_key_exists('value', $record)) {
-                return false;
-            }
+        if (! array_key_exists('value', $record)) {
+            return false;
+        }
 
-            if (! array_key_exists('expiration', $record) && ! array_key_exists('ttl', $record)) {
-                return $store->forever($key, $record);
-            }
+        if (! array_key_exists('expiration', $record) && ! array_key_exists('ttl', $record)) {
+            return $store->forever($key, $record);
+        }
 
-            $currentTimestamp = Carbon::now()->getTimestamp();
-            $value = $record['value'];
-            $expiration = $record['expiration'] ?? $currentTimestamp + $record['ttl'];
-            $ttl = $record['ttl'] ?? $record['expiration'] - $currentTimestamp;
-            $normalizedRecord = compact('value', 'expiration');
+        $currentTimestamp = Carbon::now()->getTimestamp();
+        $value = $record['value'];
+        $expiration = $record['expiration'] ?? $currentTimestamp + $record['ttl'];
+        $ttl = $record['ttl'] ?? $record['expiration'] - $currentTimestamp;
+        $normalizedRecord = compact('value', 'expiration');
 
-            return $store->put($key, $normalizedRecord, $ttl);
-        };
+        return $store->put($key, $normalizedRecord, $ttl);
     }
 
-    protected function buildStoresCallStack(Closure $handler, Closure $bottomLayer): mixed
+    protected function callStoresStacked(Closure $handler, Closure $bottomLayer): mixed
     {
         return array_reduce(array_reverse($this->stores), function ($stack, $store) use ($handler) {
-            return function (...$args) use ($stack, $store, $handler) {
-                return $handler($store, $stack, ...$args);
+            return function () use ($stack, $store, $handler) {
+                return $handler($store, $stack);
             };
-        }, $bottomLayer);
+        }, $bottomLayer)();
+    }
+
+    protected function callStores(Closure $handler): bool
+    {
+        foreach ($this->stores as $store) {
+            if (! $handler($store)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
