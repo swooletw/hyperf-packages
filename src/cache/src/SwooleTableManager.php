@@ -31,7 +31,7 @@ class SwooleTableManager
 
     public function get(string $name): Table
     {
-        return $this->tables[$name] ?? $this->resolve($name);
+        return $this->tables[$name] ??= $this->resolve($name);
     }
 
     protected function resolve(string $name): Table
