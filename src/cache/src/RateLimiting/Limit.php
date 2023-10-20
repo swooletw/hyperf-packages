@@ -65,7 +65,7 @@ class Limit
     /**
      * Create a new unlimited rate limit.
      */
-    public static function none(): static
+    public static function none(): Unlimited
     {
         return new Unlimited();
     }

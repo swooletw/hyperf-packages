@@ -9,7 +9,7 @@ class NoLock extends Lock
     /**
      * Attempt to acquire the lock.
      */
-    public function acquire(): true
+    public function acquire(): bool
     {
         return true;
     }
@@ -17,7 +17,7 @@ class NoLock extends Lock
     /**
      * Release the lock.
      */
-    public function release(): true
+    public function release(): bool
     {
         return true;
     }

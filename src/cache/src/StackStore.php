@@ -11,7 +11,7 @@ use SwooleTW\Hyperf\Cache\Contracts\Store;
 class StackStore implements Store
 {
     /**
-     * @param array<Store> $stores
+     * @param Store[] $stores
      */
     public function __construct(protected array $stores) {}
 

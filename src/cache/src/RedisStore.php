@@ -144,7 +144,7 @@ class RedisStore extends TaggableStore implements LockProvider
     /**
      * Get a lock instance.
      */
-    public function lock(string $name, int $seconds = 0, ?string $owner = null): Lock
+    public function lock(string $name, int $seconds = 0, ?string $owner = null): RedisLock
     {
         return new RedisLock($this->lockConnection(), $this->prefix . $name, $seconds, $owner);
     }
@@ -152,7 +152,7 @@ class RedisStore extends TaggableStore implements LockProvider
     /**
      * Restore a lock instance using the owner identifier.
      */
-    public function restoreLock(string $name, string $owner): Lock
+    public function restoreLock(string $name, string $owner): RedisLock
     {
         return $this->lock($name, 0, $owner);
     }

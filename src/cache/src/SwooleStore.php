@@ -31,7 +31,7 @@ class SwooleStore implements Store
     /**
      * Retrieve an item from the cache by key.
      */
-    public function get(array|string $key): mixed
+    public function get(string $key): mixed
     {
         $record = $this->table->get($key);
 

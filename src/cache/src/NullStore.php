@@ -13,7 +13,7 @@ class NullStore extends TaggableStore implements LockProvider
     /**
      * Retrieve an item from the cache by key.
      */
-    public function get(string $key): null
+    public function get(string $key): mixed
     {
         return null;
     }
