@@ -6,6 +6,7 @@ namespace SwooleTW\Hyperf\Cache;
 
 use SwooleTW\Hyperf\Cache\Contracts\Factory;
 use SwooleTW\Hyperf\Cache\Contracts\Store;
+use SwooleTW\Hyperf\Cache\Processes\EvictRecords;
 
 class ConfigProvider
 {
@@ -15,6 +16,9 @@ class ConfigProvider
             'dependencies' => [
                 Factory::class => CacheManager::class,
                 Store::class => fn ($container) => $container->get(CacheManager::class)->driver(),
+            ],
+            'processes' => [
+                EvictRecords::class,
             ],
             'publish' => [
                 [
