@@ -7,6 +7,7 @@ namespace SwooleTW\Hyperf\Foundation\Macros;
 use Carbon\Carbon;
 use Hyperf\Collection\Arr;
 use Hyperf\Context\Context;
+use Hyperf\Context\RequestContext;
 use Hyperf\HttpServer\Request;
 use Hyperf\Stringable\Str;
 use stdClass;
@@ -328,5 +329,21 @@ class RequestMacro
 
             return $this;
         };
+    }
+
+    public function getClientIp()
+    {
+        return function () {
+            if (! RequestContext::has()) {
+                return '127.0.0.1';
+            }
+            return $this->getHeaderLine('x-real-ip')
+                ?: $this->server('remote_addr');
+        };
+    }
+
+    public function ip()
+    {
+        return $this->getClientIp();
     }
 }
