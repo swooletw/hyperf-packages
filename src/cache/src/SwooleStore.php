@@ -29,7 +29,7 @@ class SwooleStore implements Store
     protected array $intervals = [];
 
     /**
-     * Create a new Octane store.
+     * Create a new Swoole store.
      */
     public function __construct(protected Table $table) {}
 
