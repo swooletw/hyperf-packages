@@ -31,7 +31,12 @@ class SwooleStore implements Store
     /**
      * Create a new Swoole store.
      */
-    public function __construct(protected Table $table) {}
+    public function __construct(
+        protected Table $table,
+        protected float $memoryLimitBuffer,
+        protected string $evictionPolicy,
+        protected float $evictionProportion
+    ) {}
 
     /**
      * Retrieve an item from the cache by key.
@@ -80,10 +85,14 @@ class SwooleStore implements Store
     {
         $now = $this->getCurrentTimestamp();
 
-        return $this->table->set($key, [
+        $result = $this->table->set($key, [
             'value' => serialize($value),
             'expiration' => $now + $seconds,
         ]);
+
+        $this->evictRecordsWhenMemoryLimitIsReached();
+
+        return $result;
     }
 
     /**
@@ -224,13 +233,10 @@ class SwooleStore implements Store
     /**
      * Evict records when memory limit is reached.
      */
-    public function evictRecordsWhenMemoryLimitIsReached(
-        float $memoryLimitBuffer,
-        string $evictionPolicy,
-        float $evictionProportion
-    ): void {
-        while ($this->memoryLimitIsReached($memoryLimitBuffer)) {
-            $this->evictRecords($evictionPolicy, $evictionProportion);
+    public function evictRecordsWhenMemoryLimitIsReached(): void
+    {
+        while ($this->memoryLimitIsReached()) {
+            $this->evictRecords();
         }
     }
 
@@ -264,12 +270,12 @@ class SwooleStore implements Store
     /**
      * Determine if the memory limit is reached.
      */
-    protected function memoryLimitIsReached(float $memoryLimitBuffer): bool
+    protected function memoryLimitIsReached(): bool
     {
         $stats = $this->table->stats();
         $conflictRate = 1 - ($stats['available_slice_num'] / $stats['total_slice_num']);
         $memoryUsage = $this->table->stats()['num'] / $this->table->getSize();
-        $allowedMemoryUsage = 1 - $memoryLimitBuffer;
+        $allowedMemoryUsage = 1 - $this->memoryLimitBuffer;
 
         return $conflictRate > $allowedMemoryUsage || $memoryUsage > $allowedMemoryUsage;
     }
@@ -277,45 +283,45 @@ class SwooleStore implements Store
     /**
      * Evict records.
      */
-    protected function evictRecords(string $policy, float $proportion)
+    protected function evictRecords()
     {
-        if ($policy === static::EVICTION_POLICY_NOEVICTION) {
+        if ($this->evictionPolicy === static::EVICTION_POLICY_NOEVICTION) {
             return;
         }
 
-        if ($policy === static::EVICTION_POLICY_LRU) {
-            return $this->evictRecordsByLRU($proportion);
+        if ($this->evictionPolicy === static::EVICTION_POLICY_LRU) {
+            return $this->evictRecordsByLRU();
         }
 
-        if ($policy === static::EVICTION_POLICY_LFU) {
-            return $this->evictRecordsByLFU($proportion);
+        if ($this->evictionPolicy === static::EVICTION_POLICY_LFU) {
+            return $this->evictRecordsByLFU();
         }
 
-        if ($policy === static::EVICTION_POLICY_TTL) {
-            return $this->evictRecordsByTTL($proportion);
+        if ($this->evictionPolicy === static::EVICTION_POLICY_TTL) {
+            return $this->evictRecordsByTTL();
         }
 
-        throw new InvalidArgumentException("Eviction policy [{$policy}] is not supported.");
+        throw new InvalidArgumentException("Eviction policy [{$this->evictionPolicy}] is not supported.");
     }
 
-    protected function evictRecordsByLRU(float $proportion): void
+    protected function evictRecordsByLRU(): void
     {
-        $this->handleRecordsEviction($proportion, 'last_used_at');
+        $this->handleRecordsEviction('last_used_at');
     }
 
-    protected function evictRecordsByLFU(float $proportion): void
+    protected function evictRecordsByLFU(): void
     {
-        $this->handleRecordsEviction($proportion, 'used_count');
+        $this->handleRecordsEviction('used_count');
     }
 
-    protected function evictRecordsByTTL(float $proportion): void
+    protected function evictRecordsByTTL(): void
     {
-        $this->handleRecordsEviction($proportion, 'expiration');
+        $this->handleRecordsEviction('expiration');
     }
 
-    protected function handleRecordsEviction(float $proportion, string $column): void
+    protected function handleRecordsEviction(string $column): void
     {
-        $quantity = (int) round($this->table->getSize() * $proportion);
+        $quantity = (int) round($this->table->getSize() * $this->evictionProportion);
 
         collect($this->table)
             ->map(fn ($record) => $record[$column])

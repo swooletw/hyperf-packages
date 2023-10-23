@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Hyperf\Stringable\Str;
 use Mockery as m;
 use Psr\Container\ContainerInterface;
+use Swoole\Table;
 use SwooleTW\Hyperf\Cache\SwooleStore;
 use SwooleTW\Hyperf\Cache\SwooleTableManager;
 use SwooleTW\Hyperf\Tests\TestCase;
@@ -26,7 +27,7 @@ class CacheSwooleStoreTest extends TestCase
 
         $table->set('foo', ['value' => serialize('bar'), 'expiration' => time() + 100]);
 
-        $store = new SwooleStore($table);
+        $store = $this->createStore($table);
 
         $this->assertEquals('bar', $store->get('foo'));
         $this->assertEquals($this->getCurrentTimestamp(), $table->get('foo')['last_used_at']);
@@ -43,7 +44,7 @@ class CacheSwooleStoreTest extends TestCase
     {
         $table = $this->createSwooleTable();
 
-        $store = new SwooleStore($table);
+        $store = $this->createStore($table);
 
         $this->assertNull($store->get('foo'));
     }
@@ -52,7 +53,7 @@ class CacheSwooleStoreTest extends TestCase
     {
         $table = $this->createSwooleTable();
 
-        $store = new SwooleStore($table);
+        $store = $this->createStore($table);
 
         $table->set('foo', ['value' => serialize('bar'), 'expiration' => time() - 100]);
 
@@ -63,7 +64,7 @@ class CacheSwooleStoreTest extends TestCase
     {
         $table = $this->createSwooleTable();
 
-        $store = new SwooleStore($table);
+        $store = $this->createStore($table);
 
         $store->interval('foo', fn () => 'bar', 1);
 
@@ -77,7 +78,7 @@ class CacheSwooleStoreTest extends TestCase
         $table->set('foo', ['value' => serialize('bar'), 'expiration' => time() + 100]);
         $table->set('bar', ['value' => serialize('baz'), 'expiration' => time() + 100]);
 
-        $store = new SwooleStore($table);
+        $store = $this->createStore($table);
 
         $this->assertEquals(['foo' => 'bar', 'bar' => 'baz'], $store->many(['foo', 'bar']));
     }
@@ -86,7 +87,7 @@ class CacheSwooleStoreTest extends TestCase
     {
         $table = $this->createSwooleTable();
 
-        $store = new SwooleStore($table);
+        $store = $this->createStore($table);
 
         $store->put('foo', 'bar', 5);
 
@@ -97,7 +98,7 @@ class CacheSwooleStoreTest extends TestCase
     {
         $table = $this->createSwooleTable();
 
-        $store = new SwooleStore($table);
+        $store = $this->createStore($table);
 
         $store->putMany(['foo' => 'bar', 'bar' => 'baz'], 5);
 
@@ -109,7 +110,7 @@ class CacheSwooleStoreTest extends TestCase
     {
         $table = $this->createSwooleTable();
 
-        $store = new SwooleStore($table);
+        $store = $this->createStore($table);
 
         $store->increment('counter');
         $this->assertEquals(1, $store->get('counter'));
@@ -125,7 +126,7 @@ class CacheSwooleStoreTest extends TestCase
     {
         $table = $this->createSwooleTable();
 
-        $store = new SwooleStore($table);
+        $store = $this->createStore($table);
 
         $store->forever('foo', 'bar');
 
@@ -136,7 +137,7 @@ class CacheSwooleStoreTest extends TestCase
     {
         $table = $this->createSwooleTable();
 
-        $store = new SwooleStore($table);
+        $store = $this->createStore($table);
 
         $store->interval('foo', fn () => Str::random(10), 1);
 
@@ -156,7 +157,7 @@ class CacheSwooleStoreTest extends TestCase
     {
         $table = $this->createSwooleTable();
 
-        $store = new SwooleStore($table);
+        $store = $this->createStore($table);
 
         $store->put('foo', 'bar', 5);
         $this->assertTrue($store->forget('foo'));
@@ -173,7 +174,7 @@ class CacheSwooleStoreTest extends TestCase
     {
         $table = $this->createSwooleTable();
 
-        $store = new SwooleStore($table);
+        $store = $this->createStore($table);
 
         $store->interval('foo', fn () => 'bar', 1);
         $this->assertTrue($store->flush());
@@ -185,7 +186,7 @@ class CacheSwooleStoreTest extends TestCase
     {
         $table = $this->createSwooleTable();
 
-        $store = new SwooleStore($table);
+        $store = $this->createStore($table);
 
         Carbon::setTestNow('2000-01-01 00:00:00.500000');
         $store->put('foo', 'bar', 1);
@@ -203,7 +204,7 @@ class CacheSwooleStoreTest extends TestCase
 
         $table->set('foo', ['value' => serialize('bar'), 'expiration' => time() - 100]);
 
-        $store = new SwooleStore($table);
+        $store = $this->createStore($table);
 
         $this->assertNull($store->get('foo'));
         $this->assertFalse($table->get('foo'));
@@ -213,20 +214,20 @@ class CacheSwooleStoreTest extends TestCase
     {
         $table = $this->createSwooleTable();
 
-        $store = new SwooleStore($table);
+        $store = $this->createStore($table);
 
-        for ($i = 0; $i < 200; ++$i) {
-            for ($j = 0; $j < 10; ++$j) {
-                $count = $i * 10 + $j;
-                $store->put(sha1("key:{$count}"), $count, 100);
-            }
-
-            $store->evictRecordsWhenMemoryLimitIsReached(0.05, SwooleStore::EVICTION_POLICY_TTL, 10);
+        for ($i = 0; $i < 2000; ++$i) {
+            $store->put(sha1("key:{$i}"), $i, 100);
         }
 
         $this->assertNull($store->get(sha1('key:0')));
         $this->assertSame(1999, $store->get(sha1('key:1999')));
         $this->assertLessThanOrEqual(1024, $table->count());
+    }
+
+    private function createStore(Table $table)
+    {
+        return new SwooleStore($table, 0.05, SwooleStore::EVICTION_POLICY_LRU, 0.05);
     }
 
     private function createSwooleTable()

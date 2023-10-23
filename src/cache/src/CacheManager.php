@@ -240,7 +240,12 @@ class CacheManager implements FactoryContract
     protected function createSwooleDriver(array $config): Repository
     {
         $cacheTable = $this->app->get(SwooleTableManager::class)->get($config['table']);
-        $store = new SwooleStore($cacheTable);
+        $store = new SwooleStore(
+            $cacheTable,
+            $config['memory_limit_buffer'] ?? 0.05,
+            $config['eviction_policy'] ?? SwooleStore::EVICTION_POLICY_LRU,
+            $config['eviction_proportion'] ?? 0.05
+        );
 
         return $this->repository($store);
     }
