@@ -90,7 +90,7 @@ class SwooleStore implements Store
             'expiration' => $now + $seconds,
         ]);
 
-        $this->evictRecordsWhenMemoryLimitIsReached();
+        $this->evictRecords();
 
         return $result;
     }
@@ -231,12 +231,14 @@ class SwooleStore implements Store
     }
 
     /**
-     * Evict records when memory limit is reached.
+     * Evict records.
      */
-    public function evictRecordsWhenMemoryLimitIsReached(): void
+    public function evictRecords(): void
     {
+        $this->flushStaleRecords();
+
         while ($this->memoryLimitIsReached()) {
-            $this->evictRecords();
+            $this->removeRecordsByEvictionPolicy();
         }
     }
 
@@ -280,41 +282,38 @@ class SwooleStore implements Store
         return $conflictRate > $allowedMemoryUsage || $memoryUsage > $allowedMemoryUsage;
     }
 
-    /**
-     * Evict records.
-     */
-    protected function evictRecords()
+    protected function removeRecordsByEvictionPolicy()
     {
         if ($this->evictionPolicy === static::EVICTION_POLICY_NOEVICTION) {
             return;
         }
 
         if ($this->evictionPolicy === static::EVICTION_POLICY_LRU) {
-            return $this->evictRecordsByLRU();
+            return $this->removeRecordsByLRU();
         }
 
         if ($this->evictionPolicy === static::EVICTION_POLICY_LFU) {
-            return $this->evictRecordsByLFU();
+            return $this->removeRecordsByLFU();
         }
 
         if ($this->evictionPolicy === static::EVICTION_POLICY_TTL) {
-            return $this->evictRecordsByTTL();
+            return $this->removeRecordsByTTL();
         }
 
         throw new InvalidArgumentException("Eviction policy [{$this->evictionPolicy}] is not supported.");
     }
 
-    protected function evictRecordsByLRU(): void
+    protected function removeRecordsByLRU(): void
     {
         $this->handleRecordsEviction('last_used_at');
     }
 
-    protected function evictRecordsByLFU(): void
+    protected function removeRecordsByLFU(): void
     {
         $this->handleRecordsEviction('used_count');
     }
 
-    protected function evictRecordsByTTL(): void
+    protected function removeRecordsByTTL(): void
     {
         $this->handleRecordsEviction('expiration');
     }
@@ -324,9 +323,21 @@ class SwooleStore implements Store
         $quantity = (int) round($this->table->getSize() * $this->evictionProportion);
 
         collect($this->table)
-            ->map(fn ($record) => $record[$column])
-            ->sort()
+            ->sortBy($column)
             ->take($quantity)
             ->each(fn ($_, $key) => $this->forget($key));
+    }
+
+    protected function flushStaleRecords(): void
+    {
+        $now = $this->getCurrentTimestamp();
+
+        collect($this->table)->sortBy('expiration')->each(function (array $record, string $key) use ($now) {
+            if ($record['expiration'] > $now) {
+                return false;
+            }
+
+            $this->forget($key);
+        });
     }
 }

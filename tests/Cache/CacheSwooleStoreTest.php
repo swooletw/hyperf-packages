@@ -216,23 +216,38 @@ class CacheSwooleStoreTest extends TestCase
 
         $store = $this->createStore($table);
 
-        for ($i = 0; $i < 2000; ++$i) {
+        for ($i = 0; $i < 256; ++$i) {
             $store->put(sha1("key:{$i}"), $i, 100);
         }
 
         $this->assertNull($store->get(sha1('key:0')));
-        $this->assertSame(1999, $store->get(sha1('key:1999')));
-        $this->assertLessThanOrEqual(1024, $table->count());
+        $this->assertSame(255, $store->get(sha1('key:255')));
+        $this->assertLessThanOrEqual(128, $table->count());
+    }
+
+    public function testFlushStaleRecords()
+    {
+        Carbon::setTestNow(now());
+
+        $table = $this->createSwooleTable();
+
+        $table->set('foo', ['value' => serialize('foo'), 'expiration' => time() - 100]);
+
+        $store = $this->createStore($table);
+
+        $store->put('bar', 'bar', 100);
+
+        $this->assertFalse($table->get('foo'));
     }
 
     private function createStore(Table $table)
     {
-        return new SwooleStore($table, 0.05, SwooleStore::EVICTION_POLICY_LRU, 0.05);
+        return new SwooleStore($table, 0.05, SwooleStore::EVICTION_POLICY_TTL, 0.05);
     }
 
     private function createSwooleTable()
     {
-        return (new SwooleTableManager(m::mock(ContainerInterface::class)))->createTable(1024, 10240, 0.2);
+        return (new SwooleTableManager(m::mock(ContainerInterface::class)))->createTable(128, 10240, 0.2);
     }
 
     private function getCurrentTimestamp()

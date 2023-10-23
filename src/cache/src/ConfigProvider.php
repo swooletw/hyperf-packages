@@ -6,7 +6,8 @@ namespace SwooleTW\Hyperf\Cache;
 
 use SwooleTW\Hyperf\Cache\Contracts\Factory;
 use SwooleTW\Hyperf\Cache\Contracts\Store;
-use SwooleTW\Hyperf\Cache\Processes\EvictRecords;
+use SwooleTW\Hyperf\Cache\Listeners\CreateSwooleTable;
+use SwooleTW\Hyperf\Cache\Listeners\CreateTimer;
 
 class ConfigProvider
 {
@@ -17,8 +18,9 @@ class ConfigProvider
                 Factory::class => CacheManager::class,
                 Store::class => fn ($container) => $container->get(CacheManager::class)->driver(),
             ],
-            'processes' => [
-                EvictRecords::class,
+            'listeners' => [
+                CreateSwooleTable::class,
+                CreateTimer::class,
             ],
             'publish' => [
                 [
