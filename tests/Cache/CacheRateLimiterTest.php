@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Tests\Cache;
 
 use Mockery as m;
-use SwooleTW\Hyperf\Cache\Contracts\Repository as Cache;
+use SwooleTW\Hyperf\Cache\Contracts\Factory as Cache;
 use SwooleTW\Hyperf\Cache\RateLimiter;
 use SwooleTW\Hyperf\Tests\TestCase;
 
