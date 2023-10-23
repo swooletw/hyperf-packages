@@ -57,7 +57,7 @@ return [
             'table' => 'default',
             'memory_limit_buffer' => 0.05,
             'eviction_policy' => SwooleStore::EVICTION_POLICY_LRU,
-            'eviction_quantity' => 10,
+            'eviction_proportion' => 0.05,
             'eviction_interval' => 10000, // milliseconds
         ],
 
