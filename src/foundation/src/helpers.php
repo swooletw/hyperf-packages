@@ -296,7 +296,6 @@ if (! function_exists('response')) {
      * Return a new response from the application.
      *
      * @param null|array|string $content
-     * @param int $status
      * @return PsrResponseInterface|ResponseInterface
      */
     function response($content = '', int $status = 200, array $headers = [])
