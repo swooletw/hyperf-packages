@@ -67,6 +67,14 @@ return [
         ],
     ],
 
+    'swoole_tables' => [
+        'default' => [
+            'rows' => 1024,
+            'bytes' => 10240,
+            'conflict_proportion' => 0.2,
+        ],
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Cache Key Prefix
