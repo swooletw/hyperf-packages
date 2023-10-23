@@ -276,7 +276,7 @@ class SwooleStore implements Store
     {
         $stats = $this->table->stats();
         $conflictRate = 1 - ($stats['available_slice_num'] / $stats['total_slice_num']);
-        $memoryUsage = $this->table->stats()['num'] / $this->table->getSize();
+        $memoryUsage = $stats['num'] / $this->table->getSize();
         $allowedMemoryUsage = 1 - $this->memoryLimitBuffer;
 
         return $conflictRate > $allowedMemoryUsage || $memoryUsage > $allowedMemoryUsage;
