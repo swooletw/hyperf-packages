@@ -21,8 +21,6 @@ class EvictRecords extends AbstractProcess
             return $config['driver'] === 'swoole';
         })->each(function (array $config, string $name) {
             Timer::tick($config['eviction_interval'] ?? 10000, function () use ($config, $name) {
-                var_dump('evicting records');
-
                 /** @var SwooleStore */
                 $store = Cache::store($name)->getStore();
 
