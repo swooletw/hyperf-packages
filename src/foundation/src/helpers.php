@@ -299,7 +299,7 @@ if (! function_exists('response')) {
      * @param int $status
      * @return PsrResponseInterface|ResponseInterface
      */
-    function response($content = '', $status = 200, array $headers = [])
+    function response($content = '', int $status = 200, array $headers = [])
     {
         /** @var PsrResponseInterface|ResponseInterface $response */
         $response = Context::get(PsrResponseInterface::class);
@@ -309,19 +309,17 @@ if (! function_exists('response')) {
         }
 
         if (is_array($content)) {
-            $response->withAddedHeader('Content-Type', 'application/json');
+            $response = $response->withAddedHeader('Content-Type', 'application/json');
             $content = json_encode($content);
         }
 
-        return tap(
-            $response->withBody(new SwooleStream((string) $content))
-                ->withStatus($status),
-            function ($response) use ($headers) {
-                foreach ($headers as $name => $value) {
-                    $response->withAddedHeader($name, $value);
-                }
-            }
-        );
+        foreach ($headers as $name => $value) {
+            $response = $response->withAddedHeader($name, $value);
+        }
+
+        return $response->withBody(
+            new SwooleStream((string) $content)
+        )->withStatus($status);
     }
 }
 
