@@ -115,7 +115,7 @@ class SwooleStore implements Store
         $record = $this->getRecord($key);
 
         if ($this->recordIsFalseOrExpired($record)) {
-            return tap($value, fn ($value) => $this->put($key, $value, static::ONE_YEAR));
+            return tap($value, fn ($value) => $this->forever($key, $value));
         }
 
         return tap((int) (unserialize($record['value']) + $value), function ($value) use ($key, $record) {
