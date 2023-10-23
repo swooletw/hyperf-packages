@@ -10,6 +10,7 @@ use Mockery\MockInterface;
 use SwooleTW\Hyperf\Cache\ArrayStore;
 use SwooleTW\Hyperf\Cache\RedisStore;
 use SwooleTW\Hyperf\Cache\StackStore;
+use SwooleTW\Hyperf\Cache\StackStoreProxy;
 use SwooleTW\Hyperf\Cache\SwooleStore;
 use SwooleTW\Hyperf\Tests\TestCase;
 
@@ -335,6 +336,54 @@ class CacheStackStoreTest extends TestCase
         $this->swoole->shouldReceive('get')->once()->with($key)->andReturn(null);
         $this->redis->shouldReceive('get')->once()->with($key)->andReturn('invalid record');
         $this->assertNull($this->store->get($key));
+    }
+
+    public function testProxyMaxTTL()
+    {
+        /** @var MockInterface|SwooleStore $swoole */
+        $swoole = m::mock(SwooleStore::class);
+        /** @var MockInterface|RedisStore $redis */
+        $redis = m::mock(RedisStore::class);
+
+        $key = 'foo';
+        $value = 'bar';
+        $ttl = 100;
+        $maxTTL = 3;
+        $expiration = Carbon::now()->getTimestamp() + $ttl;
+        $record = compact('value', 'expiration');
+
+        $store = new StackStore([
+            new StackStoreProxy($swoole, $maxTTL),
+            new StackStoreProxy($redis),
+        ]);
+
+        $swoole->shouldReceive('put')->once()->with($key, $record, $maxTTL)->andReturn(true);
+        $redis->shouldReceive('put')->once()->with($key, $record, $ttl)->andReturn(true);
+
+        $this->assertTrue($store->put($key, $value, $ttl));
+    }
+
+    public function testProxyMaxTTLWithForever()
+    {
+        /** @var MockInterface|SwooleStore $swoole */
+        $swoole = m::mock(SwooleStore::class);
+        /** @var MockInterface|RedisStore $redis */
+        $redis = m::mock(RedisStore::class);
+
+        $key = 'foo';
+        $value = 'bar';
+        $maxTTL = 3;
+        $record = compact('value');
+
+        $store = new StackStore([
+            new StackStoreProxy($swoole, $maxTTL),
+            new StackStoreProxy($redis),
+        ]);
+
+        $swoole->shouldReceive('put')->once()->with($key, $record, $maxTTL)->andReturn(true);
+        $redis->shouldReceive('forever')->once()->with($key, $record)->andReturn(true);
+
+        $this->assertTrue($store->forever($key, $value));
     }
 
     private function createStores()
