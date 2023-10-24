@@ -76,7 +76,7 @@ class Repository implements ArrayAccess, CacheContract
     /**
      * Determine if an item exists in the cache.
      */
-    public function has(string|array $key): bool
+    public function has(array|string $key): bool
     {
         return ! is_null($this->get($key));
     }
@@ -97,7 +97,7 @@ class Repository implements ArrayAccess, CacheContract
      * @param (Closure(): TCacheValue)|TCacheValue $default
      * @return (TCacheValue is null ? mixed : TCacheValue)
      */
-    public function get(string|array $key, mixed $default = null): mixed
+    public function get(array|string $key, mixed $default = null): mixed
     {
         if (is_array($key)) {
             return $this->many($key);

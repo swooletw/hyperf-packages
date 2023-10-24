@@ -32,7 +32,7 @@ class Gate implements GateContract
     /**
      * The default denial response for gates and policies.
      */
-    protected Response|null $defaultDenialResponse;
+    protected null|Response $defaultDenialResponse;
 
     /**
      * Create a new gate instance.
@@ -74,7 +74,7 @@ class Gate implements GateContract
      *
      * @throws AuthorizationException
      */
-    public function allowIf(Response|Closure|bool $condition, ?string $message = null, ?string $code = null): Response
+    public function allowIf(bool|Closure|Response $condition, ?string $message = null, ?string $code = null): Response
     {
         return $this->authorizeOnDemand($condition, $message, $code, true);
     }
@@ -84,7 +84,7 @@ class Gate implements GateContract
      *
      * @throws AuthorizationException
      */
-    public function denyIf(Response|Closure|bool $condition, ?string $message = null, ?string $code = null): Response
+    public function denyIf(bool|Closure|Response $condition, ?string $message = null, ?string $code = null): Response
     {
         return $this->authorizeOnDemand($condition, $message, $code, false);
     }
@@ -94,7 +94,7 @@ class Gate implements GateContract
      *
      * @throws AuthorizationException
      */
-    protected function authorizeOnDemand(Response|Closure|bool $condition, ?string $message, ?string $code, bool $allowWhenResponseIs): Response
+    protected function authorizeOnDemand(bool|Closure|Response $condition, ?string $message, ?string $code, bool $allowWhenResponseIs): Response
     {
         $user = $this->resolveUser();
 
@@ -399,7 +399,7 @@ class Gate implements GateContract
     /**
      * Resolve and call the appropriate authorization callback.
      */
-    protected function callAuthCallback(?Authenticatable $user, string $ability, array $arguments): bool|null|Response
+    protected function callAuthCallback(?Authenticatable $user, string $ability, array $arguments): null|bool|Response
     {
         $callback = $this->resolveAuthCallback($user, $ability, $arguments);
 
@@ -427,7 +427,7 @@ class Gate implements GateContract
     /**
      * Call all of the after callbacks with check result.
      */
-    protected function callAfterCallbacks(?Authenticatable $user, string $ability, array $arguments, bool|null|Response $result): bool|null|Response
+    protected function callAfterCallbacks(?Authenticatable $user, string $ability, array $arguments, null|bool|Response $result): null|bool|Response
     {
         foreach ($this->afterCallbacks as $after) {
             if (! $this->canBeCalledWithUser($user, $after)) {
@@ -445,7 +445,7 @@ class Gate implements GateContract
     /**
      * Dispatch a gate evaluation event.
      */
-    protected function dispatchGateEvaluatedEvent(?Authenticatable $user, string $ability, array $arguments, bool|null|Response $result): void
+    protected function dispatchGateEvaluatedEvent(?Authenticatable $user, string $ability, array $arguments, null|bool|Response $result): void
     {
         if (! $this->container->has(EventDispatcherInterface::class)) {
             return;

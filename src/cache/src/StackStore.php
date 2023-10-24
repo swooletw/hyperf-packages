@@ -48,7 +48,7 @@ class StackStore implements Store
         return true;
     }
 
-    public function increment(string $key, int $value = 1): int|bool
+    public function increment(string $key, int $value = 1): bool|int
     {
         $record = $this->getOrRestoreRecord($key);
 
@@ -66,7 +66,7 @@ class StackStore implements Store
         return false;
     }
 
-    public function decrement(string $key, int $value = 1): int|bool
+    public function decrement(string $key, int $value = 1): bool|int
     {
         return $this->increment($key, $value * -1);
     }
