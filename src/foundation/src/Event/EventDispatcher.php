@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Event;
 
+use Closure;
 use Hyperf\AsyncQueue\Driver\DriverFactory as HyperfQueueDriverFactory;
 use Hyperf\Context\ApplicationContext;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -30,8 +31,10 @@ class EventDispatcher implements EventDispatcherInterface
     public function dispatch(object $event)
     {
         foreach ($this->listeners->getListenersForEvent($event) as $listener) {
+            $listenerInstance = $listener instanceof Closure
+                ? $listener
+                : ($listener[0] ?? null);
             // push queueable listener to queue
-            $listenerInstance = $listener[0] ?? null;
             if ($listenerInstance instanceof Queueable) {
                 $listener = new QueableListener($event, get_class($listenerInstance));
                 $this->getQueueFactory()
