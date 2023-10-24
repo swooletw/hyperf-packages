@@ -20,14 +20,10 @@ jobs:
 
     name: PHP ${{ matrix.php }} (swoole-${{ matrix.swoole }})
 
-    steps:
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: swoole-${{ matrix.swoole }}
-          coverage: none
+    container:
+      image: phpswoole/swoole:${{ matrix.swoole }}-php${{ matrix.php }}
 
+    steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
