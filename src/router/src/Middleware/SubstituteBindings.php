@@ -17,7 +17,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use SwooleTW\Hyperf\Router\Contracts\UrlRoutable;
 use SwooleTW\Hyperf\Router\Exceptions\BackedEnumCaseNotFoundException;
+use SwooleTW\Hyperf\Router\Exceptions\UrlRoutableNotFoundException;
 
 use function Hyperf\Support\make;
 
@@ -109,6 +111,10 @@ class SubstituteBindings implements MiddlewareInterface
     {
         $class = $definition->getName();
 
+        if (is_a($class, UrlRoutable::class, true)) {
+            return $this->resolveUrlRoutable($class, $params[$name]);
+        }
+
         if (is_a($class, Model::class, true)) {
             return $this->resolveModel($class, $params[$name]);
         }
@@ -116,6 +122,21 @@ class SubstituteBindings implements MiddlewareInterface
         if (is_a($class, BackedEnum::class, true)) {
             return $this->resolveBackedEnum($class, $params[$name]);
         }
+    }
+
+    /**
+     * @param class-string<UrlRoutable> $class
+     * @throws ModelNotFoundException
+     */
+    protected function resolveUrlRoutable(string $class, string $routeKey): UrlRoutable
+    {
+        $urlRoutable = make($class)->resolveRouteBinding($routeKey);
+
+        if (is_null($urlRoutable)) {
+            throw new UrlRoutableNotFoundException($class, $routeKey);
+        }
+
+        return $urlRoutable;
     }
 
     /**

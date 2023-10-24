@@ -4,22 +4,29 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Router\Contracts;
 
+use Hyperf\Database\Model\Model;
+
 interface UrlRoutable
 {
     /**
      * Get the value of the model's route key.
+     *
+     * @return string
      */
-    public function getRouteKey(): string;
+    public function getRouteKey();
 
-    // TODO: Route model binding
-    // /**
-    //  * Get the route key for the model.
-    //  */
-    // public function getRouteKeyName(): string;
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName();
 
-    // TODO: Route model binding
-    // /**
-    //  * Retrieve the model for a bound value.
-    //  */
-    // public function resolveRouteBinding(string $value, ?string $field = null): Hyperf\Database\Model\Model;
+    /**
+     * Retrieve the model for a bound value.
+     *
+     * @param string $value
+     * @return null|Model
+     */
+    public function resolveRouteBinding($value);
 }
