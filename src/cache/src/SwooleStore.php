@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Closure;
 use InvalidArgumentException;
 use Laravel\SerializableClosure\SerializableClosure;
+use SplMaxHeap;
 use Swoole\Table;
 use SwooleTW\Hyperf\Cache\Contracts\Store;
 
@@ -322,22 +323,42 @@ class SwooleStore implements Store
     {
         $quantity = (int) round($this->table->getSize() * $this->evictionProportion);
 
-        collect($this->table)
-            ->sortBy($column)
-            ->take($quantity)
-            ->each(fn ($_, $key) => $this->forget($key));
+        $heap = new class() extends SplMaxHeap {
+            protected function compare($left, $right): int
+            {
+                return $left['value'] <=> $right['value'];
+            }
+        };
+
+        foreach ($this->table as $key => $record) {
+            $value = $record[$column];
+
+            $heap->insert(compact('key', 'value'));
+
+            if ($heap->count() > $quantity) {
+                $heap->extract();
+            }
+        }
+
+        while (! $heap->isEmpty()) {
+            $this->forget($heap->extract()['key']);
+        }
     }
 
     protected function flushStaleRecords(): void
     {
         $now = $this->getCurrentTimestamp();
 
-        collect($this->table)->sortBy('expiration')->each(function (array $record, string $key) use ($now) {
-            if ($record['expiration'] > $now) {
-                return false;
-            }
+        $keys = [];
 
+        foreach ($this->table as $key => $row) {
+            if ($row['expiration'] < $now) {
+                $keys[] = $key;
+            }
+        }
+
+        foreach ($keys as $key) {
             $this->forget($key);
-        });
+        }
     }
 }
