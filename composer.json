@@ -71,7 +71,6 @@
         "hyperf/http-message": "^3.1",
         "hyperf/http-server": "^3.1",
         "hyperf/macroable": "^3.1",
-        "hyperf/process": "^3.1",
         "hyperf/signal": "^3.1",
         "hyperf/stringable": "^3.1",
         "hyperf/support": "^3.1",
