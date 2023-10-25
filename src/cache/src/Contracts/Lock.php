@@ -8,37 +8,26 @@ interface Lock
 {
     /**
      * Attempt to acquire the lock.
-     *
-     * @param null|callable $callback
-     * @return mixed
      */
-    public function get($callback = null);
+    public function get(?callable $callback = null): mixed;
 
     /**
      * Attempt to acquire the lock for the given number of seconds.
-     *
-     * @param int $seconds
-     * @param null|callable $callback
-     * @return mixed
      */
-    public function block($seconds, $callback = null);
+    public function block(int $seconds, ?callable $callback = null): mixed;
 
     /**
      * Release the lock.
-     *
-     * @return bool
      */
-    public function release();
+    public function release(): bool;
 
     /**
      * Returns the current owner of the lock.
-     *
-     * @return string
      */
-    public function owner();
+    public function owner(): string;
 
     /**
      * Releases this lock in disregard of ownership.
      */
-    public function forceRelease();
+    public function forceRelease(): void;
 }

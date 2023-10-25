@@ -31,7 +31,7 @@ trait GuardHelpers
         return ! $this->check($token);
     }
 
-    public function id(): int|string|null
+    public function id(): null|int|string
     {
         if ($this->user()) {
             return $this->user()->getAuthIdentifier();

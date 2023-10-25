@@ -8,20 +8,11 @@ interface LockProvider
 {
     /**
      * Get a lock instance.
-     *
-     * @param string $name
-     * @param int $seconds
-     * @param null|string $owner
-     * @return \SwooleTW\Hyperf\Cache\Contracts\Lock
      */
-    public function lock($name, $seconds = 0, $owner = null);
+    public function lock(string $name, int $seconds = 0, ?string $owner = null): Lock;
 
     /**
      * Restore a lock instance using the owner identifier.
-     *
-     * @param string $name
-     * @param string $owner
-     * @return \SwooleTW\Hyperf\Cache\Contracts\Lock
      */
-    public function restoreLock($name, $owner);
+    public function restoreLock(string $name, string $owner): Lock;
 }

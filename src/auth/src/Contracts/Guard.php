@@ -24,7 +24,7 @@ interface Guard
     /**
      * Get the ID for the currently authenticated user.
      */
-    public function id(): int|string|null;
+    public function id(): null|int|string;
 
     /**
      * Validate a user's credentials.

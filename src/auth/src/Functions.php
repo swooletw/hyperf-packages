@@ -11,7 +11,7 @@ use SwooleTW\Hyperf\Auth\Contracts\Guard;
 /**
  * Get auth guard or auth manager.
  */
-function auth(?string $guard = null): Guard|FactoryContract
+function auth(?string $guard = null): FactoryContract|Guard
 {
     $auth = ApplicationContext::getContainer()
         ->get(AuthManager::class);

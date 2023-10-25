@@ -8,24 +8,18 @@ abstract class CacheEvent
 {
     /**
      * The key of the event.
-     *
-     * @var string
      */
-    public $key;
+    public string $key;
 
     /**
      * The tags that were assigned to the key.
-     *
-     * @var array
      */
-    public $tags;
+    public array $tags;
 
     /**
      * Create a new event instance.
-     *
-     * @param string $key
      */
-    public function __construct($key, array $tags = [])
+    public function __construct(string $key, array $tags = [])
     {
         $this->key = $key;
         $this->tags = $tags;
@@ -33,11 +27,8 @@ abstract class CacheEvent
 
     /**
      * Set the tags for the cache event.
-     *
-     * @param array $tags
-     * @return $this
      */
-    public function setTags($tags)
+    public function setTags(array $tags): static
     {
         $this->tags = $tags;
 
