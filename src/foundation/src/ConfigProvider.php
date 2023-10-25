@@ -31,7 +31,6 @@ class ConfigProvider
                         Migration::class => __DIR__ . '/../class_map/Database/Migrations/Migration.php',
                         MigrationBaseCommand::class => __DIR__ . '/../class_map/Database/Commands/Migrations/BaseCommand.php',
                         SeederBaseCommand::class => __DIR__ . '/../class_map/Database/Commands/Seeders/BaseCommand.php',
-                        ResponsePlusProxy::class => __DIR__ . '/../class_map/HttpMessage/ResponsePlusProxy.php',
                     ],
                 ],
             ],
