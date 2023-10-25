@@ -17,19 +17,19 @@ jobs:
             swoole: "5.0.3"
           - php: "8.2"
             swoole: "5.0.3"
+          - php: "8.1"
+            swoole: "5.1.0"
+          - php: "8.2"
+            swoole: "5.1.0"
 
     name: PHP ${{ matrix.php }} (swoole-${{ matrix.swoole }})
 
-    steps:
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: swoole-${{ matrix.swoole }}
-          coverage: none
+    container:
+      image: phpswoole/swoole:${{ matrix.swoole }}-php${{ matrix.php }}
 
+    steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
