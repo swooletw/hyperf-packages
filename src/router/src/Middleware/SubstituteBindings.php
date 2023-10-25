@@ -47,7 +47,7 @@ class SubstituteBindings implements MiddlewareInterface
     /**
      * @return ReflectionType[]
      */
-    protected function getDefinitions(Closure|string|array $callback): array
+    protected function getDefinitions(array|Closure|string $callback): array
     {
         if ($callback instanceof Closure) {
             return $this->getClosureDefinitions($callback);

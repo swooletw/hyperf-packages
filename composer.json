@@ -105,7 +105,7 @@
         "hyperf/session": "Required to use session guard. (^3.1)"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "3.26.0",
+        "friendsofphp/php-cs-fixer": "3.35.1",
         "hyperf/redis": "^3.1",
         "mockery/mockery": "^1.5.1",
         "phpunit/phpunit": "^10.0.7",

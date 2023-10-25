@@ -257,7 +257,7 @@ if (! function_exists('resolve')) {
      *
      * @return Closure|ContainerInterface|T
      */
-    function resolve(string|callable $abstract, array $parameters = [])
+    function resolve(callable|string $abstract, array $parameters = [])
     {
         if (is_callable($abstract)) {
             return \Closure::fromCallable($abstract);

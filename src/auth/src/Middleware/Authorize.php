@@ -47,7 +47,7 @@ class Authorize implements MiddlewareInterface
     /**
      * Get the arguments parameter for the gate.
      */
-    protected function getGateArguments(ServerRequestInterface $request, array $models): array|string|Model
+    protected function getGateArguments(ServerRequestInterface $request, array $models): array|Model|string
     {
         if (is_null($models)) {
             return [];
@@ -61,7 +61,7 @@ class Authorize implements MiddlewareInterface
     /**
      * Get the model to authorize.
      */
-    protected function getModel(ServerRequestInterface $request, string $model): string|Model|null
+    protected function getModel(ServerRequestInterface $request, string $model): null|Model|string
     {
         if ($this->isClassName($model)) {
             return trim($model);

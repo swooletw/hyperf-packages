@@ -493,7 +493,7 @@ class LogManager implements LoggerInterface
      *
      * @param string $message
      */
-    public function emergency(Stringable|string $message, array $context = []): void
+    public function emergency(string|Stringable $message, array $context = []): void
     {
         $this->driver()->emergency($message, $context);
     }
@@ -506,7 +506,7 @@ class LogManager implements LoggerInterface
      *
      * @param string $message
      */
-    public function alert(Stringable|string $message, array $context = []): void
+    public function alert(string|Stringable $message, array $context = []): void
     {
         $this->driver()->alert($message, $context);
     }
@@ -518,7 +518,7 @@ class LogManager implements LoggerInterface
      *
      * @param string $message
      */
-    public function critical(Stringable|string $message, array $context = []): void
+    public function critical(string|Stringable $message, array $context = []): void
     {
         $this->driver()->critical($message, $context);
     }
@@ -529,7 +529,7 @@ class LogManager implements LoggerInterface
      *
      * @param string $message
      */
-    public function error(Stringable|string $message, array $context = []): void
+    public function error(string|Stringable $message, array $context = []): void
     {
         $this->driver()->error($message, $context);
     }
@@ -542,7 +542,7 @@ class LogManager implements LoggerInterface
      *
      * @param string $message
      */
-    public function warning(Stringable|string $message, array $context = []): void
+    public function warning(string|Stringable $message, array $context = []): void
     {
         $this->driver()->warning($message, $context);
     }
@@ -552,7 +552,7 @@ class LogManager implements LoggerInterface
      *
      * @param string $message
      */
-    public function notice(Stringable|string $message, array $context = []): void
+    public function notice(string|Stringable $message, array $context = []): void
     {
         $this->driver()->notice($message, $context);
     }
@@ -564,7 +564,7 @@ class LogManager implements LoggerInterface
      *
      * @param string $message
      */
-    public function info(Stringable|string $message, array $context = []): void
+    public function info(string|Stringable $message, array $context = []): void
     {
         $this->driver()->info($message, $context);
     }
@@ -574,7 +574,7 @@ class LogManager implements LoggerInterface
      *
      * @param string $message
      */
-    public function debug(Stringable|string $message, array $context = []): void
+    public function debug(string|Stringable $message, array $context = []): void
     {
         $this->driver()->debug($message, $context);
     }
@@ -585,7 +585,7 @@ class LogManager implements LoggerInterface
      * @param mixed $level
      * @param string $message
      */
-    public function log($level, Stringable|string $message, array $context = []): void
+    public function log($level, string|Stringable $message, array $context = []): void
     {
         $this->driver()->log($level, $message, $context);
     }

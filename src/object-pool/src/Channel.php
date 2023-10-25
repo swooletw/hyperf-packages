@@ -20,7 +20,7 @@ class Channel
         $this->queue = new SplQueue();
     }
 
-    public function pop(float $timeout): object|false
+    public function pop(float $timeout): false|object
     {
         if ($this->isCoroutine()) {
             return $this->channel->pop($timeout);

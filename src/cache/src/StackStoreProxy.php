@@ -35,12 +35,12 @@ class StackStoreProxy implements Store
         return $this->call(__FUNCTION__, func_get_args());
     }
 
-    public function increment(string $key, int $value = 1): int|bool
+    public function increment(string $key, int $value = 1): bool|int
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
-    public function decrement(string $key, int $value = 1): int|bool
+    public function decrement(string $key, int $value = 1): bool|int
     {
         return $this->call(__FUNCTION__, func_get_args());
     }

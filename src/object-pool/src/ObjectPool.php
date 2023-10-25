@@ -19,7 +19,7 @@ abstract class ObjectPool implements ObjectPoolInterface
 
     protected ObjectPoolOption $option;
 
-    protected null|LowFrequencyInterface|FrequencyInterface $frequency = null;
+    protected null|FrequencyInterface|LowFrequencyInterface $frequency = null;
 
     protected int $currentObjectNumber = 0;
 
