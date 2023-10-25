@@ -8,7 +8,6 @@ use Hyperf\Database\Commands\Migrations\BaseCommand as MigrationBaseCommand;
 use Hyperf\Database\Commands\Seeders\BaseCommand as SeederBaseCommand;
 use Hyperf\Database\Migrations\Migration;
 use Hyperf\Database\Model\Factory as DatabaseFactory;
-use Hyperf\HttpMessage\Server\ResponsePlusProxy;
 use SwooleTW\Hyperf\Foundation\Console\Commands\ServerReloadCommand;
 use SwooleTW\Hyperf\Foundation\Model\FactoryInvoker;
 use SwooleTW\Hyperf\Foundation\Queue\Console\QueueWorkCommand;
