@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Cache\Contracts;
+namespace SwooleTW\Hyperf\Cache\Exceptions;
 
 use Exception;
 

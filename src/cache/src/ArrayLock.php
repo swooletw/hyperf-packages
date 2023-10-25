@@ -10,20 +10,13 @@ class ArrayLock extends Lock
 {
     /**
      * The parent array cache store.
-     *
-     * @var \SwooleTW\Hyperf\Cache\ArrayStore
      */
-    protected $store;
+    protected ArrayStore $store;
 
     /**
      * Create a new lock instance.
-     *
-     * @param \SwooleTW\Hyperf\Cache\ArrayStore $store
-     * @param string $name
-     * @param int $seconds
-     * @param null|string $owner
      */
-    public function __construct($store, $name, $seconds, $owner = null)
+    public function __construct(ArrayStore $store, string $name, int $seconds, ?string $owner = null)
     {
         parent::__construct($name, $seconds, $owner);
 
@@ -32,10 +25,8 @@ class ArrayLock extends Lock
 
     /**
      * Attempt to acquire the lock.
-     *
-     * @return bool
      */
-    public function acquire()
+    public function acquire(): bool
     {
         $expiration = $this->store->locks[$this->name]['expiresAt'] ?? Carbon::now()->addSecond();
 
@@ -53,10 +44,8 @@ class ArrayLock extends Lock
 
     /**
      * Release the lock.
-     *
-     * @return bool
      */
-    public function release()
+    public function release(): bool
     {
         if (! $this->exists()) {
             return false;
@@ -74,27 +63,23 @@ class ArrayLock extends Lock
     /**
      * Releases this lock in disregard of ownership.
      */
-    public function forceRelease()
+    public function forceRelease(): void
     {
         unset($this->store->locks[$this->name]);
     }
 
     /**
      * Determine if the current lock exists.
-     *
-     * @return bool
      */
-    protected function exists()
+    protected function exists(): bool
     {
         return isset($this->store->locks[$this->name]);
     }
 
     /**
      * Returns the owner value written into the driver for this lock.
-     *
-     * @return string
      */
-    protected function getCurrentOwner()
+    protected function getCurrentOwner(): string
     {
         return $this->store->locks[$this->name]['owner'];
     }

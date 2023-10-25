@@ -10,20 +10,13 @@ class RedisLock extends Lock
 {
     /**
      * The Redis factory implementation.
-     *
-     * @var Redis
      */
-    protected $redis;
+    protected Redis $redis;
 
     /**
      * Create a new lock instance.
-     *
-     * @param Redis $redis
-     * @param string $name
-     * @param int $seconds
-     * @param null|string $owner
      */
-    public function __construct($redis, $name, $seconds, $owner = null)
+    public function __construct(Redis $redis, string $name, int $seconds, ?string $owner = null)
     {
         parent::__construct($name, $seconds, $owner);
 
@@ -32,10 +25,8 @@ class RedisLock extends Lock
 
     /**
      * Attempt to acquire the lock.
-     *
-     * @return bool
      */
-    public function acquire()
+    public function acquire(): bool
     {
         if ($this->seconds > 0) {
             return $this->redis->set($this->name, $this->owner, ['EX' => $this->seconds, 'NX']) == true;
@@ -45,10 +36,8 @@ class RedisLock extends Lock
 
     /**
      * Release the lock.
-     *
-     * @return bool
      */
-    public function release()
+    public function release(): bool
     {
         return (bool) $this->redis->eval(LuaScripts::releaseLock(), [$this->name, $this->owner], 1);
     }
@@ -56,17 +45,15 @@ class RedisLock extends Lock
     /**
      * Releases this lock in disregard of ownership.
      */
-    public function forceRelease()
+    public function forceRelease(): void
     {
         $this->redis->del($this->name);
     }
 
     /**
      * Returns the owner value written into the driver for this lock.
-     *
-     * @return string
      */
-    protected function getCurrentOwner()
+    protected function getCurrentOwner(): string
     {
         return $this->redis->get($this->name);
     }

@@ -8,20 +8,16 @@ class NoLock extends Lock
 {
     /**
      * Attempt to acquire the lock.
-     *
-     * @return bool
      */
-    public function acquire()
+    public function acquire(): bool
     {
         return true;
     }
 
     /**
      * Release the lock.
-     *
-     * @return bool
      */
-    public function release()
+    public function release(): bool
     {
         return true;
     }
@@ -29,14 +25,12 @@ class NoLock extends Lock
     /**
      * Releases this lock in disregard of ownership.
      */
-    public function forceRelease() {}
+    public function forceRelease(): void {}
 
     /**
      * Returns the owner value written into the driver for this lock.
-     *
-     * @return mixed
      */
-    protected function getCurrentOwner()
+    protected function getCurrentOwner(): string
     {
         return $this->owner;
     }

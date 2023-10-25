@@ -12,113 +12,80 @@ class NullStore extends TaggableStore implements LockProvider
 
     /**
      * Retrieve an item from the cache by key.
-     *
-     * @param string $key
-     * @return mixed
      */
-    public function get($key) {}
+    public function get(string $key): mixed
+    {
+        return null;
+    }
 
     /**
      * Store an item in the cache for a given number of seconds.
-     *
-     * @param string $key
-     * @param mixed $value
-     * @param int $seconds
-     * @return bool
      */
-    public function put($key, $value, $seconds)
+    public function put(string $key, mixed $value, int $seconds): bool
     {
         return false;
     }
 
     /**
      * Increment the value of an item in the cache.
-     *
-     * @param string $key
-     * @param mixed $value
-     * @return bool|int
      */
-    public function increment($key, $value = 1)
+    public function increment(string $key, int $value = 1): bool
     {
         return false;
     }
 
     /**
      * Decrement the value of an item in the cache.
-     *
-     * @param string $key
-     * @param mixed $value
-     * @return bool|int
      */
-    public function decrement($key, $value = 1)
+    public function decrement(string $key, mixed $value = 1): bool
     {
         return false;
     }
 
     /**
      * Store an item in the cache indefinitely.
-     *
-     * @param string $key
-     * @param mixed $value
-     * @return bool
      */
-    public function forever($key, $value)
+    public function forever(string $key, mixed $value): bool
     {
         return false;
     }
 
     /**
      * Get a lock instance.
-     *
-     * @param string $name
-     * @param int $seconds
-     * @param null|string $owner
-     * @return \SwooleTW\Hyperf\Cache\Contracts\Lock
      */
-    public function lock($name, $seconds = 0, $owner = null)
+    public function lock(string $name, int $seconds = 0, ?string $owner = null): NoLock
     {
         return new NoLock($name, $seconds, $owner);
     }
 
     /**
      * Restore a lock instance using the owner identifier.
-     *
-     * @param string $name
-     * @param string $owner
-     * @return \SwooleTW\Hyperf\Cache\Contracts\Lock
      */
-    public function restoreLock($name, $owner)
+    public function restoreLock(string $name, string $owner): NoLock
     {
         return $this->lock($name, 0, $owner);
     }
 
     /**
      * Remove an item from the cache.
-     *
-     * @param string $key
-     * @return bool
      */
-    public function forget($key)
+    public function forget(string $key): bool
     {
         return true;
     }
 
     /**
      * Remove all items from the cache.
-     *
-     * @return bool
      */
-    public function flush()
+    public function flush(): bool
     {
         return true;
     }
 
     /**
      * Get the cache key prefix.
-     *
-     * @return string
      */
-    public function getPrefix()
+    public function getPrefix(): string
     {
         return '';
     }

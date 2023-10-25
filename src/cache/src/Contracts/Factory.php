@@ -8,9 +8,6 @@ interface Factory
 {
     /**
      * Get a cache store instance by name.
-     *
-     * @param null|string $name
-     * @return \SwooleTW\Hyperf\Cache\Contracts\Repository
      */
-    public function store($name = null);
+    public function store(?string $name = null): Repository;
 }

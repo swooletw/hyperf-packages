@@ -4,24 +4,19 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Cache;
 
+use SwooleTW\Hyperf\Cache\Contracts\Store;
+
 class CacheLock extends Lock
 {
     /**
      * The cache store implementation.
-     *
-     * @var \SwooleTW\Hyperf\Cache\Contracts\Store
      */
-    protected $store;
+    protected Store $store;
 
     /**
      * Create a new lock instance.
-     *
-     * @param \SwooleTW\Hyperf\Cache\Contracts\Store $store
-     * @param string $name
-     * @param int $seconds
-     * @param null|string $owner
      */
-    public function __construct($store, $name, $seconds, $owner = null)
+    public function __construct(Store $store, string $name, int $seconds, ?string $owner = null)
     {
         parent::__construct($name, $seconds, $owner);
 
@@ -30,10 +25,8 @@ class CacheLock extends Lock
 
     /**
      * Attempt to acquire the lock.
-     *
-     * @return bool
      */
-    public function acquire()
+    public function acquire(): bool
     {
         if (method_exists($this->store, 'add') && $this->seconds > 0) {
             return $this->store->add(
@@ -54,10 +47,8 @@ class CacheLock extends Lock
 
     /**
      * Release the lock.
-     *
-     * @return bool
      */
-    public function release()
+    public function release(): bool
     {
         if ($this->isOwnedByCurrentProcess()) {
             return $this->store->forget($this->name);
@@ -69,17 +60,15 @@ class CacheLock extends Lock
     /**
      * Releases this lock regardless of ownership.
      */
-    public function forceRelease()
+    public function forceRelease(): void
     {
         $this->store->forget($this->name);
     }
 
     /**
      * Returns the owner value written into the driver for this lock.
-     *
-     * @return mixed
      */
-    protected function getCurrentOwner()
+    protected function getCurrentOwner(): string
     {
         return $this->store->get($this->name);
     }

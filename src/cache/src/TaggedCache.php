@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Cache;
 
+use DateInterval;
+use DateTimeInterface;
 use SwooleTW\Hyperf\Cache\Contracts\Store;
 
 class TaggedCache extends Repository
@@ -14,10 +16,8 @@ class TaggedCache extends Repository
 
     /**
      * The tag set instance.
-     *
-     * @var \SwooleTW\Hyperf\Cache\TagSet
      */
-    protected $tags;
+    protected TagSet $tags;
 
     /**
      * Create a new tagged cache instance.
@@ -31,11 +31,8 @@ class TaggedCache extends Repository
 
     /**
      * Store multiple items in the cache for a given number of seconds.
-     *
-     * @param null|int $ttl
-     * @return bool
      */
-    public function putMany(array $values, $ttl = null)
+    public function putMany(array $values, null|DateInterval|DateTimeInterface|int $ttl = null): bool
     {
         if ($ttl === null) {
             return $this->putManyForever($values);
@@ -46,34 +43,24 @@ class TaggedCache extends Repository
 
     /**
      * Increment the value of an item in the cache.
-     *
-     * @param string $key
-     * @param mixed $value
-     * @return bool|int
      */
-    public function increment($key, $value = 1)
+    public function increment(string $key, int $value = 1): bool|int
     {
         return $this->store->increment($this->itemKey($key), $value);
     }
 
     /**
      * Decrement the value of an item in the cache.
-     *
-     * @param string $key
-     * @param mixed $value
-     * @return bool|int
      */
-    public function decrement($key, $value = 1)
+    public function decrement(string $key, int $value = 1): bool|int
     {
         return $this->store->decrement($this->itemKey($key), $value);
     }
 
     /**
      * Remove all items from the cache.
-     *
-     * @return bool
      */
-    public function flush()
+    public function flush(): bool
     {
         $this->tags->reset();
 
@@ -82,36 +69,29 @@ class TaggedCache extends Repository
 
     /**
      * Get a fully qualified key for a tagged item.
-     *
-     * @param string $key
-     * @return string
      */
-    public function taggedItemKey($key)
+    public function taggedItemKey(string $key): string
     {
         return sha1($this->tags->getNamespace()) . ':' . $key;
     }
 
     /**
      * Get the tag set instance.
-     *
-     * @return \SwooleTW\Hyperf\Cache\TagSet
      */
-    public function getTags()
+    public function getTags(): TagSet
     {
         return $this->tags;
     }
 
-    protected function itemKey($key)
+    protected function itemKey(string $key): string
     {
         return $this->taggedItemKey($key);
     }
 
     /**
      * Fire an event for this cache instance.
-     *
-     * @param string $event
      */
-    protected function event($event)
+    protected function event(object $event): void
     {
         parent::event($event->setTags($this->tags->getNames()));
     }

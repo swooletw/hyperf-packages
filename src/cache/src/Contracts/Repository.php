@@ -14,96 +14,75 @@ interface Repository extends CacheInterface
     /**
      * Retrieve an item from the cache and delete it.
      *
-     * @param string $key
-     * @param mixed $default
-     * @return mixed
+     * @template TCacheValue
+     *
+     * @param (Closure(): TCacheValue)|TCacheValue $default
+     * @return (TCacheValue is null ? mixed : TCacheValue)
      */
-    public function pull($key, $default = null);
+    public function pull(string $key, mixed $default = null): mixed;
 
     /**
      * Store an item in the cache.
-     *
-     * @param string $key
-     * @param mixed $value
-     * @param null|DateInterval|DateTimeInterface|int $ttl
-     * @return bool
      */
-    public function put($key, $value, $ttl = null);
+    public function put(array|string $key, mixed $value, null|DateInterval|DateTimeInterface|int $ttl = null): bool;
 
     /**
      * Store an item in the cache if the key does not exist.
-     *
-     * @param string $key
-     * @param mixed $value
-     * @param null|DateInterval|DateTimeInterface|int $ttl
-     * @return bool
      */
-    public function add($key, $value, $ttl = null);
+    public function add(string $key, mixed $value, null|DateInterval|DateTimeInterface|int $ttl = null): bool;
 
     /**
      * Increment the value of an item in the cache.
-     *
-     * @param string $key
-     * @param mixed $value
-     * @return bool|int
      */
-    public function increment($key, $value = 1);
+    public function increment(string $key, int $value = 1): bool|int;
 
     /**
      * Decrement the value of an item in the cache.
-     *
-     * @param string $key
-     * @param mixed $value
-     * @return bool|int
      */
-    public function decrement($key, $value = 1);
+    public function decrement(string $key, int $value = 1): bool|int;
 
     /**
      * Store an item in the cache indefinitely.
-     *
-     * @param string $key
-     * @param mixed $value
-     * @return bool
      */
-    public function forever($key, $value);
+    public function forever(string $key, mixed $value): bool;
 
     /**
      * Get an item from the cache, or execute the given Closure and store the result.
      *
-     * @param string $key
-     * @param null|DateInterval|DateTimeInterface|int $ttl
-     * @return mixed
+     * @template TCacheValue
+     *
+     * @param Closure(): TCacheValue $callback
+     * @return TCacheValue
      */
-    public function remember($key, $ttl, Closure $callback);
+    public function remember(string $key, null|DateInterval|DateTimeInterface|int $ttl, Closure $callback): mixed;
 
     /**
      * Get an item from the cache, or execute the given Closure and store the result forever.
      *
-     * @param string $key
-     * @return mixed
+     * @template TCacheValue
+     *
+     * @param Closure(): TCacheValue $callback
+     * @return TCacheValue
      */
-    public function sear($key, Closure $callback);
+    public function sear(string $key, Closure $callback): mixed;
 
     /**
      * Get an item from the cache, or execute the given Closure and store the result forever.
      *
-     * @param string $key
-     * @return mixed
+     * @template TCacheValue
+     *
+     * @param Closure(): TCacheValue $callback
+     * @return TCacheValue
      */
-    public function rememberForever($key, Closure $callback);
+    public function rememberForever(string $key, Closure $callback): mixed;
 
     /**
      * Remove an item from the cache.
-     *
-     * @param string $key
-     * @return bool
      */
-    public function forget($key);
+    public function forget(string $key): bool;
 
     /**
      * Get the cache store implementation.
-     *
-     * @return \SwooleTW\Hyperf\Cache\Contracts\Store
      */
-    public function getStore();
+    public function getStore(): Store;
 }
