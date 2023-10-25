@@ -8,7 +8,6 @@ use Carbon\Carbon;
 use Closure;
 use InvalidArgumentException;
 use Laravel\SerializableClosure\SerializableClosure;
-use SplMaxHeap;
 use Swoole\Table;
 use SwooleTW\Hyperf\Cache\Contracts\Store;
 
@@ -323,7 +322,7 @@ class SwooleStore implements Store
     {
         $quantity = (int) round($this->table->getSize() * $this->evictionProportion);
 
-        $heap = new class() extends SplMaxHeap {
+        $heap = new class($quantity) extends LimitedMaxHeap {
             protected function compare($left, $right): int
             {
                 return $left['value'] <=> $right['value'];
@@ -334,10 +333,6 @@ class SwooleStore implements Store
             $value = $record[$column];
 
             $heap->insert(compact('key', 'value'));
-
-            if ($heap->count() > $quantity) {
-                $heap->extract();
-            }
         }
 
         while (! $heap->isEmpty()) {
