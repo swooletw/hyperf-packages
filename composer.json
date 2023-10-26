@@ -81,7 +81,8 @@
         "monolog/monolog": "^3.1",
         "nesbot/carbon": "^2.16",
         "psr/simple-cache": "^3.0",
-        "ramsey/uuid": "^4.7"
+        "ramsey/uuid": "^4.7",
+        "symfony/error-handler": "^6.3"
     },
     "replace": {
         "swooletw/hyperf-auth": "self.version",

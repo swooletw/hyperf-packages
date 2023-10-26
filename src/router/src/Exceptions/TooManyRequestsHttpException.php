@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Router\Exceptions;
 
-use Hyperf\HttpMessage\Exception\HttpException;
+use SwooleTW\Hyperf\Foundation\Exceptions\HttpException;
 use Throwable;
 
 class TooManyRequestsHttpException extends HttpException
@@ -16,12 +16,13 @@ class TooManyRequestsHttpException extends HttpException
         null|int|string $retryAfter = null,
         string $message = '',
         int $code = 0,
-        Throwable $previous = null
+        Throwable $previous = null,
+        array $headers = []
     ) {
         if ($retryAfter) {
             $headers['Retry-After'] = $retryAfter;
         }
 
-        parent::__construct(429, $message, $code, $previous);
+        parent::__construct(429, $message, $code, $previous, $headers);
     }
 }

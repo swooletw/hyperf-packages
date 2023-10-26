@@ -14,8 +14,9 @@ class ThrottleRequestsException extends TooManyRequestsHttpException
     public function __construct(
         string $message = '',
         int $code = 0,
-        ?Throwable $previous = null
+        ?Throwable $previous = null,
+        array $headers = [],
     ) {
-        parent::__construct(null, $message, $code, $previous);
+        parent::__construct(null, $message, $code, $previous, $headers);
     }
 }
