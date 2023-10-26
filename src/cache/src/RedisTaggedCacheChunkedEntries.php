@@ -8,6 +8,9 @@ use Exception;
 use Iterator;
 use RuntimeException;
 
+/**
+ * @implments Iterator<string, string[]>
+ */
 class RedisTaggedCacheChunkedEntries implements Iterator
 {
     protected int $tagIndex = 0;
