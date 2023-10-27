@@ -1,12 +1,12 @@
 {
-    "name": "swooletw/hyperf-router",
+    "name": "swooletw/hyperf-http-message",
     "type": "library",
-    "description": "The router package for Hyperf.",
+    "description": "The http message package for Hyperf.",
     "license": "MIT",
     "keywords": [
         "php",
         "hyperf",
-        "router",
+        "http-message",
         "swoole"
     ],
     "authors": [
@@ -22,28 +22,17 @@
     },
     "autoload": {
         "psr-4": {
-            "SwooleTW\\Hyperf\\Router\\": "src/"
-        },
-        "files": [
-            "src/Functions.php"
-        ]
+            "SwooleTW\\Hyperf\\HttpMessage\\": "src/"
+        }
     },
     "require": {
         "php": "^8.1",
-        "hyperf/context": "^3.1",
-        "hyperf/http-server": "^3.1"
-    },
-    "suggest": {
-        "swooletw/hyperf-cache": "Required to use throttle requests middleware.",
-        "swooletw/hyperf-http-message": "Required to use throttle requests middleware."
+        "hyperf/http-message": "^3.1"
     },
     "config": {
         "sort-packages": true
     },
     "extra": {
-        "hyperf": {
-            "config": "SwooleTW\\Hyperf\\Router\\ConfigProvider"
-        },
         "branch-alias": {
             "dev-main": "3.1-dev"
         }
