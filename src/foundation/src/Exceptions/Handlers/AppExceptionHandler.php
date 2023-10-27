@@ -7,8 +7,8 @@ namespace SwooleTW\Hyperf\Foundation\Exceptions\Handlers;
 use Hyperf\ExceptionHandler\ExceptionHandler;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Psr\Http\Message\ResponseInterface;
-use SwooleTW\Hyperf\Foundation\Exceptions\HttpException;
-use SwooleTW\Hyperf\Foundation\Exceptions\HttpResponseException;
+use SwooleTW\Hyperf\HttpMessage\Exceptions\HttpException;
+use SwooleTW\Hyperf\HttpMessage\Exceptions\HttpResponseException;
 use Symfony\Component\ErrorHandler\Exception\FlattenException;
 use Throwable;
 

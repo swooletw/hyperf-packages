@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Foundation\Exceptions;
+namespace SwooleTW\Hyperf\HttpMessage\Exceptions;
 
 use Hyperf\HttpMessage\Exception\HttpException as BaseHttpException;
 use Throwable;

@@ -15,8 +15,8 @@ use SwooleTW\Hyperf\Auth\Contracts\Authenticatable;
 use SwooleTW\Hyperf\Cache\Exceptions\InvalidArgumentException;
 use SwooleTW\Hyperf\Cache\RateLimiter;
 use SwooleTW\Hyperf\Cache\RateLimiting\Unlimited;
-use SwooleTW\Hyperf\Foundation\Exceptions\HttpResponseException;
-use SwooleTW\Hyperf\Router\Exceptions\ThrottleRequestsException;
+use SwooleTW\Hyperf\HttpMessage\Exceptions\HttpResponseException;
+use SwooleTW\Hyperf\HttpMessage\Exceptions\ThrottleRequestsException;
 use SwooleTW\Hyperf\Support\Facades\Auth;
 
 class ThrottleRequests

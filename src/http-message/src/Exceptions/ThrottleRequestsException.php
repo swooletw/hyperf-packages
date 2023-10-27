@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Router\Exceptions;
+namespace SwooleTW\Hyperf\HttpMessage\Exceptions;
 
 use Throwable;
 
