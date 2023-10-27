@@ -38,7 +38,8 @@
         "hyperf/contract": "^3.1",
         "hyperf/signal": "^3.1",
         "hyperf/engine": "^2.1",
-        "hyperf/db-connection": "^3.1"
+        "hyperf/db-connection": "^3.1",
+        "symfony/error-handler": "^6.3"
     },
     "autoload": {
         "psr-4": {
