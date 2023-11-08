@@ -7,6 +7,7 @@ namespace SwooleTW\Hyperf\Router;
 use Hyperf\Contract\ContainerInterface;
 use Hyperf\HttpServer\Router\DispatcherFactory as BaseDispatcherFactory;
 use Hyperf\HttpServer\Router\RouteCollector;
+use Hyperf\HttpServer\Router\Router;
 
 class DispatcherFactory extends BaseDispatcherFactory
 {
@@ -23,7 +24,13 @@ class DispatcherFactory extends BaseDispatcherFactory
     {
         $this->routes = static::$routeFiles;
 
-        parent::initConfigRoute();
+        Router::init($this);
+
+        foreach ($this->routes as $route) {
+            if (file_exists($route)) {
+                require $route;
+            }
+        }
     }
 
     public function getRouter(string $serverName): RouteCollector
