@@ -13,15 +13,18 @@ use SwooleTW\Hyperf\Auth\AuthManager;
 
 class Authenticate implements MiddlewareInterface
 {
-    protected array $guards = [null];
-
     public function __construct(
         protected AuthManager $auth
     ) {}
 
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    public static function using(string ...$guards): string
     {
-        $this->authenticate($request, $this->guards);
+        return static::class . ':' . implode(',', $guards);
+    }
+
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler, string ...$guards): ResponseInterface
+    {
+        $this->authenticate($request, $guards);
 
         return $handler->handle($request);
     }
@@ -33,8 +36,12 @@ class Authenticate implements MiddlewareInterface
      *
      * @throws \Illuminate\Auth\AuthenticationException
      */
-    protected function authenticate($request, array $guards = []): void
+    protected function authenticate($request, array $guards): void
     {
+        if (empty($guards)) {
+            $guards = [null];
+        }
+
         foreach ($guards as $guard) {
             if ($this->auth->guard($guard)->check()) {
                 return $this->auth->shouldUse($guard);
