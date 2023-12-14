@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Router;
 
 use Hyperf\Contract\ContainerInterface;
+use Hyperf\HttpServer\MiddlewareManager;
 use Hyperf\HttpServer\Router\DispatcherFactory as BaseDispatcherFactory;
 use Hyperf\HttpServer\Router\RouteCollector;
 use Hyperf\HttpServer\Router\Router;
@@ -23,6 +24,8 @@ class DispatcherFactory extends BaseDispatcherFactory
     public function initConfigRoute()
     {
         $this->routes = static::$routeFiles;
+
+        MiddlewareManager::$container = [];
 
         Router::init($this);
 
