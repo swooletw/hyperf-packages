@@ -52,6 +52,10 @@ class RedisTaggedCacheChunkedEntries implements Iterator
             $this->nextScanCursor = '0';
         }
 
+        if ($this->nextScanCursor === $this->scanCursor) {
+            $this->nextScanCursor = '0';
+        }
+
         $this->scanCursor = $this->nextScanCursor;
 
         if ($this->scanCursor === '0') {
@@ -83,16 +87,17 @@ class RedisTaggedCacheChunkedEntries implements Iterator
 
     protected function scan(string $tagId, string $cursor): array
     {
-        [$nextCursor, $entries] = $this->store->connection()->zscan(
+        $entries = $this->store->connection()->zscan(
             $this->store->getPrefix() . $tagId,
             $cursor,
-            ['match' => '*', 'count' => $this->chunkSize]
+            '*',
+            $this->chunkSize
         );
 
         if (! is_array($entries)) {
             throw new RuntimeException('Entries is not an array.');
         }
 
-        return [$nextCursor, $entries];
+        return ["{$cursor}", $entries];
     }
 }
