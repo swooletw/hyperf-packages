@@ -26,6 +26,6 @@ class CreateWorkerRestartTimesCounter implements ListenerInterface
 
         $counter->set(-1);
 
-        $this->container->instance('server.stats.worker_restart_times', $counter);
+        $this->container->set('server.stats.worker_restart_times', $counter);
     }
 }
