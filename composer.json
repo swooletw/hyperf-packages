@@ -36,7 +36,8 @@
             "SwooleTW\\Hyperf\\Log\\": "src/log/src/",
             "SwooleTW\\Hyperf\\ObjectPool\\": "src/object-pool/src/",
             "SwooleTW\\Hyperf\\Router\\": "src/router/src/",
-            "SwooleTW\\Hyperf\\Support\\": "src/support/src/"
+            "SwooleTW\\Hyperf\\Support\\": "src/support/src/",
+            "SwooleTW\\Hyperf\\Watcher\\": "src/watcher/src/"
         },
         "files": [
             "src/auth/src/Functions.php",
@@ -77,6 +78,7 @@
         "hyperf/support": "^3.1",
         "hyperf/tappable": "^3.1",
         "hyperf/translation": "^3.1",
+        "hyperf/watcher": "^3.1",
         "laravel/serializable-closure": "^1.3",
         "lcobucci/jwt": "^5.0",
         "monolog/monolog": "^3.1",
@@ -100,7 +102,8 @@
         "swooletw/hyperf-object-pool": "self.version",
         "swooletw/hyperf-router": "self.version",
         "swooletw/hyperf-sqlite": "self.version",
-        "swooletw/hyperf-support": "self.version"
+        "swooletw/hyperf-support": "self.version",
+        "swooletw/hyperf-watcher": "self.version"
     },
     "suggest": {
         "doctrine/dbal": "Required to rename SQLite indexs (^3.5.1).",
@@ -130,7 +133,8 @@
                 "SwooleTW\\Hyperf\\Hashing\\ConfigProvider",
                 "SwooleTW\\Hyperf\\JWT\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Log\\ConfigProvider",
-                "SwooleTW\\Hyperf\\Router\\ConfigProvider"
+                "SwooleTW\\Hyperf\\Router\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Watcher\\ConfigProvider"
             ]
         },
         "branch-alias": {
