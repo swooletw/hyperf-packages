@@ -23,7 +23,24 @@ class ConfigProvider
     protected function resolveSqliteConnection()
     {
         Connection::resolverFor('sqlite', function ($connection, $database, $prefix, $config) {
+            if ($config['database'] === ':memory:') {
+                $connection = $this->createPersistentPdoResolver($connection, $config);
+            }
+
             return new SQLiteConnection($connection, $database, $prefix, $config);
         });
+    }
+
+    private function createPersistentPdoResolver($connection, $config)
+    {
+        return function () use ($config, $connection) {
+            $key = "sqlite.presistent.pdo.{$config['name']}";
+
+            if (! app()->has($key)) {
+                app()->instance($key, call_user_func($connection));
+            }
+
+            return app($key);
+        };
     }
 }
