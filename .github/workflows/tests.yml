@@ -18,9 +18,11 @@ jobs:
           - php: "8.2"
             swoole: "5.0.3"
           - php: "8.1"
-            swoole: "5.1.0"
+            swoole: "5.1.2"
           - php: "8.2"
-            swoole: "5.1.0"
+            swoole: "5.1.2"
+          - php: "8.3"
+            swoole: "5.1.2"
 
     name: PHP ${{ matrix.php }} (swoole-${{ matrix.swoole }})
 
@@ -37,5 +39,5 @@ jobs:
 
       - name: Execute tests
         run: |
-            vendor/bin/php-cs-fixer fix --dry-run --diff
+            PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --dry-run --diff
             vendor/bin/phpunit -c phpunit.xml.dist.xml
