@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Database;
 
+use Hyperf\Context\ApplicationContext;
 use Hyperf\Database\Connection;
 use SwooleTW\Hyperf\Database\Connectors\SQLiteConnector;
 
@@ -34,13 +35,14 @@ class ConfigProvider
     private function createPersistentPdoResolver($connection, $config)
     {
         return function () use ($config, $connection) {
+            $container = ApplicationContext::getContainer();
             $key = "sqlite.presistent.pdo.{$config['name']}";
 
-            if (! app()->has($key)) {
-                app()->instance($key, call_user_func($connection));
+            if (! $container->has($key)) {
+                $container->set($key, call_user_func($connection));
             }
 
-            return app($key);
+            return $container->get($key);
         };
     }
 }
