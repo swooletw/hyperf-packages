@@ -156,7 +156,7 @@ class LogManager implements LoggerInterface
         );
 
         return new Logger(
-            new Monolog('laravel', $this->prepareHandlers([$handler]))
+            new Monolog('hyperf', $this->prepareHandlers([$handler]))
         );
     }
 
@@ -277,7 +277,7 @@ class LogManager implements LoggerInterface
             $this->prepareHandler(new SlackWebhookHandler(
                 $config['url'],
                 $config['channel'] ?? null,
-                $config['username'] ?? 'Laravel',
+                $config['username'] ?? 'Hyperf',
                 $config['attachment'] ?? true,
                 $config['emoji'] ?? ':boom:',
                 $config['short'] ?? false,

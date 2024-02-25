@@ -290,7 +290,7 @@ class LogManagerTest extends TestCase
         $config->set('logging.channels.defaultsingle', [
             'driver' => 'single',
             'name' => 'ds',
-            'path' => $path = __DIR__ . '/logs/laravel.log',
+            'path' => $path = __DIR__ . '/logs/hyperf.log',
             'replace_placeholders' => true,
         ]);
 
@@ -334,7 +334,7 @@ class LogManagerTest extends TestCase
         $config->set('logging.channels.defaultdaily', [
             'driver' => 'daily',
             'name' => 'dd',
-            'path' => $path = __DIR__ . '/logs/laravel.log',
+            'path' => $path = __DIR__ . '/logs/hyperf.log',
             'replace_placeholders' => true,
         ]);
 
