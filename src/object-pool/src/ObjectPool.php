@@ -13,6 +13,9 @@ use Throwable;
 
 use function Hyperf\Support\make;
 
+/**
+ * @template T of object
+ */
 abstract class ObjectPool implements ObjectPoolInterface
 {
     protected Channel $channel;
@@ -37,6 +40,9 @@ abstract class ObjectPool implements ObjectPoolInterface
         $this->channel = make(Channel::class, ['size' => $this->option->getMaxObjects()]);
     }
 
+    /**
+     * @return T
+     */
     public function get(): object
     {
         $object = $this->getObject();
@@ -125,8 +131,14 @@ abstract class ObjectPool implements ObjectPoolInterface
         );
     }
 
+    /**
+     * @return T
+     */
     abstract protected function createObject(): object;
 
+    /**
+     * @return T
+     */
     protected function getObject(): object
     {
         $number = $this->getObjectNumberInPool();

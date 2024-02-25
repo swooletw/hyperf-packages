@@ -49,13 +49,13 @@ class CacheRedisTaggedCacheTest extends TestCase
         $this->redisProxy
             ->shouldReceive('zScan')
             ->once()
-            ->with('prefix:tag:people:entries', '0', ['match' => '*', 'count' => 1000])
-            ->andReturn(['0', ['tag:people:entries:name' => 0, 'tag:people:entries:age' => 0]]);
+            ->with('prefix:tag:people:entries', '0', '*', 1000)
+            ->andReturn(['tag:people:entries:name' => 0, 'tag:people:entries:age' => 0]);
         $this->redisProxy
             ->shouldReceive('zScan')
             ->once()
-            ->with('prefix:tag:author:entries', '0', ['match' => '*', 'count' => 1000])
-            ->andReturn(['0', ['tag:author:entries:name' => 0, 'tag:author:entries:age' => 0]]);
+            ->with('prefix:tag:author:entries', '0', '*', 1000)
+            ->andReturn(['tag:author:entries:name' => 0, 'tag:author:entries:age' => 0]);
         $this->redisProxy->shouldReceive('del')->once()->with(
             'prefix:tag:people:entries:name',
             'prefix:tag:people:entries:age'

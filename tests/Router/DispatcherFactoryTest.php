@@ -61,9 +61,7 @@ class DispatcherFactoryTest extends TestCase
             ->with(RouteCollector::class, ['server' => 'http'])
             ->andReturn($router);
 
-        $factory = new DispatcherFactory($this->container);
-
-        $factory->initConfigRoute();
+        new DispatcherFactory($this->container);
     }
 
     private function mockContainer()
