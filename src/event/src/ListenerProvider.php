@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Event;
 
-use Closure;
 use Hyperf\Collection\Collection;
-use Hyperf\Event\ListenerData;
 use Hyperf\Stdlib\SplPriorityQueue;
 use Hyperf\Stringable\Str;
 use Psr\EventDispatcher\ListenerProviderInterface;
@@ -39,17 +37,19 @@ class ListenerProvider implements ListenerProviderInterface
     }
 
     public function on(
-        array|Closure|string $event,
-        null|array|Closure|string $listener = null,
+        string $event,
+        array|callable|string $listener,
         int $priority = ListenerData::DEFAULT_PRIORITY
     ): void {
+        $listenerData = new ListenerData($event, $listener, $priority);
+
         if (is_string($event) && str_contains($event, '*')) {
-            $this->wildcards[] = (object) compact('event', 'listener', 'priority');
+            $this->wildcards[] = $listenerData;
 
             return;
         }
 
-        $this->listeners[] = (object) compact('event', 'listener', 'priority');
+        $this->listeners[] = $listenerData;
     }
 
     public function all(): array

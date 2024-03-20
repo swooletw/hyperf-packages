@@ -9,7 +9,6 @@ use Exception;
 use Hyperf\AsyncQueue\Driver\DriverFactory as QueueFactory;
 use Hyperf\Collection\Arr;
 use Hyperf\Context\ApplicationContext;
-use Hyperf\Event\ListenerData;
 use Hyperf\Stringable\Str;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
