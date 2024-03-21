@@ -7,7 +7,7 @@ namespace SwooleTW\Hyperf\Event;
 use Hyperf\Collection\Collection;
 use Hyperf\Stdlib\SplPriorityQueue;
 use Hyperf\Stringable\Str;
-use Psr\EventDispatcher\ListenerProviderInterface;
+use SwooleTW\Hyperf\Event\Contract\ListenerProviderInterface;
 
 use function Hyperf\Collection\collect;
 

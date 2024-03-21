@@ -12,10 +12,10 @@ use Hyperf\Context\ApplicationContext;
 use Hyperf\Stringable\Str;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Psr\EventDispatcher\ListenerProviderInterface;
 use Psr\EventDispatcher\StoppableEventInterface;
 use Psr\Log\LoggerInterface;
 use ReflectionClass;
+use SwooleTW\Hyperf\Event\Contract\ListenerProviderInterface;
 use SwooleTW\Hyperf\Foundation\Contracts\Queue\ShouldQueue;
 use SwooleTW\Hyperf\Support\Traits\ReflectsClosures;
 
