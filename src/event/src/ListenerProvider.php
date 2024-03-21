@@ -19,13 +19,15 @@ class ListenerProvider implements ListenerProviderInterface
 
     public function getListenersForEvent(object|string $event): iterable
     {
-        $listeners = $this->getListenersForCondition($this->listeners, function ($listener) use ($event) {
-            return is_string($event) ? $event === $listener->event : $event instanceof $listener->event;
-        });
+        $listeners = $this->getListenersUsingCondition(
+            $this->listeners,
+            fn ($_, $key) => is_string($event) ? $event === $key : $event instanceof $key
+        );
 
-        $wildcards = $this->getListenersForCondition($this->wildcards, function ($listener) use ($event) {
-            return Str::is($listener->event, $event);
-        });
+        $wildcards = is_string($event) ? $this->getListenersUsingCondition(
+            $this->wildcards,
+            fn ($_, $key) => Str::is($key, $event)
+        ) : collect();
 
         $queue = new SplPriorityQueue();
 
@@ -43,13 +45,13 @@ class ListenerProvider implements ListenerProviderInterface
     ): void {
         $listenerData = new ListenerData($event, $listener, $priority);
 
-        if (is_string($event) && str_contains($event, '*')) {
-            $this->wildcards[] = $listenerData;
+        if ($this->isWildcardEvent($event)) {
+            $this->wildcards[$event][] = $listenerData;
 
             return;
         }
 
-        $this->listeners[] = $listenerData;
+        $this->listeners[$event][] = $listenerData;
     }
 
     public function all(): array
@@ -57,46 +59,28 @@ class ListenerProvider implements ListenerProviderInterface
         return $this->listeners;
     }
 
-    public function forget(object|string $event): void
+    public function forget(string $event): void
     {
-        if (is_string($event) && str_contains($event, '*')) {
-            $this->wildcards = array_filter($this->wildcards, function ($listener) use ($event) {
-                return $event !== $listener->event;
-            });
+        if ($this->isWildcardEvent($event)) {
+            unset($this->wildcards[$event]);
 
             return;
         }
 
-        $this->listeners = array_filter($this->listeners, function ($listener) use ($event) {
-            return is_string($event) ? $event !== $listener->event : ! $event instanceof $listener->event;
-        });
+        unset($this->listeners[$event]);
     }
 
-    public function has(object|string $event): bool
+    public function has(string $event): bool
     {
-        foreach ($this->listeners as $listener) {
-            if (is_string($event) ? $event === $listener->event : $event instanceof $listener->event) {
-                return true;
-            }
-        }
-
-        if (! is_string($event)) {
-            return false;
-        }
-
-        foreach ($this->wildcards as $listener) {
-            if ($event === $listener->event) {
-                return true;
-            }
-        }
-
-        return $this->hasWildcard($event);
+        return isset($this->listeners[$event])
+            || isset($this->wildcards[$event])
+            || $this->hasWildcard($event);
     }
 
     public function hasWildcard(string $event): bool
     {
-        foreach ($this->wildcards as $listener) {
-            if (Str::is($listener->event, $event)) {
+        foreach ($this->wildcards as $key => $_) {
+            if (Str::is($key, $event)) {
                 return true;
             }
         }
@@ -104,24 +88,27 @@ class ListenerProvider implements ListenerProviderInterface
         return false;
     }
 
-    protected function getListenersForCondition(array $listeners, callable $condition): Collection
+    protected function getListenersUsingCondition(array $listeners, callable $filter): Collection
     {
         return collect($listeners)
-            ->flatMap(function ($listener, $index) use ($condition) {
-                if (! $condition($listener)) {
-                    return [];
-                }
-
-                return [[
+            ->filter($filter)
+            ->flatten(1)
+            ->map(function ($listener, $index) {
+                return [
                     'listener' => $listener->listener,
                     'priority' => $listener->priority,
                     'index' => $index,
-                ]];
+                ];
             })
             ->sortBy([
                 ['priority', 'desc'],
                 ['index', 'asc'],
             ])
             ->pluck('listener');
+    }
+
+    protected function isWildcardEvent(string $event): bool
+    {
+        return str_contains($event, '*');
     }
 }

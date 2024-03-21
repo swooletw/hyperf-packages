@@ -196,19 +196,19 @@ class EventDispatcher implements EventDispatcherInterface
 
     public function forgetPushed(): void
     {
-        foreach ($this->listeners->all() as $listener) {
-            if (is_string($listener->event) && str_ends_with($listener->event, '_pushed')) {
-                $this->forget($listener->event);
+        foreach ($this->listeners->all() as $key => $_) {
+            if (str_ends_with($key, '_pushed')) {
+                $this->forget($key);
             }
         }
     }
 
-    public function forget(object|string $event): void
+    public function forget(string $event): void
     {
         $this->listeners->forget($event);
     }
 
-    public function hasListeners(object|string $eventName): bool
+    public function hasListeners(string $eventName): bool
     {
         return $this->listeners->has($eventName);
     }
