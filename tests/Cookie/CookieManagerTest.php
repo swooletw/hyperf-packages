@@ -84,7 +84,7 @@ class CookieManagerTest extends TestCase
             ->method('getQueuedCookies')
             ->willReturn([
                 'foo' => [
-                    '/' => new Cookie('foo', 'bar')
+                    '/' => new Cookie('foo', 'bar'),
                 ],
             ]);
         $manager->expects($this->once())
@@ -105,7 +105,7 @@ class CookieManagerTest extends TestCase
             ->method('getQueuedCookies')
             ->willReturn([
                 'foo' => [
-                    '/bar' => new Cookie('foo', 'bar')
+                    '/bar' => new Cookie('foo', 'bar'),
                 ],
             ]);
         $manager->expects($this->once())

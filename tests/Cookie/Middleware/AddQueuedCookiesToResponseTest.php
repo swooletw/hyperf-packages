@@ -30,7 +30,6 @@ class AddQueuedCookiesToResponseTest extends TestCase
         $handler = m::mock(RequestHandlerInterface::class);
         $handler->shouldReceive('handle')->with($request)->once()->andReturn($response);
 
-
         $middle = new AddQueuedCookiesToResponse($cookie);
 
         $middle->process($request, $handler);
