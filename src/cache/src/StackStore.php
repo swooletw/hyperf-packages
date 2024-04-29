@@ -77,6 +77,7 @@ class StackStore implements Store
 
         return $this->callStores(
             fn (Store $store) => $store->forever($key, $record),
+            fn (Store $store) => $store->forget($key),
         );
     }
 
@@ -84,6 +85,7 @@ class StackStore implements Store
     {
         return $this->callStores(
             fn (Store $store) => $store->forget($key),
+            force: true
         );
     }
 
@@ -91,6 +93,7 @@ class StackStore implements Store
     {
         return $this->callStores(
             static fn (Store $store) => $store->flush(),
+            force: true
         );
     }
 
@@ -125,6 +128,7 @@ class StackStore implements Store
     {
         return $this->callStores(
             fn (Store $store) => $this->putToStore($store, $key, $record),
+            fn (Store $store) => $store->forget($key),
         );
     }
 
@@ -156,14 +160,23 @@ class StackStore implements Store
         }, $bottomLayer)();
     }
 
-    protected function callStores(Closure $handler): bool
+    protected function callStores(Closure $handler, ?Closure $rollback = null, bool $force = false): bool
     {
-        foreach ($this->stores as $store) {
-            if (! $handler($store)) {
-                return false;
-            }
-        }
+        return $this->callStoresStacked(
+            function (Store $store, Closure $next) use ($handler, $rollback, $force): bool {
+                if (! $handler($store) && ! $force) {
+                    return false;
+                }
 
-        return true;
+                $result = $next();
+
+                if (! $result && $rollback) {
+                    $rollback($store);
+                }
+
+                return $result;
+            },
+            static fn () => true
+        );
     }
 }

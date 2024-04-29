@@ -129,6 +129,23 @@ class CacheStackStoreTest extends TestCase
         $this->assertFalse($this->store->put($key, $value, $ttl));
     }
 
+    public function testPutItemToStoreFailedAndRollback()
+    {
+        $this->createStores();
+
+        $key = 'foo';
+        $value = 'bar';
+        $ttl = 100;
+        $expiration = Carbon::now()->getTimestamp() + $ttl;
+        $record = compact('value', 'expiration');
+
+        $this->swoole->shouldReceive('put')->once()->with($key, $record, $ttl)->andReturn(true);
+        $this->redis->shouldReceive('put')->once()->with($key, $record, $ttl)->andReturn(false);
+        $this->swoole->shouldReceive('forget')->once()->with($key)->andReturn(true);
+
+        $this->assertFalse($this->store->put($key, $value, $ttl));
+    }
+
     public function testMany()
     {
         $this->createStores();
@@ -239,6 +256,17 @@ class CacheStackStoreTest extends TestCase
         $this->assertFalse($this->store->forever('foo', 'bar'));
     }
 
+    public function testForeverFailedWithRollback()
+    {
+        $this->createStores();
+
+        $this->swoole->shouldReceive('forever')->once()->with('foo', ['value' => 'bar'])->andReturn(true);
+        $this->redis->shouldReceive('forever')->once()->with('foo', ['value' => 'bar'])->andReturn(false);
+        $this->swoole->shouldReceive('forget')->once()->with('foo')->andReturn(true);
+
+        $this->assertFalse($this->store->forever('foo', 'bar'));
+    }
+
     public function testForget()
     {
         $this->createStores();
@@ -254,8 +282,9 @@ class CacheStackStoreTest extends TestCase
         $this->createStores();
 
         $this->swoole->shouldReceive('forget')->once()->with('foo')->andReturn(false);
+        $this->redis->shouldReceive('forget')->once()->with('foo')->andReturn(true);
 
-        $this->assertFalse($this->store->forget('foo', 'bar'));
+        $this->assertTrue($this->store->forget('foo', 'bar'));
     }
 
     public function testFlush()
@@ -273,8 +302,9 @@ class CacheStackStoreTest extends TestCase
         $this->createStores();
 
         $this->swoole->shouldReceive('flush')->once()->withNoArgs()->andReturn(false);
+        $this->redis->shouldReceive('flush')->once()->withNoArgs()->andReturn(true);
 
-        $this->assertFalse($this->store->flush('foo', 'bar'));
+        $this->assertTrue($this->store->flush('foo', 'bar'));
     }
 
     public function testThreeStores()
@@ -320,7 +350,10 @@ class CacheStackStoreTest extends TestCase
         $this->assertTrue($store->put($key, $value, $ttl));
 
         $array->shouldReceive('put')->once()->with($key, $record, $ttl)->andReturn(true);
-        $swoole->shouldReceive('put')->once()->with($key, $record, $ttl)->andReturn(false);
+        $swoole->shouldReceive('put')->once()->with($key, $record, $ttl)->andReturn(true);
+        $redis->shouldReceive('put')->once()->with($key, $record, $ttl)->andReturn(false);
+        $swoole->shouldReceive('forget')->once()->with($key)->andReturn(true);
+        $array->shouldReceive('forget')->once()->with($key)->andReturn(true);
         $this->assertFalse($store->put($key, $value, $ttl));
     }
 
