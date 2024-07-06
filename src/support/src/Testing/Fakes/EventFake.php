@@ -156,7 +156,7 @@ class EventFake implements EventDispatcherInterface
      *
      * @param string $event
      * @param null|callable $callback
-     * @return \Illuminate\Support\Collection
+     * @return \Hyperf\Collection\Collection
      */
     public function dispatched($event, $callback = null)
     {

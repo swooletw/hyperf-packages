@@ -29,6 +29,7 @@
             "SwooleTW\\Hyperf\\Database\\": "src/sqlite/src/",
             "SwooleTW\\Hyperf\\Dispatcher\\": "src/dispatcher/src/",
             "SwooleTW\\Hyperf\\Encryption\\": "src/encryption/src/",
+            "SwooleTW\\Hyperf\\Event\\": "src/event/src/",
             "SwooleTW\\Hyperf\\Foundation\\": "src/foundation/src/",
             "SwooleTW\\Hyperf\\Hashing\\": "src/hashing/src/",
             "SwooleTW\\Hyperf\\HttpMessage\\": "src/http-message/src/",
@@ -42,6 +43,7 @@
         "files": [
             "src/auth/src/Functions.php",
             "src/cache/src/Functions.php",
+            "src/event/src/Functions.php",
             "src/foundation/src/helpers.php",
             "src/router/src/Functions.php",
             "src/support/src/helpers.php"
@@ -94,6 +96,7 @@
         "swooletw/hyperf-cookie": "self.version",
         "swooletw/hyperf-dispatcher": "self.version",
         "swooletw/hyperf-encryption": "self.version",
+        "swooletw/hyperf-event": "self.version",
         "swooletw/hyperf-foundation": "self.version",
         "swooletw/hyperf-hashing": "self.version",
         "swooletw/hyperf-http-message": "self.version",
@@ -129,6 +132,7 @@
                 "SwooleTW\\Hyperf\\Database\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Dispatcher\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Encryption\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Event\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Foundation\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Hashing\\ConfigProvider",
                 "SwooleTW\\Hyperf\\JWT\\ConfigProvider",
