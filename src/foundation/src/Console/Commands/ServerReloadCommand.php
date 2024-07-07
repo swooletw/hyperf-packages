@@ -60,7 +60,7 @@ class ServerReloadCommand extends Command
 
             $this->info('Done.');
         } catch (Throwable $e) {
-            $this->error('Reload failed.`');
+            $this->error('Reload failed.');
             return 1;
         }
 

@@ -9,7 +9,6 @@ use Hyperf\Database\Commands\Seeders\BaseCommand as SeederBaseCommand;
 use Hyperf\Database\Migrations\Migration;
 use Hyperf\Database\Model\Factory as DatabaseFactory;
 use SwooleTW\Hyperf\Foundation\Console\Commands\ServerReloadCommand;
-use SwooleTW\Hyperf\Foundation\Listeners\CreateWorkerRestartTimesCounter;
 use SwooleTW\Hyperf\Foundation\Listeners\ReloadDotenvAndConfig;
 use SwooleTW\Hyperf\Foundation\Model\FactoryInvoker;
 use SwooleTW\Hyperf\Foundation\Queue\Console\QueueWorkCommand;
@@ -23,7 +22,6 @@ class ConfigProvider
                 DatabaseFactory::class => FactoryInvoker::class,
             ],
             'listeners' => [
-                CreateWorkerRestartTimesCounter::class,
                 ReloadDotenvAndConfig::class,
             ],
             'commands' => [
