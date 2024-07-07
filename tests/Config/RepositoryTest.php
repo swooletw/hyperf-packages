@@ -8,6 +8,10 @@ use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Config\Repository;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class RepositoryTest extends TestCase
 {
     protected Repository $repository;
