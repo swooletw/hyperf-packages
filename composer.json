@@ -109,7 +109,7 @@
         "swooletw/hyperf-watcher": "self.version"
     },
     "suggest": {
-        "doctrine/dbal": "Required to rename SQLite indexs (^3.5.1).",
+        "doctrine/dbal": "Required to rename SQLite indexes (^3.5.1).",
         "hyperf/redis": "Required to use redis driver. (^3.1)",
         "hyperf/session": "Required to use session guard. (^3.1)"
     },
