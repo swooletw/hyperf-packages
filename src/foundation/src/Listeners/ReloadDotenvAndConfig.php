@@ -29,7 +29,6 @@ class ReloadDotenvAndConfig implements ListenerInterface
 
     public function process(object $event): void
     {
-        echo static::$restartCounter->get() . PHP_EOL;
         if (
             $event instanceof BeforeWorkerStart
             && $event->workerId === 0
