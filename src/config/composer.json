@@ -1,0 +1,47 @@
+{
+    "name": "swooletw/hyperf-config",
+    "type": "library",
+    "description": "The config package for Hyperf.",
+    "license": "MIT",
+    "keywords": [
+        "php",
+        "hyperf",
+        "config",
+        "swoole"
+    ],
+    "authors": [
+        {
+            "name": "Albert Chen",
+            "email": "albert.cht@pm.me",
+            "homepage": "https://albert-chen.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/swooletw/hyperf-packages/issues",
+        "source": "https://github.com/swooletw/hyperf-packages"
+    },
+    "autoload": {
+        "psr-4": {
+            "SwooleTW\\Hyperf\\Config\\": "src/"
+        },
+        "files": [
+            "src/Functions.php"
+        ]
+    },
+    "require": {
+        "php": "^8.1",
+        "hyperf/support": "^3.1",
+        "hyperf/macroable": "^3.1"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "hyperf": {
+            "config": "SwooleTW\\Hyperf\\Config\\ConfigProvider"
+        },
+        "branch-alias": {
+            "dev-main": "3.1-dev"
+        }
+    }
+}
