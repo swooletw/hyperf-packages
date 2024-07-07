@@ -15,10 +15,8 @@ interface Repository extends ConfigInterface
 
     /**
      * Get the specified configuration value.
-     *
-     * @param array|string $key
      */
-    public function get(string $key, mixed $default = null): mixed;
+    public function get(array|string $key, mixed $default = null): mixed;
 
     /**
      * Get all of the configuration items for the application.
