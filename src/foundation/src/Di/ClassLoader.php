@@ -10,7 +10,6 @@ class ClassLoader extends BaseClassLoader
 {
     protected static function loadDotenv(): void
     {
-        DotenvManager::init();
-        DotenvManager::load();
+        DotenvManager::load([BASE_PATH]);
     }
 }

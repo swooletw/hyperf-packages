@@ -5,50 +5,65 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Foundation\Di;
 
 use Dotenv\Dotenv;
+use Dotenv\Repository\Adapter\AdapterInterface;
 use Dotenv\Repository\Adapter\PutenvAdapter;
 use Dotenv\Repository\RepositoryBuilder;
 
 class DotenvManager
 {
-    protected static PutenvAdapter $adapter;
+    protected static AdapterInterface $adapter;
 
     protected static Dotenv $dotenv;
 
-    protected static array $entries;
+    protected static array $cachedValues;
 
-    public static function init(): void
+    public static function load(array $paths): void
     {
-        static::$adapter = PutenvAdapter::create()->get();
-
-        $repository = RepositoryBuilder::createWithNoAdapters()->addAdapter(static::$adapter)->make();
-
-        static::$dotenv = Dotenv::create($repository, [BASE_PATH]);
-    }
-
-    public static function load(): void
-    {
-        if (isset(static::$entries)) {
+        if (isset(static::$cachedValues)) {
             return;
         }
 
-        static::$entries = static::$dotenv->load();
+        static::$cachedValues = static::getDotenv($paths)->load();
     }
 
-    public static function reload(): void
+    public static function reload(array $paths, bool $force = false): void
     {
-        if (! isset(static::$entries)) {
-            static::load();
+        if (! isset(static::$cachedValues)) {
+            static::load($paths);
 
             return;
         }
 
-        $entries = static::$dotenv->load();
-        $deletedEntries = array_diff_key(static::$entries, $entries);
+        $entries = static::getDotenv($paths, $force)->load();
+        $deletedEntries = array_diff_key(static::$cachedValues, $entries);
 
-        foreach ($deletedEntries as $deletedEntry => $_) {
-            static::$adapter->delete($deletedEntry);
+        foreach ($deletedEntries as $deletedEntry => $value) {
+            static::getAdapter()->delete($deletedEntry);
         }
 
-        static::$entries = $entries;
+        static::$cachedValues = $entries;
+    }
+
+    protected static function getDotenv(array $paths, bool $force = false): Dotenv
+    {
+        if (isset(static::$dotenv) && ! $force) {
+            return static::$dotenv;
+        }
+
+        return static::$dotenv = Dotenv::create(
+            RepositoryBuilder::createWithNoAdapters()
+                ->addAdapter(static::getAdapter($force))
+                ->make(),
+            $paths
+        );
+    }
+
+    protected static function getAdapter(bool $force = false): AdapterInterface
+    {
+        if (isset(static::$adapter) && ! $force) {
+            return static::$adapter;
+        }
+
+        return static::$adapter = PutenvAdapter::create()->get();
     }
 }
