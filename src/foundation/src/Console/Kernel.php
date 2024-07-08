@@ -24,7 +24,10 @@ class Kernel implements KernelContract
     /**
      * Register the commands for the application.
      */
-    public function commands(): void {}
+    public function commands(): void
+    {
+        $this->load(app_path('Console/Commands'));
+    }
 
     /**
      * Add loadPaths in the given directory.

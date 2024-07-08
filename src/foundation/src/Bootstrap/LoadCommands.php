@@ -23,11 +23,9 @@ class LoadCommands
         if ($app->has(KernelContract::class)) {
             $kernel = $app->get(KernelContract::class);
             $kernel->commands();
-
-            $reflections = ReflectionManager::getAllClasses(
-                $app->get(KernelContract::class)
-                    ->getLoadPaths()
-            );
+            if ($loadPaths = $app->get(KernelContract::class)->getLoadPaths()) {
+                $reflections = ReflectionManager::getAllClasses($loadPaths);
+            }
         }
 
         // Load commands from config
