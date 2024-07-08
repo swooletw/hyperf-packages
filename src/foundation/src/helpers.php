@@ -63,6 +63,19 @@ if (! function_exists('storage_path')) {
     }
 }
 
+if (! function_exists('config_path')) {
+    /**
+     * Get the configuration path.
+     *
+     * @param  string  $path
+     * @return string
+     */
+    function config_path(string $path = ''): string
+    {
+        return base_path("config/{$path}");
+    }
+}
+
 if (! function_exists('config')) {
     /**
      * Get config value.
