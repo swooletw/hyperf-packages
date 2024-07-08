@@ -24,6 +24,7 @@
         "psr-4": {
             "SwooleTW\\Hyperf\\Auth\\": "src/auth/src/",
             "SwooleTW\\Hyperf\\Cache\\": "src/cache/src/",
+            "SwooleTW\\Hyperf\\Config\\": "src/config/src/",
             "SwooleTW\\Hyperf\\Container\\": "src/container/src/",
             "SwooleTW\\Hyperf\\Cookie\\": "src/cookie/src/",
             "SwooleTW\\Hyperf\\Database\\": "src/sqlite/src/",
@@ -92,6 +93,7 @@
     "replace": {
         "swooletw/hyperf-auth": "self.version",
         "swooletw/hyperf-cache": "self.version",
+        "swooletw/hyperf-config": "self.version",
         "swooletw/hyperf-container": "self.version",
         "swooletw/hyperf-cookie": "self.version",
         "swooletw/hyperf-dispatcher": "self.version",
@@ -129,6 +131,7 @@
                 "SwooleTW\\Hyperf\\Auth\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Cache\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Cookie\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Config\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Database\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Dispatcher\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Encryption\\ConfigProvider",
