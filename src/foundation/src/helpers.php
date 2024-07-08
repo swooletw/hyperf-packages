@@ -213,7 +213,7 @@ if (! function_exists('info')) {
             $context['backtrace'] = sprintf('%s:%s', $traces[0]['file'], $traces[0]['line']);
         }
 
-        return logs()->info($message, $context);
+        return logger()->info($message, $context);
     }
 }
 
