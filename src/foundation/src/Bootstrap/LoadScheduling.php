@@ -9,10 +9,10 @@ use Psr\Container\ContainerInterface;
 use SwooleTW\Hyperf\Foundation\Console\Contracts\Kernel as KernelContract;
 use SwooleTW\Hyperf\Foundation\Console\Scheduling\Schedule;
 
-class LoadCrontabs
+class LoadScheduling
 {
     /**
-     * Load Crontabs.
+     * Load Scheduling.
      */
     public function bootstrap(ContainerInterface $app): void
     {
@@ -21,7 +21,7 @@ class LoadCrontabs
         }
 
         $schedule = new Schedule($app);
-        $kernel = $app->get(KernelContract::class)
+        $app->get(KernelContract::class)
             ->schedule($schedule);
         $commands = $schedule->getCommands();
         $crontabs = $app->get(ConfigInterface::class)

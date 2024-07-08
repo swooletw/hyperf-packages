@@ -14,7 +14,7 @@ class ProvidersLoader
     protected array $bootstrappers = [
         \SwooleTW\Hyperf\Foundation\Bootstrap\LoadAliases::class,
         \SwooleTW\Hyperf\Foundation\Bootstrap\LoadCommands::class,
-        \SwooleTW\Hyperf\Foundation\Bootstrap\LoadCrontabs::class,
+        \SwooleTW\Hyperf\Foundation\Bootstrap\LoadScheduling::class,
     ];
 
     public function __construct(
