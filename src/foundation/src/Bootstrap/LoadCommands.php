@@ -8,6 +8,7 @@ use Hyperf\Command\Command;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Di\ReflectionManager;
 use Psr\Container\ContainerInterface;
+use SwooleTW\Hyperf\Foundation\Command\Console;
 use SwooleTW\Hyperf\Foundation\Console\Contracts\Kernel as KernelContract;
 use SwooleTW\Hyperf\Foundation\Database\CommandCollector;
 
@@ -28,10 +29,22 @@ class LoadCommands
             }
         }
 
+        // Load commands from registered closures
+        $consoleCommands = [];
+        foreach (Console::getCommands() as $handlerId => $command) {
+            $handlerId = "commands.{$handlerId}";
+            $app->set($handlerId, $command);
+            $consoleCommands[] = $handlerId;
+        }
+
         // Load commands from config
         $commands = $app->get(ConfigInterface::class)
             ->get('commands', []);
-        $commands = array_merge($commands, CommandCollector::getAllCommands());
+        $commands = array_merge(
+            $commands,
+            CommandCollector::getAllCommands(),
+            $consoleCommands
+        );
         foreach ($reflections as $reflection) {
             $command = $reflection->getName();
             if (! is_subclass_of($command, Command::class)) {
