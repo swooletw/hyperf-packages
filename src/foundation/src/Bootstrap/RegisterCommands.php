@@ -70,9 +70,6 @@ class RegisterCommands
             $commands = array_merge($commands, $annotationCommands);
         }
 
-        $container->get(ConfigInterface::class)
-            ->set('commands', array_unique($commands));
-
         // Register commands to application.
         foreach ($commands as $command) {
             $app->add(
