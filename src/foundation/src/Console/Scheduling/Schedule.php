@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Foundation\Console\Scheduling;
 
 use Hyperf\Command\Command;
+use Hyperf\Crontab\Crontab;
 use Psr\Container\ContainerInterface;
 use SwooleTW\Hyperf\Foundation\Console\Parser;
 
