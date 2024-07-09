@@ -20,10 +20,21 @@ use Symfony\Component\Process\PhpExecutableFinder;
 
 class Application extends SymfonyApplication implements ApplicationContract
 {
+    /**
+     * The flag for whether the console application has been bootstrapped.
+     */
     protected static bool $hasBootstrapped = false;
 
+    /**
+     * The output from the previous command.
+     *
+     * @var \Symfony\Component\Console\Output\BufferedOutput
+     */
     protected ?BufferedOutput $lastOutput;
 
+    /**
+     * The application version.
+     */
     protected string $version = '0.1';
 
     /**
@@ -77,17 +88,9 @@ class Application extends SymfonyApplication implements ApplicationContract
     }
 
     /**
-     * Register a console "starting" bootstrapper.
-     */
-    public static function starting(Closure $callback): void
-    {
-        static::$bootstrappers[] = $callback;
-    }
-
-    /**
      * Bootstrap the console application.
      */
-    public function bootstrap(): void
+    protected function bootstrap(): void
     {
         if (static::$hasBootstrapped) {
             return;
@@ -98,14 +101,6 @@ class Application extends SymfonyApplication implements ApplicationContract
         }
 
         static::$hasBootstrapped = true;
-    }
-
-    /**
-     * Clear the console application bootstrappers.
-     */
-    public static function forgetBootstrappers(): void
-    {
-        static::$bootstrappers = [];
     }
 
     /**
