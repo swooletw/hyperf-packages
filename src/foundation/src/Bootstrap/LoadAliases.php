@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Foundation\Bootstrap;
 
 use Hyperf\Contract\ConfigInterface;
-use Psr\Container\ContainerInterface;
+use SwooleTW\Hyperf\Foundation\Console\Contracts\Application as ApplicationContract;
 
 class LoadAliases
 {
     /**
      * Load Class Aliases.
      */
-    public function bootstrap(ContainerInterface $app): void
+    public function bootstrap(ApplicationContract $app): void
     {
-        $aliases = $app->get(ConfigInterface::class)
+        $aliases = $app->getContainer()
+            ->get(ConfigInterface::class)
             ->get('app.aliases', []);
         foreach ($aliases as $alias => $class) {
             if (class_exists($alias)) {

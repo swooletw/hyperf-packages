@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation;
 
+use Hyperf\Contract\ApplicationInterface;
 use Hyperf\Database\Commands\Migrations\BaseCommand as MigrationBaseCommand;
 use Hyperf\Database\Commands\Seeders\BaseCommand as SeederBaseCommand;
 use Hyperf\Database\Migrations\Migration;
 use Hyperf\Database\Model\Factory as DatabaseFactory;
+use SwooleTW\Hyperf\Foundation\Console\ApplicationFactory;
 use SwooleTW\Hyperf\Foundation\Console\Commands\ServerReloadCommand;
 use SwooleTW\Hyperf\Foundation\Listeners\ReloadDotenvAndConfig;
 use SwooleTW\Hyperf\Foundation\Model\FactoryInvoker;
@@ -19,6 +21,7 @@ class ConfigProvider
     {
         return [
             'dependencies' => [
+                ApplicationInterface::class => ApplicationFactory::class,
                 DatabaseFactory::class => FactoryInvoker::class,
             ],
             'listeners' => [

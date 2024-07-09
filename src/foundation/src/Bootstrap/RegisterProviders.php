@@ -2,36 +2,25 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Foundation;
+namespace SwooleTW\Hyperf\Foundation\Bootstrap;
 
-use Hyperf\Contract\ApplicationInterface;
 use Hyperf\Contract\ConfigInterface;
 use Psr\Container\ContainerInterface;
+use SwooleTW\Hyperf\Foundation\Console\Contracts\Application as ApplicationContract;
 use SwooleTW\Hyperf\Support\ServiceProvider;
 
-class ProvidersLoader
+class RegisterProviders
 {
-    protected array $bootstrappers = [
-        \SwooleTW\Hyperf\Foundation\Bootstrap\LoadAliases::class,
-        \SwooleTW\Hyperf\Foundation\Bootstrap\LoadCommands::class,
-        \SwooleTW\Hyperf\Foundation\Bootstrap\LoadScheduling::class,
-    ];
+    protected ?ContainerInterface $container = null;
 
-    public function __construct(
-        protected ContainerInterface $container,
-        protected array $providers = []
-    ) {
-        $this->container = $container;
-    }
+    protected array $providers = [];
 
-    public function load(): void
+    /**
+     * Register Class Aliases.
+     */
+    public function bootstrap(ApplicationContract $app): void
     {
-        // bootstrappers are before any other packages
-        $this->bootstrap();
-
-        // after initiating application, all the service bindings will
-        // be prepared to the app container
-        $this->container->get(ApplicationInterface::class);
+        $this->container = $app->getContainer();
 
         $providers = $this->getServiceProviders();
         foreach ($providers as $providerClass) {
@@ -47,14 +36,6 @@ class ProvidersLoader
                 continue;
             }
             $provider->boot();
-        }
-    }
-
-    protected function bootstrap(): void
-    {
-        foreach ($this->bootstrappers as $bootstrapper) {
-            (new $bootstrapper())
-                ->bootstrap($this->container);
         }
     }
 
