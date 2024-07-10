@@ -11,7 +11,6 @@ use Psr\Container\ContainerInterface;
 use SwooleTW\Hyperf\Container\Container;
 use SwooleTW\Hyperf\Container\DefinitionSourceFactory;
 use SwooleTW\Hyperf\Foundation\Contracts\Application as ApplicationContract;
-use SwooleTW\Hyperf\Foundation\Providers\FoundationServiceProvider;
 use SwooleTW\Hyperf\Support\ServiceProvider;
 
 class Application extends Container implements ApplicationContract
@@ -61,7 +60,7 @@ class Application extends Container implements ApplicationContract
         parent::__construct($this->getDefinitionSource());
 
         $this->registerBaseBindings();
-        $this->registerBaseServiceProviders();
+        $this->registerCoreContainerAliases();
     }
 
     protected function getDefinitionSource(): DefinitionSourceInterface
@@ -83,14 +82,6 @@ class Application extends Container implements ApplicationContract
     protected function registerBaseBindings(): void
     {
         $this->instance(ContainerInterface::class, $this);
-    }
-
-    /**
-     * Register all of the base service providers.
-     */
-    protected function registerBaseServiceProviders(): void
-    {
-        $this->register(new FoundationServiceProvider($this));
     }
 
     /**
@@ -259,5 +250,63 @@ class Application extends Container implements ApplicationContract
     public function providerIsLoaded(string $provider): bool
     {
         return isset($this->loadedProviders[$provider]);
+    }
+
+    /**
+     * Register the core class aliases in the container.
+     *
+     * @return void
+     */
+    protected function registerCoreContainerAliases(): void
+    {
+        foreach ([
+            \Psr\Container\ContainerInterface::class => [
+                'app',
+                \Hyperf\Di\Container::class,
+                \Hyperf\Contract\ContainerInterface::class,
+                \SwooleTW\Hyperf\Container\Contracts\Container::class,
+                \SwooleTW\Hyperf\Container\Container::class,
+            ],
+            \Hyperf\Contract\ConfigInterface::class => ['config'],
+            \Psr\EventDispatcher\EventDispatcherInterface::class => ['events'],
+            \Hyperf\HttpServer\Router\DispatcherFactory::class => ['router'],
+            \Hyperf\Contract\StdoutLoggerInterface::class => ['log'],
+            \SwooleTW\Hyperf\Encryption\Encrypter::class => ['encrypt'],
+            \SwooleTW\Hyperf\Cache\Contracts\Factory::class => [
+                'cache',
+                \SwooleTW\Hyperf\Cache\CacheManager::class,
+            ],
+            \SwooleTW\Hyperf\Cache\Contracts\Store::class => [
+                'cache.store',
+                \SwooleTW\Hyperf\Cache\Repository::class,
+            ],
+            \League\Flysystem\Filesystem::class => ['files'],
+            \Hyperf\Contract\TranslatorInterface::class => ['translator'],
+            \Hyperf\Validation\Contract\ValidatorFactoryInterface::class => ['validator'],
+            \Hyperf\HttpServer\Contract\RequestInterface::class => ['request'],
+            \Hyperf\HttpServer\Contract\ResponseInterface::class => ['response'],
+            \Hyperf\DbConnection\Db::class => ['db'],
+            \SwooleTW\Hyperf\Auth\Contracts\FactoryContract::class => [
+                'auth',
+                \SwooleTW\Hyperf\Auth\AuthManager::class,
+            ],
+            \SwooleTW\Hyperf\Auth\Contracts\Guard::class => [
+                'auth.driver',
+            ],
+            \SwooleTW\Hyperf\Hashing\Contracts\Hasher::class => ['hash'],
+            \SwooleTW\Hyperf\Cookie\CookieManager::class => ['cookie'],
+            \SwooleTW\Hyperf\Auth\Contracts\FactoryContract::class => [
+                'auth',
+                \SwooleTW\Hyperf\Auth\AuthManager::class,
+            ],
+            \SwooleTW\Hyperf\JWT\Contracts\ManagerContract::class => [
+                'jwt',
+                \SwooleTW\Hyperf\JWT\JWTManager::class,
+            ],
+        ] as $key => $aliases) {
+            foreach ($aliases as $alias) {
+                $this->alias($key, $alias);
+            }
+        }
     }
 }
