@@ -30,10 +30,7 @@ class FoundationServiceProvider extends ServiceProvider
     /**
      * Register any application services.
      */
-    public function register(): void
-    {
-        //
-    }
+    public function register(): void {}
 
     protected function setDatabaseConnection(): void
     {

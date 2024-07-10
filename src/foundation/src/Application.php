@@ -254,8 +254,6 @@ class Application extends Container implements ApplicationContract
 
     /**
      * Register the core class aliases in the container.
-     *
-     * @return void
      */
     protected function registerCoreContainerAliases(): void
     {
