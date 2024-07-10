@@ -264,6 +264,8 @@ class Application extends Container implements ApplicationContract
                 \Hyperf\Contract\ContainerInterface::class,
                 \SwooleTW\Hyperf\Container\Contracts\Container::class,
                 \SwooleTW\Hyperf\Container\Container::class,
+                \SwooleTW\Hyperf\Foundation\Contracts\Application::class,
+                \SwooleTW\Hyperf\Foundation\Application::class,
             ],
             \Hyperf\Contract\ConfigInterface::class => ['config'],
             \Psr\EventDispatcher\EventDispatcherInterface::class => ['events'],

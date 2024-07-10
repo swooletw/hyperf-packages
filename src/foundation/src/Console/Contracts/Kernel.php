@@ -30,6 +30,27 @@ interface Kernel
     public function load($paths): void;
 
     /**
+     * Set the Artisan commands provided by the application.
+     *
+     * @return $this
+     */
+    public function addCommands(array $commands): static;
+
+    /**
+     * Set the paths that should have their Artisan commands automatically discovered.
+     *
+     * @return $this
+     */
+    public function addCommandPaths(array $paths): static;
+
+    /**
+     * Set the paths that should have their Artisan "routes" automatically discovered.
+     *
+     * @return $this
+     */
+    public function addCommandRoutePaths(array $paths): static;
+
+    /**
      * Get loadPaths for the application.
      */
     public function getLoadPaths(): array;

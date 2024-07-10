@@ -14,12 +14,12 @@ use Hyperf\Di\Annotation\AnnotationCollector;
 use Hyperf\Di\ReflectionManager;
 use Hyperf\Framework\Event\BootApplication;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use SwooleTW\Hyperf\Container\Contracts\Container as ContainerContract;
 use SwooleTW\Hyperf\Foundation\Command\Console;
 use SwooleTW\Hyperf\Foundation\Console\Application as ConsoleApplication;
 use SwooleTW\Hyperf\Foundation\Console\Contracts\Application as ApplicationContract;
 use SwooleTW\Hyperf\Foundation\Console\Contracts\Kernel as KernelContract;
 use SwooleTW\Hyperf\Foundation\Console\Scheduling\Schedule;
+use SwooleTW\Hyperf\Foundation\Contracts\Application as ContainerContract;
 use SwooleTW\Hyperf\Foundation\Database\CommandCollector;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -246,11 +246,45 @@ class Kernel implements KernelContract
     }
 
     /**
-     * Get the bootstrap classes for the application.
+     * Set the Artisan commands provided by the application.
      *
-     * @return array
+     * @return $this
      */
-    protected function bootstrappers()
+    public function addCommands(array $commands): static
+    {
+        $this->commands = array_values(array_unique(array_merge($this->commands, $commands)));
+
+        return $this;
+    }
+
+    /**
+     * Set the paths that should have their Artisan commands automatically discovered.
+     *
+     * @return $this
+     */
+    public function addCommandPaths(array $paths): static
+    {
+        $this->commandPaths = array_values(array_unique(array_merge($this->commandPaths, $paths)));
+
+        return $this;
+    }
+
+    /**
+     * Set the paths that should have their Artisan "routes" automatically discovered.
+     *
+     * @return $this
+     */
+    public function addCommandRoutePaths(array $paths): static
+    {
+        $this->commandRoutePaths = array_values(array_unique(array_merge($this->commandRoutePaths, $paths)));
+
+        return $this;
+    }
+
+    /**
+     * Get the bootstrap classes for the application.
+     */
+    protected function bootstrappers(): array
     {
         return $this->bootstrappers;
     }
