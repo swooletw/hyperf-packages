@@ -16,46 +16,47 @@ use Symfony\Component\Console\Exception\CommandNotFoundException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Process\PhpExecutableFinder;
 
 class Application extends SymfonyApplication implements ApplicationContract
 {
     /**
-     * The flag for whether the console application has been bootstrapped.
+     * Indicates if the application has "booted".
      */
-    protected static bool $hasBootstrapped = false;
+    protected bool $booted = false;
 
     /**
      * The output from the previous command.
-     *
-     * @var \Symfony\Component\Console\Output\BufferedOutput
      */
     protected ?BufferedOutput $lastOutput;
 
     /**
-     * The application version.
-     */
-    protected string $version = '0.1';
-
-    /**
      * The console application bootstrappers.
      */
-    protected static array $bootstrappers = [
-        \SwooleTW\Hyperf\Foundation\Bootstrap\LoadAliases::class,
-        \SwooleTW\Hyperf\Foundation\Bootstrap\RegisterCommands::class,
-        \SwooleTW\Hyperf\Foundation\Bootstrap\LoadScheduling::class,
-        \SwooleTW\Hyperf\Foundation\Bootstrap\RegisterProviders::class,
-    ];
+    protected static array $bootstrappers = [];
+
+    /**
+     * A map of command names to classes.
+     */
+    protected array $commandMap = [];
 
     public function __construct(
         protected ContainerInterface $container,
         protected EventDispatcherInterface $dispatcher,
-        protected array $commandMap = []
+        string $version
     ) {
-        parent::__construct('Laravel Hyperf', $this->version);
+        parent::__construct('Laravel Hyperf', $version);
+
+        if ($dispatcher instanceof EventDispatcher) {
+            $this->setDispatcher($dispatcher);
+            $this->setSignalsToDispatchEvent();
+        }
 
         $this->setAutoExit(false);
         $this->setCatchExceptions(false);
+
         $this->bootstrap();
     }
 
@@ -88,31 +89,37 @@ class Application extends SymfonyApplication implements ApplicationContract
     }
 
     /**
+     * Register a console "starting" bootstrapper.
+     */
+    public static function starting(Closure $callback): void
+    {
+        static::$bootstrappers[] = $callback;
+    }
+
+    /**
      * Bootstrap the console application.
      */
     protected function bootstrap(): void
     {
-        if (static::$hasBootstrapped) {
-            return;
-        }
-
         foreach (static::$bootstrappers as $bootstrapper) {
-            (new $bootstrapper())->bootstrap($this);
+            (new $bootstrapper())->bootstrap($this->container);
         }
+    }
 
-        static::$hasBootstrapped = true;
+    /**
+     * Clear the console application bootstrappers.
+     */
+    public static function forgetBootstrappers(): void
+    {
+        static::$bootstrappers = [];
     }
 
     /**
      * Run an Artisan console command by name.
      *
-     * @param string $command
-     * @param null|\Symfony\Component\Console\Output\OutputInterface $outputBuffer
-     * @return int
-     *
      * @throws \Symfony\Component\Console\Exception\CommandNotFoundException
      */
-    public function call($command, array $parameters = [], $outputBuffer = null)
+    public function call(string $command, array $parameters = [], ?OutputInterface $outputBuffer = null): int
     {
         [$command, $input] = $this->parseCommand($command, $parameters);
 
@@ -128,12 +135,8 @@ class Application extends SymfonyApplication implements ApplicationContract
 
     /**
      * Parse the incoming Artisan command and its input.
-     *
-     * @param string $command
-     * @param array $parameters
-     * @return array
      */
-    protected function parseCommand($command, $parameters)
+    protected function parseCommand(string $command, array $parameters): array
     {
         if (is_subclass_of($command, SymfonyCommand::class)) {
             $callingClass = true;
@@ -200,6 +203,20 @@ class Application extends SymfonyApplication implements ApplicationContract
         foreach ($commands as $command) {
             $this->resolve($command);
         }
+
+        return $this;
+    }
+
+    /**
+     * Set the container command loader for lazy resolution.
+     *
+     * @return $this
+     */
+    public function setContainerCommandLoader(): static
+    {
+        $this->setCommandLoader(
+            new ContainerCommandLoader($this->container, $this->commandMap)
+        );
 
         return $this;
     }
