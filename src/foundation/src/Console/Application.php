@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Foundation\Console;
 
 use Closure;
+use Hyperf\Command\Command;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use SwooleTW\Hyperf\Container\Contracts\Container as ContainerContract;
@@ -167,11 +168,8 @@ class Application extends SymfonyApplication implements ApplicationContract
 
     /**
      * Add a command, resolving through the application.
-     *
-     * @param \Illuminate\Console\Command|string $command
-     * @return null|\Symfony\Component\Console\Command\Command
      */
-    public function resolve($command)
+    public function resolve(Command|string $command): ?SymfonyCommand
     {
         if (is_subclass_of($command, SymfonyCommand::class) && ($commandName = $command::getDefaultName())) {
             foreach (explode('|', $commandName) as $name) {
@@ -196,7 +194,7 @@ class Application extends SymfonyApplication implements ApplicationContract
      * @param array|mixed $commands
      * @return $this
      */
-    public function resolveCommands($commands)
+    public function resolveCommands($commands): static
     {
         $commands = is_array($commands) ? $commands : func_get_args();
 
