@@ -6,6 +6,7 @@ namespace SwooleTW\Hyperf\Foundation\Console;
 
 use Closure;
 use Hyperf\Command\Command;
+use Hyperf\Context\Context;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use SwooleTW\Hyperf\Container\Contracts\Container as ContainerContract;
@@ -31,7 +32,7 @@ class Application extends SymfonyApplication implements ApplicationContract
     /**
      * The output from the previous command.
      */
-    protected ?BufferedOutput $lastOutput;
+    protected string $lastOutputContextKey = 'console.last_output';
 
     /**
      * The console application bootstrappers.
@@ -130,7 +131,7 @@ class Application extends SymfonyApplication implements ApplicationContract
 
         return $this->run(
             $input,
-            $this->lastOutput = $outputBuffer ?: new BufferedOutput()
+            Context::set($this->lastOutputContextKey, $outputBuffer ?: new BufferedOutput())
         );
     }
 
@@ -161,8 +162,10 @@ class Application extends SymfonyApplication implements ApplicationContract
      */
     public function output(): string
     {
-        return $this->lastOutput && method_exists($this->lastOutput, 'fetch')
-            ? $this->lastOutput->fetch()
+        $lastOutput = Context::get($this->lastOutputContextKey);
+
+        return $lastOutput && method_exists($lastOutput, 'fetch')
+            ? $lastOutput->fetch()
             : '';
     }
 
