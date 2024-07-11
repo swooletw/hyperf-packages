@@ -16,6 +16,8 @@ use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Exception\CommandNotFoundException;
 use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\InputDefinition;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -104,7 +106,7 @@ class Application extends SymfonyApplication implements ApplicationContract
     protected function bootstrap(): void
     {
         foreach (static::$bootstrappers as $bootstrapper) {
-            (new $bootstrapper())->bootstrap($this->container);
+            $bootstrapper($this);
         }
     }
 
@@ -220,6 +222,33 @@ class Application extends SymfonyApplication implements ApplicationContract
         );
 
         return $this;
+    }
+
+    /**
+     * Get the default input definition for the application.
+     *
+     * This is used to add the --env option to every available command.
+     *
+     * @return InputDefinition
+     */
+    #[\Override]
+    protected function getDefaultInputDefinition(): InputDefinition
+    {
+        return tap(parent::getDefaultInputDefinition(), function ($definition) {
+            $definition->addOption($this->getEnvironmentOption());
+        });
+    }
+
+    /**
+     * Get the global environment option for the definition.
+     *
+     * @return InputOption
+     */
+    protected function getEnvironmentOption()
+    {
+        $message = 'The environment the command should run under';
+
+        return new InputOption('--env', null, InputOption::VALUE_OPTIONAL, $message);
     }
 
     public function getContainer(): ContainerContract

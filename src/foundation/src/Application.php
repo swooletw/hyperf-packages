@@ -94,7 +94,7 @@ class Application extends Container implements ApplicationContract
         $this->hasBeenBootstrapped = true;
 
         foreach ($bootstrappers as $bootstrapper) {
-            (new $bootstrapper())->bootstrap($this);
+            $this->make($bootstrapper)->bootstrap($this);
         }
     }
 
