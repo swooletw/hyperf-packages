@@ -7,6 +7,7 @@ namespace SwooleTW\Hyperf\Foundation\Console;
 use Closure;
 use Hyperf\Command\Command;
 use Hyperf\Context\Context;
+use Override;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use SwooleTW\Hyperf\Container\Contracts\Container as ContainerContract;
@@ -228,10 +229,8 @@ class Application extends SymfonyApplication implements ApplicationContract
      * Get the default input definition for the application.
      *
      * This is used to add the --env option to every available command.
-     *
-     * @return InputDefinition
      */
-    #[\Override]
+    #[Override]
     protected function getDefaultInputDefinition(): InputDefinition
     {
         return tap(parent::getDefaultInputDefinition(), function ($definition) {

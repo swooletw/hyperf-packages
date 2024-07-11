@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Console;
 
+use Closure;
 use Exception;
 use Hyperf\Collection\Arr;
 use Hyperf\Command\Annotation\Command as AnnotationCommand;
+use Hyperf\Command\ClosureCommand;
 use Hyperf\Command\Command;
 use Hyperf\Contract\ApplicationInterface;
 use Hyperf\Contract\ConfigInterface;
@@ -214,6 +216,20 @@ class Kernel implements KernelContract
      * Register the commands for the application.
      */
     public function commands(): void {}
+
+    /**
+     * Register a Closure based command with the application.
+     */
+    public function command(string $signature, Closure $callback): ClosureCommand
+    {
+        $command = new ClosureCommand($this->app, $signature, $callback);
+
+        ConsoleApplication::starting(function ($artisan) use ($command) {
+            $artisan->add($command);
+        });
+
+        return $command;
+    }
 
     /**
      * Add loadPaths in the given directory.

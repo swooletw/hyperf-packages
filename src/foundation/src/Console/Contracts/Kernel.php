@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Console\Contracts;
 
+use Closure;
 use Exception;
+use Hyperf\Command\ClosureCommand;
 use SwooleTW\Hyperf\Foundation\Console\Contracts\Application as ApplicationContract;
 use SwooleTW\Hyperf\Foundation\Console\Scheduling\Schedule;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,6 +23,13 @@ interface Kernel
      * Register the commands for the application.
      */
     public function commands(): void;
+
+    /**
+     * Register a Closure based command with the application.
+     *
+     * @return ClosureCommand
+     */
+    public function command(string $signature, Closure $callback): ClosureCommand;
 
     /**
      * Add loadPaths in the given directory.
