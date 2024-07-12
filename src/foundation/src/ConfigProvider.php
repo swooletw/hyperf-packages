@@ -11,6 +11,8 @@ use Hyperf\Database\Migrations\Migration;
 use Hyperf\Database\Model\Factory as DatabaseFactory;
 use SwooleTW\Hyperf\Foundation\Console\ApplicationFactory;
 use SwooleTW\Hyperf\Foundation\Console\Commands\ServerReloadCommand;
+use SwooleTW\Hyperf\Foundation\Console\Contracts\Schedule as ScheduleContract;
+use SwooleTW\Hyperf\Foundation\Console\Scheduling\Schedule;
 use SwooleTW\Hyperf\Foundation\Listeners\ReloadDotenvAndConfig;
 use SwooleTW\Hyperf\Foundation\Model\FactoryInvoker;
 use SwooleTW\Hyperf\Foundation\Queue\Console\QueueWorkCommand;
@@ -23,6 +25,7 @@ class ConfigProvider
             'dependencies' => [
                 ApplicationInterface::class => ApplicationFactory::class,
                 DatabaseFactory::class => FactoryInvoker::class,
+                ScheduleContract::class => Schedule::class,
             ],
             'listeners' => [
                 ReloadDotenvAndConfig::class,

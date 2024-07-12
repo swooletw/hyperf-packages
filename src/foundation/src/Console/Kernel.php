@@ -62,7 +62,6 @@ class Kernel implements KernelContract
      */
     protected array $bootstrappers = [
         \SwooleTW\Hyperf\Foundation\Bootstrap\LoadAliases::class,
-        \SwooleTW\Hyperf\Foundation\Bootstrap\LoadScheduling::class,
         \SwooleTW\Hyperf\Foundation\Bootstrap\RegisterProviders::class,
         \SwooleTW\Hyperf\Foundation\Bootstrap\BootProviders::class,
     ];
@@ -82,7 +81,7 @@ class Kernel implements KernelContract
     /**
      * Bootstrap the application for artisan commands.
      */
-    public function bootstrap(): void
+    protected function bootstrap(): void
     {
         if (! $this->app->hasBeenBootstrapped()) {
             $this->app->bootstrapWith($this->bootstrappers());
@@ -96,6 +95,10 @@ class Kernel implements KernelContract
             }
 
             $this->loadCommands();
+
+            $this->app->bootstrapWith([
+                \SwooleTW\Hyperf\Foundation\Bootstrap\LoadScheduling::class
+            ]);
 
             $this->commandsLoaded = true;
         }
@@ -222,13 +225,7 @@ class Kernel implements KernelContract
      */
     public function command(string $signature, Closure $callback): ClosureCommand
     {
-        $command = new ClosureCommand($this->app, $signature, $callback);
-
-        ConsoleApplication::starting(function ($artisan) use ($command) {
-            $artisan->add($command);
-        });
-
-        return $command;
+        return Console::command($signature, $callback);
     }
 
     /**
@@ -308,7 +305,7 @@ class Kernel implements KernelContract
     /**
      * Get the Artisan application instance.
      */
-    protected function getArtisan(): ApplicationContract
+    public function getArtisan(): ApplicationContract
     {
         if (isset($this->artisan)) {
             return $this->artisan;
@@ -319,6 +316,8 @@ class Kernel implements KernelContract
             ->setContainerCommandLoader();
 
         $this->app->instance(ApplicationInterface::class, $this->artisan);
+
+        $this->bootstrap();
 
         return $this->artisan;
     }

@@ -11,9 +11,7 @@ class ApplicationFactory
 {
     public function __invoke(ContainerInterface $container)
     {
-        $kernel = $container->get(KernelContract::class);
-        $kernel->bootstrap();
-
-        return $kernel;
+        return $container->get(KernelContract::class)
+            ->getArtisan();
     }
 }

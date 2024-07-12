@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Foundation\Console\Contracts;
 
 use Closure;
-use Exception;
 use Hyperf\Command\ClosureCommand;
 use SwooleTW\Hyperf\Foundation\Console\Contracts\Application as ApplicationContract;
 use SwooleTW\Hyperf\Foundation\Console\Scheduling\Schedule;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 interface Kernel
@@ -65,11 +63,6 @@ interface Kernel
     public function getLoadPaths(): array;
 
     /**
-     * Bootstrap the application for artisan commands.
-     */
-    public function bootstrap(): void;
-
-    /**
      * Register the given command with the console application.
      */
     public function registerCommand(string $command);
@@ -97,11 +90,7 @@ interface Kernel
     public function setArtisan(ApplicationContract $artisan): void;
 
     /**
-     * Runs the current application.
-     *
-     * @return int 0 if everything went fine, or an error code
-     *
-     * @throws Exception When running fails. Bypass this when {@link setCatchExceptions()}.
+     * Get the Artisan application instance.
      */
-    public function run(?InputInterface $input = null, ?OutputInterface $output = null): int;
+    public function getArtisan(): ApplicationContract;
 }
