@@ -166,8 +166,8 @@ class Kernel implements KernelContract
         // Append commands that defined by annotation.
         $annotationCommands = [];
         if (class_exists(AnnotationCollector::class) && class_exists(AnnotationCommand::class)) {
-            $annotationAnnotationCommands = AnnotationCollector::getClassesByAnnotation(Command::class);
-            $annotationCommands = array_keys($annotationCommands);
+            $annotationAnnotationCommands = AnnotationCollector::getClassesByAnnotation(AnnotationCommand::class);
+            $annotationCommands = array_keys($annotationAnnotationCommands);
             $commands = array_merge($commands, $annotationCommands);
         }
 
