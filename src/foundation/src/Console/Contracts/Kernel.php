@@ -24,8 +24,6 @@ interface Kernel
 
     /**
      * Register a Closure based command with the application.
-     *
-     * @return ClosureCommand
      */
     public function command(string $signature, Closure $callback): ClosureCommand;
 

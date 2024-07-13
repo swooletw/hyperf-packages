@@ -97,8 +97,9 @@ class Kernel implements KernelContract
             $this->loadCommands();
 
             // scheduling must be loaded after commands being loaded
+            // so that we can register commands to scheduler
             $this->app->bootstrapWith([
-                \SwooleTW\Hyperf\Foundation\Bootstrap\LoadScheduling::class
+                \SwooleTW\Hyperf\Foundation\Bootstrap\LoadScheduling::class,
             ]);
 
             $this->commandsLoaded = true;
