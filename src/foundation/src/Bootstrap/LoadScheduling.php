@@ -29,17 +29,22 @@ class LoadScheduling
             return;
         }
 
-        $this->environment = (string) $app->make(ConfigInterface::class)
-            ->get('app_env', '');
+        $config = $app->get(ConfigInterface::class);
+
+        $this->environment = (string) $config->get('app.env');
         $this->crontabManager = $app->get(CrontabManager::class);
         $this->parser = $app->get(Parser::class);
 
         $app->get(KernelContract::class)
             ->schedule($schedule = $app->get(ScheduleContract::class));
 
-        $this->registerCrontabs(
-            $schedule->getCommands()
-        );
+        if (! $crontabs = $schedule->getCommands()) {
+            return;
+        }
+
+        $config->set('crontab.enable', true);
+
+        $this->registerCrontabs($crontabs);
     }
 
     protected function registerCrontabs(array $crontabs): void
