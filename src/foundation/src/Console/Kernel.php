@@ -15,6 +15,7 @@ use Hyperf\Contract\ConfigInterface;
 use Hyperf\Di\Annotation\AnnotationCollector;
 use Hyperf\Di\ReflectionManager;
 use Hyperf\Framework\Event\BootApplication;
+use Hyperf\Stringable\Str;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use SwooleTW\Hyperf\Foundation\Command\Console;
 use SwooleTW\Hyperf\Foundation\Console\Application as ConsoleApplication;
@@ -169,6 +170,14 @@ class Kernel implements KernelContract
             $annotationAnnotationCommands = AnnotationCollector::getClassesByAnnotation(AnnotationCommand::class);
             $annotationCommands = array_keys($annotationAnnotationCommands);
             $commands = array_merge($commands, $annotationCommands);
+        }
+
+        // Sort commands by namespace to make sure override commands work.
+        foreach ($commands as $key => $command) {
+            if (Str::startsWith($command, 'Hyperf\\')) {
+                unset($commands[$key]);
+                array_unshift($commands, $command);
+            }
         }
 
         // Register commands to application.
