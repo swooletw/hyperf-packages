@@ -53,9 +53,7 @@ class Application extends Container implements ApplicationContract
 
     public function __construct(string $basePath = null)
     {
-        if ($basePath) {
-            $this->setBasePath($basePath);
-        }
+        $this->setBasePath($basePath ?: BASE_PATH);
 
         parent::__construct($this->getDefinitionSource());
 
@@ -229,9 +227,13 @@ class Application extends Container implements ApplicationContract
      */
     protected function bootProvider(ServiceProvider $provider): void
     {
+        $provider->callBootingCallbacks();
+
         if (method_exists($provider, 'boot')) {
             $provider->boot();
         }
+
+        $provider->callBootedCallbacks();
     }
 
     /**

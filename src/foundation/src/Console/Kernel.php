@@ -152,7 +152,8 @@ class Kernel implements KernelContract
         $commands = array_merge(
             $commands,
             CommandCollector::getAllCommands(),
-            $consoleCommands
+            $consoleCommands,
+            $this->commands
         );
         foreach ($reflections as $reflection) {
             $command = $reflection->getName();
@@ -267,7 +268,11 @@ class Kernel implements KernelContract
      */
     public function addCommands(array $commands): static
     {
-        $this->commands = array_values(array_unique(array_merge($this->commands, $commands)));
+        $this->commands = array_values(
+            array_unique(
+                array_merge($this->commands, $commands)
+            )
+        );
 
         return $this;
     }

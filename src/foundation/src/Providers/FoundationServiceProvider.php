@@ -8,7 +8,7 @@ use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Database\ConnectionResolverInterface;
 use Hyperf\HttpServer\Request;
-use Psr\Container\ContainerInterface;
+use SwooleTW\Hyperf\Foundation\Contracts\Application as ApplicationContract;
 use SwooleTW\Hyperf\Foundation\Macros\RequestMacro;
 use SwooleTW\Hyperf\Support\ServiceProvider;
 
@@ -17,7 +17,7 @@ class FoundationServiceProvider extends ServiceProvider
     protected ConfigInterface $config;
 
     public function __construct(
-        protected ContainerInterface $app
+        protected ApplicationContract $app
     ) {
         $this->config = $app->get(ConfigInterface::class);
     }
@@ -53,6 +53,10 @@ class FoundationServiceProvider extends ServiceProvider
             'app_env' => $this->config->get('app.env'),
             'scan_cacheable' => $this->config->get('app.scan_cacheable'),
             StdoutLoggerInterface::class . '.log_level' => $this->config->get('app.stdout_log_level'),
+            'translation.locale' => $this->config->get('app.locale'),
+            'translation.fallback_locale' =>
+            $this->config->get('app.fallback_locale'),
+            'translation.path' => base_path('lang'),
         ];
 
         foreach ($configs as $key => $value) {
