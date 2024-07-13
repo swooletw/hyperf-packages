@@ -53,8 +53,11 @@ class LoadScheduling
             }
 
             if (! $crontab->getName()) {
+                $callback = $crontab->getCallback();
                 $crontab->setName(
-                    ($crontab->getCallback()['command'] ?? null) ?: 'No Name'
+                    is_array($callback) && isset($callback['command'])
+                        ? $callback['command']
+                        : 'No Name'
                 );
             }
 
