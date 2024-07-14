@@ -42,7 +42,7 @@ class Application extends Container implements ApplicationContract
     /**
      * All of the registered service providers.
      *
-     * @var array<string, \Illuminate\Support\ServiceProvider>
+     * @var array<string, ServiceProvider>
      */
     protected array $serviceProviders = [];
 
