@@ -16,29 +16,21 @@ abstract class ServiceProvider
 {
     /**
      * All of the registered booting callbacks.
-     *
-     * @var array
      */
     protected array $bootingCallbacks = [];
 
     /**
      * All of the registered booted callbacks.
-     *
-     * @var array
      */
     protected array $bootedCallbacks = [];
 
     /**
      * The paths that should be published.
-     *
-     * @var array
      */
     public static array $publishes = [];
 
     /**
      * The paths that should be published by group.
-     *
-     * @var array
      */
     public static array $publishGroups = [];
 
@@ -60,9 +52,6 @@ abstract class ServiceProvider
 
     /**
      * Register a booting callback to be run before the "boot" method is called.
-     *
-     * @param  \Closure  $callback
-     * @return void
      */
     public function booting(Closure $callback): void
     {
@@ -71,9 +60,6 @@ abstract class ServiceProvider
 
     /**
      * Register a booted callback to be run after the "boot" method is called.
-     *
-     * @param  \Closure  $callback
-     * @return void
      */
     public function booted(Closure $callback): void
     {
@@ -82,8 +68,6 @@ abstract class ServiceProvider
 
     /**
      * Call the registered booting callbacks.
-     *
-     * @return void
      */
     public function callBootingCallbacks(): void
     {
@@ -94,8 +78,6 @@ abstract class ServiceProvider
 
     /**
      * Call the registered booted callbacks.
-     *
-     * @return void
      */
     public function callBootedCallbacks(): void
     {
@@ -106,10 +88,6 @@ abstract class ServiceProvider
 
     /**
      * Merge the given configuration with the existing configuration.
-     *
-     * @param  string  $path
-     * @param  string  $key
-     * @return void
      */
     protected function mergeConfigFrom(string $path, string $key): void
     {
@@ -122,9 +100,6 @@ abstract class ServiceProvider
 
     /**
      * Load the given routes file if routes are not already cached.
-     *
-     * @param  string  $path
-     * @return void
      */
     protected function loadRoutesFrom(string $path): void
     {
@@ -133,10 +108,6 @@ abstract class ServiceProvider
 
     /**
      * Register a translation file namespace.
-     *
-     * @param  string  $path
-     * @param  string  $namespace
-     * @return void
      */
     protected function loadTranslationsFrom(string $path, string $namespace): void
     {
@@ -147,9 +118,6 @@ abstract class ServiceProvider
 
     /**
      * Register a JSON translation file path.
-     *
-     * @param  string  $path
-     * @return void
      */
     protected function loadJsonTranslationsFrom(string $path): void
     {
@@ -160,9 +128,6 @@ abstract class ServiceProvider
 
     /**
      * Register database migration paths.
-     *
-     * @param  array|string  $paths
-     * @return void
      */
     protected function loadMigrationsFrom(array|string $paths): void
     {
@@ -175,10 +140,6 @@ abstract class ServiceProvider
 
     /**
      * Setup an after resolving listener, or fire immediately if already resolved.
-     *
-     * @param  string  $name
-     * @param  Closure  $callback
-     * @return void
      */
     protected function callAfterResolving(string $name, Closure $callback): void
     {
@@ -191,10 +152,6 @@ abstract class ServiceProvider
 
     /**
      * Register migration paths to be published by the publish command.
-     *
-     * @param  array  $paths
-     * @param  mixed  $groups
-     * @return void
      */
     protected function publishesMigrations(array $paths, mixed $groups = null): void
     {
@@ -210,10 +167,6 @@ abstract class ServiceProvider
 
     /**
      * Register paths to be published by the publish command.
-     *
-     * @param  array  $paths
-     * @param  mixed  $groups
-     * @return void
      */
     protected function publishes(array $paths, mixed $groups = null): void
     {
@@ -228,9 +181,6 @@ abstract class ServiceProvider
 
     /**
      * Ensure the publish array for the service provider is initialized.
-     *
-     * @param  string  $class
-     * @return void
      */
     protected function ensurePublishArrayInitialized(string $class): void
     {
@@ -241,10 +191,6 @@ abstract class ServiceProvider
 
     /**
      * Add a publish group / tag to the service provider.
-     *
-     * @param  string  $group
-     * @param  array  $paths
-     * @return void
      */
     protected function addPublishGroup(string $group, array $paths): void
     {
@@ -260,10 +206,6 @@ abstract class ServiceProvider
 
     /**
      * Get the paths to publish.
-     *
-     * @param  string|null  $provider
-     * @param  string|null  $group
-     * @return array
      */
     public static function pathsToPublish(?string $provider = null, ?string $group = null): array
     {
@@ -278,30 +220,25 @@ abstract class ServiceProvider
 
     /**
      * Get the paths for the provider or group (or both).
-     *
-     * @param  string|null  $provider
-     * @param  string|null  $group
-     * @return array
      */
     protected static function pathsForProviderOrGroup(?string $provider, ?string $group): array
     {
         if ($provider && $group) {
             return static::pathsForProviderAndGroup($provider, $group);
-        } elseif ($group && array_key_exists($group, static::$publishGroups)) {
+        }
+        if ($group && array_key_exists($group, static::$publishGroups)) {
             return static::$publishGroups[$group];
-        } elseif ($provider && array_key_exists($provider, static::$publishes)) {
+        }
+        if ($provider && array_key_exists($provider, static::$publishes)) {
             return static::$publishes[$provider];
-        } elseif ($group || $provider) {
+        }
+        if ($group || $provider) {
             return [];
         }
     }
 
     /**
      * Get the paths for the provider and group.
-     *
-     * @param  string  $provider
-     * @param  string  $group
-     * @return array
      */
     protected static function pathsForProviderAndGroup(string $provider, string $group): array
     {
@@ -314,8 +251,6 @@ abstract class ServiceProvider
 
     /**
      * Get the service providers available for publishing.
-     *
-     * @return array
      */
     public static function publishableProviders(): array
     {
@@ -324,8 +259,6 @@ abstract class ServiceProvider
 
     /**
      * Get the migration paths available for publishing.
-     *
-     * @return array
      */
     public static function publishableMigrationPaths(): array
     {
@@ -334,8 +267,6 @@ abstract class ServiceProvider
 
     /**
      * Get the groups available for publishing.
-     *
-     * @return array
      */
     public static function publishableGroups(): array
     {
@@ -344,9 +275,6 @@ abstract class ServiceProvider
 
     /**
      * Register the package's custom Artisan commands.
-     *
-     * @param  array  $commands
-     * @return void
      */
     public function commands(array $commands): void
     {

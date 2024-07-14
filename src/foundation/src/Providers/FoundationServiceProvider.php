@@ -54,8 +54,7 @@ class FoundationServiceProvider extends ServiceProvider
             'scan_cacheable' => $this->config->get('app.scan_cacheable'),
             StdoutLoggerInterface::class . '.log_level' => $this->config->get('app.stdout_log_level'),
             'translation.locale' => $this->config->get('app.locale'),
-            'translation.fallback_locale' =>
-            $this->config->get('app.fallback_locale'),
+            'translation.fallback_locale' => $this->config->get('app.fallback_locale'),
             'translation.path' => base_path('lang'),
         ];
 

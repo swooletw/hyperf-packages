@@ -31,5 +31,4 @@ class RegisterProviders
             $app->register($providerClass);
         }
     }
-
 }
