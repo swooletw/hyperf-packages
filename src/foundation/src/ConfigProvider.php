@@ -11,6 +11,7 @@ use Hyperf\Database\Migrations\Migration;
 use Hyperf\Database\Model\Factory as DatabaseFactory;
 use SwooleTW\Hyperf\Foundation\Console\ApplicationFactory;
 use SwooleTW\Hyperf\Foundation\Console\Commands\ServerReloadCommand;
+use SwooleTW\Hyperf\Foundation\Console\Commands\VendorPublishCommand;
 use SwooleTW\Hyperf\Foundation\Console\Contracts\Schedule as ScheduleContract;
 use SwooleTW\Hyperf\Foundation\Console\Scheduling\Schedule;
 use SwooleTW\Hyperf\Foundation\Listeners\ReloadDotenvAndConfig;
@@ -33,6 +34,7 @@ class ConfigProvider
             'commands' => [
                 QueueWorkCommand::class,
                 ServerReloadCommand::class,
+                VendorPublishCommand::class,
             ],
             'annotations' => [
                 'scan' => [
