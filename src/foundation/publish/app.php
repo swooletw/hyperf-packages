@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Psr\Log\LogLevel;
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -14,7 +16,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Hyperf'),
+    'name' => env('APP_NAME', 'Laravel Hyperf'),
 
     /*
     |--------------------------------------------------------------------------
@@ -40,7 +42,51 @@ return [
     |
     */
 
-    'debug' => env('APP_DEBUG', false),
+    'debug' => environment()->isDebug(),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cacheable Flag for Annotations Scanning
+    |--------------------------------------------------------------------------
+    |
+    | Enabling this option will cache the annotations scanning result. It
+    | can boost the performance of the framework initialization.
+    | Please disable it in the development environment.
+    |
+    */
+    'scan_cacheable' => env('SCAN_CACHEABLE', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Log Levels for StdoutLogger
+    |--------------------------------------------------------------------------
+    |
+    | This value only determines the log levels that are written to the stdout logger.
+    | It does not affect the log levels that are written to the other loggers.
+    |
+    */
+    'stdout_log_level' => [
+        LogLevel::ALERT,
+        LogLevel::CRITICAL,
+        // LogLevel::DEBUG,
+        LogLevel::EMERGENCY,
+        LogLevel::ERROR,
+        LogLevel::INFO,
+        LogLevel::NOTICE,
+        LogLevel::WARNING,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Debug Mode for Command Errors
+    |--------------------------------------------------------------------------
+    |
+    | This value determines whether the stack strace will be displayed
+    | when errors occur in the command line.
+    |
+    */
+
+    'command_debug_enabled' => env('COMMAND_DEBUG_ENABLED', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -66,7 +112,7 @@ return [
     |
     */
 
-    'timezone' => 'Asia/Taipei',
+    'timezone' => env('APP_TIMEZONE', 'UTC'),
 
     /*
     |--------------------------------------------------------------------------
@@ -79,14 +125,20 @@ return [
     |
     */
 
-    'locale' => 'zh-CN',
+    'locale' => env('APP_LOCALE', 'en'),
+
+    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
     'providers' => [
         SwooleTW\Hyperf\Foundation\Providers\FoundationServiceProvider::class,
+        App\Providers\RouteServiceProvider::class,
+        App\Providers\AppServiceProvider::class,
+        App\Providers\EventServiceProvider::class,
     ],
 
     'aliases' => [
         'App' => SwooleTW\Hyperf\Support\Facades\App::class,
+        'Artisan' => SwooleTW\Hyperf\Support\Facades\Artisan::class,
         'Cache' => SwooleTW\Hyperf\Support\Facades\Cache::class,
         'Config' => SwooleTW\Hyperf\Support\Facades\Config::class,
         'Cookie' => SwooleTW\Hyperf\Support\Facades\Cookie::class,
@@ -102,5 +154,6 @@ return [
         'Auth' => SwooleTW\Hyperf\Support\Facades\Auth::class,
         'Hash' => SwooleTW\Hyperf\Support\Facades\Hash::class,
         'Environment' => SwooleTW\Hyperf\Support\Facades\Environment::class,
+        'Schedule' => SwooleTW\Hyperf\Support\Facades\Schedule::class,
     ],
 ];
