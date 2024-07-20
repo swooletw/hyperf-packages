@@ -38,7 +38,7 @@ class LoadScheduling
         $app->get(KernelContract::class)
             ->schedule($schedule = $app->get(ScheduleContract::class));
 
-        if (! $crontabs = $schedule->getCommands()) {
+        if (! $crontabs = $schedule->getCrontabs()) {
             return;
         }
 

@@ -12,5 +12,5 @@ interface Schedule
 
     public function call(mixed $callable): Crontab;
 
-    public function getCommands(): array;
+    public function getCrontabs(): array;
 }
