@@ -20,9 +20,7 @@ use Psr\Container\ContainerInterface;
 
 class FailToHandleListener implements ListenerInterface
 {
-    public function __construct(private ContainerInterface $container)
-    {
-    }
+    public function __construct(private ContainerInterface $container) {}
 
     public function listen(): array
     {
