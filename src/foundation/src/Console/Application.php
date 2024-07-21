@@ -60,7 +60,7 @@ class Application extends SymfonyApplication implements ApplicationContract
         }
 
         $this->setAutoExit(false);
-        $this->setCatchExceptions(false);
+        $this->setCatchExceptions(true);
 
         $this->bootstrap();
     }
