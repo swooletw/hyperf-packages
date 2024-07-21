@@ -5,18 +5,15 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Foundation\Testing\Concerns;
 
 use Closure;
-use Hyperf\Context\ApplicationContext;
 use Hyperf\Dispatcher\HttpDispatcher;
 use Mockery;
-use Psr\Container\ContainerInterface;
-use SwooleTW\Hyperf\Container\Container;
-use SwooleTW\Hyperf\Container\DefinitionSourceFactory;
-use SwooleTW\Hyperf\Foundation\ProvidersLoader;
+use Mockery\MockInterface;
+use SwooleTW\Hyperf\Foundation\Contracts\Application as ApplicationContract;
 use SwooleTW\Hyperf\Foundation\Testing\Dispatcher\HttpDispatcher as TestingHttpDispatcher;
 
 trait InteractsWithContainer
 {
-    protected ?ContainerInterface $app = null;
+    protected ?ApplicationContract $app = null;
 
     /**
      * Register an instance of an object in the container.
@@ -25,7 +22,7 @@ trait InteractsWithContainer
      * @param object $instance
      * @return object
      */
-    protected function swap($abstract, $instance)
+    protected function swap(string $abstract, mixed $instance): mixed
     {
         return $this->instance($abstract, $instance);
     }
@@ -37,7 +34,7 @@ trait InteractsWithContainer
      * @param object $instance
      * @return object
      */
-    protected function instance($abstract, $instance)
+    protected function instance(string $abstract, mixed $instance): mixed
     {
         /* @phpstan-ignore-next-line */
         $this->app->set($abstract, $instance);
@@ -51,7 +48,7 @@ trait InteractsWithContainer
      * @param string $abstract
      * @return \Mockery\MockInterface
      */
-    protected function mock($abstract, Closure $mock = null)
+    protected function mock(string $abstract, Closure $mock = null): MockInterface
     {
         return $this->instance($abstract, Mockery::mock(...array_filter(func_get_args())));
     }
@@ -62,7 +59,7 @@ trait InteractsWithContainer
      * @param string $abstract
      * @return \Mockery\MockInterface
      */
-    protected function partialMock($abstract, Closure $mock = null)
+    protected function partialMock(string $abstract, Closure $mock = null): MockInterface
     {
         return $this->instance($abstract, Mockery::mock(...array_filter(func_get_args()))->makePartial());
     }
@@ -73,27 +70,33 @@ trait InteractsWithContainer
      * @param string $abstract
      * @return \Mockery\MockInterface
      */
-    protected function spy($abstract, Closure $mock = null)
+    protected function spy(string $abstract, Closure $mock = null): MockInterface
     {
         return $this->instance($abstract, Mockery::spy(...array_filter(func_get_args())));
     }
 
-    protected function refreshApplication(): void
+    /**
+     * Instruct the container to forget a previously mocked / spied instance of an object.
+     *
+     * @param  string  $abstract
+     * @return $this
+     */
+    protected function forgetMock(string $abstract): static
     {
-        ApplicationContext::setContainer(
-            $container = $this->createApplication()
-        );
-        (new ProvidersLoader($container))
-            ->load();
-        /* @phpstan-ignore-next-line */
-        $container->define(HttpDispatcher::class, TestingHttpDispatcher::class);
-        $container->get(\Hyperf\Contract\ApplicationInterface::class);
+        $this->app->forgetInstance($abstract);
 
-        $this->app = $container;
+        return $this;
     }
 
-    protected function createApplication(): ContainerInterface
+    protected function refreshApplication(): void
     {
-        return new Container((new DefinitionSourceFactory())());
+        $this->app = $this->createApplication();
+        /* @phpstan-ignore-next-line */
+        $this->app->define(HttpDispatcher::class, TestingHttpDispatcher::class);
+    }
+
+    protected function createApplication(): ApplicationContract
+    {
+        return require BASE_PATH . '/bootstrap/app.php';
     }
 }
