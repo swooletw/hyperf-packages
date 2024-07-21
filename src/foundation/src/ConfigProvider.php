@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation;
 
-use Hyperf\Command\Listener\FailToHandleListener;
 use Hyperf\Contract\ApplicationInterface;
 use Hyperf\Database\Commands\Migrations\BaseCommand as MigrationBaseCommand;
 use Hyperf\Database\Commands\Seeders\BaseCommand as SeederBaseCommand;
@@ -43,7 +42,6 @@ class ConfigProvider
                         Migration::class => __DIR__ . '/../class_map/Database/Migrations/Migration.php',
                         MigrationBaseCommand::class => __DIR__ . '/../class_map/Database/Commands/Migrations/BaseCommand.php',
                         SeederBaseCommand::class => __DIR__ . '/../class_map/Database/Commands/Seeders/BaseCommand.php',
-                        FailToHandleListener::class => __DIR__ . '/../class_map/Console/Listeners/FailToHandleListener.php',
                     ],
                 ],
             ],
