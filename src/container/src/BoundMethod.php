@@ -20,7 +20,7 @@ class BoundMethod
      * @param callable|string $callback
      *
      * @throws ReflectionException
-     * @throws InvalidArgumentException
+     * @throws BindingResolutionException
      */
     public static function call(ContainerContract $container, $callback, array $parameters = [], ?string $defaultMethod = null): mixed
     {

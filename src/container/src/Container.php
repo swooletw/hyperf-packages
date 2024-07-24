@@ -428,7 +428,7 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
      * @param callable|string $callback
      * @param array<string, mixed> $parameters
      *
-     * @throws \InvalidArgumentException
+     * @throws \BindingResolutionException
      */
     public function call($callback, array $parameters = [], ?string $defaultMethod = null): mixed
     {
