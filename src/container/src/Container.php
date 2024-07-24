@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Container;
 
 use ArrayAccess;
+use BindingResolutionException;
 use Closure;
 use Hyperf\Context\ApplicationContext;
 use Hyperf\Di\Container as HyperfContainer;
@@ -428,11 +429,19 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
      * @param callable|string $callback
      * @param array<string, mixed> $parameters
      *
-     * @throws \BindingResolutionException
+     * @throws BindingResolutionException
      */
     public function call($callback, array $parameters = [], ?string $defaultMethod = null): mixed
     {
         return BoundMethod::call($this, $callback, $parameters, $defaultMethod);
+    }
+
+    /**
+     * Get a closure to resolve the given type from the container.
+     */
+    public function factory(string $abstract): Closure
+    {
+        return fn () => $this->make($abstract);
     }
 
     /**

@@ -460,6 +460,17 @@ class ContainerTest extends TestCase
         $container->alias('name', 'name');
     }
 
+    public function testContainerGetFactory()
+    {
+        $container = $this->getContainer();
+        $container->bind('name', function () {
+            return 'Taylor';
+        });
+
+        $factory = $container->factory('name');
+        $this->assertEquals($container->make('name'), $factory());
+    }
+
     public function testMakeWithMethodIsAnAliasForMakeMethod()
     {
         $mock = $this->getMockBuilder(Container::class)

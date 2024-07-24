@@ -113,6 +113,11 @@ interface Container extends HyperfContainerInterface
     public function call($callback, array $parameters = [], ?string $defaultMethod = null): mixed;
 
     /**
+     * Get a closure to resolve the given type from the container.
+     */
+    public function factory(string $abstract): Closure;
+
+    /**
      * An alias function name for make().
      *
      * @param callable|string $abstract
