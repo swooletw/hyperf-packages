@@ -18,7 +18,6 @@ trait InteractsWithContainer
     /**
      * Register an instance of an object in the container.
      *
-     * @param string $abstract
      * @param object $instance
      * @return object
      */
@@ -30,7 +29,6 @@ trait InteractsWithContainer
     /**
      * Register an instance of an object in the container.
      *
-     * @param string $abstract
      * @param object $instance
      * @return object
      */
@@ -44,9 +42,6 @@ trait InteractsWithContainer
 
     /**
      * Mock an instance of an object in the container.
-     *
-     * @param string $abstract
-     * @return \Mockery\MockInterface
      */
     protected function mock(string $abstract, Closure $mock = null): MockInterface
     {
@@ -55,9 +50,6 @@ trait InteractsWithContainer
 
     /**
      * Mock a partial instance of an object in the container.
-     *
-     * @param string $abstract
-     * @return \Mockery\MockInterface
      */
     protected function partialMock(string $abstract, Closure $mock = null): MockInterface
     {
@@ -66,9 +58,6 @@ trait InteractsWithContainer
 
     /**
      * Spy an instance of an object in the container.
-     *
-     * @param string $abstract
-     * @return \Mockery\MockInterface
      */
     protected function spy(string $abstract, Closure $mock = null): MockInterface
     {
@@ -78,7 +67,6 @@ trait InteractsWithContainer
     /**
      * Instruct the container to forget a previously mocked / spied instance of an object.
      *
-     * @param  string  $abstract
      * @return $this
      */
     protected function forgetMock(string $abstract): static

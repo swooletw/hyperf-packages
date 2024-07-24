@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Console;
 
-use function Hyperf\Coroutine\run;
 use Hyperf\Command\Command as HyperfCommand;
 use Hyperf\Command\Event\AfterExecute;
 use Hyperf\Command\Event\AfterHandle;
@@ -14,9 +13,10 @@ use Hyperf\Coroutine\Coroutine;
 use Swoole\ExitException;
 use SwooleTW\Hyperf\Foundation\ApplicationContext;
 use Symfony\Component\Console\Input\InputInterface;
-
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
+
+use function Hyperf\Coroutine\run;
 
 abstract class Command extends HyperfCommand
 {
@@ -111,7 +111,7 @@ abstract class Command extends HyperfCommand
                     return $this->exitCode = (int) $exception->getStatus();
                 }
 
-                if (!$this->eventDispatcher) {
+                if (! $this->eventDispatcher) {
                     throw $exception;
                 }
 
