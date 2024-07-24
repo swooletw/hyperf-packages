@@ -52,6 +52,21 @@ interface Container extends HyperfContainerInterface
     public function bind(string $abstract, mixed $concrete = null): void;
 
     /**
+     * Determine if the container has a method binding.
+     */
+    public function hasMethodBinding(string $method): bool;
+
+    /**
+     * Bind a callback to resolve with Container::call.
+     */
+    public function bindMethod(array|string $method, Closure $callback): void;
+
+    /**
+     * Get the method binding for the given method.
+     */
+    public function callMethodBinding(string $method, mixed $instance): mixed;
+
+    /**
      * Register a binding if it hasn't already been registered.
      *
      * @param null|Closure|string $concrete
@@ -88,11 +103,21 @@ interface Container extends HyperfContainerInterface
     public function refresh(string $abstract, mixed $target, string $method): mixed;
 
     /**
+     * Call the given Closure / class@method and inject its dependencies.
+     *
+     * @param callable|string $callback
+     * @param array<string, mixed> $parameters
+     *
+     * @throws InvalidArgumentException
+     */
+    public function call($callback, array $parameters = [], ?string $defaultMethod = null): mixed;
+
+    /**
      * An alias function name for make().
      *
      * @param callable|string $abstract
      *
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @throws \Hyperf\Di\Exception\NotFoundException
      */
     public function makeWith($abstract, array $parameters = []): mixed;
 

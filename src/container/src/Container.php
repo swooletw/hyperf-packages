@@ -16,6 +16,13 @@ use TypeError;
 class Container extends HyperfContainer implements ContainerContract, ArrayAccess
 {
     /**
+     * The container's method bindings.
+     *
+     * @var Closure[]
+     */
+    protected array $methodBindings = [];
+
+    /**
      * The registered type aliases.
      *
      * @var string[]
@@ -248,6 +255,42 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
     }
 
     /**
+     * Determine if the container has a method binding.
+     */
+    public function hasMethodBinding(string $method): bool
+    {
+        return isset($this->methodBindings[$method]);
+    }
+
+    /**
+     * Bind a callback to resolve with Container::call.
+     */
+    public function bindMethod(array|string $method, Closure $callback): void
+    {
+        $this->methodBindings[$this->parseBindMethod($method)] = $callback;
+    }
+
+    /**
+     * Get the method to be bound in class@method format.
+     */
+    protected function parseBindMethod(array|string $method): string
+    {
+        if (is_array($method)) {
+            return $method[0] . '@' . $method[1];
+        }
+
+        return $method;
+    }
+
+    /**
+     * Get the method binding for the given method.
+     */
+    public function callMethodBinding(string $method, mixed $instance): mixed
+    {
+        return call_user_func($this->methodBindings[$method], $instance, $this);
+    }
+
+    /**
      * Register a binding if it hasn't already been registered.
      *
      * @param null|Closure|string $concrete
@@ -377,6 +420,19 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
     protected function getReboundCallbacks(string $abstract): array
     {
         return $this->reboundCallbacks[$abstract] ?? [];
+    }
+
+    /**
+     * Call the given Closure / class@method and inject its dependencies.
+     *
+     * @param callable|string $callback
+     * @param array<string, mixed> $parameters
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function call($callback, array $parameters = [], ?string $defaultMethod = null): mixed
+    {
+        return BoundMethod::call($this, $callback, $parameters, $defaultMethod);
     }
 
     /**
