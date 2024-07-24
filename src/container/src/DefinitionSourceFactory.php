@@ -21,10 +21,17 @@ class DefinitionSourceFactory
         }
 
         $serverDependencies = $configFromProviders['dependencies'] ?? [];
-        $dependenciesPath = BASE_PATH . '/config/autoload/dependencies.php';
-        if (file_exists($dependenciesPath)) {
-            $definitions = include $dependenciesPath;
-            $serverDependencies = array_replace($serverDependencies, $definitions ?? []);
+
+        // make dependencies.php file to be compatible with Hyperf
+        $dependenciesPaths = [
+            BASE_PATH . '/config/autoload/dependencies.php',
+            BASE_PATH . '/config/dependencies.php',
+        ];
+        foreach ($dependenciesPaths as $dependenciesPath) {
+            if (file_exists($dependenciesPath)) {
+                $definitions = include $dependenciesPath;
+                $serverDependencies = array_replace($serverDependencies, $definitions ?? []);
+            }
         }
 
         return new DefinitionSource($serverDependencies);
