@@ -7,6 +7,7 @@ namespace SwooleTW\Hyperf\Foundation\Console\Commands;
 use Hyperf\Collection\Arr;
 use Hyperf\Collection\Collection;
 use Hyperf\Contract\ContainerInterface;
+use Hyperf\Stringable\Str;
 use Hyperf\Support\Composer;
 use Hyperf\Support\Filesystem\Filesystem;
 use SwooleTW\Hyperf\Foundation\Console\Command;
@@ -130,7 +131,7 @@ class VendorPublishCommand extends Command
             $publishes[$packageName] = array_map(function (array $config) {
                 return [
                     'source' => $config['source'],
-                    'destination' => $config['destination'],
+                    'destination' => $this->replaceDestination($config['destination']),
                 ];
             }, $hyperfPublishes);
         }
@@ -144,11 +145,16 @@ class VendorPublishCommand extends Command
             foreach ($laravelPublishes as $key => $value) {
                 $publishes[$provider][] = [
                     'source' => $key,
-                    'destination' => $value,
+                    'destination' => $this->replaceDestination($value),
                 ];
             }
         }
 
         return $publishes;
+    }
+
+    protected function replaceDestination(string $destination): string
+    {
+        return Str::replace('/config/autoload/', '/config/', $destination);
     }
 }
