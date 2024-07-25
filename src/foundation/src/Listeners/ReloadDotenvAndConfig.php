@@ -7,18 +7,12 @@ namespace SwooleTW\Hyperf\Foundation\Listeners;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Event\Contract\ListenerInterface;
 use Hyperf\Framework\Event\BeforeWorkerStart;
+use Hyperf\Support\DotenvManager;
 use Psr\Container\ContainerInterface;
-use Swoole\Atomic;
-use SwooleTW\Hyperf\Foundation\Di\DotenvManager;
 
 class ReloadDotenvAndConfig implements ListenerInterface
 {
-    protected static Atomic $restartCounter;
-
-    public function __construct(protected ContainerInterface $container)
-    {
-        static::$restartCounter = new Atomic(0);
-    }
+    public function __construct(protected ContainerInterface $container) {}
 
     public function listen(): array
     {
@@ -29,17 +23,6 @@ class ReloadDotenvAndConfig implements ListenerInterface
 
     public function process(object $event): void
     {
-        if (
-            $event instanceof BeforeWorkerStart
-            && $event->workerId === 0
-            && static::$restartCounter->get() === 0
-        ) {
-            static::$restartCounter->add();
-            return;
-        }
-
-        static::$restartCounter->add();
-
         $this->reloadDotenv();
         $this->reloadConfig();
     }
@@ -51,6 +34,8 @@ class ReloadDotenvAndConfig implements ListenerInterface
 
     protected function reloadDotenv(): void
     {
-        DotenvManager::reload([BASE_PATH]);
+        if (file_exists(BASE_PATH . '/.env')) {
+            DotenvManager::reload([BASE_PATH]);
+        }
     }
 }
