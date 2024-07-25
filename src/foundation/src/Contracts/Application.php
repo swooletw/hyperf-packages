@@ -39,43 +39,32 @@ interface Application extends Container
     /**
      * Get or check the current application environment.
      *
-     * @param  string|array  ...$environments
-     * @return string|bool
+     * @param array|string ...$environments
      */
-    public function environment(...$environments): string|bool;
+    public function environment(...$environments): bool|string;
 
     /**
      * Determine if the application is in the local environment.
-     *
-     * @return bool
      */
     public function isLocal(): bool;
 
     /**
      * Determine if the application is in the production environment.
-     *
-     * @return bool
      */
     public function isProduction(): bool;
 
     /**
      * Detect the application's current environment.
-     *
-     * @return string
      */
     public function detectEnvironment(): string;
 
     /**
      * Determine if the application is running unit tests.
-     *
-     * @return bool
      */
     public function runningUnitTests(): bool;
 
     /**
      * Determine if the application is running with debug mode enabled.
-     *
-     * @return bool
      */
     public function hasDebugModeEnabled(): bool;
 
