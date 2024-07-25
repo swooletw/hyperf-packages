@@ -37,8 +37,7 @@
             "SwooleTW\\Hyperf\\Log\\": "src/log/src/",
             "SwooleTW\\Hyperf\\ObjectPool\\": "src/object-pool/src/",
             "SwooleTW\\Hyperf\\Router\\": "src/router/src/",
-            "SwooleTW\\Hyperf\\Support\\": "src/support/src/",
-            "SwooleTW\\Hyperf\\Watcher\\": "src/watcher/src/"
+            "SwooleTW\\Hyperf\\Support\\": "src/support/src/"
         },
         "files": [
             "src/auth/src/Functions.php",
