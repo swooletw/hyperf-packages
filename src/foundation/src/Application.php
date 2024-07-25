@@ -11,6 +11,7 @@ use Psr\Container\ContainerInterface;
 use SwooleTW\Hyperf\Container\Container;
 use SwooleTW\Hyperf\Container\DefinitionSourceFactory;
 use SwooleTW\Hyperf\Foundation\Contracts\Application as ApplicationContract;
+use SwooleTW\Hyperf\Support\Environment;
 use SwooleTW\Hyperf\Support\ServiceProvider;
 
 class Application extends Container implements ApplicationContract
@@ -126,6 +127,71 @@ class Application extends Container implements ApplicationContract
         }
 
         return $this->basePath . DIRECTORY_SEPARATOR . ltrim($path, DIRECTORY_SEPARATOR);
+    }
+
+    /**
+     * Get or check the current application environment.
+     *
+     * @param  string|array  ...$environments
+     * @return string|bool
+     */
+    public function environment(...$environments): string|bool
+    {
+        if (count($environments) > 0) {
+            return $this->get(Environment::class)->is(...$environments);
+        }
+
+        return $this->detectEnvironment();
+    }
+
+    /**
+     * Determine if the application is in the local environment.
+     *
+     * @return bool
+     */
+    public function isLocal(): bool
+    {
+        return $this->get(Environment::class)->is('local');
+    }
+
+    /**
+     * Determine if the application is in the production environment.
+     *
+     * @return bool
+     */
+    public function isProduction(): bool
+    {
+        return $this->get(Environment::class)->is('production');
+    }
+
+    /**
+     * Detect the application's current environment.
+     *
+     * @return string
+     */
+    public function detectEnvironment(): string
+    {
+        return $this->get(Environment::class)->get();
+    }
+
+    /**
+     * Determine if the application is running unit tests.
+     *
+     * @return bool
+     */
+    public function runningUnitTests(): bool
+    {
+        return $this->get(Environment::class)->is('testing');
+    }
+
+    /**
+     * Determine if the application is running with debug mode enabled.
+     *
+     * @return bool
+     */
+    public function hasDebugModeEnabled(): bool
+    {
+        return $this->get(Environment::class)->isDebug();
     }
 
     /**
