@@ -8,7 +8,7 @@ use BadMethodCallException;
 use Hyperf\Macroable\Macroable;
 use Hyperf\Stringable\Str;
 
-use function Hyperf\Support\env;
+use function Hyperf\Config\config;
 
 /**
  * @method bool isTesting()
@@ -24,8 +24,8 @@ class Environment
         protected ?string $env = null,
         protected ?bool $debug = null
     ) {
-        $this->env = $env ?? env('APP_ENV', 'local');
-        $this->debug = $debug ?? env('APP_DEBUG', true);
+        $this->env = $env ?? config('app.env');
+        $this->debug = $debug ?? config('app.debug');
     }
 
     public function __call($method, $parameters = [])
