@@ -70,7 +70,7 @@ interface Kernel
      *
      * @throws \Symfony\Component\Console\Exception\CommandNotFoundException
      */
-    public function call(string $command, array $parameters = [], ?OutputInterface $outputBuffer = null): int;
+    public function call(string $command, array $parameters = [], ?OutputInterface $outputBuffer = null);
 
     /**
      * Get all of the commands registered with the console.

@@ -201,7 +201,7 @@ class Kernel implements KernelContract
      *
      * @throws \Symfony\Component\Console\Exception\CommandNotFoundException
      */
-    public function call(string $command, array $parameters = [], ?OutputInterface $outputBuffer = null): int
+    public function call(string $command, array $parameters = [], ?OutputInterface $outputBuffer = null)
     {
         return $this->getArtisan()->call($command, $parameters, $outputBuffer);
     }
