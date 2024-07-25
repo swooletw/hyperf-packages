@@ -6,6 +6,7 @@ namespace SwooleTW\Hyperf\Foundation;
 
 use Hyperf\Contract\ApplicationInterface;
 use Hyperf\Database\Commands\Migrations\BaseCommand as MigrationBaseCommand;
+use Hyperf\Database\Commands\ModelCommand as HyperfModelCommand;
 use Hyperf\Database\Commands\Seeders\BaseCommand as SeederBaseCommand;
 use Hyperf\Database\Migrations\Migration;
 use Hyperf\Database\Model\Factory as DatabaseFactory;
@@ -14,6 +15,7 @@ use SwooleTW\Hyperf\Foundation\Console\Commands\ServerReloadCommand;
 use SwooleTW\Hyperf\Foundation\Console\Commands\VendorPublishCommand;
 use SwooleTW\Hyperf\Foundation\Console\Contracts\Schedule as ScheduleContract;
 use SwooleTW\Hyperf\Foundation\Console\Scheduling\Schedule;
+use SwooleTW\Hyperf\Foundation\Database\Commands\ModelCommand;
 use SwooleTW\Hyperf\Foundation\Listeners\ReloadDotenvAndConfig;
 use SwooleTW\Hyperf\Foundation\Model\FactoryInvoker;
 use SwooleTW\Hyperf\Foundation\Queue\Console\QueueWorkCommand;
@@ -22,6 +24,11 @@ class ConfigProvider
 {
     public function __invoke(): array
     {
+        $commands = [];
+        if (class_exists(HyperfModelCommand::class)) {
+            $commands[] = ModelCommand::class;
+        }
+
         return [
             'dependencies' => [
                 ApplicationInterface::class => ApplicationFactory::class,
@@ -31,11 +38,11 @@ class ConfigProvider
             'listeners' => [
                 ReloadDotenvAndConfig::class,
             ],
-            'commands' => [
+            'commands' => array_merge([
                 QueueWorkCommand::class,
                 ServerReloadCommand::class,
                 VendorPublishCommand::class,
-            ],
+            ], $commands),
             'annotations' => [
                 'scan' => [
                     'class_map' => [
