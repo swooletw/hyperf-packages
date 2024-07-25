@@ -24,6 +24,8 @@ class FoundationServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        $this->setDefaultTimezone();
+        $this->setInternalEncoding();
         $this->overrideHyperfConfigs();
         $this->setDatabaseConnection();
         $this->mixinMacros();
@@ -59,7 +61,19 @@ class FoundationServiceProvider extends ServiceProvider
         ];
 
         foreach ($configs as $key => $value) {
-            $this->config->set($key, $value);
+            if (! $this->config->has($key)) {
+                $this->config->set($key, $value);
+            }
         }
+    }
+
+    protected function setDefaultTimezone(): void
+    {
+        date_default_timezone_set($this->config->get('app.timezone', 'UTC'));
+    }
+
+    protected function setInternalEncoding(): void
+    {
+        mb_internal_encoding('UTF-8');
     }
 }
