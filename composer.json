@@ -97,8 +97,7 @@
         "swooletw/hyperf-object-pool": "self.version",
         "swooletw/hyperf-router": "self.version",
         "swooletw/hyperf-sqlite": "self.version",
-        "swooletw/hyperf-support": "self.version",
-        "swooletw/hyperf-watcher": "self.version"
+        "swooletw/hyperf-support": "self.version"
     },
     "suggest": {
         "hyperf/redis": "Required to use redis driver. (^3.1).",
@@ -130,8 +129,7 @@
                 "SwooleTW\\Hyperf\\Hashing\\ConfigProvider",
                 "SwooleTW\\Hyperf\\JWT\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Log\\ConfigProvider",
-                "SwooleTW\\Hyperf\\Router\\ConfigProvider",
-                "SwooleTW\\Hyperf\\Watcher\\ConfigProvider"
+                "SwooleTW\\Hyperf\\Router\\ConfigProvider"
             ]
         },
         "branch-alias": {
