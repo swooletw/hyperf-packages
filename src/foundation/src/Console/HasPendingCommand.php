@@ -25,7 +25,7 @@ trait HasPendingCommand
         $annotation = AnnotationCollector::getClassAnnotation($command::class, AnnotationCommand::class) ?? null;
 
         if (! $annotation) {
-            return $command;
+            return CommandReplacer::replace($command);
         }
 
         if ($annotation->signature) {
@@ -85,6 +85,6 @@ trait HasPendingCommand
             $command->setAliases($annotation->aliases);
         }
 
-        return $command;
+        return CommandReplacer::replace($command);
     }
 }
