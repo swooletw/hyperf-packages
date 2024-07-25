@@ -24,9 +24,12 @@ class FoundationServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // the config initialization is earlier than service provider
+        // so we need to override hyperf configs in boot method at first time
+        $this->overrideHyperfConfigs();
+
         $this->setDefaultTimezone();
         $this->setInternalEncoding();
-        $this->overrideHyperfConfigs();
         $this->setDatabaseConnection();
         $this->mixinMacros();
     }
@@ -34,7 +37,13 @@ class FoundationServiceProvider extends ServiceProvider
     /**
      * Register any application services.
      */
-    public function register(): void {}
+    public function register(): void
+    {
+        $this->app->afterResolving(ConfigInterface::class, function (ConfigInterface $config) {
+            $this->config = $config;
+            $this->overrideHyperfConfigs();
+        });
+    }
 
     protected function setDatabaseConnection(): void
     {
