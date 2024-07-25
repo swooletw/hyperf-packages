@@ -18,7 +18,7 @@ interface Application
 
     public function all(?string $namespace = null);
 
-    public function run(?InputInterface $input = null, ?OutputInterface $output = null): int;
+    public function run(?InputInterface $input = null, ?OutputInterface $output = null);
 
     public function call(string $command, array $parameters = [], ?OutputInterface $outputBuffer = null): int;
 
