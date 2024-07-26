@@ -17,13 +17,13 @@ use Hyperf\Di\ReflectionManager;
 use Hyperf\Framework\Event\BootApplication;
 use Hyperf\Stringable\Str;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use SwooleTW\Hyperf\Database\Commands\CommandCollector;
 use SwooleTW\Hyperf\Foundation\Command\Console;
 use SwooleTW\Hyperf\Foundation\Console\Application as ConsoleApplication;
 use SwooleTW\Hyperf\Foundation\Console\Contracts\Application as ApplicationContract;
 use SwooleTW\Hyperf\Foundation\Console\Contracts\Kernel as KernelContract;
 use SwooleTW\Hyperf\Foundation\Console\Scheduling\Schedule;
 use SwooleTW\Hyperf\Foundation\Contracts\Application as ContainerContract;
-use SwooleTW\Hyperf\Foundation\Database\CommandCollector;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 

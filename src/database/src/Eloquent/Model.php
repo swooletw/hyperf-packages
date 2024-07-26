@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Foundation\Model;
+namespace SwooleTW\Hyperf\Database\Eloquent;
 
 use Hyperf\DbConnection\Model\Model as BaseModel;
 use SwooleTW\Hyperf\Router\Contracts\UrlRoutable;

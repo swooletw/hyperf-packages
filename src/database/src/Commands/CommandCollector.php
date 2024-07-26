@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Foundation\Database;
+namespace SwooleTW\Hyperf\Database\Commands;
 
 use Hyperf\Database\Commands\Migrations\FreshCommand;
 use Hyperf\Database\Commands\Migrations\InstallCommand;

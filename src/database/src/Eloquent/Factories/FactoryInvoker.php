@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Foundation\Model;
+namespace SwooleTW\Hyperf\Database\Eloquent\Factories;
 
 use Faker\Factory as FakerFactory;
 use Psr\Container\ContainerInterface;
