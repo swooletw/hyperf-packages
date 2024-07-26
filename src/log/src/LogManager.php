@@ -121,8 +121,8 @@ class LogManager implements LoggerInterface
     /**
      * Apply the configured taps for the logger.
      *
-     * @param \Illuminate\Log\Logger $logger
-     * @return \Illuminate\Log\Logger
+     * @param Logger $logger
+     * @return Logger
      */
     protected function tap(string $name, Logger $logger): Logger
     {
@@ -320,7 +320,6 @@ class LogManager implements LoggerInterface
      * Create an instance of any handler available in Monolog.
      *
      * @throws InvalidArgumentException
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function createMonologDriver(array $config): LoggerInterface
     {

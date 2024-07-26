@@ -34,7 +34,7 @@ class Authenticate implements MiddlewareInterface
      *
      * @param \Psr\Http\Server\RequestHandlerInterface $request
      *
-     * @throws \Illuminate\Auth\AuthenticationException
+     * @throws \SwooleTW\Hyperf\Auth\AuthenticationException
      */
     protected function authenticate($request, array $guards): void
     {
@@ -57,7 +57,7 @@ class Authenticate implements MiddlewareInterface
      *
      * @param \Psr\Http\Server\RequestHandlerInterface $request
      *
-     * @throws \Illuminate\Auth\AuthenticationException
+     * @throws \SwooleTW\Hyperf\Auth\AuthenticationException
      */
     protected function unauthenticated($request, array $guards): void
     {

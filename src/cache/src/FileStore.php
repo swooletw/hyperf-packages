@@ -17,7 +17,7 @@ class FileStore implements Store, LockProvider
     use RetrievesMultipleKeys;
 
     /**
-     * The Illuminate Filesystem instance.
+     * The Filesystem instance.
      */
     protected Filesystem $files;
 
