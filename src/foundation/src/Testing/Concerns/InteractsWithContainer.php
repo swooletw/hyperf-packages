@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Foundation\Testing\Concerns;
 
 use Closure;
+use Hyperf\Contract\ApplicationInterface;
 use Hyperf\Dispatcher\HttpDispatcher;
 use Mockery;
 use Mockery\MockInterface;
@@ -81,6 +82,7 @@ trait InteractsWithContainer
         $this->app = $this->createApplication();
         /* @phpstan-ignore-next-line */
         $this->app->define(HttpDispatcher::class, TestingHttpDispatcher::class);
+        $this->app->get(ApplicationInterface::class);
     }
 
     protected function createApplication(): ApplicationContract
