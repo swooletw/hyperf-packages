@@ -95,6 +95,8 @@ class HasInDatabase extends Constraint
             $output[$key] = $data instanceof Expression ? (string) $data : $data;
         }
 
-        return json_encode($output ?? [], $options);
+        // since phpunit 10 it will pass options in boolean
+        // we need to cast it to int
+        return json_encode($output ?? [], (int) $options);
     }
 }

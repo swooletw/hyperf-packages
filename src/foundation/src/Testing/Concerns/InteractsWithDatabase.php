@@ -251,10 +251,6 @@ trait InteractsWithDatabase
      */
     protected function getConnection($connection = null, $table = null)
     {
-        // $database = $this->app->make('db');
-
-        // $connection = $connection ?: $this->getTableConnection($table) ?: $database->getDefaultConnection();
-
         return DB::connection($connection);
     }
 

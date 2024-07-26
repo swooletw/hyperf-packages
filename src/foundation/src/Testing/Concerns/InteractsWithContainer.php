@@ -77,6 +77,11 @@ trait InteractsWithContainer
         return $this;
     }
 
+    protected function flushApplication(): void
+    {
+        $this->app = null;
+    }
+
     protected function refreshApplication(): void
     {
         $this->app = $this->createApplication();
