@@ -74,7 +74,7 @@ class ModelCommand extends BaseModelCommand
         $class = $project->namespace($option->getPath()) . $class;
         $path = BASE_PATH . '/' . $project->path($class);
 
-        if (!file_exists($path)) {
+        if (! file_exists($path)) {
             $this->mkdir($path);
             file_put_contents($path, $this->buildClass($table, $class, $option));
         }
