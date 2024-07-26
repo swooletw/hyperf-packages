@@ -14,7 +14,6 @@ class Factory extends BaseFactory
      * Define a class with a given set of attributes.
      *
      * @param string $class
-     * @param string $name
      * @return $this
      */
     public function define($class, callable $attributes, ?string $name = null)
@@ -28,7 +27,6 @@ class Factory extends BaseFactory
      * Define a callback to run after making a model.
      *
      * @param string $class
-     * @param string $name
      * @return $this
      */
     public function afterMaking($class, callable $callback, ?string $name = null)
@@ -42,7 +40,6 @@ class Factory extends BaseFactory
      * Define a callback to run after creating a model.
      *
      * @param string $class
-     * @param string $name
      * @return $this
      */
     public function afterCreating($class, callable $callback, ?string $name = null)
@@ -56,8 +53,6 @@ class Factory extends BaseFactory
      * Get the raw attribute array for a given model.
      *
      * @param string $class
-     * @param string $name
-     * @return array
      */
     public function raw($class, array $attributes = [], ?string $name = null): array
     {
@@ -70,7 +65,6 @@ class Factory extends BaseFactory
      * Create a builder for the given model.
      *
      * @param string $class
-     * @param string $name
      * @return \Hyperf\Database\Model\FactoryBuilder
      */
     public function of($class, ?string $name = null)

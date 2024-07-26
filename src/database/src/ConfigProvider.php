@@ -8,8 +8,8 @@ use Hyperf\Database\Commands\Migrations\BaseCommand as MigrationBaseCommand;
 use Hyperf\Database\Commands\ModelCommand as HyperfModelCommand;
 use Hyperf\Database\Commands\Seeders\BaseCommand as SeederBaseCommand;
 use Hyperf\Database\Migrations\Migration;
-use SwooleTW\Hyperf\Database\Commands\ModelCommand;
 use Hyperf\Database\Model\Factory as DatabaseFactory;
+use SwooleTW\Hyperf\Database\Commands\ModelCommand;
 use SwooleTW\Hyperf\Database\Eloquent\Factories\FactoryInvoker;
 
 class ConfigProvider
