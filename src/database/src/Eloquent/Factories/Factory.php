@@ -17,7 +17,7 @@ class Factory extends BaseFactory
      * @param string $name
      * @return $this
      */
-    public function define($class, callable $attributes, $name = null)
+    public function define($class, callable $attributes, ?string $name = null)
     {
         $name = $name ?: $this->getConnection();
 
@@ -31,7 +31,7 @@ class Factory extends BaseFactory
      * @param string $name
      * @return $this
      */
-    public function afterMaking($class, callable $callback, $name = null)
+    public function afterMaking($class, callable $callback, ?string $name = null)
     {
         $name = $name ?: $this->getConnection();
 
@@ -45,7 +45,7 @@ class Factory extends BaseFactory
      * @param string $name
      * @return $this
      */
-    public function afterCreating($class, callable $callback, $name = null)
+    public function afterCreating($class, callable $callback, ?string $name = null)
     {
         $name = $name ?: $this->getConnection();
 
@@ -59,7 +59,7 @@ class Factory extends BaseFactory
      * @param string $name
      * @return array
      */
-    public function raw($class, array $attributes = [], $name = null)
+    public function raw($class, array $attributes = [], ?string $name = null): array
     {
         $name = $name ?: $this->getConnection();
 
@@ -73,7 +73,7 @@ class Factory extends BaseFactory
      * @param string $name
      * @return \Hyperf\Database\Model\FactoryBuilder
      */
-    public function of($class, $name = null)
+    public function of($class, ?string $name = null)
     {
         $name = $name ?: $this->getConnection();
 
