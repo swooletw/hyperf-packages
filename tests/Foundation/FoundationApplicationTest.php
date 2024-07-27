@@ -9,14 +9,13 @@ use Hyperf\Contract\TranslatorInterface;
 use Mockery as m;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use stdClass;
-use SwooleTW\Hyperf\Container\DefinitionSource;
 use SwooleTW\Hyperf\Event\EventDispatcher;
 use SwooleTW\Hyperf\Event\ListenerProvider;
-use SwooleTW\Hyperf\Foundation\Application;
 use SwooleTW\Hyperf\Foundation\Bootstrap\RegisterFacades;
 use SwooleTW\Hyperf\Foundation\Events\LocaleUpdated;
 use SwooleTW\Hyperf\Support\Environment;
 use SwooleTW\Hyperf\Support\ServiceProvider;
+use SwooleTW\Hyperf\Tests\Foundation\Concerns\HasMockedApplication;
 use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
@@ -25,6 +24,8 @@ use SwooleTW\Hyperf\Tests\TestCase;
  */
 class FoundationApplicationTest extends TestCase
 {
+    use HasMockedApplication;
+
     protected function tearDown(): void
     {
         m::close();
@@ -219,14 +220,6 @@ class FoundationApplicationTest extends TestCase
         });
 
         $this->assertSame('bar', $app->foo());
-    }
-
-    protected function getApplication(array $definitionSources = [], string $basePath = 'base_path'): Application
-    {
-        return new Application(
-            new DefinitionSource($definitionSources),
-            $basePath
-        );
     }
 
     protected function assertExpectationCount(int $times): void
