@@ -19,11 +19,18 @@ class RegisterFacades
 
         $aliases = $app->get(ConfigInterface::class)
             ->get('app.aliases', []);
+
         foreach ($aliases as $alias => $class) {
-            if (class_exists($alias)) {
-                continue;
-            }
-            class_alias($class, $alias);
+            $this->registerAlias($class, $alias);
         }
+    }
+
+    protected function registerAlias(string $class, string $alias): void
+    {
+        if (class_exists($alias)) {
+            return;
+        }
+
+        class_alias($class, $alias);
     }
 }
