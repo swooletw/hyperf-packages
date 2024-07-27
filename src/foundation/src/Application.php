@@ -52,11 +52,11 @@ class Application extends Container implements ApplicationContract
      */
     protected array $loadedProviders = [];
 
-    public function __construct(string $basePath = null)
+    public function __construct(?DefinitionSourceInterface $definitionSource = null, ?string $basePath = null)
     {
         $this->setBasePath($basePath ?: BASE_PATH);
 
-        parent::__construct($this->getDefinitionSource());
+        parent::__construct($definitionSource ?: $this->getDefinitionSource());
 
         $this->registerBaseBindings();
         $this->registerCoreContainerAliases();
