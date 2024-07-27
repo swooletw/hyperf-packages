@@ -76,6 +76,10 @@ class LoadScheduling
 
     public function isValidCrontab(Crontab $crontab): bool
     {
-        return $crontab->getRule() && $crontab->getCallback() && $this->parser->isValid($crontab->getRule());
+        $rule = $crontab->getRule();
+
+        return $rule
+            && $crontab->getCallback()
+            && $this->parser->isValid($rule);
     }
 }

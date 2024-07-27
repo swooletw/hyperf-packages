@@ -7,7 +7,7 @@ namespace SwooleTW\Hyperf\Foundation\Console\Contracts;
 use Closure;
 use Hyperf\Command\ClosureCommand;
 use SwooleTW\Hyperf\Foundation\Console\Contracts\Application as ApplicationContract;
-use SwooleTW\Hyperf\Foundation\Console\Scheduling\Schedule;
+use SwooleTW\Hyperf\Foundation\Console\Contracts\Schedule as ScheduleContract;
 use Symfony\Component\Console\Output\OutputInterface;
 
 interface Kernel
@@ -15,7 +15,7 @@ interface Kernel
     /**
      * Define the application's command schedule.
      */
-    public function schedule(Schedule $schedule): void;
+    public function schedule(ScheduleContract $schedule): void;
 
     /**
      * Register the commands for the application.

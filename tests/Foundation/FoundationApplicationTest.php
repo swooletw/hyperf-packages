@@ -26,11 +26,6 @@ class FoundationApplicationTest extends TestCase
 {
     use HasMockedApplication;
 
-    protected function tearDown(): void
-    {
-        m::close();
-    }
-
     public function testSetLocaleSetsLocaleAndFiresLocaleChangedEvent()
     {
         $config = m::mock(stdClass::class);
