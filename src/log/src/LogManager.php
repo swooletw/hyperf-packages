@@ -120,9 +120,6 @@ class LogManager implements LoggerInterface
 
     /**
      * Apply the configured taps for the logger.
-     *
-     * @param Logger $logger
-     * @return Logger
      */
     protected function tap(string $name, Logger $logger): Logger
     {
