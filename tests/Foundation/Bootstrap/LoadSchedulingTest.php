@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Tests\Foundation\Bootstrap;
 
+use Exception;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Crontab\Crontab;
 use Hyperf\Crontab\CrontabManager;
@@ -26,10 +27,10 @@ class LoadSchedulingTest extends TestCase
     public function testSkipWhenKernelIsNotBound()
     {
         $app = $this->getApplication([
-            ConfigInterface::class => fn () => throw new \Exception('Should not be called'),
+            ConfigInterface::class => fn () => throw new Exception('Should not be called'),
         ]);
 
-        (new LoadScheduling)->bootstrap($app);
+        (new LoadScheduling())->bootstrap($app);
 
         $this->assertTrue(true);
     }
@@ -74,7 +75,7 @@ class LoadSchedulingTest extends TestCase
             ScheduleContract::class => fn () => $schedule,
         ]);
 
-        (new LoadScheduling)->bootstrap($app);
+        (new LoadScheduling())->bootstrap($app);
     }
 
     protected function getCrontab(bool $isEnable = true, string $name = 'test-command', string $rule = '* * * * *'): Crontab

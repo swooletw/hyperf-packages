@@ -36,14 +36,13 @@ class RegisterProvidersTest extends TestCase
 
         Composer::setBasePath(__DIR__ . '/../fixtures/hyperf1');
 
-        (new RegisterProviders)->bootstrap($app);
+        (new RegisterProviders())->bootstrap($app);
 
         // reset base path, otherwise it will affect other tests
         Composer::setBasePath(null);
 
         $this->assertSame('foo', $app->get('foo'));
         $this->assertSame('bar', $app->get('bar'));
-
     }
 }
 

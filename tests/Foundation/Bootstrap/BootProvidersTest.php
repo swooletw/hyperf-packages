@@ -22,11 +22,10 @@ class BootProvidersTest extends TestCase
         $app = $this->getApplication();
         $app->register(ApplicationBasicServiceProviderStub::class);
 
-        (new BootProviders)->bootstrap($app);
+        (new BootProviders())->bootstrap($app);
 
         $this->assertSame('bar', $app->get('foo'));
     }
-
 }
 
 class ApplicationBasicServiceProviderStub extends ServiceProvider
