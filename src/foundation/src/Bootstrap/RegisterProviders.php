@@ -6,8 +6,8 @@ namespace SwooleTW\Hyperf\Foundation\Bootstrap;
 
 use Hyperf\Collection\Arr;
 use Hyperf\Contract\ConfigInterface;
-use Hyperf\Support\Composer;
 use SwooleTW\Hyperf\Foundation\Contracts\Application as ApplicationContract;
+use SwooleTW\Hyperf\Foundation\Support\Composer;
 
 class RegisterProviders
 {
