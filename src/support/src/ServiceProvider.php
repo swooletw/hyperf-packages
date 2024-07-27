@@ -91,11 +91,11 @@ abstract class ServiceProvider
      */
     protected function mergeConfigFrom(string $path, string $key): void
     {
-        $this->app->get(ConfigInterface::class)
-            ->set($key, array_merge(
-                require $path,
-                $config->get($key, [])
-            ));
+        $config = $this->app->get(ConfigInterface::class);
+        $config->set($key, array_merge(
+            require $path,
+            $config->get($key, [])
+        ));
     }
 
     /**
