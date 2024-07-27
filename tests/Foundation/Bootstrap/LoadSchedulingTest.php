@@ -9,7 +9,6 @@ use Hyperf\Crontab\Crontab;
 use Hyperf\Crontab\CrontabManager;
 use Hyperf\Crontab\Parser;
 use Mockery as m;
-use stdClass;
 use SwooleTW\Hyperf\Foundation\Bootstrap\LoadScheduling;
 use SwooleTW\Hyperf\Foundation\Console\Contracts\Kernel as KernelContract;
 use SwooleTW\Hyperf\Foundation\Console\Contracts\Schedule as ScheduleContract;
@@ -37,7 +36,7 @@ class LoadSchedulingTest extends TestCase
 
     public function testRegisterCrontabs()
     {
-        $config = m::mock(stdClass::class);
+        $config = m::mock(ConfigInterface::class);
         $config->shouldReceive('get')
             ->with('app.env')
             ->once()
