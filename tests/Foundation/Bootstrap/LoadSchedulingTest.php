@@ -12,6 +12,7 @@ use Hyperf\Crontab\Parser;
 use Mockery as m;
 use SwooleTW\Hyperf\Foundation\Bootstrap\LoadScheduling;
 use SwooleTW\Hyperf\Foundation\Console\Contracts\Kernel as KernelContract;
+use SwooleTW\Hyperf\Foundation\Console\Contracts\Schedule as ScheduleContract;
 use SwooleTW\Hyperf\Foundation\Console\Scheduling\Schedule;
 use SwooleTW\Hyperf\Tests\Foundation\Concerns\HasMockedApplication;
 use SwooleTW\Hyperf\Tests\TestCase;
