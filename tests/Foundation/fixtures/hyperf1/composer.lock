@@ -1,0 +1,17 @@
+{
+    "packages": [
+        {
+            "name": "package-one",
+            "version": "0.1",
+            "extra": {
+                "hyperf": {
+                    "providers": "SwooleTW\\Hyperf\\Tests\\Foundation\\Bootstrap\\TestOneServiceProvider"
+                }
+            },
+            "scripts": {
+                "foo": "script-one"
+            }
+        }
+    ],
+    "packages-dev": []
+}

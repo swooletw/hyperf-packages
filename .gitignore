@@ -3,3 +3,4 @@
 composer.lock
 /phpunit.xml
 .phpunit.result.cache
+!tests/Foundation/fixtures/hyperf1/composer.lock
