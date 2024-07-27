@@ -4,15 +4,20 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation;
 
+use Closure;
 use Hyperf\Collection\Arr;
 use Hyperf\Di\Definition\DefinitionSourceInterface;
 use Hyperf\Macroable\Macroable;
 use Psr\Container\ContainerInterface;
+use RuntimeException;
 use SwooleTW\Hyperf\Container\Container;
 use SwooleTW\Hyperf\Container\DefinitionSourceFactory;
 use SwooleTW\Hyperf\Foundation\Contracts\Application as ApplicationContract;
+use SwooleTW\Hyperf\Foundation\Events\LocaleUpdated;
 use SwooleTW\Hyperf\Support\Environment;
 use SwooleTW\Hyperf\Support\ServiceProvider;
+
+use function Hyperf\Collection\data_get;
 
 class Application extends Container implements ApplicationContract
 {
@@ -51,6 +56,11 @@ class Application extends Container implements ApplicationContract
      * The names of the loaded service providers.
      */
     protected array $loadedProviders = [];
+
+    /**
+     * The application namespace.
+     */
+    protected ?string $namespace;
 
     public function __construct(?DefinitionSourceInterface $definitionSource = null, ?string $basePath = null)
     {
@@ -93,8 +103,28 @@ class Application extends Container implements ApplicationContract
         $this->hasBeenBootstrapped = true;
 
         foreach ($bootstrappers as $bootstrapper) {
+            $this['events']->dispatch('bootstrapping: ' . $bootstrapper, [$this]);
+
             $this->make($bootstrapper)->bootstrap($this);
+
+            $this['events']->dispatch('bootstrapped: ' . $bootstrapper, [$this]);
         }
+    }
+
+    /**
+     * Register a callback to run before a bootstrapper.
+     */
+    public function beforeBootstrapping(string $bootstrapper, Closure $callback): void
+    {
+        $this['events']->listen('bootstrapping: ' . $bootstrapper, $callback);
+    }
+
+    /**
+     * Register a callback to run after a bootstrapper.
+     */
+    public function afterBootstrapping(string $bootstrapper, Closure $callback): void
+    {
+        $this['events']->listen('bootstrapped: ' . $bootstrapper, $callback);
     }
 
     /**
@@ -115,6 +145,18 @@ class Application extends Container implements ApplicationContract
         $this->basePath = rtrim($basePath, '\/');
 
         return $this;
+    }
+
+    /**
+     * Get the path to the application "app" directory.
+     */
+    public function path(string $path = ''): string
+    {
+        if (empty($path)) {
+            return $this->basePath('app');
+        }
+
+        return $this->basePath('app' . DIRECTORY_SEPARATOR . ltrim($path, DIRECTORY_SEPARATOR));
     }
 
     /**
@@ -200,6 +242,15 @@ class Application extends Container implements ApplicationContract
         }
 
         $provider->register();
+
+        // If there are bindings set as properties on the provider we
+        // will spin through them and register them with the application, which
+        // serves as a convenience layer while registering a lot of bindings.
+        if (property_exists($provider, 'bindings')) {
+            foreach ($provider->bindings as $key => $value) {
+                $this->bind($key, $value);
+            }
+        }
 
         $this->markAsRegistered($provider);
 
@@ -310,6 +361,42 @@ class Application extends Container implements ApplicationContract
     }
 
     /**
+     * Get the current application locale.
+     */
+    public function getLocale(): string
+    {
+        return $this['config']->get('app.locale');
+    }
+
+    /**
+     * Get the current application locale.
+     */
+    public function currentLocale(): string
+    {
+        return $this->getLocale();
+    }
+
+    /**
+     * Get the current application fallback locale.
+     */
+    public function getFallbackLocale(): string
+    {
+        return $this['config']->get('app.fallback_locale');
+    }
+
+    /**
+     * Set the current application locale.
+     */
+    public function setLocale(string $locale): void
+    {
+        $this['config']->set('app.locale', $locale);
+
+        $this['translator']->setLocale($locale);
+
+        $this['events']->dispatch(new LocaleUpdated($locale));
+    }
+
+    /**
      * Register the core class aliases in the container.
      */
     protected function registerCoreContainerAliases(): void
@@ -365,5 +452,28 @@ class Application extends Container implements ApplicationContract
                 $this->alias($key, $alias);
             }
         }
+    }
+
+    /**
+     * Get the application namespace.
+     *
+     * @throws RuntimeException
+     */
+    public function getNamespace(): string
+    {
+        if (isset($this->namespace)) {
+            return $this->namespace;
+        }
+
+        $composer = json_decode(file_get_contents($this->basePath('composer.json')), true);
+        foreach ((array) data_get($composer, 'autoload.psr-4') as $namespace => $path) {
+            foreach ((array) $path as $pathChoice) {
+                if (realpath($this->path()) === realpath($this->basePath($pathChoice))) {
+                    return $this->namespace = $namespace;
+                }
+            }
+        }
+
+        throw new RuntimeException('Unable to detect application namespace.');
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Contracts;
 
+use RuntimeException;
 use SwooleTW\Hyperf\Container\Contracts\Container;
 use SwooleTW\Hyperf\Support\ServiceProvider;
 
@@ -35,6 +36,11 @@ interface Application extends Container
      * Get the base path of the Laravel installation.
      */
     public function basePath(string $path = ''): string;
+
+    /**
+     * Get the path to the application "app" directory.
+     */
+    public function path(string $path = ''): string;
 
     /**
      * Get or check the current application environment.
@@ -104,4 +110,31 @@ interface Application extends Container
      * Determine if the given service provider is loaded.
      */
     public function providerIsLoaded(string $provider): bool;
+
+    /**
+     * Get the current application locale.
+     */
+    public function getLocale(): string;
+
+    /**
+     * Get the current application locale.
+     */
+    public function currentLocale(): string;
+
+    /**
+     * Get the current application fallback locale.
+     */
+    public function getFallbackLocale(): string;
+
+    /**
+     * Set the current application locale.
+     */
+    public function setLocale(string $locale): void;
+
+    /**
+     * Get the application namespace.
+     *
+     * @throws RuntimeException
+     */
+    public function getNamespace(): string;
 }
