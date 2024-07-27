@@ -54,4 +54,9 @@ class DispatcherFactory extends BaseDispatcherFactory
     {
         static::$routeFiles = $routes;
     }
+
+    public static function getRouteFiles(): array
+    {
+        return static::$routeFiles;
+    }
 }
