@@ -62,7 +62,7 @@ class Kernel implements KernelContract
      * The console application bootstrappers.
      */
     protected array $bootstrappers = [
-        \SwooleTW\Hyperf\Foundation\Bootstrap\LoadAliases::class,
+        \SwooleTW\Hyperf\Foundation\Bootstrap\RegisterFacades::class,
         \SwooleTW\Hyperf\Foundation\Bootstrap\RegisterProviders::class,
         \SwooleTW\Hyperf\Foundation\Bootstrap\BootProviders::class,
     ];
