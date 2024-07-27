@@ -560,13 +560,13 @@ class EventsDispatcherTest extends TestCase
         $this->container
             ->shouldReceive('get')
             ->once()
-            ->with(TestListenerInvokeyHandler::class)
-            ->andReturnUsing(fn () => new TestListenerInvokeyHandler());
+            ->with(TestListenerInvokeHandler::class)
+            ->andReturnUsing(fn () => new TestListenerInvokeHandler());
         $this->container
             ->shouldReceive('get')
             ->twice()
-            ->with(TestListenerInvokey::class)
-            ->andReturnUsing(fn () => new TestListenerInvokey());
+            ->with(TestListenerInvoke::class)
+            ->andReturnUsing(fn () => new TestListenerInvoke());
         $this->container
             ->shouldReceive('get')
             ->once()
@@ -576,22 +576,22 @@ class EventsDispatcherTest extends TestCase
         // Only "handle" is called when both "handle" and "__invoke" exist on listener.
         $_SERVER['__event.test'] = [];
         $d = $this->getEventDispatcher();
-        $d->listen('myEvent', TestListenerInvokeyHandler::class);
+        $d->listen('myEvent', TestListenerInvokeHandler::class);
         $d->dispatch('myEvent');
         $this->assertEquals(['__construct', 'handle'], $_SERVER['__event.test']);
 
         // "__invoke" is called when there is no handle.
         $_SERVER['__event.test'] = [];
         $d = $this->getEventDispatcher();
-        $d->listen('myEvent', TestListenerInvokey::class);
-        $d->listen('myEvent', TestListenerInvokeyHandler::class);
+        $d->listen('myEvent', TestListenerInvoke::class);
+        $d->listen('myEvent', TestListenerInvokeHandler::class);
         $d->dispatch('myEvent', 'somePayload');
         $this->assertEquals(['__construct', '__invoke_somePayload'], $_SERVER['__event.test']);
 
         // It falls back to __invoke if the referenced method is not found.
         $_SERVER['__event.test'] = [];
         $d = $this->getEventDispatcher();
-        $d->listen('myEvent', [TestListenerInvokey::class, 'someAbsentMethod']);
+        $d->listen('myEvent', [TestListenerInvoke::class, 'someAbsentMethod']);
         $d->dispatch('myEvent', 'somePayload');
         $this->assertEquals(['__construct', '__invoke_somePayload'], $_SERVER['__event.test']);
 
@@ -615,7 +615,7 @@ class EventsDispatcherTest extends TestCase
 
 class TestListenerLean {}
 
-class TestListenerInvokeyHandler
+class TestListenerInvokeHandler
 {
     public function __construct()
     {
@@ -633,7 +633,7 @@ class TestListenerInvokeyHandler
     }
 }
 
-class TestListenerInvokey
+class TestListenerInvoke
 {
     public function __construct()
     {
