@@ -114,7 +114,7 @@ class Kernel implements KernelContract
 
             $this->loadCommands();
 
-            // bootststrap after loading commands
+            // bootstrap after loading commands
             $this->app->bootstrapWith($this->afterBootstrappers());
 
             $this->commandsLoaded = true;
