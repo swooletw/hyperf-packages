@@ -9,7 +9,6 @@ use Exception;
 use Hyperf\Collection\Arr;
 use Hyperf\Command\Annotation\Command as AnnotationCommand;
 use Hyperf\Command\ClosureCommand;
-use Hyperf\Command\Command;
 use Hyperf\Contract\ApplicationInterface;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Di\Annotation\AnnotationCollector;
@@ -17,13 +16,12 @@ use Hyperf\Di\ReflectionManager;
 use Hyperf\Framework\Event\BootApplication;
 use Hyperf\Stringable\Str;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use SwooleTW\Hyperf\Database\Commands\CommandCollector;
-use SwooleTW\Hyperf\Foundation\Command\Console;
 use SwooleTW\Hyperf\Foundation\Console\Application as ConsoleApplication;
 use SwooleTW\Hyperf\Foundation\Console\Contracts\Application as ApplicationContract;
 use SwooleTW\Hyperf\Foundation\Console\Contracts\Kernel as KernelContract;
 use SwooleTW\Hyperf\Foundation\Console\Scheduling\Schedule;
 use SwooleTW\Hyperf\Foundation\Contracts\Application as ContainerContract;
+use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -37,6 +35,11 @@ class Kernel implements KernelContract
      * The Artisan commands provided by the application.
      */
     protected array $commands = [];
+
+    /**
+     * Registered closure commands.
+     */
+    protected array $closureCommands = [];
 
     /**
      * The paths where Artisan commands should be automatically discovered.
@@ -67,10 +70,16 @@ class Kernel implements KernelContract
         \SwooleTW\Hyperf\Foundation\Bootstrap\BootProviders::class,
     ];
 
+    /**
+     * Bootstrappers that being bootstrapped after commands being loaded.
+     */
+    protected array $afterBootstrappers = [
+        \SwooleTW\Hyperf\Foundation\Bootstrap\LoadScheduling::class,
+    ];
+
     public function __construct(
         protected ContainerContract $app,
-        protected EventDispatcherInterface $events,
-        protected array $loadPaths = []
+        protected EventDispatcherInterface $events
     ) {
         if (! defined('ARTISAN_BINARY')) {
             define('ARTISAN_BINARY', 'artisan');
@@ -80,9 +89,17 @@ class Kernel implements KernelContract
     }
 
     /**
+     * Run the console application.
+     */
+    public function handle(InputInterface $input, ?OutputInterface $output = null): mixed
+    {
+        return $this->getArtisan()->run($input, $output);
+    }
+
+    /**
      * Bootstrap the application for artisan commands.
      */
-    protected function bootstrap(): void
+    public function bootstrap(): void
     {
         if (! $this->app->hasBeenBootstrapped()) {
             $this->app->bootstrapWith($this->bootstrappers());
@@ -97,11 +114,8 @@ class Kernel implements KernelContract
 
             $this->loadCommands();
 
-            // scheduling must be loaded after commands being loaded
-            // so that we can register commands to scheduler
-            $this->app->bootstrapWith([
-                \SwooleTW\Hyperf\Foundation\Bootstrap\LoadScheduling::class,
-            ]);
+            // bootststrap after loading commands
+            $this->app->bootstrapWith($this->afterBootstrappers());
 
             $this->commandsLoaded = true;
         }
@@ -131,46 +145,55 @@ class Kernel implements KernelContract
         }
     }
 
-    protected function loadCommands(): void
+    /**
+     * Collect commands from all possible sources.
+     */
+    protected function collectCommands(): array
     {
         // Load commands from the given directory.
-        $reflections = [];
-        if ($loadPaths = $this->getLoadPaths()) {
-            $reflections = ReflectionManager::getAllClasses($loadPaths);
+        $loadedPathReflections = [];
+        if ($loadedPaths = $this->getLoadedPaths()) {
+            $loadedPathReflections = ReflectionManager::getAllClasses($loadedPaths);
         }
 
-        // Load commands from registered closures
-        $consoleCommands = [];
-        foreach (Console::getCommands() as $handlerId => $command) {
-            $handlerId = "commands.{$handlerId}";
-            $this->app->set($handlerId, $command);
-            $consoleCommands[] = $handlerId;
+        // Load commands from Hyperf config for compatibility.
+        $configReflections = array_map(function (string $class) {
+            return ReflectionManager::reflectClass($class);
+        }, $this->app->get(ConfigInterface::class)->get('commands', []));
+
+        // Load commands that defined by annotation.
+        $annotationReflections = [];
+        if (class_exists(AnnotationCollector::class) && class_exists(AnnotationCommand::class)) {
+            $annotationAnnotationCommands = AnnotationCollector::getClassesByAnnotation(AnnotationCommand::class);
+            $annotationReflections = array_map(function (string $class) {
+                return ReflectionManager::reflectClass($class);
+            }, array_keys($annotationAnnotationCommands));
         }
 
-        // Load commands from config
-        $commands = $this->app->get(ConfigInterface::class)
-            ->get('commands', []);
-        $commands = array_merge(
-            $commands,
-            CommandCollector::getAllCommands(),
-            $consoleCommands,
-            $this->commands
-        );
+        $reflections = array_merge($loadedPathReflections, $configReflections, $annotationReflections);
+        $commands = [];
+        // Filter valid command classes.
         foreach ($reflections as $reflection) {
             $command = $reflection->getName();
-            if (! is_subclass_of($command, Command::class)) {
+            if (! is_subclass_of($command, SymfonyCommand::class)) {
                 continue;
             }
             $commands[] = $command;
         }
 
-        // Append commands that defined by annotation.
-        $annotationCommands = [];
-        if (class_exists(AnnotationCollector::class) && class_exists(AnnotationCommand::class)) {
-            $annotationAnnotationCommands = AnnotationCollector::getClassesByAnnotation(AnnotationCommand::class);
-            $annotationCommands = array_keys($annotationAnnotationCommands);
-            $commands = array_merge($commands, $annotationCommands);
+        // Load commands from registered closures
+        foreach ($this->closureCommands as $command) {
+            $closureId = spl_object_hash($command);
+            $this->app->set($commandId = "commands.{$closureId}", $command);
+            $commands[] = $commandId;
         }
+
+        return $commands;
+    }
+
+    protected function loadCommands(): void
+    {
+        $commands = $this->collectCommands();
 
         // Sort commands by namespace to make sure override commands work.
         foreach ($commands as $key => $command) {
@@ -237,11 +260,15 @@ class Kernel implements KernelContract
      */
     public function command(string $signature, Closure $callback): ClosureCommand
     {
-        return Console::command($signature, $callback);
+        $command = new ClosureCommand($this->app, $signature, $callback);
+
+        $this->closureCommands[] = $command;
+
+        return $command;
     }
 
     /**
-     * Add loadPaths in the given directory.
+     * Add loadedPaths in the given directory.
      *
      * @param array|string $paths
      */
@@ -257,17 +284,17 @@ class Kernel implements KernelContract
             return;
         }
 
-        $this->loadPaths = array_values(
-            array_unique(array_merge($this->loadPaths, $paths))
+        $this->loadedPaths = array_values(
+            array_unique(array_merge($this->loadedPaths, $paths))
         );
     }
 
     /**
-     * Get loadPaths for the application.
+     * Get loadedPaths for the application.
      */
-    public function getLoadPaths(): array
+    public function getLoadedPaths(): array
     {
-        return $this->loadPaths;
+        return $this->loadedPaths;
     }
 
     /**
@@ -316,6 +343,14 @@ class Kernel implements KernelContract
     protected function bootstrappers(): array
     {
         return $this->bootstrappers;
+    }
+
+    /**
+     * Get the after bootstrap classes for the application.
+     */
+    protected function afterBootstrappers(): array
+    {
+        return $this->afterBootstrappers;
     }
 
     /**

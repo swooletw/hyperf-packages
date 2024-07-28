@@ -40,7 +40,7 @@ class Application extends SymfonyApplication implements ApplicationContract
     /**
      * The console application bootstrappers.
      */
-    protected static array $bootstrappers = [];
+    protected array $bootstrappers = [];
 
     /**
      * A map of command names to classes.
@@ -96,9 +96,9 @@ class Application extends SymfonyApplication implements ApplicationContract
     /**
      * Register a console "starting" bootstrapper.
      */
-    public static function starting(Closure $callback): void
+    public function starting(Closure $callback): void
     {
-        static::$bootstrappers[] = $callback;
+        $this->bootstrappers[] = $callback;
     }
 
     /**
@@ -106,7 +106,7 @@ class Application extends SymfonyApplication implements ApplicationContract
      */
     protected function bootstrap(): void
     {
-        foreach (static::$bootstrappers as $bootstrapper) {
+        foreach ($this->bootstrappers as $bootstrapper) {
             $bootstrapper($this);
         }
     }
@@ -114,9 +114,9 @@ class Application extends SymfonyApplication implements ApplicationContract
     /**
      * Clear the console application bootstrappers.
      */
-    public static function forgetBootstrappers(): void
+    public function forgetBootstrappers(): void
     {
-        static::$bootstrappers = [];
+        $this->bootstrappers = [];
     }
 
     /**

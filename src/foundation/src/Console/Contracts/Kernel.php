@@ -13,6 +13,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 interface Kernel
 {
     /**
+     * Bootstrap the application for artisan commands.
+     */
+    public function bootstrap(): void;
+
+    /**
      * Define the application's command schedule.
      */
     public function schedule(Schedule $schedule): void;
@@ -56,9 +61,9 @@ interface Kernel
     public function addCommandRoutePaths(array $paths): static;
 
     /**
-     * Get loadPaths for the application.
+     * Get loadedPaths for the application.
      */
-    public function getLoadPaths(): array;
+    public function getLoadedPaths(): array;
 
     /**
      * Register the given command with the console application.
