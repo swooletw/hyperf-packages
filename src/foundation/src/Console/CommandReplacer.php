@@ -33,18 +33,26 @@ class CommandReplacer
         'gen:migration-from-database' => 'make:migration-from-database',
         'gen:view-engine-cache' => 'make:view-engine-cache',
         'gen:swagger-schema' => 'make:swagger-schema',
+        'crontab:run' => [
+            'name' => 'schedule:run',
+            'description' => 'Run the scheduled commands',
+        ],
     ];
 
     public static function replace(Command $command, bool $remainAlias = true): Command
     {
         $commandName = $command->getName();
-        if (! $replaceName = static::$commands[$commandName] ?? null) {
+        if (! $replace = static::$commands[$commandName] ?? null) {
             return $command;
         }
 
-        $command->setName($replaceName);
+        $command->setName($replace['name'] ?? $replace);
         if ($remainAlias) {
             $command->setAliases([$commandName]);
+        }
+
+        if ($description = $replace['description'] ?? null) {
+            $command->setDescription($description);
         }
 
         return $command;
