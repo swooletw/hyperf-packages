@@ -25,7 +25,7 @@ class CacheManagerTest extends TestCase
     public function testCustomDriverClosureBoundObjectIsCacheManager()
     {
         $userConfig = [
-            'laravel_cache' => [
+            'cache' => [
                 'stores' => [
                     'foo' => [
                         'driver' => 'foo',
@@ -44,7 +44,7 @@ class CacheManagerTest extends TestCase
     public function testCustomDriverOverridesInternalDrivers()
     {
         $userConfig = [
-            'laravel_cache' => [
+            'cache' => [
                 'stores' => [
                     'my_store' => [
                         'driver' => 'array',
@@ -70,7 +70,7 @@ class CacheManagerTest extends TestCase
     public function testItMakesRepositoryWhenContainerHasNoDispatcher()
     {
         $userConfig = [
-            'laravel_cache' => [
+            'cache' => [
                 'stores' => [
                     'my_store' => [
                         'driver' => 'array',
@@ -103,7 +103,7 @@ class CacheManagerTest extends TestCase
     public function testItRefreshesDispatcherOnAllStores()
     {
         $userConfig = [
-            'laravel_cache' => [
+            'cache' => [
                 'stores' => [
                     'store_1' => [
                         'driver' => 'array',
@@ -137,7 +137,7 @@ class CacheManagerTest extends TestCase
     public function testItSetsDefaultDriverChangesGlobalConfig()
     {
         $userConfig = [
-            'laravel_cache' => [
+            'cache' => [
                 'default' => 'store_1',
                 'stores' => [
                     'store_1' => [
@@ -155,13 +155,13 @@ class CacheManagerTest extends TestCase
 
         $cacheManager->setDefaultDriver('><((((@>');
 
-        $this->assertEquals('><((((@>', $app->get(ConfigInterface::class)->get('laravel_cache.default'));
+        $this->assertEquals('><((((@>', $app->get(ConfigInterface::class)->get('cache.default'));
     }
 
     public function testItPurgesMemoizedStoreObjects()
     {
         $userConfig = [
-            'laravel_cache' => [
+            'cache' => [
                 'stores' => [
                     'store_1' => [
                         'driver' => 'array',
@@ -228,7 +228,7 @@ class CacheManagerTest extends TestCase
     public function testForgetDriverForgets()
     {
         $userConfig = [
-            'laravel_cache' => [
+            'cache' => [
                 'stores' => [
                     'forget' => [
                         'driver' => 'forget',
@@ -270,7 +270,7 @@ class CacheManagerTest extends TestCase
         $this->expectExceptionMessage('Driver [unknown_taxi_driver] is not supported.');
 
         $userConfig = [
-            'laravel_cache' => [
+            'cache' => [
                 'stores' => [
                     'my_store' => [
                         'driver' => 'unknown_taxi_driver',
@@ -292,7 +292,7 @@ class CacheManagerTest extends TestCase
         $this->expectExceptionMessage('Cache store [alien_store] is not defined.');
 
         $userConfig = [
-            'laravel_cache' => [
+            'cache' => [
                 'stores' => [
                     'my_store' => [
                         'driver' => 'array',

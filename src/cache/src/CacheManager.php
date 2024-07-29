@@ -89,7 +89,7 @@ class CacheManager implements FactoryContract
     public function getDefaultDriver(): string
     {
         return $this->app->get(ConfigInterface::class)
-            ->get('laravel_cache.default', 'file');
+            ->get('cache.default', 'file');
     }
 
     /**
@@ -98,7 +98,7 @@ class CacheManager implements FactoryContract
     public function setDefaultDriver(string $name): void
     {
         $this->app->get(ConfigInterface::class)
-            ->set('laravel_cache.default', $name);
+            ->set('cache.default', $name);
     }
 
     /**
@@ -288,7 +288,7 @@ class CacheManager implements FactoryContract
      */
     protected function getPrefix(array $config): string
     {
-        return $config['prefix'] ?? $this->app->get(ConfigInterface::class)->get('laravel_cache.prefix');
+        return $config['prefix'] ?? $this->app->get(ConfigInterface::class)->get('cache.prefix');
     }
 
     /**
@@ -297,7 +297,7 @@ class CacheManager implements FactoryContract
     protected function getConfig(string $name): ?array
     {
         if (! is_null($name) && $name !== 'null') {
-            return $this->app->get(ConfigInterface::class)->get("laravel_cache.stores.{$name}");
+            return $this->app->get(ConfigInterface::class)->get("cache.stores.{$name}");
         }
 
         return ['driver' => 'null'];

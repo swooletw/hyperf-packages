@@ -26,8 +26,8 @@ class ConfigProvider
                 [
                     'id' => 'config',
                     'description' => 'The config for cache.',
-                    'source' => __DIR__ . '/../publish/laravel_cache.php',
-                    'destination' => BASE_PATH . '/config/autoload/laravel_cache.php',
+                    'source' => __DIR__ . '/../publish/cache.php',
+                    'destination' => BASE_PATH . '/config/autoload/cache.php',
                 ],
             ],
         ];

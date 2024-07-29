@@ -15,7 +15,7 @@ abstract class BaseListener implements ListenerInterface
 
     protected function swooleStores(): Collection
     {
-        $config = $this->container->get(ConfigInterface::class)->get('laravel_cache.stores');
+        $config = $this->container->get(ConfigInterface::class)->get('cache.stores');
 
         return collect($config)->where('driver', 'swoole');
     }
