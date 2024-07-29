@@ -77,7 +77,8 @@
         "lcobucci/jwt": "^5.0",
         "nesbot/carbon": "^2.16",
         "ramsey/uuid": "^4.7",
-        "symfony/error-handler": "^6.3"
+        "symfony/error-handler": "^6.3",
+        "monolog/monolog": "^3.1"
     },
     "replace": {
         "swooletw/hyperf-auth": "self.version",
