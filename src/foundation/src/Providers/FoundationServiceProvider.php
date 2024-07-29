@@ -43,7 +43,7 @@ class FoundationServiceProvider extends ServiceProvider
 
     protected function setDatabaseConnection(): void
     {
-        $connection = $this->config->get('databases.connection', 'default');
+        $connection = $this->config->get('database.default', 'mysql');
         $this->app->get(ConnectionResolverInterface::class)
             ->setDefaultConnection($connection);
     }
@@ -63,6 +63,9 @@ class FoundationServiceProvider extends ServiceProvider
             'translation.locale' => $this->config->get('app.locale'),
             'translation.fallback_locale' => $this->config->get('app.fallback_locale'),
             'translation.path' => base_path('lang'),
+            'databases' => $this->config->get('database.connections'),
+            'databases.migrations' => $migration = $this->config->get('database.migrations.migrations', 'migrations'),
+            'databases.default.migrations' => $migration,
         ];
 
         foreach ($configs as $key => $value) {

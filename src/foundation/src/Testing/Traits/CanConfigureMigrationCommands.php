@@ -18,7 +18,7 @@ trait CanConfigureMigrationCommands
         $seeder = $this->seeder();
         $connection = $this->app
             ->get(ConfigInterface::class)
-            ->get('databases.connection', 'default');
+            ->get('database.default');
 
         return array_merge(
             [

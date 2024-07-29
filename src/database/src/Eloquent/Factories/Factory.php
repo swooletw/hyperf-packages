@@ -79,6 +79,6 @@ class Factory extends BaseFactory
     {
         return ApplicationContext::getContainer()
             ->get(ConfigInterface::class)
-            ->get('databases.connection', 'default');
+            ->get('database.default');
     }
 }

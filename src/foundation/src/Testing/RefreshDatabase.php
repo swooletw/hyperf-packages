@@ -46,7 +46,7 @@ trait RefreshDatabase
     {
         $config = $this->app->get(ConfigInterface::class);
 
-        return $config->get("databases.{$this->getRefreshConnection()}.database") === ':memory:';
+        return $config->get("database.connections.{$this->getRefreshConnection()}.database") === ':memory:';
     }
 
     /**
@@ -125,6 +125,6 @@ trait RefreshDatabase
     {
         return $this->app
             ->get(ConfigInterface::class)
-            ->get('databases.connection', 'default');
+            ->get('database.default');
     }
 }
