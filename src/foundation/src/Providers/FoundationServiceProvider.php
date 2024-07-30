@@ -64,8 +64,9 @@ class FoundationServiceProvider extends ServiceProvider
             'translation.fallback_locale' => $this->config->get('app.fallback_locale'),
             'translation.path' => base_path('lang'),
             'databases' => $this->config->get('database.connections'),
-            'databases.migrations' => $migration = $this->config->get('database.migrations.migrations', 'migrations'),
+            'databases.migrations' => $migration = $this->config->get('database.migrations', 'migrations'),
             'databases.default.migrations' => $migration,
+            'redis' => $this->getRedisConfig(),
         ];
 
         foreach ($configs as $key => $value) {
@@ -73,6 +74,19 @@ class FoundationServiceProvider extends ServiceProvider
                 $this->config->set($key, $value);
             }
         }
+    }
+
+    protected function getRedisConfig(): array
+    {
+        $redisConfig = $this->config->get('database.redis', []);
+        $redisOptions = $redisConfig['options'] ?? [];
+        unset($redisConfig['options']);
+
+        return array_map(function (array $config) use ($redisOptions) {
+            return array_merge($config, [
+                'options' => $redisOptions
+            ]);
+        }, $redisConfig);
     }
 
     protected function setDefaultTimezone(): void
