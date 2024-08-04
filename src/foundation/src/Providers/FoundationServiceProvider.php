@@ -84,7 +84,7 @@ class FoundationServiceProvider extends ServiceProvider
 
         return array_map(function (array $config) use ($redisOptions) {
             return array_merge($config, [
-                'options' => $redisOptions
+                'options' => $redisOptions,
             ]);
         }, $redisConfig);
     }
