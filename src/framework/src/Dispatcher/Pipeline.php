@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Dispatcher;
 
 use Closure;
-use Hyperf\HttpServer\CoreMiddleware;
+use Hyperf\HttpServer\Contract\CoreMiddlewareInterface;
 use Hyperf\Pipeline\Pipeline as BasePipeline;
 use Psr\Http\Server\MiddlewareInterface;
 
@@ -13,7 +13,7 @@ class Pipeline extends BasePipeline
 {
     protected array $adaptedMiddleware = [];
 
-    protected ?Psr15AdapterMiddleware $coreMiddleware = null;
+    protected array $coreMiddleware = [];
 
     /**
      * Get a Closure that represents a slice of the application onion.
@@ -39,7 +39,7 @@ class Pipeline extends BasePipeline
                     $parameters = array_merge([$passable, $stack], $parameters);
                 } else {
                     // Convert the core middleware to adapted core middleware
-                    if ($pipe instanceof CoreMiddleware) {
+                    if ($pipe instanceof CoreMiddlewareInterface) {
                         $pipe = $this->getAdaptedCoreMiddleware($pipe);
                     }
                     // If the pipe is already an object we'll just make a callable and pass it to
@@ -55,13 +55,14 @@ class Pipeline extends BasePipeline
         };
     }
 
-    protected function getAdaptedCoreMiddleware(CoreMiddleware $coreMiddleware): Psr15AdapterMiddleware
+    protected function getAdaptedCoreMiddleware(CoreMiddlewareInterface $coreMiddleware): Psr15AdapterMiddleware
     {
-        if ($this->coreMiddleware) {
-            return $this->coreMiddleware;
+        $coreMiddlewareName = get_class($coreMiddleware);
+        if ($cachedCoreMiddleware = ($this->coreMiddleware[$coreMiddlewareName] ?? null)) {
+            return $cachedCoreMiddleware;
         }
 
-        return $this->coreMiddleware = new Psr15AdapterMiddleware($coreMiddleware, true);
+        return $this->coreMiddleware[$coreMiddlewareName] = new Psr15AdapterMiddleware($coreMiddleware, true);
     }
 
     protected function getPipeInstance(string $name): object
