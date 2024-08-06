@@ -12,7 +12,7 @@ class FormRequestServiceProvider extends ServiceProvider
     /**
      * Bootstrap the application services.
      */
-    public function boot()
+    public function boot(): void
     {
         $this->app->resolving(FormRequest::class, function (FormRequest $request) {
             $request->validateResolved();
