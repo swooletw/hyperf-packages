@@ -12,10 +12,11 @@ use SwooleTW\Hyperf\Dispatcher\Pipeline;
 
 class HttpRequestHandler implements RequestHandlerInterface
 {
-    public function __construct(protected array $middlewares, protected $coreMiddleware, protected ContainerInterface $container)
-    {
-        $this->middlewares = array_values($this->middlewares);
-    }
+    public function __construct(
+        protected array $middlewares,
+        protected $coreMiddleware,
+        protected ContainerInterface $container
+    ) {}
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {

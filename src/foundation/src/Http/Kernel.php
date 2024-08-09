@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Http;
 
-use Hyperf\Collection\Arr;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Coordinator\Constants;
 use Hyperf\Coordinator\CoordinatorManager;
@@ -19,6 +18,7 @@ use Hyperf\HttpServer\Server as HyperfServer;
 use Hyperf\Support\SafeCaller;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
+use SwooleTW\Hyperf\Dispatcher\ParsedMiddleware;
 use SwooleTW\Hyperf\Foundation\Exceptions\Handlers\HttpExceptionHandler;
 use Throwable;
 
@@ -57,6 +57,13 @@ class Kernel extends HyperfServer
      * @var string[]
      */
     protected array $middlewarePriority = [];
+
+    /**
+     * Cached parsedMiddleware.
+     *
+     * @var ParsedMiddleware[]
+     */
+    protected array $parsedMiddleware = [];
 
     public function initCoreMiddleware(string $serverName): void
     {
@@ -149,37 +156,46 @@ class Kernel extends HyperfServer
             ? MiddlewareManager::get($this->serverName, $dispatched->handler->route, $request->getMethod())
             : [];
 
-        $middleware = array_map(function (string $middleware) {
-            $name = $this->parseMiddleware($middleware);
-            if (isset($this->middlewareAliases[$name])) {
-                $middleware = $this->middlewareAliases[$name];
-            } elseif (isset($this->middlewareGroups[$name])) {
-                $middleware = array_map(
-                    fn ($middleware) => $this->parseMiddleware($middleware),
-                    $this->middlewareGroups[$name]
-                );
-            }
+        $middleware = $this->resolveMiddleware(
+            array_merge($middleware, $registeredMiddleware)
+        );
 
-            return $middleware;
-        }, array_merge($middleware, $registeredMiddleware));
-
-        $middleware = $middleware ? Arr::flatten($middleware) : [];
-        if (count($middleware) && count($this->middlewarePriority)) {
+        if ($middleware && $this->middlewarePriority) {
             $middleware = $this->sortMiddleware($middleware);
         }
 
         return $middleware;
     }
 
+    protected function resolveMiddleware(array $middlewares): array
+    {
+        $resolved = [];
+        foreach ($middlewares as $middleware) {
+            $parsedMiddleware = $this->parseMiddleware($middleware);
+            $name = $parsedMiddleware->getName();
+            $signature = $parsedMiddleware->getSignature();
+            if (isset($this->middlewareAliases[$name])) {
+                $resolved[$signature] = $this->parseMiddleware($this->middlewareAliases[$name]);
+                continue;
+            }
+            if (isset($this->middlewareGroups[$name])) {
+                foreach ($this->middlewareGroups[$name] as $groupMiddleware) {
+                    $parsedMiddleware = $this->parseMiddleware($groupMiddleware);
+                    $resolved[$parsedMiddleware->getSignature()] = $parsedMiddleware;
+                }
+                continue;
+            }
+            $resolved[$signature] = $parsedMiddleware;
+        }
+
+        return array_values($resolved);
+    }
+
     protected function sortMiddleware(array $middlewares): array
     {
         $lastIndex = 0;
         foreach ($middlewares as $index => $middleware) {
-            if (! is_string($middleware)) {
-                continue;
-            }
-
-            if (! is_null($priorityIndex = $this->priorityMapIndex($middleware))) {
+            if (! is_null($priorityIndex = $this->priorityMapIndex($middleware->getName()))) {
                 // This middleware is in the priority map. If we have encountered another middleware
                 // that was also in the priority map and was at a lower priority than the current
                 // middleware, we will move this middleware to be above the previous encounter.
@@ -220,8 +236,7 @@ class Kernel extends HyperfServer
      */
     protected function moveMiddleware(array $middlewares, int $from, int $to): array
     {
-        array_splice($middlewares, $to, 0, $middlewares[$from]);
-
+        array_splice($middlewares, $to, 0, [$middlewares[$from]]);
         unset($middlewares[$from + 1]);
 
         return $middlewares;
@@ -243,16 +258,13 @@ class Kernel extends HyperfServer
         ];
     }
 
-    /**
-     * Parse a middleware string to get the name and parameters.
-     *
-     * @return array
-     */
-    protected function parseMiddleware(string $middleware): string
+    public function parseMiddleware(string $middleware): ParsedMiddleware
     {
-        $parse = explode(':', $middleware);
+        if ($parsedMiddleware = $this->parsedMiddleware[$middleware] ?? null) {
+            return $parsedMiddleware;
+        }
 
-        return reset($parse);
+        return $this->parsedMiddleware[$middleware] = new ParsedMiddleware($middleware);
     }
 
     /**

@@ -10,6 +10,7 @@ use Hyperf\HttpMessage\Server\Request;
 use Hyperf\HttpServer\ResponseEmitter;
 use Hyperf\HttpServer\Router\Dispatched;
 use Mockery as m;
+use SwooleTW\Hyperf\Dispatcher\ParsedMiddleware;
 use SwooleTW\Hyperf\Foundation\Http\Kernel;
 use SwooleTW\Hyperf\Tests\Foundation\Concerns\HasMockedApplication;
 use SwooleTW\Hyperf\Tests\TestCase;
@@ -27,11 +28,11 @@ class KernelTest extends TestCase
         $kernel = $this->getKernel();
         $kernel->setGlobalMiddleware([
             'top_middleware',
-            'b_middleware',
+            'b_middleware:foo',
             'a_middleware',
             'alias2',
             'c_middleware',
-            'alias1:foo',
+            'alias1',
             'group1',
         ]);
         $kernel->setMiddlewareGroups([
@@ -54,16 +55,18 @@ class KernelTest extends TestCase
             'group1_middleware2',
         ]);
 
+        $result = $kernel->getMiddlewareForRequest($this->getRequest());
+
         $this->assertSame([
             'top_middleware',
             'a_middleware',
-            'b_middleware',
+            'b_middleware:foo',
             'c_middleware',
             'alias1_middleware',
             'alias2_middleware',
-            'group1_middleware1',
+            'group1_middleware1:bar',
             'group1_middleware2',
-        ], $kernel->getMiddlewareForRequest($this->getRequest()));
+        ], array_map(fn (ParsedMiddleware $middleware) => $middleware->getSignature(), $result));
     }
 
     protected function getKernel(): Kernel

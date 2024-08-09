@@ -10,6 +10,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use SwooleTW\Hyperf\Dispatcher\ParsedMiddleware;
 use SwooleTW\Hyperf\Dispatcher\Pipeline;
 use SwooleTW\Hyperf\Tests\Foundation\Concerns\HasMockedApplication;
 use SwooleTW\Hyperf\Tests\TestCase;
@@ -55,6 +56,26 @@ class PipelineTest extends TestCase
         $response = (new Pipeline($container = $this->getApplication()))
             ->send($request)
             ->through([HyperfMiddleware::class . ':foo', $closure])
+            ->thenReturn();
+
+        $this->assertSame($mockedResponse, $response);
+    }
+
+    public function testHandleParsedMiddleware()
+    {
+        $request = m::mock(ServerRequestInterface::class);
+        $request->shouldReceive('withAttribute')
+            ->with('param', 'foo')
+            ->once()
+            ->andReturnSelf();
+        $parsedMiddleware = new ParsedMiddleware(HyperfMiddleware::class . ':foo');
+
+        $mockedResponse = m::mock(ResponseInterface::class);
+        $closure = fn (ServerRequestInterface $request, Closure $next) => $mockedResponse;
+
+        $response = (new Pipeline($container = $this->getApplication()))
+            ->send($request)
+            ->through([$parsedMiddleware, $closure])
             ->thenReturn();
 
         $this->assertSame($mockedResponse, $response);
