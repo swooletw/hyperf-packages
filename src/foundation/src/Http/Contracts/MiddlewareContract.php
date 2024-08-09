@@ -8,7 +8,7 @@ use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 use SwooleTW\Hyperf\Dispatcher\ParsedMiddleware;
 
-interface Kernel
+interface MiddlewareContract
 {
     /**
      * Get middleware array for request.

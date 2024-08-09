@@ -10,7 +10,7 @@ use Hyperf\Database\ConnectionResolverInterface;
 use Hyperf\HttpServer\MiddlewareManager;
 use Hyperf\HttpServer\Request;
 use SwooleTW\Hyperf\Foundation\Contracts\Application as ApplicationContract;
-use SwooleTW\Hyperf\Foundation\Http\Kernel as HttpKernel;
+use SwooleTW\Hyperf\Foundation\Http\Contracts\MiddlewareContract;
 use SwooleTW\Hyperf\Foundation\Macros\RequestMacro;
 use SwooleTW\Hyperf\Support\ServiceProvider;
 
@@ -102,11 +102,11 @@ class FoundationServiceProvider extends ServiceProvider
         }
 
         foreach ($this->config->get('server.kernels') as $server => $kernel) {
-            if (! is_string($kernel) || ! is_a($kernel, HttpKernel::class, true)) {
+            if (! is_string($kernel) || ! is_a($kernel, MiddlewareContract::class, true)) {
                 continue;
             }
             $middleware[$server] = array_merge(
-                $this->app->get($kernel)->getMiddleware(),
+                $this->app->get($kernel)->getGlobalMiddleware(),
                 $middleware[$server] ?? [],
             );
         }
