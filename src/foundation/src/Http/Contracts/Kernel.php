@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Http\Contracts;
 
+use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 use SwooleTW\Hyperf\Dispatcher\ParsedMiddleware;
 
@@ -43,7 +44,7 @@ interface Kernel
      *
      * @return $this
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function prependMiddlewareToGroup(string $group, string $middleware): static;
 
@@ -52,7 +53,7 @@ interface Kernel
      *
      * @return $this
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function appendMiddlewareToGroup(string $group, string $middleware): static;
 
