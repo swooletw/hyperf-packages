@@ -105,7 +105,10 @@ class FoundationServiceProvider extends ServiceProvider
             if (! is_string($kernel) || ! is_a($kernel, HttpKernel::class, true)) {
                 continue;
             }
-            $middleware[$server] = $this->app->get($kernel)->getGlobalMiddleware();
+            $middleware[$server] = array_merge(
+                $this->app->get($kernel)->getMiddleware(),
+                $middleware[$server] ?? [],
+            );
         }
 
         return $middleware;
