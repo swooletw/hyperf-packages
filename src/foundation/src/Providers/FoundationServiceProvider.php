@@ -7,8 +7,10 @@ namespace SwooleTW\Hyperf\Foundation\Providers;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Database\ConnectionResolverInterface;
+use Hyperf\HttpServer\MiddlewareManager;
 use Hyperf\HttpServer\Request;
 use SwooleTW\Hyperf\Foundation\Contracts\Application as ApplicationContract;
+use SwooleTW\Hyperf\Foundation\Http\Kernel as HttpKernel;
 use SwooleTW\Hyperf\Foundation\Macros\RequestMacro;
 use SwooleTW\Hyperf\Support\ServiceProvider;
 
@@ -74,6 +76,8 @@ class FoundationServiceProvider extends ServiceProvider
                 $this->config->set($key, $value);
             }
         }
+
+        $this->config->set('middlewares', $this->getMiddlewareConfig());
     }
 
     protected function getRedisConfig(): array
@@ -87,6 +91,24 @@ class FoundationServiceProvider extends ServiceProvider
                 'options' => $redisOptions,
             ]);
         }, $redisConfig);
+    }
+
+    protected function getMiddlewareConfig(): array
+    {
+        if ($middleware = $this->config->get('middlewares', [])) {
+            foreach ($middleware as $server => $middlewareConfig) {
+                $middleware[$server] = MiddlewareManager::sortMiddlewares($middlewareConfig);
+            }
+        }
+
+        foreach ($this->config->get('server.kernels') as $server => $kernel) {
+            if (! is_string($kernel) || ! is_a($kernel, HttpKernel::class, true)) {
+                continue;
+            }
+            $middleware[$server] = $this->app->get($kernel)->getGlobalMiddleware();
+        }
+
+        return $middleware;
     }
 
     protected function setDefaultTimezone(): void

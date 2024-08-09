@@ -9,6 +9,7 @@ use Hyperf\Collection\Arr;
 use Hyperf\Support\Traits\InteractsWithTime;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
 use SwooleTW\Hyperf\Auth\Contracts\Authenticatable;
@@ -19,7 +20,7 @@ use SwooleTW\Hyperf\HttpMessage\Exceptions\HttpResponseException;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\ThrottleRequestsException;
 use SwooleTW\Hyperf\Support\Facades\Auth;
 
-class ThrottleRequests
+class ThrottleRequests implements MiddlewareInterface
 {
     use InteractsWithTime;
 

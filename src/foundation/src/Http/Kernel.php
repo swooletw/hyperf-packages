@@ -18,11 +18,13 @@ use Hyperf\HttpServer\Server as HyperfServer;
 use Hyperf\Support\SafeCaller;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use SwooleTW\Hyperf\Dispatcher\ParsedMiddleware;
 use SwooleTW\Hyperf\Foundation\Exceptions\Handlers\HttpExceptionHandler;
+use SwooleTW\Hyperf\Foundation\Http\Contracts\Kernel as HttpKernel;
 use Throwable;
 
-class Kernel extends HyperfServer
+class Kernel extends HyperfServer implements HttpKernel
 {
     /**
      * The application's global HTTP middleware stack.
@@ -147,7 +149,10 @@ class Kernel extends HyperfServer
         ));
     }
 
-    public function getMiddlewareForRequest(Request $request): array
+    /**
+     * Get middleware array for request.
+     */
+    public function getMiddlewareForRequest(ServerRequestInterface $request): array
     {
         $middleware = $this->middleware;
         $dispatched = $request->getAttribute(Dispatched::class);
@@ -181,6 +186,11 @@ class Kernel extends HyperfServer
             if (isset($this->middlewareGroups[$name])) {
                 foreach ($this->middlewareGroups[$name] as $groupMiddleware) {
                     $parsedMiddleware = $this->parseMiddleware($groupMiddleware);
+                    if (isset($this->middlewareAliases[$name = $parsedMiddleware->getName()])) {
+                        $parsedMiddleware = $this->parseMiddleware(
+                            $this->middlewareAliases[$name] . ':' . implode(',', $parsedMiddleware->getParameters())
+                        );
+                    }
                     $resolved[$parsedMiddleware->getSignature()] = $parsedMiddleware;
                 }
                 continue;
@@ -362,7 +372,7 @@ class Kernel extends HyperfServer
      *
      * @return $this
      */
-    public function appendToMiddlewarePriority(string $middleware)
+    public function appendToMiddlewarePriority(string $middleware): static
     {
         if (! in_array($middleware, $this->middlewarePriority)) {
             $this->middlewarePriority[] = $middleware;
