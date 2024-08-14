@@ -117,6 +117,9 @@ class TestCase extends \PHPUnit\Framework\TestCase
         }
 
         try {
+            if ($container = m::getContainer()) {
+                $this->addToAssertionCount($container->mockery_getExpectationCount());
+            }
             m::close();
         } catch (Throwable) {
         }
