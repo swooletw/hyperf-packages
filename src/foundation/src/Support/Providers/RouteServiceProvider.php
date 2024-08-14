@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Support\Providers;
 
-use SwooleTW\Hyperf\Router\DispatcherFactory;
+use SwooleTW\Hyperf\Router\RouteFileCollector;
 use SwooleTW\Hyperf\Support\ServiceProvider;
 
 class RouteServiceProvider extends ServiceProvider
@@ -17,6 +17,7 @@ class RouteServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        DispatcherFactory::setRouteFiles($this->routes);
+        $this->app->get(RouteFileCollector::class)
+            ->setRouteFiles($this->routes);
     }
 }
