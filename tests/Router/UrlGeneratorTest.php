@@ -55,6 +55,10 @@ class UrlGeneratorTest extends TestCase
 
     public function testRoute()
     {
+        if (! defined('BASE_PATH')) {
+            $this->markTestSkipped('skip it because DispatcherFactory in hyperf is dirty.');
+        }
+
         $this->mockRouter();
 
         $this->router
@@ -79,6 +83,10 @@ class UrlGeneratorTest extends TestCase
 
     public function testRouteWithNotDefined()
     {
+        if (! defined('BASE_PATH')) {
+            $this->markTestSkipped('skip it because DispatcherFactory in hyperf is dirty.');
+        }
+
         $this->mockRouter();
 
         $this->router

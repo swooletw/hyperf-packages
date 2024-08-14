@@ -11,6 +11,7 @@ use Mockery;
 use Mockery\MockInterface;
 use SwooleTW\Hyperf\Router\DispatcherFactory;
 use SwooleTW\Hyperf\Router\NamedRouteCollector;
+use SwooleTW\Hyperf\Router\RouteFileCollector;
 use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
@@ -31,6 +32,10 @@ class DispatcherFactoryTest extends TestCase
 
     public function testGetRouter()
     {
+        if (! defined('BASE_PATH')) {
+            $this->markTestSkipped('skip it because DispatcherFactory in hyperf is dirty.');
+        }
+
         /** @var MockInterface|NamedRouteCollector */
         $router = Mockery::mock(NamedRouteCollector::class);
 
@@ -40,6 +45,12 @@ class DispatcherFactoryTest extends TestCase
             ->once()
             ->andReturn($router);
 
+        $this->container
+            ->shouldReceive('get')
+            ->with(RouteFileCollector::class)
+            ->once()
+            ->andReturn(new RouteFileCollector(['foo']));
+
         $factory = new DispatcherFactory($this->container);
 
         $this->assertEquals($router, $factory->getRouter('http'));
@@ -47,8 +58,9 @@ class DispatcherFactoryTest extends TestCase
 
     public function testInitConfigRoute()
     {
-        DispatcherFactory::addRouteFile(__DIR__ . '/routes/foo.php');
-        DispatcherFactory::addRouteFile(__DIR__ . '/routes/bar.php');
+        if (! defined('BASE_PATH')) {
+            $this->markTestSkipped('skip it because DispatcherFactory in hyperf is dirty.');
+        }
 
         /** @var MockInterface|NamedRouteCollector */
         $router = Mockery::mock(NamedRouteCollector::class);
@@ -60,6 +72,15 @@ class DispatcherFactoryTest extends TestCase
             ->shouldReceive('make')
             ->with(RouteCollector::class, ['server' => 'http'])
             ->andReturn($router);
+
+        $this->container
+            ->shouldReceive('get')
+            ->with(RouteFileCollector::class)
+            ->once()
+            ->andReturn(new RouteFileCollector([
+                __DIR__ . '/routes/foo.php',
+                __DIR__ . '/routes/bar.php',
+            ]));
 
         new DispatcherFactory($this->container);
     }
