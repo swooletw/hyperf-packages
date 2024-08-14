@@ -95,6 +95,16 @@ class TestCase extends \PHPUnit\Framework\TestCase
             $this->disableEventsForAllTests();
         }
 
+        foreach ($uses as $trait) {
+            if (method_exists($this, $method = 'setUp' . class_basename($trait))) {
+                $this->{$method}();
+            }
+
+            if (method_exists($this, $method = 'tearDown' . class_basename($trait))) {
+                $this->beforeApplicationDestroyed(fn () => $this->{$method}());
+            }
+        }
+
         return $uses;
     }
 

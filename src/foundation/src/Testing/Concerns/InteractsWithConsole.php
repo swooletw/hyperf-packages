@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Testing\Concerns;
 
-use Hyperf\Contract\ApplicationInterface;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Console\Output\NullOutput;
+use SwooleTW\Hyperf\Foundation\Console\Contracts\Kernel as KernelContract;
 
 trait InteractsWithConsole
 {
@@ -21,19 +18,8 @@ trait InteractsWithConsole
      */
     public function command(string $command, array $parameters = []): int
     {
-        $application = $this->app->get(ApplicationInterface::class);
-
-        $input = new ArrayInput(array_merge(
-            $parameters,
-            ['command' => $command]
-        ));
-        $output = $this->mockConsoleOutput
-            ? new NullOutput()
-            : new ConsoleOutput();
-
-        $application->setAutoExit(false);
-
-        return $application->run($input, $output);
+        return $this->app->get(KernelContract::class)
+            ->call($command, $parameters);
     }
 
     /**
