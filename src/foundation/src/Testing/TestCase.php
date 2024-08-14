@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Testing;
 
-use Carbon\Carbon;
 use Hyperf\Testing\Concerns\RunTestsInCoroutine;
 use Mockery as m;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithConsole;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithContainer;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithDatabase;
+use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithTime;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\MakesHttpRequests;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\MocksApplicationServices;
 use SwooleTW\Hyperf\Support\Facades\Facade;
@@ -27,6 +27,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
     use InteractsWithConsole;
     use InteractsWithDatabase;
     use RunTestsInCoroutine;
+    use InteractsWithTime;
 
     /**
      * The callbacks that should be run after the application is created.
@@ -113,10 +114,6 @@ class TestCase extends \PHPUnit\Framework\TestCase
         if ($this->app) {
             $this->callBeforeApplicationDestroyedCallbacks();
             $this->flushApplication();
-        }
-
-        if (class_exists(Carbon::class)) {
-            Carbon::setTestNow();
         }
 
         $this->afterApplicationCreatedCallbacks = [];
