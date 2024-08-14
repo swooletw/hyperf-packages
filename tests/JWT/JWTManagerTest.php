@@ -229,8 +229,6 @@ class JWTManagerTest extends TestCase
 
     private function mockContainer()
     {
-        ! defined('BASE_PATH') && define('BASE_PATH', __DIR__);
-
         $this->container = Mockery::mock(ContainerInterface::class);
     }
 

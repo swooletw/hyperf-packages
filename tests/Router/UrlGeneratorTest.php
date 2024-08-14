@@ -172,8 +172,6 @@ class UrlGeneratorTest extends TestCase
 
     private function mockContainer()
     {
-        ! defined('BASE_PATH') && define('BASE_PATH', __DIR__);
-
         /** @var ContainerInterface|MockInterface */
         $container = Mockery::mock(ContainerInterface::class);
 

@@ -64,8 +64,6 @@ class FunctionsTest extends TestCase
      */
     private function mockUrlGenerator(): UrlGenerator
     {
-        ! defined('BASE_PATH') && define('BASE_PATH', __DIR__);
-
         /** @var ContainerInterface|MockInterface */
         $container = Mockery::mock(ContainerInterface::class);
         $urlGenerator = Mockery::mock(UrlGenerator::class);

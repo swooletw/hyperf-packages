@@ -67,8 +67,6 @@ class AuthorizableTest extends TestCase
      */
     private function mockGate(): Gate
     {
-        ! defined('BASE_PATH') && define('BASE_PATH', __DIR__);
-
         $gate = Mockery::mock(Gate::class);
 
         /** @var ContainerInterface|MockInterface */
