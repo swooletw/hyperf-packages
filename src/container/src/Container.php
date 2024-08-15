@@ -169,8 +169,18 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
         }
 
         parent::unbind($name);
+    }
 
-        unset($this->fetchedDefinitions[$name]);
+    /**
+     * Remove an arbitrary binding.
+     */
+    public function remove(string $name): void
+    {
+        if ($this->isAlias($name)) {
+            $name = $this->getAlias($name);
+        }
+
+        parent::unbind($name);
 
         $this->definitionSource->removeDefinition($name);
     }
@@ -182,10 +192,6 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
     {
         if ($this->isAlias($abstract)) {
             $abstract = $this->getAlias($abstract);
-        }
-
-        if ($this->resolvedEntries[$abstract] ?? null) {
-            return true;
         }
 
         return (bool) ($this->definitionSource->getDefinitions()[$abstract] ?? false);
@@ -709,7 +715,7 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
 
     public function offsetUnset(mixed $offset): void
     {
-        $this->unbind($offset);
+        $this->remove($offset);
     }
 
     /**

@@ -263,8 +263,9 @@ class ContainerTest extends TestCase
         $container = $this->getContainer();
         $container->instance('object', new stdClass());
 
+        // keep original behaviour in hyperf
         $container->unbind('object');
-        $this->assertFalse($container->bound('object'));
+        $this->assertTrue($container->bound('object'));
     }
 
     public function testUnsetRemoveBoundInstances()
@@ -272,6 +273,7 @@ class ContainerTest extends TestCase
         $container = $this->getContainer();
         $container->instance('object', new stdClass());
 
+        // extended remove function
         unset($container['object']);
         $this->assertFalse($container->bound('object'));
     }
