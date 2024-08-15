@@ -17,6 +17,7 @@ use SwooleTW\Hyperf\Foundation\Console\Contracts\Kernel as KernelContract;
 use SwooleTW\Hyperf\Foundation\Console\Kernel as ConsoleKernel;
 use SwooleTW\Hyperf\Foundation\Contracts\Application as ApplicationContract;
 use SwooleTW\Hyperf\Foundation\Testing\TestCase;
+use SwooleTW\Hyperf\Foundation\Testing\TestScanHandler;
 
 use function Swoole\Coroutine\run;
 
@@ -58,7 +59,7 @@ class ApplicationTestCase extends TestCase
         $this->generateComposerLock();
 
         Runtime::enableCoroutine(true);
-        ClassLoader::init();
+        ClassLoader::init(null, null, new TestScanHandler());
 
         $this->createApplication()
             ->get(ApplicationInterface::class);
