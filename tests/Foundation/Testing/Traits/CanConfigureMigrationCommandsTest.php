@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Tests\Foundation\Testing;
+namespace SwooleTW\Hyperf\Tests\Foundation\Testing\Traits;
 
 use Hyperf\Config\Config;
 use Hyperf\Contract\ConfigInterface;

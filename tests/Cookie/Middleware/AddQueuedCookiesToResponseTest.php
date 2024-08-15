@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Tests\Cookie;
+namespace SwooleTW\Hyperf\Tests\Cookie\Middleware;
 
 use Mockery as m;
 use Psr\Http\Message\ResponseInterface;

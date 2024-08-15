@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Foundation\Testing;
+namespace SwooleTW\Hyperf\Tests\Foundation\Testing;
 
 use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;
+use SwooleTW\Hyperf\Foundation\Testing\Wormhole;
 
 /**
  * @internal
