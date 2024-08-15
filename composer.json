@@ -63,6 +63,7 @@
         "hyperf/command": "~3.1.0",
         "hyperf/config": "~3.1.0",
         "hyperf/crontab": "~3.1.0",
+        "hyperf/database-sqlite": "~3.1.0",
         "hyperf/db-connection": "~3.1.0",
         "hyperf/engine": "^2.10",
         "hyperf/framework": "~3.1.0",
@@ -74,10 +75,10 @@
         "hyperf/translation": "~3.1.0",
         "laravel/serializable-closure": "^1.3",
         "lcobucci/jwt": "^5.0",
+        "monolog/monolog": "^3.1",
         "nesbot/carbon": "^2.16",
         "ramsey/uuid": "^4.7",
-        "symfony/error-handler": "^6.3",
-        "monolog/monolog": "^3.1"
+        "symfony/error-handler": "^6.3"
     },
     "replace": {
         "swooletw/hyperf-auth": "self.version",
@@ -103,6 +104,7 @@
         "friendsofhyperf/tinker": "Required to use the tinker console command (^3.1)."
     },
     "require-dev": {
+        "fakerphp/faker": "^2.0",
         "friendsofphp/php-cs-fixer": "3.35.1",
         "hyperf/devtool": "~3.1.0",
         "hyperf/redis": "~3.1.0",

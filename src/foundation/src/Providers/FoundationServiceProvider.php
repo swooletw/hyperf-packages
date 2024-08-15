@@ -101,7 +101,7 @@ class FoundationServiceProvider extends ServiceProvider
             }
         }
 
-        foreach ($this->config->get('server.kernels') as $server => $kernel) {
+        foreach ($this->config->get('server.kernels', []) as $server => $kernel) {
             if (! is_string($kernel) || ! is_a($kernel, MiddlewareContract::class, true)) {
                 continue;
             }
