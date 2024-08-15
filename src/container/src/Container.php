@@ -183,6 +183,8 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
         parent::unbind($name);
 
         $this->definitionSource->removeDefinition($name);
+
+        unset($this->fetchedDefinitions[$name]);
     }
 
     /**

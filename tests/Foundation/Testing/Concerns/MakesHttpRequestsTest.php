@@ -54,14 +54,14 @@ class MakesHttpRequestsTest extends ApplicationTestCase
 
     public function testWithoutAndWithMiddleware()
     {
-        $this->assertFalse($this->app->bound('middleware.disable'));
+        $this->assertFalse($this->app->has('middleware.disable'));
 
         $this->withoutMiddleware();
-        $this->assertTrue($this->app->bound('middleware.disable'));
+        $this->assertTrue($this->app->has('middleware.disable'));
         $this->assertTrue($this->app->get('middleware.disable'));
 
         $this->withMiddleware();
-        $this->assertFalse($this->app->bound('middleware.disable'));
+        $this->assertFalse($this->app->has('middleware.disable'));
     }
 
     public function testWithoutAndWithMiddlewareWithParameter()
