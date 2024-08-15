@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Testing\Concerns;
 
+use SwooleTW\Hyperf\Foundation\Testing\Http\TestClient;
 use SwooleTW\Hyperf\Foundation\Testing\Http\TestResponse;
 use SwooleTW\Hyperf\Foundation\Testing\Stubs\FakeMiddleware;
-use SwooleTW\Hyperf\Tests\Foundation\Testing\HttpClient;
 
 trait MakesHttpRequests
 {
@@ -69,7 +69,7 @@ trait MakesHttpRequests
             : [];
 
         $response = $this->createTestResponse(
-            $this->app->make(HttpClient::class)->{$method}(
+            $this->app->make(TestClient::class)->{$method}(
                 $uri,
                 $data,
                 array_merge($this->defaultHeaders, $headers),

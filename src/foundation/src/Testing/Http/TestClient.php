@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Tests\Foundation\Testing;
+namespace SwooleTW\Hyperf\Foundation\Testing\Http;
 
 use Hyperf\Collection\Arr;
 use Hyperf\Context\Context;
@@ -27,7 +27,7 @@ use Throwable;
 use function Hyperf\Collection\data_get;
 use function Hyperf\Coroutine\wait;
 
-class HttpClient extends HttpKernel
+class TestClient extends HttpKernel
 {
     protected PackerInterface $packer;
 
