@@ -16,6 +16,7 @@ use Hyperf\HttpMessage\Cookie\Cookie;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\Validation\Contract\ValidatorFactoryInterface;
+use Hyperf\View\RenderInterface;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
@@ -449,5 +450,21 @@ if (! function_exists('__')) {
     function __(string $key, array $replace = [], ?string $locale = null)
     {
         return \Hyperf\Translation\trans($key, $replace, $locale);
+    }
+}
+
+if (! function_exists('view')) {
+    /**
+     * Get the evaluated view contents for the given view.
+     */
+    function view(?string $view = null, array $data = [], array $mergeData = [])
+    {
+        $factory = app(RenderInterface::class);
+
+        if (func_num_args() === 0) {
+            return $factory;
+        }
+
+        return $factory->render($view, $data, $mergeData);
     }
 }
