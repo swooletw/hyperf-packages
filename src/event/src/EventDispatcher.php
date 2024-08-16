@@ -132,7 +132,7 @@ class EventDispatcher implements EventDispatcherInterface
 
     protected function makeListener(array|Closure|string $listener): Closure
     {
-        if (is_string($listener) || (is_array($listener) && isset($listener[0]) && is_string($listener[0]))) {
+        if (is_string($listener) || (is_array($listener) && ((isset($listener[0]) && is_string($listener[0])) || is_callable($listener)))) {
             return $this->createClassListener($listener);
         }
 
@@ -172,7 +172,7 @@ class EventDispatcher implements EventDispatcherInterface
             return $this->createQueuedHandlerCallable($class, $method);
         }
 
-        $listener = $this->container->get($class);
+        $listener = is_string($class) ? $this->container->get($class) : $class;
 
         return [$listener, $method];
     }
@@ -230,16 +230,20 @@ class EventDispatcher implements EventDispatcherInterface
         return $this;
     }
 
-    protected function handlerShouldBeQueued(string $class): bool
+    protected function handlerShouldBeQueued(object|string $class): bool
     {
         try {
-            return (new ReflectionClass($class))->implementsInterface(ShouldQueue::class);
+            if (is_string($class)) {
+                return (new ReflectionClass($class))->implementsInterface(ShouldQueue::class);
+            }
+
+            return $class instanceof ShouldQueue;
         } catch (Exception) {
             return false;
         }
     }
 
-    protected function createQueuedHandlerCallable(string $class, string $method): Closure
+    protected function createQueuedHandlerCallable(object|string $class, string $method): Closure
     {
         return function () use ($class, $method) {
             $arguments = array_map(function ($a) {
@@ -252,9 +256,9 @@ class EventDispatcher implements EventDispatcherInterface
         };
     }
 
-    protected function handlerWantsToBeQueued(string $class, array $arguments): bool
+    protected function handlerWantsToBeQueued(object|string $class, array $arguments): bool
     {
-        $instance = $this->container->get($class);
+        $instance = is_string($class) ? $this->container->get($class) : $class;
 
         if (method_exists($instance, 'shouldQueue')) {
             return $instance->shouldQueue($arguments[0]);
@@ -263,7 +267,7 @@ class EventDispatcher implements EventDispatcherInterface
         return true;
     }
 
-    protected function queueHandler(string $class, string $method, array $arguments): void
+    protected function queueHandler(object|string $class, string $method, array $arguments): void
     {
         [$listener, $job] = $this->createListenerAndJob($class, $method, $arguments);
 
@@ -278,9 +282,9 @@ class EventDispatcher implements EventDispatcherInterface
         $connection->push($job, $delay);
     }
 
-    protected function createListenerAndJob(string $class, string $method, array $arguments): array
+    protected function createListenerAndJob(object|string $class, string $method, array $arguments): array
     {
-        $listener = (new ReflectionClass($class))->newInstanceWithoutConstructor();
+        $listener = is_string($class) ? (new ReflectionClass($class))->newInstanceWithoutConstructor() : $class;
 
         return [$listener, $this->propagateListenerOptions(
             $listener,
