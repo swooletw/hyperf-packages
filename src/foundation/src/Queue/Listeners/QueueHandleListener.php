@@ -13,7 +13,7 @@ use Hyperf\AsyncQueue\Event\RetryHandle;
 use Hyperf\Event\Contract\ListenerInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use SwooleTW\Hyperf\Foundation\Event\QueableListener;
+use SwooleTW\Hyperf\Event\CallQueuedListener;
 
 class QueueHandleListener implements ListenerInterface
 {
@@ -42,11 +42,7 @@ class QueueHandleListener implements ListenerInterface
         }
 
         $job = $event->getMessage()->job();
-        $isQueable = $job instanceof QueableListener;
-        $jobClass = $isQueable ? $job->listener : get_class($job);
-        if ($job instanceof AnnotationJob) {
-            $jobClass = sprintf('Job[%s@%s]', $job->class, $job->method);
-        }
+        $jobClass = $this->getJobClass($job);
 
         switch (true) {
             case $event instanceof BeforeHandle:
@@ -63,5 +59,18 @@ class QueueHandleListener implements ListenerInterface
                 $this->logger->warning(sprintf('Retried %s.', $jobClass));
                 break;
         }
+    }
+
+    private function getJobClass(mixed $job): string
+    {
+        if ($job instanceof CallQueuedListener) {
+            return is_string($job->class) ? $job->class : get_class($job->class);
+        }
+
+        if ($job instanceof AnnotationJob) {
+            return sprintf('Job[%s@%s]', $job->class, $job->method);
+        }
+
+        return get_class($job);
     }
 }
