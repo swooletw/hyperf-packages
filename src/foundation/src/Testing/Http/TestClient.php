@@ -46,6 +46,7 @@ class TestClient extends HttpKernel
 
         $this->initCoreMiddleware($server);
         $this->initBaseUri($server);
+        $this->loadKernelMiddleware($server);
     }
 
     public function get(string $uri, array $data = [], array $headers = [], array $cookies = [])
@@ -194,6 +195,22 @@ class TestClient extends HttpKernel
         }
 
         return $psr7Response;
+    }
+
+    protected function loadKernelMiddleware(string $server): void
+    {
+        $kernelClass = $this->container->get(ConfigInterface::class)
+            ->get("server.kernels.{$server}");
+        if (! $kernelClass || ! class_exists($kernelClass)) {
+            return;
+        }
+
+        $kernel = $this->container->get($kernelClass);
+
+        $this->setGlobalMiddleware($kernel->getGlobalMiddleware());
+        $this->setMiddlewareGroups($kernel->getMiddlewareGroups());
+        $this->setMiddlewareAliases($kernel->getMiddlewareAliases());
+        $this->setMiddlewarePriority($kernel->getMiddlewarePriority());
     }
 
     protected function persistToContext(ServerRequestInterface $request, ResponseInterface $response)
