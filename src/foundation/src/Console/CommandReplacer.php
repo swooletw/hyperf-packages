@@ -9,6 +9,7 @@ use Symfony\Component\Console\Command\Command;
 class CommandReplacer
 {
     protected static array $commands = [
+        'start' => 'serve',
         'gen:amqp-consumer' => 'make:amqp-consumer',
         'gen:amqp-producer' => 'make:amqp-producer',
         'gen:aspect' => 'make:aspect',
