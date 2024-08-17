@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Tests\Foundation\Testing;
 
 use Hyperf\Context\ApplicationContext;
-use Hyperf\Contract\ApplicationInterface;
 use Hyperf\Coordinator\Constants;
 use Hyperf\Coordinator\CoordinatorManager;
 use Hyperf\Di\ClassLoader;
@@ -48,11 +47,6 @@ class ApplicationTestCase extends TestCase
 
     protected function bootstrapApplication(): void
     {
-        ini_set('display_errors', 'on');
-        ini_set('display_startup_errors', 'on');
-
-        error_reporting(E_ALL);
-
         ! defined('BASE_PATH') && define('BASE_PATH', dirname(__DIR__, 3) . '/tests/Foundation/fixtures/hyperf');
         ! defined('SWOOLE_HOOK_FLAGS') && define('SWOOLE_HOOK_FLAGS', SWOOLE_HOOK_ALL);
 
@@ -60,9 +54,6 @@ class ApplicationTestCase extends TestCase
 
         Runtime::enableCoroutine(true);
         ClassLoader::init(null, null, new TestScanHandler());
-
-        $this->createApplication()
-            ->get(ApplicationInterface::class);
     }
 
     protected function createApplication(): ApplicationContract
