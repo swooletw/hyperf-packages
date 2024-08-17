@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Router;
 
 use Closure;
+use Hyperf\Collection\Arr;
 use Hyperf\HttpServer\MiddlewareManager;
 use Hyperf\HttpServer\Router\Handler;
 use Hyperf\HttpServer\Router\RouteCollector;
@@ -16,9 +17,31 @@ class NamedRouteCollector extends RouteCollector
      */
     protected array $namedRoutes = [];
 
+    /**
+     * Adds a OPTIONS route to the collection.
+     *
+     * This is simply an alias of $this->addRoute('OPTIONS', $route, $handler)
+     * @param array|string $handler
+     */
+    public function options(string $route, mixed $handler, array $options = []): void
+    {
+        $this->addRoute('OPTIONS', $route, $handler, $options);
+    }
+
+    /**
+     * Adds a GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS route to the collection.
+     *
+     * This is simply an alias of $this->addRoute([GET, POST, PUT, DELETE, PATCH, HEAD], $route, $handler)
+     * @param array|string $handler
+     */
+    public function any(string $route, mixed $handler, array $options = []): void
+    {
+        $this->addRoute(['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD'], $route, $handler, $options);
+    }
+
     public function addRoute(array|string $httpMethod, string $route, mixed $handler, array $options = []): void
     {
-        $route = $this->currentGroupPrefix . $route;
+        $route = $this->getRouteWithGroupPrefix($route);
         $routeDataList = $this->routeParser->parse($route);
 
         [$handler, $options] = $this->parseHandlerAndOptions($handler, $options);
@@ -36,7 +59,7 @@ class NamedRouteCollector extends RouteCollector
                 }
             }
 
-            MiddlewareManager::addMiddlewares($this->server, $route, $method, $options['middleware'] ?? []);
+            MiddlewareManager::addMiddlewares($this->server, $route, $method, Arr::wrap($options['middleware'] ?? []));
         }
     }
 
@@ -90,5 +113,17 @@ class NamedRouteCollector extends RouteCollector
     private function cleanOptions(array $options): array
     {
         return array_diff_key($options, array_flip([0, 'uses']));
+    }
+
+    private function getRouteWithGroupPrefix(string $route): string
+    {
+        $prefix = trim($this->currentGroupPrefix, '/');
+        $route = trim($route, '/');
+
+        if (empty($prefix) || $prefix === '/') {
+            return $route ? "/{$route}" : '/';
+        }
+
+        return "/{$prefix}" . ($route ? "/{$route}" : '');
     }
 }

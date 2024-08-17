@@ -39,9 +39,9 @@ class NamedRouteCollectorTest extends TestCase
 
         $data = $collector->getData()[0];
         $this->assertSame('Handler::Get', $data['GET']['/']->callback);
-        $this->assertSame('Handler::ApiGet', $data['GET']['/api/']->callback);
+        $this->assertSame('Handler::ApiGet', $data['GET']['/api']->callback);
         $this->assertSame('Handler::Post', $data['POST']['/']->callback);
-        $this->assertSame('Handler::ApiPost', $data['POST']['/api/']->callback);
+        $this->assertSame('Handler::ApiPost', $data['POST']['/api']->callback);
     }
 
     public function testGetRouteParser()
@@ -78,14 +78,14 @@ class NamedRouteCollectorTest extends TestCase
 
         $data = $collector->getData()[0];
         $this->assertSame('Handler::Get', $data['GET']['/']->callback);
-        $this->assertSame('Handler::ApiGet', $data['GET']['/api/']->callback);
+        $this->assertSame('Handler::ApiGet', $data['GET']['/api']->callback);
         $this->assertSame('Handler::Post', $data['POST']['/']->callback);
         $this->assertSame(['middleware' => ['PostMiddleware']], $data['POST']['/']->options);
 
         $middle = MiddlewareManager::$container;
         $this->assertSame(['GetMiddleware'], $middle['http']['/']['GET']);
         $this->assertSame(['PostMiddleware'], $middle['http']['/']['POST']);
-        $this->assertSame(['ApiGetMiddleware', 'ApiSelfGetMiddleware'], $middle['http']['/api/']['GET']);
+        $this->assertSame(['ApiGetMiddleware', 'ApiSelfGetMiddleware'], $middle['http']['/api']['GET']);
         $this->assertSame(['PostMiddleware'], $middle['http']['/user/{id:\d+}']['POST']);
     }
 
@@ -104,7 +104,7 @@ class NamedRouteCollectorTest extends TestCase
         ]);
 
         $middle = MiddlewareManager::$container;
-        $this->assertSame(['ApiGetMiddleware', 'ApiSelfGetMiddleware'], $middle['test']['/api/']['GET']);
+        $this->assertSame(['ApiGetMiddleware', 'ApiSelfGetMiddleware'], $middle['test']['/api']['GET']);
     }
 
     public function testRouterCollectorMergeOptions()
@@ -162,8 +162,8 @@ class NamedRouteCollectorTest extends TestCase
 
         $this->assertSame(['/'], $namedRoutes['get']);
         $this->assertSame(['/'], $namedRoutes['post']);
-        $this->assertSame(['/api/'], $namedRoutes['api-get']);
-        $this->assertSame(['/api/'], $namedRoutes['api-post']);
+        $this->assertSame(['/api'], $namedRoutes['api-get']);
+        $this->assertSame(['/api'], $namedRoutes['api-post']);
         $this->assertSame(['/foo/', ['bar', '[^/]+']], $namedRoutes['params']);
         $this->assertSame(['/foo/', ['bar', '[^/]+'], '/', ['baz', '[0-9]+']], $namedRoutes['regex']);
     }
