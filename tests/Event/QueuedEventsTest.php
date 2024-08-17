@@ -57,6 +57,28 @@ class QueuedEventsTest extends TestCase
         $d->dispatch('some.event', ['foo', 'bar']);
     }
 
+    public function testCallableHandlersAreQueued()
+    {
+        $this->container
+            ->shouldReceive('get')
+            ->once()
+            ->with(TestDispatcherQueuedHandler::class)
+            ->andReturn(new TestDispatcherQueuedHandler());
+
+        $d = $this->getEventDispatcher();
+
+        $queue = m::mock(QueueFactory::class);
+        $driver = m::mock(QueueDriver::class);
+        $queue->shouldReceive('get')->twice()->with('default')->andReturn($driver);
+        $driver->shouldReceive('push')->twice()->with(m::type(CallQueuedListener::class), 0);
+
+        $d->setQueueResolver(fn () => $queue);
+
+        $d->listen(TestDispatcherQueuedHandlerEvent::class, [new TestDispatcherQueuedHandler(), 'handle']);
+        $d->listen(TestDispatcherQueuedHandlerEvent::class, [TestDispatcherQueuedHandler::class, 'handle']);
+        $d->dispatch(new TestDispatcherQueuedHandlerEvent());
+    }
+
     public function testQueueIsSetByGetConnection()
     {
         $this->container
@@ -237,6 +259,8 @@ class TestDispatcherQueuedHandler implements ShouldQueue
 {
     public function handle() {}
 }
+
+class TestDispatcherQueuedHandlerEvent {}
 
 class TestDispatcherGetConnection implements ShouldQueue
 {

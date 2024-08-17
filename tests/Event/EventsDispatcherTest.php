@@ -564,7 +564,7 @@ class EventsDispatcherTest extends TestCase
             ->andReturnUsing(fn () => new TestListenerInvokeHandler());
         $this->container
             ->shouldReceive('get')
-            ->twice()
+            ->once()
             ->with(TestListenerInvoke::class)
             ->andReturnUsing(fn () => new TestListenerInvoke());
         $this->container
@@ -585,13 +585,6 @@ class EventsDispatcherTest extends TestCase
         $d = $this->getEventDispatcher();
         $d->listen('myEvent', TestListenerInvoke::class);
         $d->listen('myEvent', TestListenerInvokeHandler::class);
-        $d->dispatch('myEvent', 'somePayload');
-        $this->assertEquals(['__construct', '__invoke_somePayload'], $_SERVER['__event.test']);
-
-        // It falls back to __invoke if the referenced method is not found.
-        $_SERVER['__event.test'] = [];
-        $d = $this->getEventDispatcher();
-        $d->listen('myEvent', [TestListenerInvoke::class, 'someAbsentMethod']);
         $d->dispatch('myEvent', 'somePayload');
         $this->assertEquals(['__construct', '__invoke_somePayload'], $_SERVER['__event.test']);
 

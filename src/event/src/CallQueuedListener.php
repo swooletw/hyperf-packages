@@ -11,7 +11,7 @@ use Throwable;
 class CallQueuedListener extends Job
 {
     public function __construct(
-        public string $class,
+        public object|string $class,
         public string $method,
         public array $data
     ) {}
@@ -28,8 +28,8 @@ class CallQueuedListener extends Job
         }
     }
 
-    protected function getEventHandler(): mixed
+    protected function getEventHandler(): object
     {
-        return ApplicationContext::getContainer()->get($this->class);
+        return is_string($this->class) ? ApplicationContext::getContainer()->get($this->class) : $this->class;
     }
 }
