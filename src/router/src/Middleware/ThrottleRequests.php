@@ -113,14 +113,14 @@ class ThrottleRequests implements MiddlewareInterface
         return $this->handleRequest(
             $request,
             $handler,
-            collect(Arr::wrap($limiterResponse))->map(function ($limit) use ($limiterName) {
+            array_map(function ($limit) use ($limiterName) {
                 return (object) [
                     'key' => self::$shouldHashKeys ? md5($limiterName . $limit->key) : $limiterName . ':' . $limit->key,
-                    'maxAttempts' => $limit->maxAttempts,
-                    'decayMinutes' => $limit->decayMinutes,
-                    'responseCallback' => $limit->responseCallback,
+                    'maxAttempts' => 0,
+                    'decayMinutes' => 0,
+                    'responseCallback' => null,
                 ];
-            })->all()
+            }, Arr::wrap($limiterResponse))
         );
     }
 
@@ -250,7 +250,7 @@ class ThrottleRequests implements MiddlewareInterface
         ?ResponseInterface $response = null
     ): array {
         if ($response
-            && ! is_null($response->getHeader('X-RateLimit-Remaining'))
+            && ! empty($response->getHeader('X-RateLimit-Remaining'))
             && (int) $response->getHeader('X-RateLimit-Remaining') <= (int) $remainingAttempts) {
             return [];
         }
