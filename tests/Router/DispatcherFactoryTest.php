@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Tests\Router;
 
 use Hyperf\Context\ApplicationContext;
-use Hyperf\Contract\ContainerInterface;
+use Hyperf\Di\Container;
+use Hyperf\Di\Definition\DefinitionSource;
 use Hyperf\HttpServer\Router\RouteCollector;
 use Mockery;
 use Mockery\MockInterface;
@@ -20,16 +21,6 @@ use SwooleTW\Hyperf\Tests\TestCase;
  */
 class DispatcherFactoryTest extends TestCase
 {
-    /**
-     * @var ContainerInterface|MockInterface
-     */
-    private ContainerInterface $container;
-
-    protected function setUp(): void
-    {
-        $this->mockContainer();
-    }
-
     public function testGetRouter()
     {
         if (! defined('BASE_PATH')) {
@@ -37,23 +28,16 @@ class DispatcherFactoryTest extends TestCase
         }
 
         /** @var MockInterface|NamedRouteCollector */
-        $router = Mockery::mock(NamedRouteCollector::class);
+        $routeCollector = Mockery::mock(NamedRouteCollector::class);
 
-        $this->container
-            ->shouldReceive('make')
-            ->with(RouteCollector::class, ['server' => 'http'])
-            ->once()
-            ->andReturn($router);
+        $getContainer = $this->getContainer([
+            RouteCollector::class => fn () => $routeCollector,
+            RouteFileCollector::class => fn () => new RouteFileCollector(['foo']),
+        ]);
 
-        $this->container
-            ->shouldReceive('get')
-            ->with(RouteFileCollector::class)
-            ->once()
-            ->andReturn(new RouteFileCollector(['foo']));
+        $factory = new DispatcherFactory($getContainer);
 
-        $factory = new DispatcherFactory($this->container);
-
-        $this->assertEquals($router, $factory->getRouter('http'));
+        $this->assertEquals($routeCollector, $factory->getRouter('http'));
     }
 
     public function testInitConfigRoute()
@@ -63,32 +47,29 @@ class DispatcherFactoryTest extends TestCase
         }
 
         /** @var MockInterface|NamedRouteCollector */
-        $router = Mockery::mock(NamedRouteCollector::class);
+        $routeCollector = Mockery::mock(NamedRouteCollector::class);
+        $routeCollector->shouldReceive('get')->with('/foo', 'Handler::Foo')->once();
+        $routeCollector->shouldReceive('get')->with('/bar', 'Handler::Bar')->once();
 
-        $router->shouldReceive('get')->with('/foo', 'Handler::Foo')->once();
-        $router->shouldReceive('get')->with('/bar', 'Handler::Bar')->once();
-
-        $this->container
-            ->shouldReceive('make')
-            ->with(RouteCollector::class, ['server' => 'http'])
-            ->andReturn($router);
-
-        $this->container
-            ->shouldReceive('get')
-            ->with(RouteFileCollector::class)
-            ->once()
-            ->andReturn(new RouteFileCollector([
+        $container = $this->getContainer([
+            RouteCollector::class => fn () => $routeCollector,
+            RouteFileCollector::class => fn () => new RouteFileCollector([
                 __DIR__ . '/routes/foo.php',
                 __DIR__ . '/routes/bar.php',
-            ]));
+            ]),
+        ]);
 
-        new DispatcherFactory($this->container);
+        new DispatcherFactory($container);
     }
 
-    private function mockContainer()
+    private function getContainer(array $bindings = []): Container
     {
-        $this->container = Mockery::mock(ContainerInterface::class);
+        $container = new Container(
+            new DefinitionSource($bindings)
+        );
 
-        ApplicationContext::setContainer($this->container);
+        ApplicationContext::setContainer($container);
+
+        return $container;
     }
 }

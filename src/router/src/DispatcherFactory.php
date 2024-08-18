@@ -8,7 +8,6 @@ use Hyperf\Contract\ContainerInterface;
 use Hyperf\HttpServer\MiddlewareManager;
 use Hyperf\HttpServer\Router\DispatcherFactory as BaseDispatcherFactory;
 use Hyperf\HttpServer\Router\RouteCollector;
-use Hyperf\HttpServer\Router\Router;
 
 class DispatcherFactory extends BaseDispatcherFactory
 {
@@ -24,7 +23,8 @@ class DispatcherFactory extends BaseDispatcherFactory
     {
         MiddlewareManager::$container = [];
 
-        Router::init($this);
+        $this->container->get(Router::class)
+            ->setDispatcherFactory($this);
 
         foreach ($this->routes as $route) {
             if (file_exists($route)) {
