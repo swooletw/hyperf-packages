@@ -1,11 +1,13 @@
 {
     "name": "swooletw/hyperf-packages",
     "type": "library",
-    "description": "The pakcages for Hyperf maintained by SwooleTW.",
+    "description": "The packages for Laravel Hyperf maintained by SwooleTW.",
     "license": "MIT",
     "keywords": [
         "php",
+        "laravel",
         "hyperf",
+        "laravel-hyperf",
         "packages",
         "swoole"
     ],
