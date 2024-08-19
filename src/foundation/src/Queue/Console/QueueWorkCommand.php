@@ -28,7 +28,7 @@ class QueueWorkCommand extends Command
         $this->setDescription('Start processing jobs on the queue as a daemon');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('Listening queue jobs...');
 

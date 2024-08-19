@@ -6,7 +6,7 @@ use PhpCsFixer\Runner\Parallel\ParallelConfig;
 $maxProcesses = function_exists('swoole_cpu_num') ? swoole_cpu_num() : 4;
 
 return (new Config())
-    ->setParallelConfig(new ParallelConfig($maxProcesses, 10))
+    ->setParallelConfig(new ParallelConfig($maxProcesses))
     ->setRiskyAllowed(true)
     ->setRules([
         '@PSR2' => true,
