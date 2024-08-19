@@ -14,12 +14,6 @@ return (new Config())
         '@DoctrineAnnotation' => true,
         '@PhpCsFixer' => true,
         'phpdoc_no_alias_tag' => false,
-        'header_comment' => [
-            'header' => '',
-            'comment_type' => 'PHPDoc',
-            'location' => 'after_declare_strict',
-            'separate' => 'none',
-        ],
         'array_syntax' => [
             'syntax' => 'short',
         ],
