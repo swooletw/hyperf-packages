@@ -16,7 +16,8 @@ class AddQueuedCookiesToResponse implements MiddlewareInterface
 {
     public function __construct(
         protected CookieContract $cookie
-    ) {}
+    ) {
+    }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

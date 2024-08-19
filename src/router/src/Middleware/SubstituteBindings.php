@@ -25,7 +25,9 @@ use function Hyperf\Support\make;
 
 class SubstituteBindings implements MiddlewareInterface
 {
-    public function __construct(protected ContainerInterface $container) {}
+    public function __construct(protected ContainerInterface $container)
+    {
+    }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

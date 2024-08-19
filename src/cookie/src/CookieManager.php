@@ -16,7 +16,8 @@ class CookieManager implements CookieContract
 
     public function __construct(
         protected RequestInterface $request
-    ) {}
+    ) {
+    }
 
     public function has(string $key): bool
     {

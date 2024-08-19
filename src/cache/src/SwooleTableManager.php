@@ -15,7 +15,8 @@ class SwooleTableManager
 
     public function __construct(
         protected ContainerInterface $app
-    ) {}
+    ) {
+    }
 
     public function createTable(int $rows, int $bytes, float $conflictProportion): Table
     {

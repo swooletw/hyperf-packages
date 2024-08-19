@@ -12,7 +12,9 @@ use Psr\Container\ContainerInterface;
 
 class ReloadDotenvAndConfig implements ListenerInterface
 {
-    public function __construct(protected ContainerInterface $container) {}
+    public function __construct(protected ContainerInterface $container)
+    {
+    }
 
     public function listen(): array
     {

@@ -16,7 +16,8 @@ class Blacklist implements BlacklistContract
         protected int $gracePeriod = 0,
         protected int $refreshTTL = 20160,
         protected string $key = 'jti'
-    ) {}
+    ) {
+    }
 
     /**
      * Add the token (jti claim) to the blacklist.

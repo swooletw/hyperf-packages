@@ -17,7 +17,7 @@ class QueuedClosure
     /**
      * The number of seconds before the job should be made available.
      */
-    public null|int $delay;
+    public ?int $delay;
 
     /**
      * All of the "catch" callbacks for the queued closure.
@@ -29,7 +29,9 @@ class QueuedClosure
      *
      * @param Closure $closure The underlying Closure
      */
-    public function __construct(public Closure $closure) {}
+    public function __construct(public Closure $closure)
+    {
+    }
 
     /**
      * Set the desired connection for the job.
@@ -44,7 +46,7 @@ class QueuedClosure
     /**
      * Set the desired delay in seconds for the job.
      */
-    public function delay(null|int $delay): static
+    public function delay(?int $delay): static
     {
         $this->delay = $delay;
 

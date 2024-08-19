@@ -25,7 +25,8 @@ class RedisTaggedCacheChunkedEntries implements Iterator
         protected RedisStore $store,
         protected array $tagIds,
         protected int $chunkSize = 1000
-    ) {}
+    ) {
+    }
 
     /**
      * @return string[]

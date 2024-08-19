@@ -8,7 +8,9 @@ use SplMaxHeap;
 
 class LimitedMaxHeap extends SplMaxHeap
 {
-    public function __construct(protected int $limit) {}
+    public function __construct(protected int $limit)
+    {
+    }
 
     public function insert(mixed $value): bool
     {

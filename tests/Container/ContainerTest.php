@@ -623,26 +623,40 @@ class ContainerTest extends TestCase
 
 class CircularAStub
 {
-    public function __construct(CircularBStub $b) {}
+    public function __construct(CircularBStub $b)
+    {
+    }
 }
 
 class CircularBStub
 {
-    public function __construct(CircularCStub $c) {}
+    public function __construct(CircularCStub $c)
+    {
+    }
 }
 
 class CircularCStub
 {
-    public function __construct(CircularAStub $a) {}
+    public function __construct(CircularAStub $a)
+    {
+    }
 }
 
-class ContainerConcreteStub {}
+class ContainerConcreteStub
+{
+}
 
-interface IContainerContractStub {}
+interface IContainerContractStub
+{
+}
 
-class ContainerImplementationStub implements IContainerContractStub {}
+class ContainerImplementationStub implements IContainerContractStub
+{
+}
 
-class ContainerImplementationStubTwo implements IContainerContractStub {}
+class ContainerImplementationStubTwo implements IContainerContractStub
+{
+}
 
 class ContainerDependentStub
 {
@@ -715,7 +729,9 @@ class ContainerInjectVariableStubWithInterfaceImplementation implements IContain
 
 class ContainerContextualBindingCallTarget
 {
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     public function work(IContainerContractStub $stub)
     {

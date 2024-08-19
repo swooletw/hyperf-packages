@@ -16,7 +16,8 @@ class Schedule implements ScheduleContract
 
     public function __construct(
         protected ContainerInterface $app
-    ) {}
+    ) {
+    }
 
     public function command(string $command, array $parameters = []): Crontab
     {

@@ -125,7 +125,7 @@ if (! function_exists('cookie')) {
      *
      * @return Cookie|CookieContract
      */
-    function cookie(?string $name = null, string $value = null, int $minutes = 0, string $path = null, string $domain = null, bool $secure = false, bool $httpOnly = true, bool $raw = false, ?string $sameSite = null)
+    function cookie(?string $name = null, ?string $value = null, int $minutes = 0, ?string $path = null, ?string $domain = null, bool $secure = false, bool $httpOnly = true, bool $raw = false, ?string $sameSite = null)
     {
         if (is_null($name)) {
             return app(CookieContract::class);
@@ -147,7 +147,7 @@ if (! function_exists('app')) {
      *
      * @return ContainerInterface|T
      */
-    function app(string $abstract = null, array $parameters = [])
+    function app(?string $abstract = null, array $parameters = [])
     {
         if (ApplicationContext::hasContainer()) {
             /** @var \Hyperf\Contract\ContainerInterface $container */
@@ -405,7 +405,7 @@ if (! function_exists('url')) {
     /**
      * Generate a url for the application.
      */
-    function url(string $path, array $extra = [], bool $secure = null): string
+    function url(string $path, array $extra = [], ?bool $secure = null): string
     {
         return \SwooleTW\Hyperf\Router\url($path, $extra, $secure);
     }

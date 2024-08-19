@@ -138,7 +138,9 @@ class AuthEloquentUserProviderTest extends TestCase
     }
 }
 
-class EloquentProviderUserStub {}
+class EloquentProviderUserStub
+{
+}
 
 class User extends Model implements Authenticatable
 {

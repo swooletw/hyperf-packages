@@ -15,7 +15,7 @@ class TooManyRequestsHttpException extends HttpException
         null|int|string $retryAfter = null,
         string $message = '',
         int $code = 0,
-        Throwable $previous = null,
+        ?Throwable $previous = null,
         array $headers = []
     ) {
         if ($retryAfter) {

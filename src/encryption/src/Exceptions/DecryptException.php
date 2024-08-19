@@ -6,4 +6,6 @@ namespace SwooleTW\Hyperf\Encryption\Exceptions;
 
 use RuntimeException;
 
-class DecryptException extends RuntimeException {}
+class DecryptException extends RuntimeException
+{
+}

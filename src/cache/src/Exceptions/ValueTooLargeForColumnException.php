@@ -6,4 +6,6 @@ namespace SwooleTW\Hyperf\Cache\Exceptions;
 
 use InvalidArgumentException;
 
-class ValueTooLargeForColumnException extends InvalidArgumentException {}
+class ValueTooLargeForColumnException extends InvalidArgumentException
+{
+}

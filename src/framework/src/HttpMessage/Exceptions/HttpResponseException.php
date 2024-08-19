@@ -9,7 +9,9 @@ use RuntimeException;
 
 class HttpResponseException extends RuntimeException
 {
-    public function __construct(protected ResponseInterface $response) {}
+    public function __construct(protected ResponseInterface $response)
+    {
+    }
 
     public function getResponse(): ResponseInterface
     {

@@ -27,7 +27,8 @@ class JwtGuard implements Guard
         protected ManagerContract $jwtManager,
         protected RequestInterface $request,
         protected int $ttl = 120
-    ) {}
+    ) {
+    }
 
     /**
      * Attempt to authenticate a user using the given credentials.

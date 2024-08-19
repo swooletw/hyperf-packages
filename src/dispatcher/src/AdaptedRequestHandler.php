@@ -15,7 +15,8 @@ class AdaptedRequestHandler implements RequestHandlerInterface
     public function __construct(
         private Closure $next,
         private bool $overrideResponse = false
-    ) {}
+    ) {
+    }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {

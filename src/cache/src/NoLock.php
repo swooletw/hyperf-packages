@@ -25,7 +25,9 @@ class NoLock extends Lock
     /**
      * Releases this lock in disregard of ownership.
      */
-    public function forceRelease(): void {}
+    public function forceRelease(): void
+    {
+    }
 
     /**
      * Returns the owner value written into the driver for this lock.

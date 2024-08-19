@@ -499,7 +499,7 @@ class GateTest extends TestCase
             return true;
         });
 
-        $this->assertTrue($gate->forUser(new class() implements Authenticatable {
+        $this->assertTrue($gate->forUser(new class implements Authenticatable {
             public function getAuthIdentifierName(): string
             {
                 return 'id';
@@ -684,7 +684,7 @@ class GateTest extends TestCase
 
     public function testAllowsIfCallbackAcceptsGuestsWhenAuthenticated()
     {
-        $response = $this->getBasicGate()->allowIf(function (Authenticatable $user = null) {
+        $response = $this->getBasicGate()->allowIf(function (?Authenticatable $user = null) {
             return $user !== null;
         });
 
@@ -695,7 +695,7 @@ class GateTest extends TestCase
     {
         $gate = $this->getBasicGate()->forUser(null);
 
-        $response = $gate->allowIf(function (Authenticatable $user = null) {
+        $response = $gate->allowIf(function (?Authenticatable $user = null) {
             return $user === null;
         });
 
@@ -811,7 +811,7 @@ class GateTest extends TestCase
 
     public function testDenyIfCallbackAcceptsGuestsWhenAuthenticated()
     {
-        $response = $this->getBasicGate()->denyIf(fn (Authenticatable $user = null) => $user === null);
+        $response = $this->getBasicGate()->denyIf(fn (?Authenticatable $user = null) => $user === null);
 
         $this->assertTrue($response->allowed());
     }
@@ -820,7 +820,7 @@ class GateTest extends TestCase
     {
         $gate = $this->getBasicGate()->forUser(null);
 
-        $response = $gate->denyIf(fn (Authenticatable $user = null) => $user !== null);
+        $response = $gate->denyIf(fn (?Authenticatable $user = null) => $user !== null);
 
         $this->assertTrue($response->allowed());
     }

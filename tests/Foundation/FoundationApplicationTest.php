@@ -203,8 +203,8 @@ class FoundationApplicationTest extends TestCase
         $app1 = $this->getApplication([], realpath(__DIR__ . '/fixtures/hyperf1'));
         $app2 = $this->getApplication([], realpath(__DIR__ . '/fixtures/hyperf2'));
 
-        $this->assertSame('Hyperf\\One\\', $app1->getNamespace());
-        $this->assertSame('Hyperf\\Two\\', $app2->getNamespace());
+        $this->assertSame('Hyperf\One\\', $app1->getNamespace());
+        $this->assertSame('Hyperf\Two\\', $app2->getNamespace());
     }
 
     public function testMacroable()
@@ -225,11 +225,19 @@ class FoundationApplicationTest extends TestCase
 
 class ApplicationBasicServiceProviderStub extends ServiceProvider
 {
-    public function boot() {}
+    public function boot()
+    {
+    }
 
-    public function register(): void {}
+    public function register(): void
+    {
+    }
 }
 
-abstract class AbstractClass {}
+abstract class AbstractClass
+{
+}
 
-class ConcreteClass extends AbstractClass {}
+class ConcreteClass extends AbstractClass
+{
+}

@@ -8,5 +8,7 @@ use SwooleTW\Hyperf\JWT\Validations\AbstractValidation;
 
 class ValidationStub extends AbstractValidation
 {
-    public function validate(array $payload): void {}
+    public function validate(array $payload): void
+    {
+    }
 }

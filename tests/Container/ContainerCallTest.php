@@ -243,7 +243,9 @@ class ContainerTestCallStub
     }
 }
 
-class ContainerCallConcreteStub {}
+class ContainerCallConcreteStub
+{
+}
 
 class ContainerStaticMethodStub
 {

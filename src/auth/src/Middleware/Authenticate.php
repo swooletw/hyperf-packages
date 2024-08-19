@@ -15,7 +15,8 @@ class Authenticate implements MiddlewareInterface
 {
     public function __construct(
         protected AuthManager $auth
-    ) {}
+    ) {
+    }
 
     public static function using(string ...$guards): string
     {

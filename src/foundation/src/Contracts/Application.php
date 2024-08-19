@@ -102,7 +102,7 @@ interface Application extends Container
     /**
      * Get the service providers that have been loaded.
      *
-     * @return array<string, boolean>
+     * @return array<string, bool>
      */
     public function getLoadedProviders(): array;
 

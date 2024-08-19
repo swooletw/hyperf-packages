@@ -37,7 +37,8 @@ class CacheManager implements FactoryContract
      */
     public function __construct(
         protected ContainerInterface $app
-    ) {}
+    ) {
+    }
 
     /**
      * Dynamically call the default driver instance.

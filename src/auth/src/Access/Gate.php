@@ -32,7 +32,7 @@ class Gate implements GateContract
     /**
      * The default denial response for gates and policies.
      */
-    protected null|Response $defaultDenialResponse;
+    protected ?Response $defaultDenialResponse;
 
     /**
      * Create a new gate instance.
@@ -51,7 +51,8 @@ class Gate implements GateContract
         protected array $policies = [],
         protected array $beforeCallbacks = [],
         protected array $afterCallbacks = []
-    ) {}
+    ) {
+    }
 
     /**
      * Determine if a given ability has been defined.

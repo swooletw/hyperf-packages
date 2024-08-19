@@ -18,7 +18,7 @@ class RedisTagSet extends TagSet
     /**
      * Add a reference entry to the tag set's underlying sorted set.
      */
-    public function addEntry(string $key, int $ttl = 0, string $updateWhen = null): void
+    public function addEntry(string $key, int $ttl = 0, ?string $updateWhen = null): void
     {
         $ttl = $ttl > 0 ? now()->addSeconds($ttl)->getTimestamp() : -1;
 

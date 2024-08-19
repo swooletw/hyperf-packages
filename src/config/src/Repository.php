@@ -18,7 +18,9 @@ class Repository implements ArrayAccess, ConfigContract
     /**
      * Create a new configuration repository.
      */
-    public function __construct(protected array $items) {}
+    public function __construct(protected array $items)
+    {
+    }
 
     /**
      * Determine if the given configuration value exists.
@@ -115,7 +117,7 @@ class Repository implements ArrayAccess, ConfigContract
     /**
      * Get the specified boolean configuration value.
      *
-     * @param null|(Closure():(null|bool))|bool $default
+     * @param null|bool|(Closure():(null|bool)) $default
      */
     public function boolean(string $key, mixed $default = null): bool
     {
@@ -133,7 +135,7 @@ class Repository implements ArrayAccess, ConfigContract
     /**
      * Get the specified array configuration value.
      *
-     * @param null|(Closure():(null|array<array-key, mixed>))|array<array-key, mixed> $default
+     * @param null|array<array-key, mixed>|(Closure():(null|array<array-key, mixed>)) $default
      * @return array<array-key, mixed>
      */
     public function array(string $key, mixed $default = null): array

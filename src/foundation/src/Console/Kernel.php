@@ -248,12 +248,16 @@ class Kernel implements KernelContract
     /**
      * Define the application's command schedule.
      */
-    public function schedule(Schedule $schedule): void {}
+    public function schedule(Schedule $schedule): void
+    {
+    }
 
     /**
      * Register the commands for the application.
      */
-    public function commands(): void {}
+    public function commands(): void
+    {
+    }
 
     /**
      * Register a Closure based command with the application.

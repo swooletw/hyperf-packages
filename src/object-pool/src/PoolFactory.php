@@ -10,7 +10,9 @@ class PoolFactory
 {
     protected array $pools = [];
 
-    public function __construct(protected ContainerInterface $container) {}
+    public function __construct(protected ContainerInterface $container)
+    {
+    }
 
     /**
      * @template T of object

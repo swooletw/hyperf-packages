@@ -257,16 +257,22 @@ class QueuedEventsTest extends TestCase
 
 class TestDispatcherQueuedHandler implements ShouldQueue
 {
-    public function handle() {}
+    public function handle()
+    {
+    }
 }
 
-class TestDispatcherQueuedHandlerEvent {}
+class TestDispatcherQueuedHandlerEvent
+{
+}
 
 class TestDispatcherGetConnection implements ShouldQueue
 {
     public $connection = 'my_connection';
 
-    public function handle() {}
+    public function handle()
+    {
+    }
 
     public function viaConnection()
     {
@@ -278,7 +284,9 @@ class TestDispatcherGetDelay implements ShouldQueue
 {
     public $delay = 10;
 
-    public function handle() {}
+    public function handle()
+    {
+    }
 
     public function withDelay()
     {
@@ -290,12 +298,16 @@ class TestDispatcherOptions implements ShouldQueue
 {
     public $maxAttempts = 1;
 
-    public function handle() {}
+    public function handle()
+    {
+    }
 }
 
 class TestDispatcherGetConnectionDynamically implements ShouldQueue
 {
-    public function handle() {}
+    public function handle()
+    {
+    }
 
     public function viaConnection($_, $event)
     {
@@ -311,7 +323,9 @@ class TestDispatcherGetDelayDynamically implements ShouldQueue
 {
     public $delay = 10;
 
-    public function handle() {}
+    public function handle()
+    {
+    }
 
     public function withDelay($_, $event)
     {
@@ -323,4 +337,6 @@ class TestDispatcherGetDelayDynamically implements ShouldQueue
     }
 }
 
-class TestDispatcherAnonymousQueuedClosureEvent {}
+class TestDispatcherAnonymousQueuedClosureEvent
+{
+}

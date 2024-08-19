@@ -1,16 +1,12 @@
 <?php
 
-declare(strict_types=1);
-/**
- * This file is part of Hyperf.
- *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
- */
+use PhpCsFixer\Config;
+use PhpCsFixer\Runner\Parallel\ParallelConfig;
 
-return (new PhpCsFixer\Config())
+$maxProcesses = function_exists('swoole_cpu_num') ? swoole_cpu_num() : 4;
+
+return (new Config())
+    ->setParallelConfig(new ParallelConfig($maxProcesses, 10))
     ->setRiskyAllowed(true)
     ->setRules([
         '@PSR2' => true,
@@ -18,6 +14,12 @@ return (new PhpCsFixer\Config())
         '@DoctrineAnnotation' => true,
         '@PhpCsFixer' => true,
         'phpdoc_no_alias_tag' => false,
+        'header_comment' => [
+            'header' => '',
+            'comment_type' => 'PHPDoc',
+            'location' => 'after_declare_strict',
+            'separate' => 'none',
+        ],
         'array_syntax' => [
             'syntax' => 'short',
         ],
@@ -85,6 +87,10 @@ return (new PhpCsFixer\Config())
         'single_quote' => true,
         'standardize_not_equals' => true,
         'multiline_comment_opening_closing' => true,
+        'fully_qualified_strict_types' => false,
+        // Since PHP 8.3, default null values can be declared as nullable.
+        'nullable_type_declaration_for_default_null_value' => true,
+        'single_line_empty_body' => false,
     ])
     ->setFinder(
         PhpCsFixer\Finder::create()

@@ -8,7 +8,9 @@ use SwooleTW\Hyperf\Auth\Contracts\Authenticatable;
 
 class AccessGateTestAuthenticatable implements Authenticatable
 {
-    public function __construct(private bool $isAdmin = false) {}
+    public function __construct(private bool $isAdmin = false)
+    {
+    }
 
     public function getAuthIdentifierName(): string
     {

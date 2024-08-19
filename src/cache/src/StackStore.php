@@ -13,7 +13,9 @@ class StackStore implements Store
     /**
      * @param Store[] $stores
      */
-    public function __construct(protected array $stores) {}
+    public function __construct(protected array $stores)
+    {
+    }
 
     public function get(string $key): mixed
     {

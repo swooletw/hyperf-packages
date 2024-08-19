@@ -463,7 +463,7 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
      *
      * @param Closure|string $abstract
      */
-    public function beforeResolving($abstract, Closure $callback = null): void
+    public function beforeResolving($abstract, ?Closure $callback = null): void
     {
         if (is_string($abstract)) {
             $abstract = $this->getAlias($abstract);
@@ -481,7 +481,7 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
      *
      * @param Closure|string $abstract
      */
-    public function resolving($abstract, Closure $callback = null): void
+    public function resolving($abstract, ?Closure $callback = null): void
     {
         if (is_string($abstract)) {
             $abstract = $this->getAlias($abstract);
@@ -499,7 +499,7 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
      *
      * @param Closure|string $abstract
      */
-    public function afterResolving($abstract, Closure $callback = null): void
+    public function afterResolving($abstract, ?Closure $callback = null): void
     {
         if (is_string($abstract)) {
             $abstract = $this->getAlias($abstract);

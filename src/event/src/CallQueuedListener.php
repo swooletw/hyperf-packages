@@ -14,7 +14,8 @@ class CallQueuedListener extends Job
         public object|string $class,
         public string $method,
         public array $data
-    ) {}
+    ) {
+    }
 
     public function handle(): void
     {

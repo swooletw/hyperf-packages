@@ -454,7 +454,7 @@ class LogManagerTest extends TestCase
                 'path' => $path = __DIR__ . '/logs/custom.log',
             ]);
 
-        $factory = new class() {
+        $factory = new class {
             public function __invoke()
             {
                 return new Monolog(

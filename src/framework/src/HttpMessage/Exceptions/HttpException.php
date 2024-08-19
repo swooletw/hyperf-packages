@@ -13,7 +13,7 @@ class HttpException extends BaseHttpException
         int $statusCode,
         $message = '',
         $code = 0,
-        Throwable $previous = null,
+        ?Throwable $previous = null,
         protected array $headers = []
     ) {
         parent::__construct($statusCode, $message, $code, $previous);

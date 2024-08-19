@@ -21,7 +21,8 @@ class HasInDatabase extends Constraint
     public function __construct(
         protected Connection $database,
         protected array $data
-    ) {}
+    ) {
+    }
 
     /**
      * Check if the data is found in the given table.

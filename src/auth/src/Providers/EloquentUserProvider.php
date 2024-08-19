@@ -26,7 +26,8 @@ class EloquentUserProvider implements UserProvider
     public function __construct(
         protected HashContract $hasher,
         protected string $model
-    ) {}
+    ) {
+    }
 
     /**
      * Retrieve a user by their unique identifier.

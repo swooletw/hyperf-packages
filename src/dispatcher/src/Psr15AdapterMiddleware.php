@@ -14,7 +14,8 @@ class Psr15AdapterMiddleware
     public function __construct(
         private MiddlewareInterface $middleware,
         private bool $overrideResponse = false
-    ) {}
+    ) {
+    }
 
     public function handle(ServerRequestInterface $request, Closure $next, ...$arguments): ResponseInterface
     {

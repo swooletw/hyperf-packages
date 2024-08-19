@@ -606,7 +606,9 @@ class EventsDispatcherTest extends TestCase
     }
 }
 
-class TestListenerLean {}
+class TestListenerLean
+{
+}
 
 class TestListenerInvokeHandler
 {
@@ -641,11 +643,17 @@ class TestListenerInvoke
     }
 }
 
-class ExampleEvent {}
+class ExampleEvent
+{
+}
 
-interface SomeEventInterface {}
+interface SomeEventInterface
+{
+}
 
-class AnotherEvent implements SomeEventInterface {}
+class AnotherEvent implements SomeEventInterface
+{
+}
 
 class TestEventListener
 {

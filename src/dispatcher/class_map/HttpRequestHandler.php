@@ -16,7 +16,8 @@ class HttpRequestHandler implements RequestHandlerInterface
         protected array $middlewares,
         protected $coreMiddleware,
         protected ContainerInterface $container
-    ) {}
+    ) {
+    }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {

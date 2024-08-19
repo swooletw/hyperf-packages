@@ -19,7 +19,7 @@ function route(string $name, array $parameters = [], string $server = 'http'): s
 /**
  * Generate a url for the application.
  */
-function url(string $path, array $extra = [], bool $secure = null): string
+function url(string $path, array $extra = [], ?bool $secure = null): string
 {
     return ApplicationContext::getContainer()->get(UrlGenerator::class)->to($path, $extra, $secure);
 }

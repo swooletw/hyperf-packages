@@ -21,5 +21,6 @@ class GateEvaluated
         public string $ability,
         public ?bool $result,
         public array $arguments
-    ) {}
+    ) {
+    }
 }

@@ -165,7 +165,7 @@ if (! function_exists('optional')) {
      * @param mixed $value
      * @return mixed
      */
-    function optional($value = null, callable $callback = null)
+    function optional($value = null, ?callable $callback = null)
     {
         return \Hyperf\Support\optional($value, $callback);
     }
@@ -234,7 +234,7 @@ if (! function_exists('with')) {
      * @param mixed $value
      * @return mixed
      */
-    function with($value, callable $callback = null)
+    function with($value, ?callable $callback = null)
     {
         return \Hyperf\Support\with($value, $callback);
     }

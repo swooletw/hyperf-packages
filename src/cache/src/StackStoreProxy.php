@@ -9,7 +9,9 @@ use SwooleTW\Hyperf\Cache\Contracts\Store;
 
 class StackStoreProxy implements Store
 {
-    public function __construct(protected Store $store, protected ?int $maxTTL = null) {}
+    public function __construct(protected Store $store, protected ?int $maxTTL = null)
+    {
+    }
 
     public function get(string $key): mixed
     {

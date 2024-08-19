@@ -33,7 +33,8 @@ abstract class Provider
         protected string $secret,
         protected string $algo,
         protected array $keys
-    ) {}
+    ) {
+    }
 
     /**
      * Set the algorithm used to sign the token.

@@ -33,7 +33,7 @@ class AuthorizesRequestsTest extends TestCase
 
     public function testAuthorizeMayBeGuessedPassingModelInstance()
     {
-        $model = new class() extends Model {};
+        $model = new class extends Model {};
         $response = Mockery::mock(Response::class);
 
         $gate = $this->mockGate();
@@ -57,14 +57,14 @@ class AuthorizesRequestsTest extends TestCase
 
     public function testAuthorizeMayBeGuessedAndNormalized()
     {
-        $model = new class() extends Model {};
+        $model = new class extends Model {};
         $response = Mockery::mock(Response::class);
 
         $gate = $this->mockGate();
 
         $gate->shouldReceive('authorize')->with('create', $model)->once()->andReturn($response);
 
-        $this->assertEquals($response, (new class() extends AuthorizesRequestsStub {
+        $this->assertEquals($response, (new class extends AuthorizesRequestsStub {
             public function store($model)
             {
                 return $this->authorize($model);

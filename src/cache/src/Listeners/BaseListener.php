@@ -11,7 +11,9 @@ use Psr\Container\ContainerInterface;
 
 abstract class BaseListener implements ListenerInterface
 {
-    public function __construct(protected ContainerInterface $container) {}
+    public function __construct(protected ContainerInterface $container)
+    {
+    }
 
     protected function swooleStores(): Collection
     {

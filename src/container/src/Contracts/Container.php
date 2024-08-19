@@ -131,21 +131,21 @@ interface Container extends HyperfContainerInterface
      *
      * @param Closure|string $abstract
      */
-    public function beforeResolving($abstract, Closure $callback = null): void;
+    public function beforeResolving($abstract, ?Closure $callback = null): void;
 
     /**
      * Register a new resolving callback.
      *
      * @param Closure|string $abstract
      */
-    public function resolving($abstract, Closure $callback = null): void;
+    public function resolving($abstract, ?Closure $callback = null): void;
 
     /**
      * Register a new after resolving callback for all types.
      *
      * @param Closure|string $abstract
      */
-    public function afterResolving($abstract, Closure $callback = null): void;
+    public function afterResolving($abstract, ?Closure $callback = null): void;
 
     /**
      * Get the container's bindings.

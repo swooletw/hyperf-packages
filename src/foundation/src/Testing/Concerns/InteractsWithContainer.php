@@ -44,7 +44,7 @@ trait InteractsWithContainer
     /**
      * Mock an instance of an object in the container.
      */
-    protected function mock(string $abstract, Closure $mock = null): MockInterface
+    protected function mock(string $abstract, ?Closure $mock = null): MockInterface
     {
         return $this->instance($abstract, Mockery::mock(...array_filter(func_get_args())));
     }
@@ -52,7 +52,7 @@ trait InteractsWithContainer
     /**
      * Mock a partial instance of an object in the container.
      */
-    protected function partialMock(string $abstract, Closure $mock = null): MockInterface
+    protected function partialMock(string $abstract, ?Closure $mock = null): MockInterface
     {
         return $this->instance($abstract, Mockery::mock(...array_filter(func_get_args()))->makePartial());
     }
@@ -60,7 +60,7 @@ trait InteractsWithContainer
     /**
      * Spy an instance of an object in the container.
      */
-    protected function spy(string $abstract, Closure $mock = null): MockInterface
+    protected function spy(string $abstract, ?Closure $mock = null): MockInterface
     {
         return $this->instance($abstract, Mockery::spy(...array_filter(func_get_args())));
     }

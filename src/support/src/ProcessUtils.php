@@ -33,7 +33,7 @@ class ProcessUtils
 
             foreach (preg_split('/(")/', $argument, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE) as $part) {
                 if ($part === '"') {
-                    $escapedArgument .= '\\"';
+                    $escapedArgument .= '\"';
                 } elseif (self::isSurroundedBy($part, '%')) {
                     // Avoid environment variable expansion
                     $escapedArgument .= '^%"' . substr($part, 1, -1) . '"^%';

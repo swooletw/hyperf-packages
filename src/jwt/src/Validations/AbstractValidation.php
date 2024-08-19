@@ -11,7 +11,8 @@ abstract class AbstractValidation implements ValidationContract
 {
     public function __construct(
         protected array $config = []
-    ) {}
+    ) {
+    }
 
     abstract public function validate(array $payload): void;
 

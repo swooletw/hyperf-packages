@@ -43,12 +43,15 @@ abstract class ServiceProvider
 
     public function __construct(
         protected ApplicationContract $app
-    ) {}
+    ) {
+    }
 
     /**
      * Register any application services.
      */
-    public function register(): void {}
+    public function register(): void
+    {
+    }
 
     /**
      * Register a booting callback to be run before the "boot" method is called.

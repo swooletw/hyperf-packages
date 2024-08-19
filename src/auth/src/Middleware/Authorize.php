@@ -20,7 +20,9 @@ class Authorize implements MiddlewareInterface
      *
      * @param Gate $gate the gate instance
      */
-    public function __construct(protected Gate $gate) {}
+    public function __construct(protected Gate $gate)
+    {
+    }
 
     /**
      * Specify the ability and models for the middleware.
