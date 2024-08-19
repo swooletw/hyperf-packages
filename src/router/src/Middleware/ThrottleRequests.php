@@ -251,7 +251,7 @@ class ThrottleRequests implements MiddlewareInterface
     ): array {
         if ($response
             && ! empty($response->getHeader('X-RateLimit-Remaining'))
-            && (int) $response->getHeader('X-RateLimit-Remaining') <= (int) $remainingAttempts) {
+            && (int) $response->getHeader('X-RateLimit-Remaining')[0] <= (int) $remainingAttempts) {
             return [];
         }
 
