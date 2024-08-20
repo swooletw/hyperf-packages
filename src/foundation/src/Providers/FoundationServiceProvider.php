@@ -65,8 +65,9 @@ class FoundationServiceProvider extends ServiceProvider
             'translation.locale' => $this->config->get('app.locale'),
             'translation.fallback_locale' => $this->config->get('app.fallback_locale'),
             'translation.path' => base_path('lang'),
-            'databases' => $this->config->get('database.connections'),
+            'databases' => $connections = $this->config->get('database.connections'),
             'databases.migrations' => $migration = $this->config->get('database.migrations', 'migrations'),
+            'databases.default' => $connections[$this->config->get('database.default')] ?? [],
             'databases.default.migrations' => $migration,
             'redis' => $this->getRedisConfig(),
         ];
