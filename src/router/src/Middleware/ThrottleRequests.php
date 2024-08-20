@@ -116,9 +116,9 @@ class ThrottleRequests implements MiddlewareInterface
             array_map(function ($limit) use ($limiterName) {
                 return (object) [
                     'key' => self::$shouldHashKeys ? md5($limiterName . $limit->key) : $limiterName . ':' . $limit->key,
-                    'maxAttempts' => 0,
-                    'decayMinutes' => 0,
-                    'responseCallback' => null,
+                    'maxAttempts' => $limit->maxAttempts,
+                    'decayMinutes' => $limit->decayMinutes,
+                    'responseCallback' => $limit->responseCallback,
                 ];
             }, Arr::wrap($limiterResponse))
         );
