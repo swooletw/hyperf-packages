@@ -336,7 +336,7 @@ class Application extends Container implements ApplicationContract
         $provider->callBootingCallbacks();
 
         if (method_exists($provider, 'boot')) {
-            $provider->boot();
+            $this->call([$provider, 'boot']);
         }
 
         $provider->callBootedCallbacks();

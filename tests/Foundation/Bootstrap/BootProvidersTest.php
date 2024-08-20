@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Tests\Foundation\Bootstrap;
 
+use Hyperf\Di\MethodDefinitionCollector;
+use Hyperf\Di\MethodDefinitionCollectorInterface;
 use SwooleTW\Hyperf\Foundation\Bootstrap\BootProviders;
 use SwooleTW\Hyperf\Support\ServiceProvider;
 use SwooleTW\Hyperf\Tests\Foundation\Concerns\HasMockedApplication;
@@ -19,7 +21,9 @@ class BootProvidersTest extends TestCase
 
     public function testBoot()
     {
-        $app = $this->getApplication();
+        $app = $this->getApplication([
+            MethodDefinitionCollectorInterface::class => MethodDefinitionCollector::class,
+        ]);
         $app->register(ApplicationBasicServiceProviderStub::class);
 
         (new BootProviders())->bootstrap($app);
