@@ -411,11 +411,12 @@ class Application extends Container implements ApplicationContract
                 \SwooleTW\Hyperf\Foundation\Contracts\Application::class,
                 \SwooleTW\Hyperf\Foundation\Application::class,
             ],
+            \SwooleTW\Hyperf\Foundation\Console\Contracts\Kernel::class => ['artisan'],
             \Hyperf\Contract\ConfigInterface::class => ['config'],
             \Psr\EventDispatcher\EventDispatcherInterface::class => ['events'],
             \Hyperf\HttpServer\Router\DispatcherFactory::class => ['router'],
-            \Hyperf\Contract\StdoutLoggerInterface::class => ['log'],
-            \SwooleTW\Hyperf\Encryption\Encrypter::class => ['encrypt'],
+            \Psr\Log\LoggerInterface::class => ['log'],
+            \SwooleTW\Hyperf\Encryption\Encrypter::class => ['encrypter'],
             \SwooleTW\Hyperf\Cache\Contracts\Factory::class => [
                 'cache',
                 \SwooleTW\Hyperf\Cache\CacheManager::class,
@@ -447,6 +448,10 @@ class Application extends Container implements ApplicationContract
                 'jwt',
                 \SwooleTW\Hyperf\JWT\JWTManager::class,
             ],
+            \Hyperf\Redis\Redis::class => ['redis'],
+            \SwooleTW\Hyperf\Router\Router::class => ['router'],
+            \SwooleTW\Hyperf\Router\UrlGenerator::class => ['url'],
+            \Hyperf\View\RenderInterface::class => ['view'],
         ] as $key => $aliases) {
             foreach ($aliases as $alias) {
                 $this->alias($key, $alias);
