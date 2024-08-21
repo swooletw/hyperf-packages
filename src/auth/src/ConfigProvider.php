@@ -24,7 +24,7 @@ class ConfigProvider
             'publish' => [
                 [
                     'id' => 'config',
-                    'description' => 'The config for cache.',
+                    'description' => 'The config for auth.',
                     'source' => __DIR__ . '/../publish/auth.php',
                     'destination' => BASE_PATH . '/config/autoload/auth.php',
                 ],
