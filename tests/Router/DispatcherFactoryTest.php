@@ -13,6 +13,7 @@ use Mockery\MockInterface;
 use SwooleTW\Hyperf\Router\DispatcherFactory;
 use SwooleTW\Hyperf\Router\NamedRouteCollector;
 use SwooleTW\Hyperf\Router\RouteFileCollector;
+use SwooleTW\Hyperf\Router\Router;
 use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
@@ -59,7 +60,10 @@ class DispatcherFactoryTest extends TestCase
             ]),
         ]);
 
-        new DispatcherFactory($container);
+        $dispatcherFactory = new DispatcherFactory($container);
+        $container->define(Router::class, fn () => new Router($dispatcherFactory));
+
+        $dispatcherFactory->initRoutes('http');
     }
 
     private function getContainer(array $bindings = []): Container

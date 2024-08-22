@@ -9,6 +9,7 @@ use SwooleTW\Hyperf\Router\Router;
 /**
  * @method static void addRoute(array|string $httpMethod, string $route, mixed $handler, array $options = [])
  * @method static void group($prefix, callable $callback, array $options = [])
+ * @method static void match($methods, $route, $handler, array $options = [])
  * @method static void any($route, $handler, array $options = [])
  * @method static void get($route, $handler, array $options = [])
  * @method static void post($route, $handler, array $options = [])

@@ -29,6 +29,17 @@ class NamedRouteCollector extends RouteCollector
     }
 
     /**
+     * Adds custom methods route to the collection.
+     *
+     * This is simply an alias of $this->addRoute($methods, $route, $handler)
+     * @param array|string $handler
+     */
+    public function match(array $methods, string $route, mixed $handler, array $options = []): void
+    {
+        $this->addRoute($methods, $route, $handler, $options);
+    }
+
+    /**
      * Adds a GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS route to the collection.
      *
      * This is simply an alias of $this->addRoute([GET, POST, PUT, DELETE, PATCH, HEAD], $route, $handler)

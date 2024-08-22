@@ -6,11 +6,11 @@ namespace SwooleTW\Hyperf\Router;
 
 use Hyperf\Context\ApplicationContext;
 use Hyperf\HttpServer\Router\DispatcherFactory;
-use RuntimeException;
 
 /**
  * @method static void addRoute(array|string $httpMethod, string $route, mixed $handler, array $options = [])
  * @method static void group($prefix, callable $callback, array $options = [])
+ * @method static void match($methods, $route, $handler, array $options = [])
  * @method static void any($route, $handler, array $options = [])
  * @method static void get($route, $handler, array $options = [])
  * @method static void post($route, $handler, array $options = [])
@@ -24,22 +24,8 @@ class Router
 {
     protected string $serverName = 'http';
 
-    protected ?DispatcherFactory $dispatcherFactory = null;
-
-    public function setDispatcherFactory(DispatcherFactory $dispatcherFactory): static
+    public function __construct(protected DispatcherFactory $dispatcherFactory)
     {
-        $this->dispatcherFactory = $dispatcherFactory;
-
-        return $this;
-    }
-
-    public function getDispatcherFactory(): DispatcherFactory
-    {
-        if (! $this->dispatcherFactory) {
-            throw new RuntimeException('The dispatcher factory is not set.');
-        }
-
-        return $this->dispatcherFactory;
     }
 
     public function addServer(string $serverName, callable $callback): void
@@ -51,9 +37,15 @@ class Router
 
     public function __call(string $name, array $arguments)
     {
-        return $this->getDispatcherFactory()
+        return $this->dispatcherFactory
             ->getRouter($this->serverName)
             ->{$name}(...$arguments);
+    }
+
+    public function getRouter()
+    {
+        return $this->dispatcherFactory
+            ->getRouter($this->serverName);
     }
 
     public static function __callStatic(string $name, array $arguments)

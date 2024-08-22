@@ -5,26 +5,27 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Router;
 
 use Hyperf\Contract\ContainerInterface;
+use Hyperf\Di\Annotation\AnnotationCollector;
 use Hyperf\HttpServer\MiddlewareManager;
 use Hyperf\HttpServer\Router\DispatcherFactory as BaseDispatcherFactory;
 use Hyperf\HttpServer\Router\RouteCollector;
 
 class DispatcherFactory extends BaseDispatcherFactory
 {
+    protected bool $initialized = false;
+
     public function __construct(protected ContainerInterface $container)
     {
         $this->routes = $container->get(RouteFileCollector::class)
             ->getRouteFiles();
-
-        parent::__construct();
+        $this->initAnnotationRoute(AnnotationCollector::list());
     }
 
-    public function initConfigRoute()
+    public function initRoutes()
     {
-        MiddlewareManager::$container = [];
+        $this->initialized = true;
 
-        $this->container->get(Router::class)
-            ->setDispatcherFactory($this);
+        MiddlewareManager::$container = [];
 
         foreach ($this->routes as $route) {
             if (file_exists($route)) {
@@ -35,10 +36,14 @@ class DispatcherFactory extends BaseDispatcherFactory
 
     public function getRouter(string $serverName): RouteCollector
     {
+        if (! $this->initialized) {
+            $this->initRoutes();
+        }
+        // dump(debug_backtrace(2));
         if (isset($this->routers[$serverName])) {
             return $this->routers[$serverName];
         }
-
+        // dd($this->container->make(RouteCollector::class));
         return $this->routers[$serverName] = $this->container->make(RouteCollector::class, ['server' => $serverName]);
     }
 }
