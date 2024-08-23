@@ -44,7 +44,7 @@ class Router
             ->{$name}(...$arguments);
     }
 
-    public function group($prefix, string|callable $source, array $options = []): void
+    public function group($prefix, callable|string $source, array $options = []): void
     {
         if (is_string($source)) {
             $source = $this->registerRouteFile($source);
@@ -55,7 +55,7 @@ class Router
             ->addGroup($prefix, $source, $options);
     }
 
-    public function addGroup($prefix, string|callable $source, array $options = []): void
+    public function addGroup($prefix, callable|string $source, array $options = []): void
     {
         $this->group($prefix, $source, $options);
     }
@@ -66,7 +66,7 @@ class Router
             throw new RuntimeException("Route file does not exist at path `{$routeFile}`.");
         }
 
-        return fn() => require $routeFile;
+        return fn () => require $routeFile;
     }
 
     public function getRouter()
