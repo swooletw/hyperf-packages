@@ -38,6 +38,10 @@ class CommandReplacer
             'name' => 'schedule:run',
             'description' => 'Run the scheduled commands',
         ],
+        'describe:routes' => [
+            'name' => 'route:list',
+            'description' => 'List all registered routes',
+        ],
     ];
 
     public static function replace(Command $command, bool $remainAlias = true): Command
