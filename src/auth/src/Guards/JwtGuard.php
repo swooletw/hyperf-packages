@@ -50,7 +50,7 @@ class JwtGuard implements Guard
 
     public function parseToken(): ?string
     {
-        // prevent nullalbe request
+        // prevent nullable request
         if (! RequestContext::has()) {
             return null;
         }

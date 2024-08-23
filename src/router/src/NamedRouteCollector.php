@@ -9,6 +9,7 @@ use Hyperf\Collection\Arr;
 use Hyperf\HttpServer\MiddlewareManager;
 use Hyperf\HttpServer\Router\Handler;
 use Hyperf\HttpServer\Router\RouteCollector;
+use InvalidArgumentException;
 
 class NamedRouteCollector extends RouteCollector
 {
@@ -119,6 +120,8 @@ class NamedRouteCollector extends RouteCollector
         if (isset($options[0]) && $options[0] instanceof Closure) {
             return $options[0];
         }
+
+        throw new InvalidArgumentException('Invalid route action: ' . json_encode($options));
     }
 
     private function cleanOptions(array $options): array

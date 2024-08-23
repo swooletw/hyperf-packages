@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Support\Facades;
 
 use Closure;
-use Hyperf\Context\ApplicationContext;
 use Mockery;
 use Mockery\LegacyMockInterface;
 use RuntimeException;
+use SwooleTW\Hyperf\Foundation\ApplicationContext;
 
 abstract class Facade
 {
@@ -144,9 +144,7 @@ abstract class Facade
     {
         static::$resolvedInstance[static::getFacadeAccessor()] = $instance;
 
-        if (isset(static::$app)) {
-            static::$app->instance(static::getFacadeAccessor(), $instance);
-        }
+        ApplicationContext::getContainer()->instance(static::getFacadeAccessor(), $instance);
     }
 
     /**

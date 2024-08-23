@@ -9,7 +9,7 @@ use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\TranslatorLoaderInterface;
 use Hyperf\Database\Migrations\Migrator;
 use SwooleTW\Hyperf\Foundation\Contracts\Application as ApplicationContract;
-use SwooleTW\Hyperf\Router\DispatcherFactory;
+use SwooleTW\Hyperf\Router\RouteFileCollector;
 use SwooleTW\Hyperf\Support\Facades\Artisan;
 
 abstract class ServiceProvider
@@ -106,7 +106,8 @@ abstract class ServiceProvider
      */
     protected function loadRoutesFrom(string $path): void
     {
-        DispatcherFactory::addRouteFile($path);
+        $this->app->get(RouteFileCollector::class)
+            ->addRouteFile($path);
     }
 
     /**
@@ -235,9 +236,8 @@ abstract class ServiceProvider
         if ($provider && array_key_exists($provider, static::$publishes)) {
             return static::$publishes[$provider];
         }
-        if ($group || $provider) {
-            return [];
-        }
+
+        return [];
     }
 
     /**

@@ -84,6 +84,8 @@ class EloquentUserProvider implements UserProvider
         foreach ($credentials as $key => $value) {
             return $key;
         }
+
+        return null;
     }
 
     /**

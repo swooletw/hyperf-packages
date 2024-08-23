@@ -9,7 +9,7 @@ use Psr\Container\ContainerInterface;
 
 class HyperfLogFactory
 {
-    public function __invoke(ContainerInterface $container)
+    public function __invoke(ContainerInterface $container): LogFactoryAdapter
     {
         return new LogFactoryAdapter(
             $container,

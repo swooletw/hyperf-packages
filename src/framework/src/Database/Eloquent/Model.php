@@ -13,6 +13,7 @@ abstract class Model extends BaseModel implements UrlRoutable
 
     public function resolveRouteBinding($value)
     {
+        /** @phpstan-ignore-next-line */
         return $this->where($this->getRouteKeyName(), $value)->firstOrFail();
     }
 }

@@ -14,13 +14,6 @@ class PoolFactory
     {
     }
 
-    /**
-     * @template T of object
-     *
-     * @params callable(): T $callback
-     *
-     * @return ObjectPool<T>
-     */
     public function get(string $name, callable $callback, array $options = []): ObjectPool
     {
         if (isset($this->pools[$name])) {

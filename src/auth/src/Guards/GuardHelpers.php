@@ -26,9 +26,9 @@ trait GuardHelpers
         throw new AuthenticationException();
     }
 
-    public function guest(?string $token = null): bool
+    public function guest(): bool
     {
-        return ! $this->check($token);
+        return ! $this->check();
     }
 
     public function id(): null|int|string

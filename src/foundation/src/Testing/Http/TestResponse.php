@@ -128,7 +128,7 @@ class TestResponse extends HyperfTestResponse
     public function assertCookie($cookieName, $value = null)
     {
         PHPUnit::assertNotNull(
-            $cookie = $this->getCookie($cookieName, ! is_null($value)),
+            $cookie = $this->getCookie($cookieName),
             "Cookie [{$cookieName}] not present on response."
         );
 
@@ -217,6 +217,7 @@ class TestResponse extends HyperfTestResponse
      */
     public function getCookie($cookieName)
     {
+        /** @phpstan-ignore-next-line */
         foreach (Arr::flatten($this->getCookies()) as $cookie) {
             if ($cookie->getName() === $cookieName) {
                 return $cookie;
