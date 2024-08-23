@@ -32,7 +32,3 @@ parameters:
     - '#Call to an undefined static method SwooleTW\\Hyperf\\Support\\Facades\\#'
     - message: '#Call to an undefined method SwooleTW\\Hyperf\\Foundation\\Testing\\TestCase::#'
       path: src/foundation/src/Testing/TestCase.php
-    - message: '#Parameter \$request of anonymous function has invalid type Hyperf\\Validation\\Request\\FormRequest.#'
-      path: src/foundation/src/Providers/FormRequestServiceProvider.php
-    - message: '#Variable \$response might not be defined.#'
-      path: src/foundation/src/Http/Kernel.php
