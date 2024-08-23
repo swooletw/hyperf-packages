@@ -1,4 +1,4 @@
-name: tests
+name: static analysis
 
 on:
   push:
@@ -38,4 +38,4 @@ jobs:
             COMPOSER_MEMORY_LIMIT=-1 composer install --prefer-dist -n -o
 
       - name: Execute static analysis
-        run: vendor/bin/phpstan --configuration="phpstan.neon.dist"
+        run: vendor/bin/phpstan --configuration="phpstan.neon.dist" --memory-limit=-1

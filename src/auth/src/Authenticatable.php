@@ -27,7 +27,7 @@ trait Authenticatable
      */
     public function getAuthPassword(): string
     {
-        /** @phpstan-ignore-next-line */
+        /* @phpstan-ignore-next-line */
         return $this->password;
     }
 }

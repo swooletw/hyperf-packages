@@ -56,7 +56,7 @@ class Kernel extends HyperfServer implements MiddlewareContract
             $response = $this->getResponseForException($throwable);
         } finally {
             if (isset($request)) {
-                /** @phpstan-ignore-next-line */
+                /* @phpstan-ignore-next-line */
                 $this->dispatchRequestHandledEvents($request, $response);
             }
 

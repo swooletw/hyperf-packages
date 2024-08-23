@@ -217,7 +217,7 @@ class TestResponse extends HyperfTestResponse
      */
     public function getCookie($cookieName)
     {
-        /** @phpstan-ignore-next-line */
+        /* @phpstan-ignore-next-line */
         foreach (Arr::flatten($this->getCookies()) as $cookie) {
             if ($cookie->getName() === $cookieName) {
                 return $cookie;
