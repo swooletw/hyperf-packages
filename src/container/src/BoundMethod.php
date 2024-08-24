@@ -138,7 +138,7 @@ class BoundMethod
 
         return static::call(
             $container,
-            [$container->make($segments[0]), $method],
+            [$container->get($segments[0]), $method],
             $parameters
         );
     }
