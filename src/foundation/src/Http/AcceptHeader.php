@@ -20,8 +20,6 @@ use SwooleTW\Hyperf\Foundation\Support\HeaderUtils;
  *
  * An accept header is compound with a list of items,
  * sorted by descending quality.
- *
- * @author Jean-François Simon <contact@jfsimon.fr>
  */
 class AcceptHeader
 {
@@ -115,7 +113,7 @@ class AcceptHeader
      */
     public function filter(string $pattern): self
     {
-        return new self(array_filter($this->items, fn(AcceptHeaderItem $item) => preg_match($pattern, $item->getValue())));
+        return new self(array_filter($this->items, fn (AcceptHeaderItem $item) => preg_match($pattern, $item->getValue())));
     }
 
     /**
@@ -133,7 +131,7 @@ class AcceptHeader
      */
     private function sort(): void
     {
-        if (!$this->sorted) {
+        if (! $this->sorted) {
             uasort($this->items, function (AcceptHeaderItem $a, AcceptHeaderItem $b) {
                 $qA = $a->getQuality();
                 $qB = $b->getQuality();

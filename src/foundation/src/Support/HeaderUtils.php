@@ -13,15 +13,17 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Support;
 
+use InvalidArgumentException;
+
+use const PREG_SET_ORDER;
 
 /**
  * HTTP header utility functions.
- *
- * @author Christian Schmidt <github@chsc.dk>
  */
 class HeaderUtils
 {
     public const DISPOSITION_ATTACHMENT = 'attachment';
+
     public const DISPOSITION_INLINE = 'inline';
 
     public static array $formats = [
@@ -41,7 +43,9 @@ class HeaderUtils
     /**
      * This class should not be instantiated.
      */
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 
     /**
      * Splits an HTTP header by one or more separators.
@@ -52,15 +56,15 @@ class HeaderUtils
      * // => ['da'], ['en-gb', 'q=0.8']]
      *
      * @param string $separators List of characters to split on, ordered by
-     * precedence, e.g. ',', ';=', or ',;='
+     *                           precedence, e.g. ',', ';=', or ',;='
      *
      * @return array Nested array with as many levels as there are characters in
-     * $separators
+     *               $separators
      */
     public static function split(string $header, string $separators): array
     {
-        if ('' === $separators) {
-            throw new \InvalidArgumentException('At least one separator must be specified.');
+        if ($separators === '') {
+            throw new InvalidArgumentException('At least one separator must be specified.');
         }
 
         $quotedSeparators = preg_quote($separators, '/');
@@ -70,7 +74,7 @@ class HeaderUtils
         (?!\s)
         (?:
         # quoted-string
-        "(?:[^"\\\\]|\\\\.)*(?:"|\\\\|$)
+        "(?:[^"\\\]|\\\.)*(?:"|\\\|$)
         |
         # token
         [^"' . $quotedSeparators . ']+
@@ -81,7 +85,7 @@ class HeaderUtils
             \s*
             (?<separator>[' . $quotedSeparators . '])
             \s*
-            /x', trim($header), $matches, \PREG_SET_ORDER);
+            /x', trim($header), $matches, PREG_SET_ORDER);
 
         return self::groupParts($matches, $separators);
     }
@@ -127,7 +131,7 @@ class HeaderUtils
     {
         $parts = [];
         foreach ($assoc as $name => $value) {
-            if (true === $value) {
+            if ($value === true) {
                 $parts[] = $name;
             } else {
                 $parts[] = $name . '=' . self::quote($value);
@@ -150,7 +154,7 @@ class HeaderUtils
             return $s;
         }
 
-        return '"' . addcslashes($s, '"\\"') . '"';
+        return '"' . addcslashes($s, '"\"') . '"';
     }
 
     /**
@@ -161,7 +165,7 @@ class HeaderUtils
      */
     public static function unquote(string $s): string
     {
-        return preg_replace('/\\\\(.)|"/', '$1', $s);
+        return preg_replace('/\\\(.)|"/', '$1', $s);
     }
 
     /**
@@ -170,36 +174,36 @@ class HeaderUtils
      * @param string $disposition One of "inline" or "attachment"
      * @param string $filename A unicode string
      * @param string $filenameFallback A string containing only ASCII characters that
-     * is semantically equivalent to $filename. If the filename is already ASCII,
-     * it can be omitted, or just copied from $filename
+     *                                 is semantically equivalent to $filename. If the filename is already ASCII,
+     *                                 it can be omitted, or just copied from $filename
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @see RFC 6266
      */
     public static function makeDisposition(string $disposition, string $filename, string $filenameFallback = ''): string
     {
         if (! \in_array($disposition, [self::DISPOSITION_ATTACHMENT, self::DISPOSITION_INLINE])) {
-            throw new \InvalidArgumentException(sprintf('The disposition must be either "%s" or "%s".', self::DISPOSITION_ATTACHMENT, self::DISPOSITION_INLINE));
+            throw new InvalidArgumentException(sprintf('The disposition must be either "%s" or "%s".', self::DISPOSITION_ATTACHMENT, self::DISPOSITION_INLINE));
         }
 
-        if ('' === $filenameFallback) {
+        if ($filenameFallback === '') {
             $filenameFallback = $filename;
         }
 
         // filenameFallback is not ASCII.
         if (! preg_match('/^[\x20-\x7e]*$/', $filenameFallback)) {
-            throw new \InvalidArgumentException('The filename fallback must only contain ASCII characters.');
+            throw new InvalidArgumentException('The filename fallback must only contain ASCII characters.');
         }
 
         // percent characters aren't safe in fallback.
         if (str_contains($filenameFallback, '%')) {
-            throw new \InvalidArgumentException('The filename fallback cannot contain the "%" character.');
+            throw new InvalidArgumentException('The filename fallback cannot contain the "%" character.');
         }
 
         // path separators aren't allowed in either.
         if (str_contains($filename, '/') || str_contains($filename, '\\') || str_contains($filenameFallback, '/') || str_contains($filenameFallback, '\\')) {
-            throw new \InvalidArgumentException('The filename and the fallback cannot contain the "/" and "\\" characters.');
+            throw new InvalidArgumentException('The filename and the fallback cannot contain the "/" and "\" characters.');
         }
 
         $params = ['filename' => $filenameFallback];
@@ -274,7 +278,7 @@ class HeaderUtils
         $separators = substr($separators, 1) ?: '';
         $i = 0;
 
-        if ('' === $separators && ! $first) {
+        if ($separators === '' && ! $first) {
             $parts = [''];
 
             foreach ($matches as $match) {
@@ -301,7 +305,7 @@ class HeaderUtils
         }
 
         foreach ($partMatches as $matches) {
-            if ('' === $separators && '' !== $unquoted = self::unquote($matches[0][0])) {
+            if ($separators === '' && '' !== $unquoted = self::unquote($matches[0][0])) {
                 $parts[] = $unquoted;
             } elseif ($groupedParts = self::groupParts($matches, $separators, false)) {
                 $parts[] = $groupedParts;

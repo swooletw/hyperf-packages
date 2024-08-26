@@ -17,14 +17,15 @@ use SwooleTW\Hyperf\Foundation\Support\HeaderUtils;
 
 /**
  * Represents an Accept-* header item.
- *
- * @author Jean-François Simon <contact@jfsimon.fr>
  */
 class AcceptHeaderItem
 {
     private string $value;
+
     private float $quality = 1.0;
+
     private int $index = 0;
+
     private array $attributes = [];
 
     public function __construct(string $value, array $attributes = [])
@@ -152,7 +153,7 @@ class AcceptHeaderItem
      */
     public function setAttribute(string $name, string $value): static
     {
-        if ('q' === $name) {
+        if ($name === 'q') {
             $this->quality = (float) $value;
         } else {
             $this->attributes[$name] = $value;

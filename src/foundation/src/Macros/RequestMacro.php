@@ -16,6 +16,7 @@ use SwooleTW\Hyperf\Foundation\Support\HeaderUtils;
 
 use function Hyperf\Collection\collect;
 use function Hyperf\Collection\data_get;
+
 /**
  * @property array $contextkeys
  * @mixin Request
@@ -484,14 +485,13 @@ class RequestMacro
             $acceptable = $this->getAcceptableContentTypes();
 
             return count($acceptable) === 0 || (
-            isset($acceptable[0]) && ($acceptable[0] === '*/*' || $acceptable[0] === '*')
+                isset($acceptable[0]) && ($acceptable[0] === '*/*' || $acceptable[0] === '*')
             );
         };
     }
 
     public function expectsJson()
     {
-        return fn () =>
-        ($this->ajax() && ! $this->pjax() && $this->acceptsAnyContentType()) || $this->wantsJson();
+        return fn () => ($this->ajax() && ! $this->pjax() && $this->acceptsAnyContentType()) || $this->wantsJson();
     }
 }
