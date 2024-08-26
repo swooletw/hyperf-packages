@@ -39,11 +39,11 @@ class DispatcherFactory extends BaseDispatcherFactory
         if (! $this->initialized) {
             $this->initRoutes();
         }
-        // dump(debug_backtrace(2));
+
         if (isset($this->routers[$serverName])) {
             return $this->routers[$serverName];
         }
-        // dd($this->container->make(RouteCollector::class));
+
         return $this->routers[$serverName] = $this->container->make(RouteCollector::class, ['server' => $serverName]);
     }
 }
