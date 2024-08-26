@@ -11,10 +11,11 @@ use Hyperf\Context\RequestContext;
 use Hyperf\HttpServer\Request;
 use Hyperf\Stringable\Str;
 use stdClass;
+use SwooleTW\Hyperf\Foundation\Http\AcceptHeader;
+use SwooleTW\Hyperf\Foundation\Support\HeaderUtils;
 
 use function Hyperf\Collection\collect;
 use function Hyperf\Collection\data_get;
-
 /**
  * @property array $contextkeys
  * @mixin Request
@@ -345,5 +346,152 @@ class RequestMacro
     public function ip()
     {
         return $this->getClientIp();
+    }
+
+    public function fullUrlWithQuery()
+    {
+        return function (array $query) {
+            $question = $this->url() . $this->getPathInfo() === '/' ? '/?' : '?';
+
+            return count($this->query()) > 0
+                ? $this->url() . $question . Arr::query(array_merge($this->query(), $query))
+                : $this->fullUrl() . Arr::query($query);
+        };
+    }
+
+    public function fullUrlWithoutQuery()
+    {
+        return function (array $keys) {
+            $query = Arr::except($this->query(), $keys);
+
+            $question = $this->url() . $this->getPathInfo() === '/' ? '/?' : '?';
+
+            return count($query) > 0
+                ? $this->url() . $question . Arr::query($query)
+                : $this->url();
+        };
+    }
+
+    public function method()
+    {
+        return fn () => $this->getMethod();
+    }
+
+    public function bearerToken()
+    {
+        return function () {
+            $header = $this->header('Authorization', '');
+
+            $position = strrpos($header, 'Bearer ');
+
+            if ($position !== false) {
+                $header = substr($header, $position + 7);
+
+                return str_contains($header, ',') ? strstr($header, ',', true) : $header;
+            }
+        };
+    }
+
+    public function getAcceptableContentTypes()
+    {
+        return fn () => array_map('strval', array_keys(AcceptHeader::fromString($this->header('Accept'))->all()));
+    }
+
+    public function getMimeType()
+    {
+        return fn (string $format) => isset(HeaderUtils::$formats[$format]) ? HeaderUtils::$formats[$format][0] : null;
+    }
+
+    public function getMimeTypes()
+    {
+        return fn (string $format) => HeaderUtils::$formats[$format] ?? [];
+    }
+
+    public function accepts()
+    {
+        return function (array $contentTypes) {
+            $accepts = $this->getAcceptableContentTypes();
+            if (count($accepts) === 0) {
+                return true;
+            }
+
+            foreach ($accepts as $accept) {
+                if ($accept === '*/*' || $accept === '*') {
+                    return true;
+                }
+
+                foreach ($contentTypes as $type) {
+                    $accept = strtolower($accept);
+
+                    $type = strtolower($type);
+
+                    if (AcceptHeader::matchesType($accept, $type) || $accept === strtok($type, '/') . '/*') {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        };
+    }
+
+    public function prefers()
+    {
+        return function (array $contentTypes) {
+            $accepts = $this->getAcceptableContentTypes();
+            foreach ($accepts as $accept) {
+                if (in_array($accept, ['*/*', '*'])) {
+                    return $contentTypes[0];
+                }
+
+                foreach ($contentTypes as $contentType) {
+                    $type = $contentType;
+
+                    if (! is_null($mimeType = $this->getMimeType($contentType))) {
+                        $type = $mimeType;
+                    }
+
+                    $accept = strtolower($accept);
+
+                    $type = strtolower($type);
+
+                    if (AcceptHeader::matchesType($type, $accept) || $accept === strtok($type, '/') . '/*') {
+                        return $contentType;
+                    }
+                }
+            }
+        };
+    }
+
+    public function isXmlHttpRequest()
+    {
+        return fn () => $this->header('X-Requested-With') === 'XMLHttpRequest';
+    }
+
+    public function ajax()
+    {
+        return $this->isXmlHttpRequest();
+    }
+
+    public function pjax()
+    {
+        return fn () => $this->header('X-PJAX') === true;
+    }
+
+    public function acceptsAnyContentType()
+    {
+        return function () {
+            $acceptable = $this->getAcceptableContentTypes();
+
+            return count($acceptable) === 0 || (
+            isset($acceptable[0]) && ($acceptable[0] === '*/*' || $acceptable[0] === '*')
+            );
+        };
+    }
+
+    public function expectsJson()
+    {
+        return fn () =>
+        ($this->ajax() && ! $this->pjax() && $this->acceptsAnyContentType()) || $this->wantsJson();
     }
 }
