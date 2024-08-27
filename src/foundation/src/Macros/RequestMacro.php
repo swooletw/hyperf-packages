@@ -52,7 +52,7 @@ class RequestMacro
     {
         return function ($key = null) {
             if (is_null($key)) {
-                return $this->all();
+                return collect($this->all());
             }
 
             return collect(
