@@ -61,7 +61,8 @@ class Request extends HyperfRequest implements RequestContract
     public function boolean(?string $key = null, bool $default = false): bool
     {
         return filter_var(
-            $this->input($key, $default), FILTER_VALIDATE_BOOLEAN
+            $this->input($key, $default),
+            FILTER_VALIDATE_BOOLEAN
         );
     }
 
@@ -175,9 +176,6 @@ class Request extends HyperfRequest implements RequestContract
 
     /**
      * Retrieve input from the request as a Stringable instance.
-     *
-     * @param string $key
-     * @param mixed $default
      */
     public function str(string $key, mixed $default = null): Stringable
     {
@@ -359,7 +357,7 @@ class Request extends HyperfRequest implements RequestContract
     {
         return $this->merge(
             collect($input)
-                ->filter(fn($value, $key) => $this->missing($key))
+                ->filter(fn ($value, $key) => $this->missing($key))
                 ->toArray()
         );
     }

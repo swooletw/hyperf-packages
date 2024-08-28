@@ -1,7 +1,7 @@
 {
     "name": "swooletw/hyperf-http",
     "type": "library",
-    "description": "The http macro package for Hyperf.",
+    "description": "The http package for Hyperf.",
     "license": "MIT",
     "keywords": [
         "php",

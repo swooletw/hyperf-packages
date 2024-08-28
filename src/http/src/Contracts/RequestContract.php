@@ -88,9 +88,6 @@ interface RequestContract extends RequestInterface
 
     /**
      * Retrieve input from the request as a Stringable instance.
-     *
-     * @param string $key
-     * @param mixed $default
      */
     public function str(string $key, mixed $default = null): Stringable;
 
