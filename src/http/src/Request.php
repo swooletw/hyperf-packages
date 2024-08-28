@@ -402,7 +402,7 @@ class Request extends HyperfRequest implements RequestContract
      */
     public function getSchemeAndHttpHost(): string
     {
-        return $this->getScheme() . '://' . $this->httpHost();
+        return $this->getScheme() . '://' . $this->getHttpHost();
     }
 
     /**
@@ -634,6 +634,8 @@ class Request extends HyperfRequest implements RequestContract
 
             return str_contains($header, ',') ? strstr($header, ',', true) : $header;
         }
+
+        return null;
     }
 
     /**
