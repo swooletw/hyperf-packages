@@ -8,10 +8,8 @@ use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Database\ConnectionResolverInterface;
 use Hyperf\HttpServer\MiddlewareManager;
-use Hyperf\HttpServer\Request;
 use SwooleTW\Hyperf\Foundation\Contracts\Application as ApplicationContract;
 use SwooleTW\Hyperf\Foundation\Http\Contracts\MiddlewareContract;
-use SwooleTW\Hyperf\Foundation\Macros\RequestMacro;
 use SwooleTW\Hyperf\Support\ServiceProvider;
 
 class FoundationServiceProvider extends ServiceProvider
@@ -29,7 +27,6 @@ class FoundationServiceProvider extends ServiceProvider
         $this->setDefaultTimezone();
         $this->setInternalEncoding();
         $this->setDatabaseConnection();
-        $this->mixinMacros();
     }
 
     /**
@@ -48,11 +45,6 @@ class FoundationServiceProvider extends ServiceProvider
         $connection = $this->config->get('database.default', 'mysql');
         $this->app->get(ConnectionResolverInterface::class)
             ->setDefaultConnection($connection);
-    }
-
-    protected function mixinMacros(): void
-    {
-        Request::mixin(new RequestMacro());
     }
 
     protected function overrideHyperfConfigs(): void

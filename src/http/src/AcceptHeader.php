@@ -11,9 +11,7 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Foundation\Http;
-
-use SwooleTW\Hyperf\Foundation\Support\HeaderUtils;
+namespace SwooleTW\Hyperf\Http;
 
 /**
  * Represents an Accept-* header.

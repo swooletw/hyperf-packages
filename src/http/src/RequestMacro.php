@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Foundation\Macros;
+namespace SwooleTW\Hyperf\Http;
 
 use Carbon\Carbon;
 use Hyperf\Collection\Arr;
@@ -30,7 +30,7 @@ class RequestMacro
 
     public function anyFilled()
     {
-        return function ($keys) {
+        return function (array|string $keys) {
             $keys = is_array($keys) ? $keys : func_get_args();
 
             foreach ($keys as $key) {
@@ -45,12 +45,12 @@ class RequestMacro
 
     public function boolean()
     {
-        return fn (string $key = '', $default = false) => filter_var($this->input($key, $default), FILTER_VALIDATE_BOOLEAN);
+        return fn (?string $key = null, bool $default = false) => filter_var($this->input($key, $default), FILTER_VALIDATE_BOOLEAN);
     }
 
     public function collect()
     {
-        return function ($key = null) {
+        return function (null|array|string $key = null) {
             if (is_null($key)) {
                 return collect($this->all());
             }
@@ -63,7 +63,7 @@ class RequestMacro
 
     public function date()
     {
-        return function (string $key, $format = null, $tz = null) {
+        return function (string $key, ?string $format = null, ?string $tz = null) {
             if ($this->isNotFilled($key)) {
                 return null;
             }
@@ -78,7 +78,7 @@ class RequestMacro
 
     public function enum()
     {
-        return function ($key, $enumClass) {
+        return function (string $key, $enumClass) {
             if (
                 $this->isNotFilled($key)
                 || ! function_exists('enum_exists')
@@ -94,7 +94,7 @@ class RequestMacro
 
     public function except()
     {
-        return function ($keys) {
+        return function (mixed $keys) {
             $keys = is_array($keys) ? $keys : func_get_args();
             $results = $this->all();
 
@@ -111,7 +111,7 @@ class RequestMacro
 
     public function filled()
     {
-        return function ($key) {
+        return function (array|string $key) {
             $keys = is_array($key) ? $key : func_get_args();
 
             foreach ($keys as $value) {
@@ -126,12 +126,12 @@ class RequestMacro
 
     public function float()
     {
-        return fn ($key, $default = null) => (float) $this->input($key, $default);
+        return fn (string $key, float $default = 0.0) => (float) $this->input($key, $default);
     }
 
     public function hasAny()
     {
-        return fn ($keys) => Arr::hasAny($this->all(), is_array($keys) ? $keys : func_get_args());
+        return fn (array|string $keys) => Arr::hasAny($this->all(), is_array($keys) ? $keys : func_get_args());
     }
 
     public function host()
@@ -194,12 +194,12 @@ class RequestMacro
 
     public function integer()
     {
-        return fn ($key, $default = null) => (int) $this->input($key, $default);
+        return fn (string $key, int $default = 0) => (int) $this->input($key, $default);
     }
 
     public function isEmptyString()
     {
-        return function ($key) {
+        return function (string $key) {
             $value = $this->input($key);
 
             return ! is_bool($value) && ! is_array($value) && trim((string) $value) === '';
@@ -231,11 +231,21 @@ class RequestMacro
         return fn () => array_merge(array_keys($this->all()), array_keys($this->getUploadedFiles()));
     }
 
-    public function merge()
+    public function replace()
     {
         return function (array $input) {
             /* @phpstan-ignore-next-line */
             Context::override($this->contextkeys['parsedData'], fn ($inputs) => array_replace((array) $inputs, $input));
+
+            return $this;
+        };
+    }
+
+    public function merge()
+    {
+        return function (array $input) {
+            /* @phpstan-ignore-next-line */
+            Context::override($this->contextkeys['parsedData'], fn ($inputs) => array_merge((array) $inputs, $input));
 
             return $this;
         };
@@ -257,7 +267,7 @@ class RequestMacro
 
     public function only()
     {
-        return function ($keys) {
+        return function (mixed $keys) {
             $results = [];
             $input = $this->all();
             $placeholder = new stdClass();
@@ -286,12 +296,12 @@ class RequestMacro
 
     public function str()
     {
-        return fn ($key, $default = null) => Str::of($this->input($key, $default));
+        return $this->string();
     }
 
     public function string()
     {
-        return fn ($key, $default = null) => Str::of($this->input($key, $default));
+        return fn (string $key, mixed $default = null) => Str::of($this->input($key, $default));
     }
 
     public function wantsJson()
@@ -305,7 +315,7 @@ class RequestMacro
 
     public function whenFilled()
     {
-        return function ($key, callable $callback, ?callable $default = null) {
+        return function (string $key, callable $callback, ?callable $default = null) {
             if ($this->filled($key)) {
                 return $callback(data_get($this->all(), $key)) ?: $this;
             }
@@ -320,7 +330,7 @@ class RequestMacro
 
     public function whenHas()
     {
-        return function ($key, callable $callback, ?callable $default = null) {
+        return function (string $key, callable $callback, ?callable $default = null) {
             if ($this->has($key)) {
                 return $callback(data_get($this->all(), $key)) ?: $this;
             }
@@ -410,7 +420,7 @@ class RequestMacro
 
     public function accepts()
     {
-        return function (array $contentTypes) {
+        return function (array|string $contentTypes) {
             $accepts = $this->getAcceptableContentTypes();
             if (count($accepts) === 0) {
                 return true;
@@ -436,9 +446,19 @@ class RequestMacro
         };
     }
 
+    public function acceptsJson()
+    {
+        return fn () => $this->accepts('application/json');
+    }
+
+    public function acceptsHtml()
+    {
+        return fn () => $this->accepts('text/html');
+    }
+
     public function prefers()
     {
-        return function (array $contentTypes) {
+        return function (array|string $contentTypes) {
             $accepts = $this->getAcceptableContentTypes();
             foreach ($accepts as $accept) {
                 if (in_array($accept, ['*/*', '*'])) {

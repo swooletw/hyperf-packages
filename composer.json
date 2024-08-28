@@ -35,6 +35,7 @@
             "SwooleTW\\Hyperf\\Event\\": "src/event/src/",
             "SwooleTW\\Hyperf\\Foundation\\": "src/foundation/src/",
             "SwooleTW\\Hyperf\\Hashing\\": "src/hashing/src/",
+            "SwooleTW\\Hyperf\\Http\\": "src/http/src/",
             "SwooleTW\\Hyperf\\JWT\\": "src/jwt/src/",
             "SwooleTW\\Hyperf\\Log\\": "src/log/src/",
             "SwooleTW\\Hyperf\\ObjectPool\\": "src/object-pool/src/",
@@ -97,6 +98,7 @@
         "swooletw/hyperf-framework": "self.version",
         "swooletw/hyperf-foundation": "self.version",
         "swooletw/hyperf-hashing": "self.version",
+        "swooletw/hyperf-http": "self.version",
         "swooletw/hyperf-jwt": "self.version",
         "swooletw/hyperf-log": "self.version",
         "swooletw/hyperf-object-pool": "self.version",
@@ -135,6 +137,7 @@
                 "SwooleTW\\Hyperf\\Event\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Foundation\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Hashing\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Http\\ConfigProvider",
                 "SwooleTW\\Hyperf\\JWT\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Log\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Router\\ConfigProvider"

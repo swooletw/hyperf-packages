@@ -22,7 +22,7 @@ parameters:
     - %currentWorkingDirectory%/src/foundation/src/Testing/Concerns/*
     - %currentWorkingDirectory%/src/foundation/src/Testing/Constraints/*
     - %currentWorkingDirectory%/src/foundation/src/Http/WebsocketKernel.php
-    - %currentWorkingDirectory%/src/foundation/src/Macros/RequestMacro.php
+    - %currentWorkingDirectory%/src/http/src/RequestMacro.php
     - %currentWorkingDirectory%/src/log/src/Adapter/*
   ignoreErrors:
     - '#Result of method .* \(void\) is used\.#'
