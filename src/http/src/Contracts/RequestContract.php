@@ -8,9 +8,10 @@ use Carbon\Carbon;
 use Carbon\Exceptions\InvalidFormatException;
 use Hyperf\Collection\Collection;
 use Hyperf\HttpServer\Contract\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Stringable;
 
-interface Request extends RequestInterface
+interface RequestContract extends RequestInterface
 {
     /**
      * Retrieve normalized file upload data.
@@ -91,7 +92,7 @@ interface Request extends RequestInterface
      * @param string $key
      * @param mixed $default
      */
-    public function str($key, $default = null): Stringable;
+    public function str(string $key, mixed $default = null): Stringable;
 
     /**
      * Determine if the request contains any of the given inputs.
@@ -335,4 +336,9 @@ interface Request extends RequestInterface
      * Determine if the request is the result of a PJAX call.
      */
     public function pjax(): bool;
+
+    /**
+     * Get original psr7 request instance.
+     */
+    public function getPsr7Request(): ServerRequestInterface;
 }

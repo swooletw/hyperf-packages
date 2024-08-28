@@ -42,6 +42,7 @@ class BootstrapConfigProvider
         \SwooleTW\Hyperf\Event\ConfigProvider::class,
         \SwooleTW\Hyperf\Foundation\ConfigProvider::class,
         \SwooleTW\Hyperf\Hashing\ConfigProvider::class,
+        \SwooleTW\Hyperf\Http\ConfigProvider::class,
         \SwooleTW\Hyperf\JWT\ConfigProvider::class,
         \SwooleTW\Hyperf\Log\ConfigProvider::class,
         \SwooleTW\Hyperf\Router\ConfigProvider::class,
