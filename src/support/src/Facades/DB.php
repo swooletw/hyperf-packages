@@ -7,7 +7,27 @@ namespace SwooleTW\Hyperf\Support\Facades;
 use Hyperf\DbConnection\Db as HyperfDb;
 
 /**
- * @mixin Hyperf\DbConnection\Db
+ * @method static Builder table(string $table)
+ * @method static Expression raw($value)
+ * @method static mixed selectOne(string $query, array $bindings = [], bool $useReadPdo = true)
+ * @method static array select(string $query, array $bindings = [], bool $useReadPdo = true)
+ * @method static Generator cursor(string $query, array $bindings = [], bool $useReadPdo = true)
+ * @method static bool insert(string $query, array $bindings = [])
+ * @method static int update(string $query, array $bindings = [])
+ * @method static int delete(string $query, array $bindings = [])
+ * @method static bool statement(string $query, array $bindings = [])
+ * @method static int affectingStatement(string $query, array $bindings = [])
+ * @method static bool unprepared(string $query)
+ * @method static array prepareBindings(array $bindings)
+ * @method static mixed transaction(Closure $callback, int $attempts = 1)
+ * @method static void beginTransaction()
+ * @method static void rollBack()
+ * @method static void commit()
+ * @method static int transactionLevel()
+ * @method static array pretend(Closure $callback)
+ * @method static ConnectionInterface connection(string $pool)
+ *
+ * @see HyperfDb
  */
 class DB extends Facade
 {
