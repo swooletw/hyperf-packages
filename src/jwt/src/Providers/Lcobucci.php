@@ -48,7 +48,7 @@ class Lcobucci extends Provider implements ProviderContract
      * Signers that this provider supports.
      */
     protected array $signers = [
-        self::ALGO_HS256 => \SwooleTW\Hyperf\JWT\Signers\HmacSha256::class,
+        self::ALGO_HS256 => Signer\Hmac\Sha256::class,
         self::ALGO_HS384 => Signer\Hmac\Sha384::class,
         self::ALGO_HS512 => Signer\Hmac\Sha512::class,
         self::ALGO_RS256 => Signer\Rsa\Sha256::class,
