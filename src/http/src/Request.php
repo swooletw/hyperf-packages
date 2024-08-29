@@ -425,7 +425,7 @@ class Request extends HyperfRequest implements RequestContract
      */
     public function wantsJson(): bool
     {
-        $acceptable = explode(',', $this->header('ACCEPT') ?? '');
+        $acceptable = explode(',', $this->header('Accept') ?? '');
 
         return Str::contains(strtolower($acceptable[0]) ?? '', ['/json', '+json']);
     }
@@ -439,7 +439,7 @@ class Request extends HyperfRequest implements RequestContract
         if (count($accepts) === 0) {
             return true;
         }
-
+        $contentTypes = is_string($contentTypes) ? [$contentTypes] : $contentTypes;
         foreach ($accepts as $accept) {
             if ($accept === '*/*' || $accept === '*') {
                 return true;
@@ -447,7 +447,6 @@ class Request extends HyperfRequest implements RequestContract
 
             foreach ($contentTypes as $type) {
                 $accept = strtolower($accept);
-
                 $type = strtolower($type);
 
                 if (AcceptHeader::matchesType($accept, $type) || $accept === strtok($type, '/') . '/*') {
@@ -694,7 +693,7 @@ class Request extends HyperfRequest implements RequestContract
      */
     public function pjax(): bool
     {
-        return $this->header('X-PJAX') === true;
+        return $this->header('X-PJAX') === 'true';
     }
 
     public function getPsr7Request(): ServerRequestInterface
