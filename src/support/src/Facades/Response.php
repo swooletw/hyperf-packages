@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Support\Facades;
 
 use Hyperf\HttpMessage\Cookie\Cookie;
-use Hyperf\HttpServer\Contract\ResponseInterface as HyperfResponseInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use SwooleTW\Hyperf\Http\Contracts\ResponseContract;
 
 /**
  * @method static ResponseInterface json($data, int $status = 200, array $headers = [])
@@ -36,6 +36,12 @@ use Psr\Http\Message\StreamInterface;
  * @method static ResponseInterface withFile(string $file)
  * @method static ResponseInterface withTrailer($name, $value)
  * @method static ResponseInterface withTrailers(array $trailers)
+ * @method static ResponseInterface make(mixed $content = '', int $status = 200, array $headers = [])
+ * @method static ResponseInterface noContent(int $status = 204, array $headers = [])
+ * @method static ResponseInterface view(string $view, array $data = [], int $status = 200, array $headers = [])
+ * @method static ResponseInterface getPsr7Response()
+ * @method static ResponseInterface stream(callable $callback, array $headers = [])
+ * @method static ResponseInterface streamDownload(callable $callback, ?string $filename = null, array $headers = [], string $disposition = 'attachment')
  *
  * @see \SwooleTW\Hyperf\Http\Response
  */
@@ -43,6 +49,6 @@ class Response extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return HyperfResponseInterface::class;
+        return ResponseContract::class;
     }
 }

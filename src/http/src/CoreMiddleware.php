@@ -9,6 +9,8 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use SwooleTW\Hyperf\Http\Contracts\RequestContract;
+use SwooleTW\Hyperf\Http\Contracts\ResponseContract;
+use Swow\Psr7\Message\ResponsePlusInterface;
 
 class CoreMiddleware extends HyperfCoreMiddleware
 {
@@ -23,5 +25,19 @@ class CoreMiddleware extends HyperfCoreMiddleware
         }
 
         return parent::process($request, $handler);
+    }
+
+    /**
+     * Transfer the non-standard response content to a standard response object.
+     *
+     * @param null|array|Arrayable|Jsonable|ResponseInterface|string $response
+     */
+    protected function transferToResponse($response, ServerRequestInterface $request): ResponsePlusInterface
+    {
+        if ($response instanceof ResponseContract) {
+            return $response->getPsr7Response();
+        }
+
+        return parent::transferToResponse($response, $request);
     }
 }

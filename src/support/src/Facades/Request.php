@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Hyperf\Collection\Collection;
 use Psr\Http\Message\ServerRequestInterface;
 use Stringable;
+use SwooleTW\Hyperf\Http\Contracts\RequestContract;
 use SwooleTW\Hyperf\Http\Request as HttpRequest;
 
 /**
@@ -91,6 +92,6 @@ class Request extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return HttpRequest::class;
+        return RequestContract::class;
     }
 }

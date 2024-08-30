@@ -30,6 +30,9 @@
         "hyperf/http-server": "~3.1.0",
         "hyperf/collection": "~3.1.0",
         "hyperf/stringable": "~3.1.0",
+        "hyperf/codec": "~3.1.0",
+        "hyperf/context": "~3.1.0",
+        "hyperf/contract": "~3.1.0",
         "nesbot/carbon": "^2.0 || ^3.0"
     },
     "config": {

@@ -696,6 +696,9 @@ class Request extends HyperfRequest implements RequestContract
         return $this->header('X-PJAX') === 'true';
     }
 
+    /**
+     * Get original psr7 request instance.
+     */
     public function getPsr7Request(): ServerRequestInterface
     {
         return parent::getRequest();

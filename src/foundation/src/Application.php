@@ -428,8 +428,15 @@ class Application extends Container implements ApplicationContract
             \League\Flysystem\Filesystem::class => ['files'],
             \Hyperf\Contract\TranslatorInterface::class => ['translator'],
             \Hyperf\Validation\Contract\ValidatorFactoryInterface::class => ['validator'],
-            \Psr\Http\Message\ServerRequestInterface::class => ['request'],
-            \Hyperf\HttpServer\Contract\ResponseInterface::class => ['response'],
+            \Psr\Http\Message\ServerRequestInterface::class => [
+                'request',
+                \Hyperf\HttpServer\Contract\RequestInterface::class,
+                \Hyperf\HttpServer\Request::class,
+            ],
+            \Hyperf\HttpServer\Contract\ResponseInterface::class => [
+                'response',
+                \Hyperf\HttpServer\Response::class,
+            ],
             \Hyperf\DbConnection\Db::class => ['db'],
             \SwooleTW\Hyperf\Auth\Contracts\FactoryContract::class => [
                 'auth',

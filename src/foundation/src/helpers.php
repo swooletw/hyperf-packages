@@ -9,20 +9,20 @@ use FriendsOfHyperf\Support\AsyncQueue\ClosureJob;
 use Hyperf\AsyncQueue\Driver\DriverFactory;
 use Hyperf\AsyncQueue\JobInterface;
 use Hyperf\Context\ApplicationContext;
-use Hyperf\Context\Context;
 use Hyperf\Contract\SessionInterface;
 use Hyperf\Contract\ValidatorInterface;
 use Hyperf\HttpMessage\Cookie\Cookie;
-use Hyperf\HttpMessage\Stream\SwooleStream;
-use Hyperf\HttpServer\Contract\RequestInterface;
+use Hyperf\Stringable\Stringable;
 use Hyperf\Validation\Contract\ValidatorFactoryInterface;
 use Hyperf\View\RenderInterface;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use SwooleTW\Hyperf\Cache\Contracts\Factory as CacheManager;
 use SwooleTW\Hyperf\Cookie\Contracts\Cookie as CookieContract;
+use SwooleTW\Hyperf\Http\Contracts\RequestContract;
+use SwooleTW\Hyperf\Http\Contracts\ResponseContract;
 
 if (! function_exists('base_path')) {
     /**
@@ -125,15 +125,14 @@ if (! function_exists('cookie')) {
      *
      * @return Cookie|CookieContract
      */
-    function cookie(?string $name = null, ?string $value = null, int $minutes = 0, ?string $path = null, ?string $domain = null, bool $secure = false, bool $httpOnly = true, bool $raw = false, ?string $sameSite = null)
+    function cookie(string $name, string $value, int $minutes = 0, string $path = '', string $domain = '', bool $secure = false, bool $httpOnly = true, bool $raw = false, ?string $sameSite = null)
     {
+        $cookieManager = app(CookieContract::class);
         if (is_null($name)) {
-            return app(CookieContract::class);
+            return $cookieManager;
         }
 
-        $time = ($minutes == 0) ? 0 : $minutes * 60;
-
-        return new Cookie($name, $value, $time, $path, $domain, $secure, $httpOnly, $raw, $sameSite);
+        return $cookieManager->make($name, $value, $minutes, $path, $domain, $secure, $httpOnly, $raw, $sameSite);
     }
 }
 
@@ -175,12 +174,11 @@ if (! function_exists('app')) {
 if (! function_exists('dispatch')) {
     /**
      * @param AsyncTaskInterface|Closure|JobInterface|ProduceMessage|ProducerMessageInterface $job
-     * @return bool
      * @throws TypeError
      * @throws InvalidDriverException
      * @throws InvalidArgumentException
      */
-    function dispatch($job, ...$arguments)
+    function dispatch($job, ...$arguments): bool
     {
         if ($job instanceof \Closure) {
             $job = new ClosureJob($job, (int) ($arguments[2] ?? 0));
@@ -214,10 +212,9 @@ if (! function_exists('event')) {
 
 if (! function_exists('info')) {
     /**
-     * @param string|Stringable $message
      * @throws TypeError
      */
-    function info($message, array $context = [], bool $backtrace = false)
+    function info(string|Stringable $message, array $context = [], bool $backtrace = false)
     {
         if ($backtrace) {
             $traces = debug_backtrace();
@@ -232,27 +229,26 @@ if (! function_exists('logger')) {
     /**
      * Log a debug message to the logs.
      *
-     * @param null|string $message
      * @return null|\SwooleTW\Hyperf\Log\LogManager
      */
-    function logger($message = null, array $context = [])
+    function logger(?string $message = null, array $context = []): ?LoggerInterface
     {
         $logger = app(LoggerInterface::class);
         if (is_null($message)) {
             return $logger;
         }
 
-        return $logger->debug($message, $context);
+        $logger->debug($message, $context);
+
+        return null;
     }
 }
 
 if (! function_exists('now')) {
     /**
      * Create a new Carbon instance for the current time.
-     *
-     * @param null|DateTimeZone|string $tz
      */
-    function now($tz = null): Carbon
+    function now(null|\DateTimeZone|string $tz = null): Carbon
     {
         return Carbon::now($tz);
     }
@@ -281,14 +277,12 @@ if (! function_exists('resolve')) {
 if (! function_exists('request')) {
     /**
      * Get an instance of the current request or an input item from the request.
-     * @param null|array|string $key
-     * @param mixed $default
-     * @return array|mixed|RequestInterface
+     * @return array|mixed|RequestContract
      * @throws TypeError
      */
-    function request($key = null, $default = null)
+    function request(null|array|string $key = null, mixed $default = null): mixed
     {
-        $request = app(RequestInterface::class);
+        $request = app(RequestContract::class);
 
         if (is_null($key)) {
             return $request;
@@ -306,30 +300,30 @@ if (! function_exists('response')) {
     /**
      * Return a new response from the application.
      *
-     * @param null|array|string $content
-     * @return PsrResponseInterface|ResponseInterface
+     * @return ResponseContract|ResponseInterface
      */
-    function response($content = '', int $status = 200, array $headers = [])
+    function response(mixed $content = '', int $status = 200, array $headers = [])
     {
-        /** @var PsrResponseInterface|ResponseInterface $response */
-        $response = Context::get(PsrResponseInterface::class);
+        $response = app(ResponseContract::class);
 
         if (func_num_args() === 0) {
             return $response;
         }
 
-        if (is_array($content)) {
-            $response = $response->withAddedHeader('Content-Type', 'application/json');
-            $content = json_encode($content);
-        }
+        return $response->make($content, $status, $headers);
+    }
+}
 
-        foreach ($headers as $name => $value) {
-            $response = $response->withAddedHeader($name, $value);
-        }
-
-        return $response->withBody(
-            new SwooleStream((string) $content)
-        )->withStatus($status);
+if (! function_exists('redirect')) {
+    /**
+     * Return a new response from the application.
+     *
+     * @return ResponseInterface
+     */
+    function redirect(string $toUrl, int $status = 302, string $schema = 'http')
+    {
+        return app(ResponseContract::class)
+            ->redirect($toUrl, $status, $schema);
     }
 }
 
@@ -457,7 +451,7 @@ if (! function_exists('view')) {
     /**
      * Get the evaluated view contents for the given view.
      */
-    function view(?string $view = null, array $data = [], array $mergeData = [])
+    function view(?string $view = null, array $data = [])
     {
         $factory = app(RenderInterface::class);
 
@@ -465,6 +459,6 @@ if (! function_exists('view')) {
             return $factory;
         }
 
-        return $factory->render($view, $data, $mergeData);
+        return $factory->render($view, $data);
     }
 }
