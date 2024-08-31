@@ -701,6 +701,6 @@ class Request extends HyperfRequest implements RequestContract
      */
     public function getPsr7Request(): ServerRequestInterface
     {
-        return parent::getRequest();
+        return $this->getRequest();
     }
 }

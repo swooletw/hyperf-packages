@@ -55,6 +55,7 @@ abstract class TransformsRequest
 
         $queryParams = $request->getQueryParams();
         $queryParams = $this->processArray($queryParams);
+
         return $request->withQueryParams($queryParams);
     }
 

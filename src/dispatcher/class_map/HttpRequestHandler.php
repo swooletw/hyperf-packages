@@ -21,9 +21,6 @@ class HttpRequestHandler implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        // transform psr-7 request to hyperf request for consistency in controller
-        $request = $this->container->get(ServerRequestInterface::class);
-
         return $this->container
             ->get(Pipeline::class)
             ->send($request)
