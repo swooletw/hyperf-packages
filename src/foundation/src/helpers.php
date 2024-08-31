@@ -9,12 +9,14 @@ use FriendsOfHyperf\Support\AsyncQueue\ClosureJob;
 use Hyperf\AsyncQueue\Driver\DriverFactory;
 use Hyperf\AsyncQueue\JobInterface;
 use Hyperf\Context\ApplicationContext;
+use Hyperf\Contract\Arrayable;
 use Hyperf\Contract\SessionInterface;
 use Hyperf\Contract\ValidatorInterface;
 use Hyperf\HttpMessage\Cookie\Cookie;
 use Hyperf\Stringable\Stringable;
 use Hyperf\Validation\Contract\ValidatorFactoryInterface;
-use Hyperf\View\RenderInterface;
+use Hyperf\ViewEngine\Contract\FactoryInterface;
+use Hyperf\ViewEngine\Contract\ViewInterface;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -450,15 +452,18 @@ if (! function_exists('__')) {
 if (! function_exists('view')) {
     /**
      * Get the evaluated view contents for the given view.
+     *
+     * @param null|string $view
+     * @param array $mergeData
      */
-    function view(?string $view = null, array $data = [])
+    function view($view = null, array|Arrayable $data = [], $mergeData = []): FactoryInterface|ViewInterface
     {
-        $factory = app(RenderInterface::class);
+        $factory = app(FactoryInterface::class);
 
         if (func_num_args() === 0) {
             return $factory;
         }
 
-        return $factory->render($view, $data);
+        return $factory->make($view, $data, $mergeData);
     }
 }

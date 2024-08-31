@@ -454,7 +454,7 @@ class Application extends Container implements ApplicationContract
             \Hyperf\Redis\Redis::class => ['redis'],
             \SwooleTW\Hyperf\Router\Router::class => ['router'],
             \SwooleTW\Hyperf\Router\UrlGenerator::class => ['url'],
-            \Hyperf\View\RenderInterface::class => ['view'],
+            \Hyperf\ViewEngine\Contract\FactoryInterface::class => ['view'],
         ] as $key => $aliases) {
             foreach ($aliases as $alias) {
                 $this->alias($key, $alias);

@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Http;
 
+use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\HttpServer\CoreMiddleware as HyperfCoreMiddleware;
+use Hyperf\View\RenderInterface;
+use Hyperf\ViewEngine\Contract\ViewInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -36,6 +39,12 @@ class CoreMiddleware extends HyperfCoreMiddleware
     {
         if ($response instanceof ResponseContract) {
             return $response->getPsr7Response();
+        }
+
+        if ($response instanceof ViewInterface) {
+            return $this->response()
+                ->setHeader('content-type', $this->container->get(RenderInterface::class)->getContentType())
+                ->setBody(new SwooleStream((string) $response));
         }
 
         return parent::transferToResponse($response, $request);
