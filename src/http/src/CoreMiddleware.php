@@ -12,7 +12,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use SwooleTW\Hyperf\Http\Contracts\RequestContract;
-use SwooleTW\Hyperf\Http\Contracts\ResponseContract;
 use Swow\Psr7\Message\ResponsePlusInterface;
 
 class CoreMiddleware extends HyperfCoreMiddleware
@@ -37,13 +36,9 @@ class CoreMiddleware extends HyperfCoreMiddleware
      */
     protected function transferToResponse($response, ServerRequestInterface $request): ResponsePlusInterface
     {
-        if ($response instanceof ResponseContract) {
-            return $response->getPsr7Response();
-        }
-
         if ($response instanceof ViewInterface) {
             return $this->response()
-                ->setHeader('content-type', $this->container->get(RenderInterface::class)->getContentType())
+                ->setHeader('Content-Type', $this->container->get(RenderInterface::class)->getContentType())
                 ->setBody(new SwooleStream((string) $response));
         }
 

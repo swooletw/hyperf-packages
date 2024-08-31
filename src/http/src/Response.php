@@ -21,30 +21,25 @@ class Response extends HyperfResponse implements ResponseContract
      */
     public function make(mixed $content = '', int $status = 200, array $headers = []): ResponseInterface
     {
-        /* @phpstan-ignore-next-line */
-        $this->setStatus($status);
+        $response = $this->getResponse()->withStatus($status);
         foreach ($headers as $name => $value) {
-            /* @phpstan-ignore-next-line */
-            $this->setHeader($name, $value);
+            $response->addHeader($name, $value);
         }
         if (is_array($content) || $content instanceof Arrayable) {
-            /* @phpstan-ignore-next-line */
-            return $this->setHeader('Content-Type', 'application/json')
+            return $response->addHeader('Content-Type', 'application/json')
                 ->setBody(new SwooleStream(Json::encode($content)));
         }
 
         if ($content instanceof Jsonable) {
-            /* @phpstan-ignore-next-line */
-            return $this->setHeader('Content-Type', 'application/json')
+            return $response->addHeader('Content-Type', 'application/json')
                 ->setBody(new SwooleStream((string) $content));
         }
 
-        if ($this->hasHeader('Content-Type')) {
-            /* @phpstan-ignore-next-line */
-            return $this->setBody(new SwooleStream((string) $content));
+        if ($response->hasHeader('Content-Type')) {
+            return $response->setBody(new SwooleStream((string) $content));
         }
-        /* @phpstan-ignore-next-line */
-        return $this->setHeader('Content-Type', 'text/plain')
+
+        return $response->addHeader('Content-Type', 'text/plain')
             ->setBody(new SwooleStream((string) $content));
     }
 
@@ -53,9 +48,9 @@ class Response extends HyperfResponse implements ResponseContract
      */
     public function noContent(int $status = 204, array $headers = []): ResponseInterface
     {
-        $response = $this->withStatus($status);
+        $response = $this->getResponse()->withStatus($status);
         foreach ($headers as $name => $value) {
-            $response = $response->withAddedHeader($name, $value);
+            $response->addHeader($name, $value);
         }
 
         return $response;
@@ -82,7 +77,7 @@ class Response extends HyperfResponse implements ResponseContract
      */
     public function getPsr7Response(): ResponseInterface
     {
-        return $this->response;
+        return $this->getResponse();
     }
 
     /**
@@ -93,12 +88,13 @@ class Response extends HyperfResponse implements ResponseContract
      */
     public function stream(callable $callback, array $headers = []): ResponseInterface
     {
-        $response = $this->getResponse()
-            ->setHeader('Content-Type', 'text/event-stream');
-
+        $response = $this->getResponse();
         foreach ($headers as $key => $value) {
-            /* @phpstan-ignore-next-line */
-            $response->setHeader($key, $value);
+            $response->addHeader($key, $value);
+        }
+
+        if (! $response->hasHeader('Content-Type')) {
+            $response->setHeader('Content-Type', 'text/event-stream');
         }
 
         /* @phpstan-ignore-next-line */
