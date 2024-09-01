@@ -25,6 +25,7 @@ use SwooleTW\Hyperf\Cache\Contracts\Factory as CacheManager;
 use SwooleTW\Hyperf\Cookie\Contracts\Cookie as CookieContract;
 use SwooleTW\Hyperf\Http\Contracts\RequestContract;
 use SwooleTW\Hyperf\Http\Contracts\ResponseContract;
+use SwooleTW\Hyperf\Router\UrlGenerator;
 
 if (! function_exists('base_path')) {
     /**
@@ -401,7 +402,7 @@ if (! function_exists('url')) {
     /**
      * Generate a url for the application.
      */
-    function url(string $path, array $extra = [], ?bool $secure = null): string
+    function url(?string $path = null, array $extra = [], ?bool $secure = null): string|UrlGenerator
     {
         return \SwooleTW\Hyperf\Router\url($path, $extra, $secure);
     }

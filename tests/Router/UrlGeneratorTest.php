@@ -178,6 +178,24 @@ class UrlGeneratorTest extends TestCase
         $this->assertEquals('http://localhost/foo', $urlGenerator->to('foo'));
     }
 
+    public function testFull()
+    {
+        $this->mockRequest();
+
+        $urlGenerator = new UrlGenerator($this->container);
+
+        $this->assertEquals('http://example.com/foo?bar=baz#boom', $urlGenerator->full());
+    }
+
+    public function testCurrent()
+    {
+        $this->mockRequest();
+
+        $urlGenerator = new UrlGenerator($this->container);
+
+        $this->assertEquals('http://example.com/foo', $urlGenerator->current());
+    }
+
     private function mockContainer()
     {
         /** @var ContainerInterface|MockInterface */

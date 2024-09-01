@@ -80,6 +80,22 @@ class UrlGenerator
         return $this->to($path, $extra, true);
     }
 
+    /**
+     * Get the full URL for the current request.
+     */
+    public function full(): string
+    {
+        return (string) $this->getRequestUri();
+    }
+
+    /**
+     * Get the current URL for the request.
+     */
+    public function current(): string
+    {
+        return rtrim(preg_replace('/\?.*/', '', $this->full()), '/');
+    }
+
     private function trimPath(string $path, string $tail = ''): string
     {
         return '/' . trim($path . '/' . $tail, '/');
