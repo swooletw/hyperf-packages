@@ -35,7 +35,8 @@
     },
     "suggest": {
         "swooletw/hyperf-cache": "Required to use throttle requests middleware.",
-        "swooletw/hyperf-http-message": "Required to use throttle requests middleware."
+        "swooletw/hyperf-http-message": "Required to use throttle requests middleware.",
+        "hyperf/session": "Required to use session based `previous` function in UrlGenerator."
     },
     "config": {
         "sort-packages": true

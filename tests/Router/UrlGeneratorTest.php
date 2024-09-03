@@ -10,6 +10,7 @@ use Hyperf\Context\Context;
 use Hyperf\Context\RequestContext;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\ContainerInterface;
+use Hyperf\Contract\SessionInterface;
 use Hyperf\HttpMessage\Server\Request as ServerRequest;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Request;
@@ -18,6 +19,7 @@ use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use ReflectionMethod;
 use SwooleTW\Hyperf\Router\DispatcherFactory;
 use SwooleTW\Hyperf\Router\NamedRouteCollector;
 use SwooleTW\Hyperf\Router\UrlGenerator;
@@ -194,6 +196,110 @@ class UrlGeneratorTest extends TestCase
         $urlGenerator = new UrlGenerator($this->container);
 
         $this->assertEquals('http://example.com/foo', $urlGenerator->current());
+    }
+
+    public function testPrevious()
+    {
+        $urlGenerator = new UrlGenerator($this->container);
+
+        // Test with referer header
+        RequestContext::set(
+            new ServerRequest(
+                'GET',
+                'http://example.com/foo',
+                ['referer' => 'http://example.com/previous']
+            )
+        );
+        $this->container->shouldReceive('has')
+            ->with(SessionInterface::class)
+            ->andReturnFalse();
+
+        $this->assertEquals('http://example.com/previous', $urlGenerator->previous());
+
+        // Test without referer header and no session
+        RequestContext::set(
+            new ServerRequest(
+                'GET',
+                'http://example.com/foo'
+            )
+        );
+
+        $this->assertEquals('http://example.com', $urlGenerator->previous());
+
+        // Test with fallback
+        $this->assertEquals('http://example.com/fallback', $urlGenerator->previous('fallback'));
+    }
+
+    public function testPreviousPath()
+    {
+        $urlGenerator = new UrlGenerator($this->container);
+
+        // Mock RequestContext
+        RequestContext::set(
+            new ServerRequest(
+                'GET',
+                'http://example.com/foo',
+                ['referer' => 'http://example.com/previous/path']
+            )
+        );
+
+        // Mock ConfigInterface for app.url
+        $mockConfig = Mockery::mock(ConfigInterface::class);
+        $mockConfig->shouldReceive('get')
+            ->with('app.url')
+            ->andReturn('http://example.com');
+        $this->container->shouldReceive('get')
+            ->with(ConfigInterface::class)
+            ->andReturn($mockConfig);
+
+        // Test with referer header
+        $this->container->shouldReceive('has')
+            ->with(SessionInterface::class)
+            ->andReturnFalse();
+
+        $this->assertEquals('/previous/path', $urlGenerator->previousPath());
+
+        // Test without referer header and no session
+        RequestContext::set(
+            new ServerRequest(
+                'GET',
+                'http://example.com/foo'
+            )
+        );
+
+        $this->assertEquals('/', $urlGenerator->previousPath());
+
+        // Test with fallback
+        $this->assertEquals('/fallback', $urlGenerator->previousPath('fallback'));
+    }
+
+    public function testIsValidUrl()
+    {
+        $urlGenerator = new UrlGenerator($this->container);
+        $method = new ReflectionMethod(UrlGenerator::class, 'isValidUrl');
+        $method->setAccessible(true);
+
+        $this->assertTrue($method->invoke($urlGenerator, 'http://example.com'));
+        $this->assertTrue($method->invoke($urlGenerator, 'https://example.com'));
+        $this->assertTrue($method->invoke($urlGenerator, '//example.com'));
+        $this->assertTrue($method->invoke($urlGenerator, 'mailto:test@example.com'));
+        $this->assertTrue($method->invoke($urlGenerator, 'tel:1234567890'));
+        $this->assertTrue($method->invoke($urlGenerator, 'sms:1234567890'));
+        $this->assertTrue($method->invoke($urlGenerator, '#anchor'));
+        $this->assertFalse($method->invoke($urlGenerator, 'not-a-url'));
+    }
+
+    public function testFormatParameters()
+    {
+        $urlGenerator = new UrlGenerator($this->container);
+        $method = new ReflectionMethod(UrlGenerator::class, 'formatParameters');
+        $method->setAccessible(true);
+
+        $urlRoutable = new UrlRoutableStub();
+        $parameters = ['key' => $urlRoutable, 'normal' => 'value'];
+
+        $result = $method->invoke($urlGenerator, $parameters);
+        $this->assertEquals(['key' => '1', 'normal' => 'value'], $result);
     }
 
     private function mockContainer()

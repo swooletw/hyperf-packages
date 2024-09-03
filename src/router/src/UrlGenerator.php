@@ -8,6 +8,7 @@ use Hyperf\Context\Context;
 use Hyperf\Context\RequestContext;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\ContainerInterface;
+use Hyperf\Contract\SessionInterface;
 use Hyperf\HttpMessage\Uri\Uri;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Router\DispatcherFactory;
@@ -94,6 +95,50 @@ class UrlGenerator
     public function current(): string
     {
         return rtrim(preg_replace('/\?.*/', '', $this->full()), '/');
+    }
+
+    /**
+     * Get the URL for the previous request.
+     *
+     * @param mixed $fallback
+     */
+    public function previous($fallback = false): string
+    {
+        if (! RequestContext::has()) {
+            return $this->getPreviousUrlFromSession()
+                ?: ($fallback ? $this->to($fallback) : $this->to('/'));
+        }
+
+        $referrer = $this->container->get(RequestInterface::class)
+            ->header('referer');
+        $url = $referrer ? $this->to($referrer) : $this->getPreviousUrlFromSession();
+
+        return $url ?: ($fallback ? $this->to($fallback) : $this->to('/'));
+    }
+
+    /**
+     * Get the previous path info for the request.
+     *
+     * @param mixed $fallback
+     */
+    public function previousPath($fallback = false): string
+    {
+        $previousPath = str_replace($this->to('/'), '', rtrim(preg_replace('/\?.*/', '', $this->previous($fallback)), '/'));
+
+        return $previousPath === '' ? '/' : $previousPath;
+    }
+
+    /**
+     * Get the previous URL from the session if possible.
+     */
+    protected function getPreviousUrlFromSession(): ?string
+    {
+        if (! $this->container->has(SessionInterface::class)) {
+            return null;
+        }
+
+        return $this->container->get(SessionInterface::class)
+            ->previousUrl();
     }
 
     private function trimPath(string $path, string $tail = ''): string
