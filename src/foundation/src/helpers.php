@@ -305,7 +305,7 @@ if (! function_exists('response')) {
      *
      * @return ResponseContract|ResponseInterface
      */
-    function response(mixed $content = '', int $status = 200, array $headers = [])
+    function response(mixed $content = '', int $status = 200, array $headers = []): ResponseContract|ResponseInterface
     {
         $response = app(ResponseContract::class);
 
@@ -323,7 +323,7 @@ if (! function_exists('redirect')) {
      *
      * @return ResponseInterface
      */
-    function redirect(string $toUrl, int $status = 302, string $schema = 'http')
+    function redirect(string $toUrl, int $status = 302, string $schema = 'http'): ResponseInterface
     {
         return app(ResponseContract::class)
             ->redirect($toUrl, $status, $schema);
@@ -340,7 +340,7 @@ if (! function_exists('session')) {
      * @param mixed $default
      * @return mixed|SessionInterface
      */
-    function session($key = null, $default = null)
+    function session(null|array|string $key = null, mixed $default = null): mixed
     {
         $session = app(SessionInterface::class);
 
