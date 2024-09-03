@@ -84,6 +84,7 @@ use SwooleTW\Hyperf\Http\Request as HttpRequest;
  * @method static string getRequestUri()
  * @method static string getUri()
  * @method static string getQueryString()
+ * @method static SessionInterface session()
  *
  * @see \SwooleTW\Hyperf\Http\Request
  * @see \Hyperf\HttpServer\Request

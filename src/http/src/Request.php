@@ -10,9 +10,11 @@ use Hyperf\Collection\Arr;
 use Hyperf\Collection\Collection;
 use Hyperf\Context\Context;
 use Hyperf\Context\RequestContext;
+use Hyperf\Contract\SessionInterface;
 use Hyperf\HttpServer\Request as HyperfRequest;
 use Hyperf\Stringable\Str;
 use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
 use stdClass;
 use Stringable;
 use SwooleTW\Hyperf\Http\Contracts\RequestContract;
@@ -694,6 +696,18 @@ class Request extends HyperfRequest implements RequestContract
     public function pjax(): bool
     {
         return $this->header('X-PJAX') === 'true';
+    }
+
+    /**
+     * Get session for the current request.
+     */
+    public function session(): SessionInterface
+    {
+        if (! Context::has(SessionInterface::class)) {
+            throw new RuntimeException('Session not set on request.');
+        }
+
+        return Context::get(SessionInterface::class);
     }
 
     /**

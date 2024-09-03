@@ -7,6 +7,7 @@ namespace SwooleTW\Hyperf\Http\Contracts;
 use Carbon\Carbon;
 use Carbon\Exceptions\InvalidFormatException;
 use Hyperf\Collection\Collection;
+use Hyperf\Contract\SessionInterface;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Stringable;
@@ -333,6 +334,11 @@ interface RequestContract extends RequestInterface
      * Determine if the request is the result of a PJAX call.
      */
     public function pjax(): bool;
+
+    /**
+     * Get session for the current request.
+     */
+    public function session(): SessionInterface;
 
     /**
      * Get original psr7 request instance.

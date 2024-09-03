@@ -456,6 +456,7 @@ class Application extends Container implements ApplicationContract
             \SwooleTW\Hyperf\Router\UrlGenerator::class => ['url'],
             \Hyperf\ViewEngine\Contract\FactoryInterface::class => ['view'],
             \Hyperf\ViewEngine\Compiler\CompilerInterface::class => ['blade.compiler'],
+            \Hyperf\Contract\SessionInterface::class => ['session'],
         ] as $key => $aliases) {
             foreach ($aliases as $alias) {
                 $this->alias($key, $alias);

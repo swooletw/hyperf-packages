@@ -7,12 +7,14 @@ namespace SwooleTW\Hyperf\Tests\Http;
 use Carbon\Carbon;
 use Hyperf\Collection\Collection;
 use Hyperf\Context\Context;
+use Hyperf\Contract\SessionInterface;
 use Hyperf\HttpMessage\Upload\UploadedFile;
 use Hyperf\HttpMessage\Uri\Uri;
 use Hyperf\Stringable\Stringable;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
 use SwooleTW\Hyperf\Http\Request;
 use Swow\Psr7\Message\ServerRequestPlusInterface;
 
@@ -27,6 +29,7 @@ class RequestTest extends TestCase
         Mockery::close();
         Context::set(ServerRequestInterface::class, null);
         Context::set('http.request.parsedData', null);
+        Context::set(SessionInterface::class, null);
     }
 
     public function testAllFiles()
@@ -615,6 +618,30 @@ class RequestTest extends TestCase
         $request = new Request();
 
         $this->assertTrue($request->pjax());
+    }
+
+    public function testSession()
+    {
+        $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);
+        Context::set(ServerRequestInterface::class, $psrRequest);
+        $request = new Request();
+
+        $mockSession = Mockery::mock(SessionInterface::class);
+        Context::set(SessionInterface::class, $mockSession);
+
+        $this->assertSame($mockSession, $request->session());
+    }
+
+    public function testSessionThrowsExceptionWhenNotSet()
+    {
+        $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);
+        Context::set(ServerRequestInterface::class, $psrRequest);
+        $request = new Request();
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Session not set on request.');
+
+        $request->session();
     }
 
     public function testGetPsr7Request()
