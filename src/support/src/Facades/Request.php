@@ -20,6 +20,7 @@ use SwooleTW\Hyperf\Http\Request as HttpRequest;
  * @method static mixed enum(string $key, string $enumClass)
  * @method static array except(mixed $keys)
  * @method static bool exists(array|string $key)
+ * @method static array validate(array $rules, array $messages = [], array $customAttributes = [])
  * @method static bool filled(array|string $key)
  * @method static float float(string $key, float $default = 0.0)
  * @method static Stringable string(string $key, mixed $default = null)

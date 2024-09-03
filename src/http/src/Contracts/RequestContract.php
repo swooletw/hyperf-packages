@@ -9,6 +9,7 @@ use Carbon\Exceptions\InvalidFormatException;
 use Hyperf\Collection\Collection;
 use Hyperf\Contract\SessionInterface;
 use Hyperf\HttpServer\Contract\RequestInterface;
+use Hyperf\Validation\ValidationException;
 use Psr\Http\Message\ServerRequestInterface;
 use Stringable;
 
@@ -339,6 +340,13 @@ interface RequestContract extends RequestInterface
      * Get session for the current request.
      */
     public function session(): SessionInterface;
+
+    /**
+     * Validate the given data against the provided rules.
+     *
+     * @throws ValidationException
+     */
+    public function validate(array $data, array $rules, array $messages = [], array $customAttributes = []): array;
 
     /**
      * Get original psr7 request instance.

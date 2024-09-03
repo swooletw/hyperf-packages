@@ -35,6 +35,10 @@
         "hyperf/contract": "~3.1.0",
         "nesbot/carbon": "^2.0 || ^3.0"
     },
+    "suggest": {
+        "hyperf/session": "Required to `session` function in request.",
+        "hyperf/validation": "Required to `validate` function in request."
+    },
     "config": {
         "sort-packages": true
     },

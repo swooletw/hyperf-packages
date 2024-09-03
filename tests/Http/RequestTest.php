@@ -6,13 +6,16 @@ namespace SwooleTW\Hyperf\Tests\Http;
 
 use Carbon\Carbon;
 use Hyperf\Collection\Collection;
+use Hyperf\Context\ApplicationContext;
 use Hyperf\Context\Context;
 use Hyperf\Contract\SessionInterface;
 use Hyperf\HttpMessage\Upload\UploadedFile;
 use Hyperf\HttpMessage\Uri\Uri;
 use Hyperf\Stringable\Stringable;
+use Hyperf\Validation\ValidatorFactory;
 use Mockery;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
 use SwooleTW\Hyperf\Http\Request;
@@ -651,6 +654,37 @@ class RequestTest extends TestCase
         $request = new Request();
 
         $this->assertSame($psrRequest, $request->getPsr7Request());
+    }
+
+    public function testValidate()
+    {
+        $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);
+        Context::set(ServerRequestInterface::class, $psrRequest);
+        $request = new Request();
+
+        $validatorFactory = Mockery::mock(ValidatorFactory::class);
+        $validatorFactory->shouldReceive('validate')
+            ->once()
+            ->with(
+                ['name' => 'John Doe'],
+                ['name' => 'required|string|max:255'],
+                [],
+                []
+            )
+            ->andReturn(['name' => 'John Doe']);
+
+        $container = Mockery::mock(ContainerInterface::class);
+        $container->shouldReceive('get')
+            ->with(ValidatorFactory::class)
+            ->andReturn($validatorFactory);
+        ApplicationContext::setContainer($container);
+
+        $result = $request->validate(
+            ['name' => 'John Doe'],
+            ['name' => 'required|string|max:255']
+        );
+
+        $this->assertEquals(['name' => 'John Doe'], $result);
     }
 }
 

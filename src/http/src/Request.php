@@ -8,11 +8,14 @@ use Carbon\Carbon;
 use Carbon\Exceptions\InvalidFormatException;
 use Hyperf\Collection\Arr;
 use Hyperf\Collection\Collection;
+use Hyperf\Context\ApplicationContext;
 use Hyperf\Context\Context;
 use Hyperf\Context\RequestContext;
 use Hyperf\Contract\SessionInterface;
 use Hyperf\HttpServer\Request as HyperfRequest;
 use Hyperf\Stringable\Str;
+use Hyperf\Validation\ValidationException;
+use Hyperf\Validation\ValidatorFactory;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
 use stdClass;
@@ -708,6 +711,18 @@ class Request extends HyperfRequest implements RequestContract
         }
 
         return Context::get(SessionInterface::class);
+    }
+
+    /**
+     * Validate the given data against the provided rules.
+     *
+     * @throws ValidationException
+     */
+    public function validate(array $data, array $rules, array $messages = [], array $customAttributes = []): array
+    {
+        return ApplicationContext::getContainer()
+            ->get(ValidatorFactory::class)
+            ->validate($data, $rules, $messages, $customAttributes);
     }
 
     /**
