@@ -7,7 +7,7 @@
         "hyperf",
         "auth",
         "swoole",
-        "larvel"
+        "laravel"
     ],
     "support": {
         "issues": "https://github.com/swooletw/hyperf-packages/issues",
