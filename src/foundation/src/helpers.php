@@ -302,8 +302,6 @@ if (! function_exists('request')) {
 if (! function_exists('response')) {
     /**
      * Return a new response from the application.
-     *
-     * @return ResponseContract|ResponseInterface
      */
     function response(mixed $content = '', int $status = 200, array $headers = []): ResponseContract|ResponseInterface
     {
@@ -320,8 +318,6 @@ if (! function_exists('response')) {
 if (! function_exists('redirect')) {
     /**
      * Return a new response from the application.
-     *
-     * @return ResponseInterface
      */
     function redirect(string $toUrl, int $status = 302, string $schema = 'http'): ResponseInterface
     {
@@ -336,8 +332,6 @@ if (! function_exists('session')) {
      *
      * If an array is passed as the key, we will assume you want to set an array of values.
      *
-     * @param null|array|string $key
-     * @param mixed $default
      * @return mixed|SessionInterface
      */
     function session(null|array|string $key = null, mixed $default = null): mixed
