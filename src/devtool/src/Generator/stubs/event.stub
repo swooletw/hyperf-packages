@@ -1,0 +1,16 @@
+<?php
+
+declare(strict_types=1);
+
+namespace %NAMESPACE%;
+
+class %CLASS%
+{
+    /**
+     * Create a new event instance.
+     */
+    public function __construct()
+    {
+        //
+    }
+}

@@ -1,0 +1,21 @@
+<?php
+
+declare(strict_types=1);
+
+namespace %NAMESPACE%;
+
+use SwooleTW\Hyperf\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class %CLASS% extends TestCase
+{
+    /**
+     * A basic feature test example.
+     */
+    public function testExample(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+    }
+}
