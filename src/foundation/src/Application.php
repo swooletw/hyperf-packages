@@ -457,6 +457,7 @@ class Application extends Container implements ApplicationContract
             \Hyperf\ViewEngine\Contract\FactoryInterface::class => ['view'],
             \Hyperf\ViewEngine\Compiler\CompilerInterface::class => ['blade.compiler'],
             \Hyperf\Contract\SessionInterface::class => ['session'],
+            \SwooleTW\Hyperf\Foundation\Console\Contracts\Schedule::class => ['schedule'],
         ] as $key => $aliases) {
             foreach ($aliases as $alias) {
                 $this->alias($key, $alias);
