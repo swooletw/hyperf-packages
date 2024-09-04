@@ -14,10 +14,6 @@ class Reflector
 {
     /**
      * This is a PHP 7.4 compatible implementation of is_callable.
-     *
-     * @param mixed $var
-     * @param bool $syntaxOnly
-     * @return bool
      */
     public static function isCallable(mixed $var, bool $syntaxOnly = false): bool
     {
@@ -63,7 +59,6 @@ class Reflector
      * Get the class name of the given parameter's type, if possible.
      *
      * @param ReflectionParameter $parameter
-     * @return null|string
      */
     public static function getParameterClassName($parameter): ?string
     {
@@ -80,7 +75,6 @@ class Reflector
      * Get the class names of the given parameter's type, including union types.
      *
      * @param ReflectionParameter $parameter
-     * @return array
      */
     public static function getParameterClassNames($parameter): array
     {
@@ -108,7 +102,6 @@ class Reflector
      *
      * @param ReflectionParameter $parameter
      * @param ReflectionNamedType $type
-     * @return string
      */
     protected static function getTypeName($parameter, $type): ?string
     {
@@ -132,7 +125,6 @@ class Reflector
      *
      * @param ReflectionParameter $parameter
      * @param string $className
-     * @return bool
      */
     public static function isParameterSubclassOf($parameter, $className): bool
     {

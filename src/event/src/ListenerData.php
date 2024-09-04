@@ -8,7 +8,6 @@ use Hyperf\Event\ListenerData as BaseListenerData;
 
 class ListenerData extends BaseListenerData
 {
-
     /**
      * @phpstan-ignore-next-line
      * @var array|callable|string
