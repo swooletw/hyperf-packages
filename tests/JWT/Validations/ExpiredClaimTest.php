@@ -6,14 +6,14 @@ namespace SwooleTW\Hyperf\Tests\JWT\Validations;
 
 use Carbon\Carbon;
 use SwooleTW\Hyperf\JWT\Exceptions\TokenExpiredException;
-use SwooleTW\Hyperf\JWT\Validations\ExpiredCliam;
+use SwooleTW\Hyperf\JWT\Validations\ExpiredClaim;
 use SwooleTW\Hyperf\Tests\TestCase;
 
 /**
  * @internal
  * @coversNothing
  */
-class ExpiredCliamTest extends TestCase
+class ExpiredClaimTest extends TestCase
 {
     public function testValid()
     {
@@ -21,7 +21,7 @@ class ExpiredCliamTest extends TestCase
 
         $this->expectNotToPerformAssertions();
 
-        $validation = new ExpiredCliam(['leeway' => 3600]);
+        $validation = new ExpiredClaim(['leeway' => 3600]);
 
         $validation->validate([]);
         $validation->validate(['exp' => Carbon::now()->timestamp + 3600]);
@@ -35,7 +35,7 @@ class ExpiredCliamTest extends TestCase
         $this->expectException(TokenExpiredException::class);
         $this->expectExceptionMessage('Token has expired');
 
-        $validation = new ExpiredCliam();
+        $validation = new ExpiredClaim();
 
         $validation->validate(['exp' => Carbon::now()->timestamp - 3600]);
     }

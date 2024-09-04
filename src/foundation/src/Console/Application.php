@@ -48,7 +48,7 @@ class Application extends SymfonyApplication implements ApplicationContract
     protected array $commandMap = [];
 
     public function __construct(
-        protected ContainerInterface $container,
+        protected ContainerContract $container,
         protected EventDispatcherInterface $dispatcher,
         string $version
     ) {
