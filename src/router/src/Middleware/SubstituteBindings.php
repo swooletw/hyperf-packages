@@ -138,6 +138,7 @@ class SubstituteBindings implements MiddlewareInterface
             throw new UrlRoutableNotFoundException($class, $routeKey);
         }
 
+        /** @phpstan-ignore-next-line */
         return $urlRoutable;
     }
 

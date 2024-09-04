@@ -95,7 +95,7 @@ abstract class Facade
     /**
      * Create a fresh mock instance for the given class.
      */
-    protected static function createMock(): MockInterface
+    protected static function createMock(): MockInterface|LegacyMockInterface
     {
         $class = static::getMockableClass();
 

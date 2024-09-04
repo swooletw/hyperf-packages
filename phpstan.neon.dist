@@ -3,7 +3,7 @@
 #
 
 parameters:
-  level: 2
+  level: 3
   parallel:
     jobSize: 20
     maximumNumberOfProcesses: 32

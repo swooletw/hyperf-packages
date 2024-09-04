@@ -687,6 +687,7 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
             );
         }
 
+        /** @phpstan-ignore-next-line */
         return ApplicationContext::getContainer();
     }
 
@@ -695,6 +696,7 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
      */
     public static function setInstance(ContainerContract $container): ContainerContract
     {
+        /** @phpstan-ignore-next-line */
         return ApplicationContext::setContainer($container);
     }
 

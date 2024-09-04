@@ -8,13 +8,13 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Exception;
 use Hyperf\Collection\Collection;
+use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Ecdsa;
 use Lcobucci\JWT\Signer\Key;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa;
-use Lcobucci\JWT\Token\Builder;
 use Lcobucci\JWT\Token\RegisteredClaims;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use SwooleTW\Hyperf\JWT\Contracts\ProviderContract;
@@ -196,7 +196,7 @@ class Lcobucci extends Provider implements ProviderContract
     /**
      * @throws \SwooleTW\Hyperf\JWT\Exceptions\JWTException
      */
-    protected function getSigningKey(): Key
+    protected function getSigningKey(): mixed
     {
         if ($this->isAsymmetric()) {
             if (! $privateKey = $this->getPrivateKey()) {
@@ -216,7 +216,7 @@ class Lcobucci extends Provider implements ProviderContract
     /**
      * @throws \SwooleTW\Hyperf\JWT\Exceptions\JWTException
      */
-    protected function getVerificationKey(): Key
+    protected function getVerificationKey(): mixed
     {
         if ($this->isAsymmetric()) {
             if (! $public = $this->getPublicKey()) {

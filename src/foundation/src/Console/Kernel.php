@@ -29,7 +29,7 @@ class Kernel implements KernelContract
 {
     use HasPendingCommand;
 
-    protected ConsoleApplication $artisan;
+    protected ApplicationContract $artisan;
 
     /**
      * The Artisan commands provided by the application.

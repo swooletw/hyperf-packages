@@ -8,7 +8,6 @@ use Closure;
 use Hyperf\Command\Command;
 use Hyperf\Context\Context;
 use Override;
-use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use SwooleTW\Hyperf\Container\Contracts\Container as ContainerContract;
 use SwooleTW\Hyperf\Foundation\Console\Contracts\Application as ApplicationContract;

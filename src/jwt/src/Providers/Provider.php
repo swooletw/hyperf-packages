@@ -123,8 +123,6 @@ abstract class Provider
 
     /**
      * Get the key used to sign the tokens.
-     *
-     * @return null|string
      */
     protected function getSigningKey(): mixed
     {
@@ -133,8 +131,6 @@ abstract class Provider
 
     /**
      * Get the key used to verify the tokens.
-     *
-     * @return null|string
      */
     protected function getVerificationKey(): mixed
     {
