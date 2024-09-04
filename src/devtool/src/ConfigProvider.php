@@ -8,6 +8,7 @@ use SwooleTW\Hyperf\Devtool\Generator\ComponentCommand;
 use SwooleTW\Hyperf\Devtool\Generator\EventCommand;
 use SwooleTW\Hyperf\Devtool\Generator\ListenerCommand;
 use SwooleTW\Hyperf\Devtool\Generator\ProviderCommand;
+use SwooleTW\Hyperf\Devtool\Generator\RuleCommand;
 use SwooleTW\Hyperf\Devtool\Generator\SessionTableCommand;
 use SwooleTW\Hyperf\Devtool\Generator\TestCommand;
 
@@ -23,6 +24,7 @@ class ConfigProvider
                 ComponentCommand::class,
                 TestCommand::class,
                 SessionTableCommand::class,
+                RuleCommand::class,
             ],
         ];
     }

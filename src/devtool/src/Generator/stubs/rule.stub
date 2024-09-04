@@ -1,0 +1,21 @@
+<?php
+
+declare(strict_types=1);
+
+namespace %NAMESPACE%;
+
+use Closure;
+use Hyperf\Validation\Contract\Rule;
+
+class %CLASS% implements Rule
+{
+    /**
+     * Run the validation rule.
+     *
+     * @param  \Closure(string)  $fail
+     */
+    public function validate(string $attribute, mixed $value, Closure $fail): void
+    {
+        //
+    }
+}
