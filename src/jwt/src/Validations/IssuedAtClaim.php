@@ -15,7 +15,7 @@ class IssuedAtClaim extends AbstractValidation
             return;
         }
 
-        if ($this->timestamp($iat)->subSecond($this->config['leeway'] ?? 0) > Carbon::now()) {
+        if ($this->timestamp($iat)->subSeconds($this->config['leeway'] ?? 0) > Carbon::now()) {
             throw new TokenInvalidException('Issued At (iat) timestamp cannot be in the future');
         }
     }

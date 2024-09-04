@@ -212,14 +212,14 @@ class LogManager implements LoggerInterface
 
         $handlers = Collection::make($config['channels'])->flatMap(function ($channel) {
             return $channel instanceof LoggerInterface
-                ? $channel->getHandlers()
-                : $this->channel($channel)->getHandlers();
+                ? $channel->getHandlers() // @phpstan-ignore-line
+                : $this->channel($channel)->getHandlers(); // @phpstan-ignore-line
         })->all();
 
         $processors = Collection::make($config['channels'])->flatMap(function ($channel) {
             return $channel instanceof LoggerInterface
-                ? $channel->getProcessors()
-                : $this->channel($channel)->getProcessors();
+                ? $channel->getProcessors() // @phpstan-ignore-line
+                : $this->channel($channel)->getProcessors(); // @phpstan-ignore-line
         })->all();
 
         if ($config['ignore_exceptions'] ?? false) {

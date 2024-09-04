@@ -8,8 +8,6 @@ interface FactoryContract
 {
     /**
      * Get a guard instance by name.
-     *
-     * @return \SwooleTW\Hyperf\Auth\Guard|\SwooleTW\Hyperf\Auth\StatefulGuard
      */
     public function guard(?string $name = null): Guard|StatefulGuard;
 

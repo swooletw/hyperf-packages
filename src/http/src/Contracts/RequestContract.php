@@ -9,7 +9,6 @@ use Carbon\Exceptions\InvalidFormatException;
 use Hyperf\Collection\Collection;
 use Hyperf\Contract\SessionInterface;
 use Hyperf\HttpServer\Contract\RequestInterface;
-use Hyperf\Validation\ValidationException;
 use Psr\Http\Message\ServerRequestInterface;
 use Stringable;
 
@@ -280,10 +279,8 @@ interface RequestContract extends RequestInterface
 
     /**
      * Get the full URL for the request without the given query string parameters.
-     *
-     * @param array|string $keys
      */
-    public function fullUrlWithoutQuery(array $keys): string;
+    public function fullUrlWithoutQuery(array|string $keys): string;
 
     /**
      * Get the request method.
@@ -344,7 +341,7 @@ interface RequestContract extends RequestInterface
     /**
      * Validate the given data against the provided rules.
      *
-     * @throws ValidationException
+     * @throws \Hyperf\Validation\ValidationException
      */
     public function validate(array $data, array $rules, array $messages = [], array $customAttributes = []): array;
 

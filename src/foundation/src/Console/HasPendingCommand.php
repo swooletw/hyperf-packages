@@ -7,6 +7,7 @@ namespace SwooleTW\Hyperf\Foundation\Console;
 use Hyperf\Command\Annotation\Command as AnnotationCommand;
 use Hyperf\Command\Parser;
 use Hyperf\Di\Annotation\AnnotationCollector;
+use InvalidArgumentException;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputArgument;
@@ -16,8 +17,7 @@ trait HasPendingCommand
 {
     /**
      * @throws InvalidArgumentException
-     * @throws SymfonyInvalidArgumentException
-     * @throws LogicException
+     * @throws \LogicException
      */
     protected function pendingCommand(SymfonyCommand $command): SymfonyCommand
     {

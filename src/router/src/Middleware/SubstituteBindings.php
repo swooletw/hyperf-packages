@@ -147,6 +147,7 @@ class SubstituteBindings implements MiddlewareInterface
      */
     protected function resolveModel(string $class, string $routeKey): Model
     {
+        /* @phpstan-ignore-next-line */
         return $class::where(make($class)->getRouteKeyName(), $routeKey)->firstOrFail();
     }
 

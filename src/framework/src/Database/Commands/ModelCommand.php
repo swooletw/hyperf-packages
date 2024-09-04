@@ -62,6 +62,7 @@ class ModelCommand extends BaseModelCommand
     {
         $builder = $this->getSchemaBuilder($option->getPool());
         $table = Str::replaceFirst($option->getPrefix(), '', $table);
+        /* @phpstan-ignore-next-line */
         $columns = $this->formatColumns($builder->getColumnTypeListing($table));
         if (empty($columns)) {
             $this->output?->error(

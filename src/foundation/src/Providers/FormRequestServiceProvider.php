@@ -16,6 +16,7 @@ class FormRequestServiceProvider extends ServiceProvider
     {
         /* @phpstan-ignore-next-line */
         $this->app->resolving(FormRequest::class, function (FormRequest $request) {
+            /* @phpstan-ignore-next-line */
             $request->validateResolved();
         });
     }

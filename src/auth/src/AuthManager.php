@@ -14,8 +14,6 @@ use Psr\Container\ContainerInterface;
 use SwooleTW\Hyperf\Auth\Contracts\FactoryContract;
 use SwooleTW\Hyperf\Auth\Contracts\Guard;
 use SwooleTW\Hyperf\Auth\Contracts\StatefulGuard;
-use SwooleTW\Hyperf\Auth\Exceptions\GuardException;
-use SwooleTW\Hyperf\Auth\Exceptions\UserProviderException;
 use SwooleTW\Hyperf\Auth\Guards\JwtGuard;
 use SwooleTW\Hyperf\Auth\Guards\SessionGuard;
 use SwooleTW\Hyperf\JWT\JWTManager;
@@ -42,9 +40,7 @@ class AuthManager implements FactoryContract
     protected Closure $userResolver;
 
     /**
-     * The array of auth config.
-     *
-     * @var array
+     * The auth configuration.
      */
     protected ConfigInterface $config;
 
@@ -58,8 +54,7 @@ class AuthManager implements FactoryContract
     }
 
     /**
-     * @throws GuardException
-     * @throws UserProviderException
+     * Attempt to get the guard from the local cache.
      */
     public function guard(?string $name = null): Guard|StatefulGuard
     {
@@ -119,6 +114,7 @@ class AuthManager implements FactoryContract
      */
     public function createJwtDriver(string $name, array $config): JwtGuard
     {
+        /* @phpstan-ignore-next-line */
         return new JwtGuard(
             $name,
             $this->createUserProvider($config['provider'] ?? null),

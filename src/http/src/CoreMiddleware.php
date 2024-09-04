@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Http;
 
+use Hyperf\Contract\Arrayable;
+use Hyperf\Contract\Jsonable;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\HttpServer\CoreMiddleware as HyperfCoreMiddleware;
 use Hyperf\View\RenderInterface;

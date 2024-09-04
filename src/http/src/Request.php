@@ -14,7 +14,6 @@ use Hyperf\Context\RequestContext;
 use Hyperf\Contract\SessionInterface;
 use Hyperf\HttpServer\Request as HyperfRequest;
 use Hyperf\Stringable\Str;
-use Hyperf\Validation\ValidationException;
 use Hyperf\Validation\ValidatorFactory;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
@@ -600,10 +599,8 @@ class Request extends HyperfRequest implements RequestContract
 
     /**
      * Get the full URL for the request without the given query string parameters.
-     *
-     * @param array|string $keys
      */
-    public function fullUrlWithoutQuery(array $keys): string
+    public function fullUrlWithoutQuery(array|string $keys): string
     {
         $query = Arr::except($this->query(), $keys);
 
@@ -716,7 +713,7 @@ class Request extends HyperfRequest implements RequestContract
     /**
      * Validate the given data against the provided rules.
      *
-     * @throws ValidationException
+     * @throws \Hyperf\Validation\ValidationException
      */
     public function validate(array $data, array $rules, array $messages = [], array $customAttributes = []): array
     {

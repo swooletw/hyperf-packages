@@ -76,7 +76,7 @@ class Encrypter implements EncrypterContract, StringEncrypter
     /**
      * Encrypt the given value.
      *
-     * @throws \SwooleTW\Encryption\Exceptions\EncryptException
+     * @throws \SwooleTW\Hyperf\Encryption\Exceptions\EncryptException
      */
     public function encrypt(mixed $value, bool $serialize = true): string
     {
@@ -114,7 +114,7 @@ class Encrypter implements EncrypterContract, StringEncrypter
     /**
      * Encrypt a string without serialization.
      *
-     * @throws \SwooleTW\Encryption\Exceptions\EncryptException
+     * @throws \SwooleTW\Hyperf\Encryption\Exceptions\EncryptException
      */
     public function encryptString(string $value): string
     {
@@ -124,7 +124,7 @@ class Encrypter implements EncrypterContract, StringEncrypter
     /**
      * Decrypt the given value.
      *
-     * @throws \SwooleTW\Encryption\Exceptions\DecryptException
+     * @throws \SwooleTW\Hyperf\Encryption\Exceptions\DecryptException
      */
     public function decrypt(string $payload, bool $unserialize = true): mixed
     {
@@ -158,7 +158,7 @@ class Encrypter implements EncrypterContract, StringEncrypter
     /**
      * Decrypt the given string without unserialization.
      *
-     * @throws \SwooleTW\Encryption\Exceptions\DecryptException
+     * @throws \SwooleTW\Hyperf\Encryption\Exceptions\DecryptException
      */
     public function decryptString(string $payload): string
     {
@@ -176,7 +176,7 @@ class Encrypter implements EncrypterContract, StringEncrypter
     /**
      * Get the JSON array from the given payload.
      *
-     * @throws \SwooleTW\Encryption\Exceptions\DecryptException
+     * @throws \SwooleTW\Hyperf\Encryption\Exceptions\DecryptException
      */
     protected function getJsonPayload(string $payload): array
     {

@@ -22,6 +22,7 @@ class InvokeQueuedClosure
      */
     public function failed(Throwable $e, SerializableClosure $closure, array $arguments, array $catchCallbacks): void
     {
+        /* @phpstan-ignore-next-line */
         collect($catchCallbacks)->each->__invoke(...[$e, ...$arguments]);
     }
 }

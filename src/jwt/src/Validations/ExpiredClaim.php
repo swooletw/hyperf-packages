@@ -7,7 +7,7 @@ namespace SwooleTW\Hyperf\JWT\Validations;
 use Carbon\Carbon;
 use SwooleTW\Hyperf\JWT\Exceptions\TokenExpiredException;
 
-class ExpiredCliam extends AbstractValidation
+class ExpiredClaim extends AbstractValidation
 {
     public function validate(array $payload): void
     {
@@ -15,7 +15,7 @@ class ExpiredCliam extends AbstractValidation
             return;
         }
 
-        if (Carbon::now() > $this->timestamp($exp)->addSecond($this->config['leeway'] ?? 0)) {
+        if (Carbon::now() > $this->timestamp($exp)->addSeconds($this->config['leeway'] ?? 0)) {
             throw new TokenExpiredException('Token has expired');
         }
     }

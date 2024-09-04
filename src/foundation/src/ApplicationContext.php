@@ -6,6 +6,7 @@ namespace SwooleTW\Hyperf\Foundation;
 
 use Hyperf\Context\ApplicationContext as HyperfApplicationContext;
 use SwooleTW\Hyperf\Container\Contracts\Container as ContainerContract;
+use TypeError;
 
 class ApplicationContext extends HyperfApplicationContext
 {

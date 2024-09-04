@@ -179,8 +179,6 @@ interface Container extends HyperfContainerInterface
 
     /**
      * Get the globally available instance of the container.
-     *
-     * @return SwooleTW\Hyperf\Container\Contracts\Container
      */
     public static function getInstance(): Container;
 

@@ -39,7 +39,7 @@ class EloquentUserProvider implements UserProvider
         $model = $this->createModel();
 
         return $this->newModelQuery($model)
-            ->where($model->getAuthIdentifierName(), $identifier)
+            ->where($model->getAuthIdentifierName(), $identifier) // @phpstan-ignore-line
             ->first();
     }
 

@@ -73,7 +73,7 @@ class BoundMethod
         throw new BindingResolutionException("Invalid callable `{$callableName}` provided.");
     }
 
-    private static function getDependencyParameters(ContainerContract $container, array $definitions, string $callableName, array $parameters): array
+    protected static function getDependencyParameters(ContainerContract $container, array $definitions, string $callableName, array $parameters): array
     {
         $result = [];
 

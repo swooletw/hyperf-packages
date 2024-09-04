@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Container;
 
 use ArrayAccess;
-use BindingResolutionException;
 use Closure;
 use Hyperf\Context\ApplicationContext;
 use Hyperf\Di\Container as HyperfContainer;
 use Hyperf\Di\Definition\DefinitionSource;
+use InvalidArgumentException;
 use LogicException;
 use SwooleTW\Hyperf\Container\Contracts\Container as ContainerContract;
 use TypeError;
@@ -103,7 +103,7 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
      * @param array $parameters Optional parameters to use to build the entry. Use this to force specific parameters
      *                          to specific values. Parameters not defined in this array will be resolved using
      *                          the container.
-     * @throws NotFoundException no entry found for the given name
+     * @throws \Hyperf\Di\Exception\NotFoundException no entry found for the given name
      * @throws InvalidArgumentException the name parameter must be of type string
      */
     public function make(string $name, array $parameters = [])
@@ -182,6 +182,7 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
 
         parent::unbind($name);
 
+        /* @phpstan-ignore-next-line */
         $this->definitionSource->removeDefinition($name);
 
         unset($this->fetchedDefinitions[$name]);
@@ -308,7 +309,7 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
     /**
      * "Extend" an abstract type in the container.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function extend(string $abstract, Closure $closure): void
     {
@@ -691,9 +692,6 @@ class Container extends HyperfContainer implements ContainerContract, ArrayAcces
 
     /**
      * Set the shared instance of the container.
-     *
-     * @param \SwooleTW\Hyperf\Contracts\Container\Container $container
-     * @return \SwooleTW\Hyperf\Contracts\Container\Container
      */
     public static function setInstance(ContainerContract $container): ContainerContract
     {

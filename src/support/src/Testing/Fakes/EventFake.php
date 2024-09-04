@@ -51,6 +51,7 @@ class EventFake implements EventDispatcherInterface
      */
     public function assertListening($expectedEvent, $expectedListener)
     {
+        /* @phpstan-ignore-next-line */
         foreach ($this->dispatcher->getListeners($expectedEvent) as $listenerClosure) {
             $actualListener = (new ReflectionFunction($listenerClosure))
                 ->getStaticVariables()['listener'];
@@ -190,7 +191,6 @@ class EventFake implements EventDispatcherInterface
      * @param object|string $event
      * @param mixed $payload
      * @param bool $halt
-     * @return null|array
      */
     public function dispatch($event, $payload = [], $halt = false)
     {
@@ -198,9 +198,10 @@ class EventFake implements EventDispatcherInterface
 
         if ($this->shouldFakeEvent($name, $payload)) {
             $this->events[$name][] = func_get_args();
-        } else {
-            return $this->dispatcher->dispatch($event, $payload, $halt);
         }
+
+        /* @phpstan-ignore-next-line */
+        return $this->dispatcher->dispatch($event, $payload, $halt);
     }
 
     /**

@@ -15,7 +15,7 @@ class NotBeforeCliam extends AbstractValidation
             return;
         }
 
-        if ($this->timestamp($nbf)->subSecond($this->config['leeway'] ?? 0) > Carbon::now()) {
+        if ($this->timestamp($nbf)->subSeconds($this->config['leeway'] ?? 0) > Carbon::now()) {
             throw new TokenInvalidException('Not Before (nbf) timestamp cannot be in the future');
         }
     }

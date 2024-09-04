@@ -3,7 +3,7 @@
 #
 
 parameters:
-  level: 1
+  level: 2
   parallel:
     jobSize: 20
     maximumNumberOfProcesses: 32
@@ -31,5 +31,6 @@ parameters:
     - '#Class [a-zA-Z0-9\\\\_]+ not found.#'
     - '#Constant BASE_PATH not found.#'
     - '#Call to an undefined static method SwooleTW\\Hyperf\\Support\\Facades\\#'
+    - '#Call to an undefined method Psr\\Container\\ContainerInterface::make\(\)#'
     - message: '#Call to an undefined method SwooleTW\\Hyperf\\Foundation\\Testing\\TestCase::#'
       path: src/foundation/src/Testing/TestCase.php
