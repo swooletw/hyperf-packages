@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Cache;
 
-use Exception;
 use Hyperf\Context\ApplicationContext;
 use SwooleTW\Hyperf\Cache\Exceptions\InvalidArgumentException;
 
@@ -13,28 +12,29 @@ use SwooleTW\Hyperf\Cache\Exceptions\InvalidArgumentException;
  *
  * If an array is passed, we'll assume you want to put to the cache.
  *
- * @param  dynamic  key|key,default|data,expiration|null
- * @return mixed|\SwooleTW\Hyperf\Cache\CacheManager
- * @throws Exception
+ * @param null|array<string, mixed>|string $key key|data
+ * @param mixed $default default|expiration|null
+ * @return ($key is null ? \SwooleTW\Hyperf\Cache\CacheManager : ($key is string ? mixed : bool))
+ *
+ * @throws InvalidArgumentException
  */
-function cache()
+function cache($key = null, $default = null)
 {
-    $arguments = func_get_args();
     $manager = ApplicationContext::getContainer()->get(CacheManager::class);
 
-    if (empty($arguments)) {
+    if (is_null($key)) {
         return $manager;
     }
 
-    if (is_string($arguments[0])) {
-        return $manager->get(...$arguments);
+    if (is_string($key)) {
+        return $manager->get($key, $default);
     }
 
-    if (! is_array($arguments[0])) {
+    if (! is_array($key)) {
         throw new InvalidArgumentException(
             'When setting a value in the cache, you must pass an array of key / value pairs.'
         );
     }
 
-    return $manager->put(key($arguments[0]), reset($arguments[0]), $arguments[1] ?? null);
+    return $manager->put(key($key), reset($key), $default);
 }

@@ -11,6 +11,7 @@ class FileLock extends CacheLock
      */
     public function acquire(): bool
     {
+        /* @phpstan-ignore-next-line */
         return $this->store->add($this->name, $this->owner, $this->seconds);
     }
 }

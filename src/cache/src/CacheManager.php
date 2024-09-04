@@ -151,7 +151,7 @@ class CacheManager implements FactoryContract
     /**
      * Attempt to get the store from the local cache.
      */
-    protected function get(string $name): RepositoryContract
+    protected function getStore(string $name): RepositoryContract
     {
         return $this->stores[$name] ?? $this->resolve($name);
     }
@@ -262,7 +262,7 @@ class CacheManager implements FactoryContract
                 $config = [];
             }
 
-            $store = $this->get($name)->getStore();
+            $store = $this->getStore($name)->getStore();
 
             return new StackStoreProxy($store, $config['max_ttl'] ?? null);
         })->all();

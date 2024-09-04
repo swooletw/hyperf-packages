@@ -109,6 +109,18 @@ class SwooleStore implements Store
     }
 
     /**
+     * Store an item in the cache if the key doesn't exist.
+     */
+    public function add(string $key, mixed $value, int $seconds): bool
+    {
+        if ($this->table->exists($key)) {
+            return false;
+        }
+
+        return $this->put($key, $value, $seconds);
+    }
+
+    /**
      * Increment the value of an item in the cache.
      */
     public function increment(string $key, int $value = 1): int

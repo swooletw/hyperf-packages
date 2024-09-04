@@ -106,6 +106,17 @@ class CacheSwooleStoreTest extends TestCase
         $this->assertEquals('baz', $store->get('bar'));
     }
 
+    public function testAdd()
+    {
+        $table = $this->createSwooleTable();
+
+        $store = $this->createStore($table);
+
+        $this->assertTrue($store->add('foo', 'bar', 5));
+        $this->assertEquals('bar', $store->get('foo'));
+        $this->assertFalse($store->add('foo', 'baz', 5));
+    }
+
     public function testIncrementAndDecrementOperations()
     {
         $table = $this->createSwooleTable();

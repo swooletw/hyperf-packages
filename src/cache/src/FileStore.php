@@ -9,7 +9,7 @@ use Hyperf\Support\Filesystem\Filesystem;
 use Hyperf\Support\Traits\InteractsWithTime;
 use SwooleTW\Hyperf\Cache\Contracts\LockProvider;
 use SwooleTW\Hyperf\Cache\Contracts\Store;
-use SwooleTW\Hyperf\Cache\Exceptions\NotSupportedException;
+use SwooleTW\Hyperf\Cache\Exceptions\LockTimeoutException;
 
 class FileStore implements Store, LockProvider
 {
@@ -78,12 +78,36 @@ class FileStore implements Store, LockProvider
 
     /**
      * Store an item in the cache if the key doesn't exist.
-     *
-     * @throw NotSupportedException
      */
     public function add(string $key, mixed $value, int $seconds): bool
     {
-        throw new NotSupportedException();
+        $this->ensureCacheDirectoryExists($path = $this->path($key));
+
+        $file = new LockableFile($path, 'c+');
+
+        try {
+            $file->getExclusiveLock();
+        } catch (LockTimeoutException) {
+            $file->close();
+
+            return false;
+        }
+
+        $expire = $file->read(10);
+
+        if (empty($expire) || $this->currentTime() >= $expire) {
+            $file->truncate()
+                ->write($this->expiration($seconds) . serialize($value))
+                ->close();
+
+            $this->ensurePermissionsAreCorrect($path);
+
+            return true;
+        }
+
+        $file->close();
+
+        return false;
     }
 
     /**
@@ -243,7 +267,7 @@ class FileStore implements Store, LockProvider
         // just return null. Otherwise, we'll get the contents of the file and get
         // the expiration UNIX timestamps from the start of the file's contents.
         try {
-            $expire = substr(
+            $expire = (int) substr(
                 $contents = $this->files->get($path, true),
                 0,
                 10

@@ -21,7 +21,7 @@ class CreateTimer extends BaseListener
     {
         $this->swooleStores()->each(function (array $config, string $name) {
             Timer::tick($config['eviction_interval'] ?? 10000, function () use ($name) {
-                /** @var SwooleStore */
+                /** @var \SwooleTW\Hyperf\Cache\SwooleStore */
                 $store = Cache::store($name)->getStore();
 
                 $store->evictRecords();

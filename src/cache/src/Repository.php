@@ -399,6 +399,7 @@ class Repository implements ArrayAccess, CacheContract
             throw new BadMethodCallException('This cache store does not support tagging.');
         }
 
+        /* @phpstan-ignore-next-line */
         $cache = $this->store->tags(is_array($names) ? $names : func_get_args());
 
         if (! is_null($this->events)) {

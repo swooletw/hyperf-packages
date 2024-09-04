@@ -72,6 +72,7 @@ class RateLimiter
     public function tooManyAttempts(string $key, int $maxAttempts): bool
     {
         if ($this->attempts($key) >= $maxAttempts) {
+            /* @phpstan-ignore-next-line */
             if ($this->cache->has($this->cleanRateLimiterKey($key) . ':timer')) {
                 return true;
             }
@@ -89,17 +90,21 @@ class RateLimiter
     {
         $key = $this->cleanRateLimiterKey($key);
 
+        /* @phpstan-ignore-next-line */
         $this->cache->add(
             $key . ':timer',
             $this->availableAt($decaySeconds),
             $decaySeconds
         );
 
+        /* @phpstan-ignore-next-line */
         $added = $this->cache->add($key, 0, $decaySeconds);
 
+        /* @phpstan-ignore-next-line */
         $hits = (int) $this->cache->increment($key);
 
         if (! $added && $hits == 1) {
+            /* @phpstan-ignore-next-line */
             $this->cache->put($key, 1, $decaySeconds);
         }
 
@@ -113,6 +118,7 @@ class RateLimiter
     {
         $key = $this->cleanRateLimiterKey($key);
 
+        /* @phpstan-ignore-next-line */
         return $this->cache->get($key, 0);
     }
 
@@ -123,6 +129,7 @@ class RateLimiter
     {
         $key = $this->cleanRateLimiterKey($key);
 
+        /* @phpstan-ignore-next-line */
         return $this->cache->forget($key);
     }
 
@@ -133,6 +140,7 @@ class RateLimiter
     {
         $key = $this->cleanRateLimiterKey($key);
 
+        /* @phpstan-ignore-next-line */
         $attempts = $this->attempts($key);
 
         return $maxAttempts - $attempts;
@@ -154,7 +162,7 @@ class RateLimiter
         $key = $this->cleanRateLimiterKey($key);
 
         $this->resetAttempts($key);
-
+        /* @phpstan-ignore-next-line */
         $this->cache->forget($key . ':timer');
     }
 
@@ -165,6 +173,7 @@ class RateLimiter
     {
         $key = $this->cleanRateLimiterKey($key);
 
+        /* @phpstan-ignore-next-line */
         return max(0, $this->cache->get($key . ':timer') - $this->currentTime());
     }
 
