@@ -47,7 +47,7 @@ class SessionTableCommand extends GeneratorCommand
 
         file_put_contents($path, file_get_contents($this->getStub()));
 
-        $output->writeln(sprintf('<info>%s</info>', $filename . ' created successfully.'));
+        $output->writeln(sprintf('<info>%s</info>', "Migration {$filename} created successfully."));
 
         $this->openWithIde($path);
 
