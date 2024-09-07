@@ -133,7 +133,7 @@ class UrlGenerator
      */
     protected function getPreviousUrlFromSession(): ?string
     {
-        if (! $this->container->has(SessionInterface::class)) {
+        if (! Context::has(SessionInterface::class)) {
             return null;
         }
 

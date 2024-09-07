@@ -6,9 +6,7 @@ namespace SwooleTW\Hyperf\Support\Facades;
 
 use Closure;
 use Mockery;
-use Mockery\Expectation;
 use Mockery\LegacyMockInterface;
-use Mockery\MockInterface;
 use RuntimeException;
 use SwooleTW\Hyperf\Foundation\ApplicationContext;
 
@@ -39,7 +37,7 @@ abstract class Facade
     /**
      * Convert the facade into a Mockery spy.
      */
-    public static function spy(): ?MockInterface
+    public static function spy()
     {
         if (static::isMock()) {
             return null;
@@ -55,7 +53,7 @@ abstract class Facade
     /**
      * Initiate a partial mock on the facade.
      */
-    public static function partialMock(): MockInterface
+    public static function partialMock()
     {
         $name = static::getFacadeAccessor();
 
@@ -69,7 +67,7 @@ abstract class Facade
     /**
      * Initiate a mock expectation on the facade.
      */
-    public static function shouldReceive(): Expectation
+    public static function shouldReceive()
     {
         $name = static::getFacadeAccessor();
 
@@ -83,7 +81,7 @@ abstract class Facade
     /**
      * Create a fresh mock instance for the given class.
      */
-    protected static function createFreshMockInstance(): MockInterface
+    protected static function createFreshMockInstance()
     {
         return tap(static::createMock(), function ($mock) {
             static::swap($mock);
@@ -95,7 +93,7 @@ abstract class Facade
     /**
      * Create a fresh mock instance for the given class.
      */
-    protected static function createMock(): LegacyMockInterface|MockInterface
+    protected static function createMock()
     {
         $class = static::getMockableClass();
 
