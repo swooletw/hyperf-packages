@@ -28,6 +28,7 @@ use ReflectionException;
 use SwooleTW\Hyperf\Auth\Access\AuthorizationException;
 use SwooleTW\Hyperf\Auth\AuthenticationException;
 use SwooleTW\Hyperf\Foundation\Contracts\Application as Container;
+use SwooleTW\Hyperf\Foundation\Exceptions\Contracts\ExceptionHandler as ExceptionHandlerContract;
 use SwooleTW\Hyperf\Foundation\Exceptions\Contracts\ExceptionRenderer;
 use SwooleTW\Hyperf\Foundation\Exceptions\Contracts\ShouldntReport;
 use SwooleTW\Hyperf\Http\Contracts\ResponseContract;
@@ -43,7 +44,7 @@ use SwooleTW\Hyperf\Support\Reflector;
 use SwooleTW\Hyperf\Support\Traits\ReflectsClosures;
 use Throwable;
 
-class Handler extends ExceptionHandler
+class Handler extends ExceptionHandler implements ExceptionHandlerContract
 {
     use ReflectsClosures;
 
@@ -109,7 +110,7 @@ class Handler extends ExceptionHandler
     protected array $internalDontReport = [
         AuthenticationException::class,
         AuthorizationException::class,
-        HttpException::class,
+        HyperfHttpException::class,
         HttpResponseException::class,
         ModelNotFoundException::class,
         ValidationException::class,

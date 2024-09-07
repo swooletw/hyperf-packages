@@ -10,6 +10,8 @@ use SwooleTW\Hyperf\Foundation\Console\Commands\ServerReloadCommand;
 use SwooleTW\Hyperf\Foundation\Console\Commands\VendorPublishCommand;
 use SwooleTW\Hyperf\Foundation\Console\Contracts\Schedule as ScheduleContract;
 use SwooleTW\Hyperf\Foundation\Console\Scheduling\Schedule;
+use SwooleTW\Hyperf\Foundation\Exceptions\Contracts\ExceptionHandler as ExceptionHandlerContract;
+use SwooleTW\Hyperf\Foundation\Exceptions\Handler as ExceptionHandler;
 use SwooleTW\Hyperf\Foundation\Listeners\ReloadDotenvAndConfig;
 use SwooleTW\Hyperf\Foundation\Queue\Console\QueueWorkCommand;
 
@@ -21,6 +23,7 @@ class ConfigProvider
             'dependencies' => [
                 ApplicationInterface::class => ApplicationFactory::class,
                 ScheduleContract::class => Schedule::class,
+                ExceptionHandlerContract::class => ExceptionHandler::class,
             ],
             'listeners' => [
                 ReloadDotenvAndConfig::class,

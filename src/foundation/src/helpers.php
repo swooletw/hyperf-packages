@@ -22,6 +22,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use SwooleTW\Hyperf\Cookie\Contracts\Cookie as CookieContract;
+use SwooleTW\Hyperf\Foundation\Exceptions\Contracts\ExceptionHandler as ExceptionHandlerContract;
 use SwooleTW\Hyperf\Http\Contracts\RequestContract;
 use SwooleTW\Hyperf\Http\Contracts\ResponseContract;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\HttpException;
@@ -369,6 +370,20 @@ if (! function_exists('redirect')) {
     {
         return app(ResponseContract::class)
             ->redirect($toUrl, $status, $schema);
+    }
+}
+
+if (! function_exists('report')) {
+    /**
+     * Report an exception.
+     */
+    function report(string|Throwable $exception): void
+    {
+        if (is_string($exception)) {
+            $exception = new Exception($exception);
+        }
+
+        app(ExceptionHandlerContract::class)->report($exception);
     }
 }
 
