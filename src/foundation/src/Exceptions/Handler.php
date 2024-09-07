@@ -231,7 +231,6 @@ class Handler extends ExceptionHandler
     /**
      * Indicate that the given attributes should never be flashed to the session on validation errors.
      *
-     * @param  array|string  $attributes
      * @return $this
      */
     public function dontFlash(array|string $attributes): self
@@ -603,9 +602,6 @@ class Handler extends ExceptionHandler
 
     /**
      * Remove all uploaded files form the given input array.
-     *
-     * @param  array  $input
-     * @return array
      */
     protected function removeFilesFromInput(array $input): array
     {
@@ -624,6 +620,7 @@ class Handler extends ExceptionHandler
 
     /**
      * Get the message bag from the given provider.
+     * @param mixed $provider
      */
     protected function getMessageBag($provider): MessageBagContract
     {
