@@ -24,7 +24,69 @@ use Psr\Log\LoggerInterface;
 use SwooleTW\Hyperf\Cookie\Contracts\Cookie as CookieContract;
 use SwooleTW\Hyperf\Http\Contracts\RequestContract;
 use SwooleTW\Hyperf\Http\Contracts\ResponseContract;
+use SwooleTW\Hyperf\HttpMessage\Exceptions\HttpException;
+use SwooleTW\Hyperf\HttpMessage\Exceptions\HttpResponseException;
+use SwooleTW\Hyperf\HttpMessage\Exceptions\NotFoundHttpException;
 use SwooleTW\Hyperf\Router\UrlGenerator;
+use SwooleTW\Hyperf\Support\Contracts\Responsable;
+
+if (! function_exists('abort')) {
+    /**
+     * Throw an HttpException with the given data.
+     *
+     * @param int|Responsable $code
+     *
+     * @throws HttpException
+     * @throws NotFoundHttpException
+     * @throws HttpResponseException
+     */
+    function abort(mixed $code, string $message = '', array $headers = []): void
+    {
+        if ($code instanceof Responsable) {
+            throw new HttpResponseException($code->toResponse(request()));
+        }
+
+        app()->abort($code, $message, $headers);
+    }
+}
+
+if (! function_exists('abort_if')) {
+    /**
+     * Throw an HttpException with the given data if the given condition is true.
+     *
+     * @param int|Responsable $code
+     *
+     * @throws HttpException
+     * @throws NotFoundHttpException
+     */
+    function abort_if(bool $boolean, mixed $code, string $message = '', array $headers = []): void
+    {
+        if (! $boolean) {
+            return;
+        }
+
+        abort($code, $message, $headers);
+    }
+}
+
+if (! function_exists('abort_unless')) {
+    /**
+     * Throw an HttpException with the given data unless the given condition is true.
+     *
+     * @param int|Responsable $code
+     *
+     * @throws HttpException
+     * @throws NotFoundHttpException
+     */
+    function abort_unless(bool $boolean, mixed $code, string $message = '', array $headers = []): void
+    {
+        if ($boolean) {
+            return;
+        }
+
+        abort($code, $message, $headers);
+    }
+}
 
 if (! function_exists('base_path')) {
     /**
@@ -32,7 +94,7 @@ if (! function_exists('base_path')) {
      */
     function base_path(string $path = ''): string
     {
-        return BASE_PATH . ($path ? '/' . $path : $path);
+        return app()->basePath($path);
     }
 }
 
