@@ -18,6 +18,7 @@ use Hyperf\HttpMessage\Exception\HttpException as HyperfHttpException;
 use Hyperf\HttpMessage\Exception\NotFoundHttpException;
 use Hyperf\HttpMessage\Upload\UploadedFile;
 use Hyperf\Support\MessageBag;
+use Hyperf\Validation\UnauthorizedException;
 use Hyperf\Validation\ValidationException;
 use Hyperf\ViewEngine\ViewErrorBag;
 use InvalidArgumentException;
@@ -778,6 +779,7 @@ class Handler extends ExceptionHandler
                 $e->response()?->message() ?: (BaseResponse::getReasonPhraseByCode($e->status()) ?? 'Whoops, looks like something went wrong.'),
                 $e
             ),
+            $e instanceof UnauthorizedException => new AccessDeniedHttpException($e->getMessage(), $e),
             $e instanceof AuthorizationException && ! $e->hasStatus() => new AccessDeniedHttpException($e->getMessage(), $e),
             default => $e,
         };
