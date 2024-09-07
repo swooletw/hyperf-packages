@@ -514,7 +514,6 @@ class Handler extends ExceptionHandler
             foreach ($this->firstClosureParameterTypes($renderCallback) as $type) {
                 if (is_a($e, $type)) {
                     if ($response = $renderCallback($e, $request)) {
-                        /* @phpstan-ignore-next-line */
                         return $response;
                     }
                 }
