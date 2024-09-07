@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Http\Contracts;
 
+use Hyperf\Contract\Arrayable;
+use Hyperf\Contract\Jsonable;
 use Hyperf\HttpServer\Contract\ResponseInterface as HyperfResponseInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -23,6 +25,13 @@ interface ResponseContract extends HyperfResponseInterface
      * Create a new response for a given view.
      */
     public function view(string $view, array $data = [], int $status = 200, array $headers = []): ResponseInterface;
+
+    /**
+     * Format data to JSON and return data with Content-Type:application/json header.
+     *
+     * @param array|Arrayable|Jsonable $data
+     */
+    public function json($data, int $status = 200, array $headers = []): ResponseInterface;
 
     /**
      * Create a streamed response.

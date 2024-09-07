@@ -73,6 +73,21 @@ class Response extends HyperfResponse implements ResponseContract
     }
 
     /**
+     * Format data to JSON and return data with Content-Type:application/json header.
+     *
+     * @param array|Arrayable|Jsonable $data
+     */
+    public function json($data, int $status = 200, array $headers = []): ResponseInterface
+    {
+        $response = parent::json($data);
+        foreach ($headers as $name => $value) {
+            $response = $response->withHeader($name, $value);
+        }
+
+        return $response->withStatus($status);
+    }
+
+    /**
      * Get original psr7 response instance.
      */
     public function getPsr7Response(): ResponseInterface
