@@ -14,6 +14,7 @@ use Hyperf\Di\MethodDefinitionCollector;
 use Hyperf\Di\MethodDefinitionCollectorInterface;
 use Hyperf\HttpMessage\Exception\HttpException;
 use Hyperf\HttpMessage\Server\Response as Psr7Response;
+use Hyperf\HttpMessage\Uri\Uri;
 use Hyperf\Support\MessageBag;
 use Hyperf\Validation\ValidationException;
 use Hyperf\Validation\Validator;
@@ -76,7 +77,7 @@ class FoundationExceptionHandlerTest extends TestCase
         ResponseContext::set(new Psr7Response());
         ApplicationContext::setContainer($this->container);
         View::shouldReceive('replaceNamespace')->once();
-        Context::set(SessionInterface::class, null);
+        Context::destroy(SessionInterface::class);
 
         $this->handler = new Handler($this->container);
     }
@@ -322,6 +323,10 @@ class FoundationExceptionHandlerTest extends TestCase
     {
         $this->request->shouldReceive('expectsJson')->once()->andReturn(false);
         $this->request->shouldReceive('all')->once()->andReturn(['foo' => 'bar']);
+
+        $psr7Request = m::mock(ServerRequestInterface::class);
+        $psr7Request->shouldReceive('getUri')->andReturn(new Uri('http://localhost'));
+        $this->container->instance(ServerRequestInterface::class, $psr7Request);
 
         $session = m::mock(SessionInterface::class);
         $session->shouldReceive('get')->with('errors', m::type(ViewErrorBag::class))->andReturn(new MessageBag(['error' => 'My custom validation exception']));
