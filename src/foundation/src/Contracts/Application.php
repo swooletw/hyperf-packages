@@ -6,6 +6,8 @@ namespace SwooleTW\Hyperf\Foundation\Contracts;
 
 use RuntimeException;
 use SwooleTW\Hyperf\Container\Contracts\Container;
+use SwooleTW\Hyperf\HttpMessage\Exceptions\HttpException;
+use SwooleTW\Hyperf\HttpMessage\Exceptions\NotFoundHttpException;
 use SwooleTW\Hyperf\Support\ServiceProvider;
 
 interface Application extends Container
@@ -98,6 +100,14 @@ interface Application extends Container
      * Boot the application's service providers.
      */
     public function boot(): void;
+
+    /**
+     * Throw an HttpException with the given data.
+     *
+     * @throws HttpException
+     * @throws NotFoundHttpException
+     */
+    public function abort(int $code, string $message = '', array $headers = []): void;
 
     /**
      * Get the service providers that have been loaded.

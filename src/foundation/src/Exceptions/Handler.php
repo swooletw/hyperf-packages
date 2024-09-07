@@ -15,7 +15,6 @@ use Hyperf\Database\Model\ModelNotFoundException;
 use Hyperf\ExceptionHandler\ExceptionHandler;
 use Hyperf\HttpMessage\Base\Response as BaseResponse;
 use Hyperf\HttpMessage\Exception\HttpException as HyperfHttpException;
-use Hyperf\HttpMessage\Exception\NotFoundHttpException;
 use Hyperf\HttpMessage\Upload\UploadedFile;
 use Hyperf\Support\MessageBag;
 use Hyperf\Validation\UnauthorizedException;
@@ -36,6 +35,7 @@ use SwooleTW\Hyperf\Http\Request;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\AccessDeniedHttpException;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\HttpException;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\HttpResponseException;
+use SwooleTW\Hyperf\HttpMessage\Exceptions\NotFoundHttpException;
 use SwooleTW\Hyperf\Router\UrlGenerator;
 use SwooleTW\Hyperf\Support\Contracts\Responsable;
 use SwooleTW\Hyperf\Support\Facades\Auth;
@@ -779,8 +779,8 @@ class Handler extends ExceptionHandler
                 $e->response()?->message() ?: (BaseResponse::getReasonPhraseByCode($e->status()) ?? 'Whoops, looks like something went wrong.'),
                 $e
             ),
-            $e instanceof UnauthorizedException => new AccessDeniedHttpException($e->getMessage(), $e),
-            $e instanceof AuthorizationException && ! $e->hasStatus() => new AccessDeniedHttpException($e->getMessage(), $e),
+            $e instanceof UnauthorizedException => new AccessDeniedHttpException($e->getMessage(), 0, $e),
+            $e instanceof AuthorizationException && ! $e->hasStatus() => new AccessDeniedHttpException($e->getMessage(), 0, $e),
             default => $e,
         };
     }

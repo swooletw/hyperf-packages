@@ -14,6 +14,8 @@ use SwooleTW\Hyperf\Container\Container;
 use SwooleTW\Hyperf\Container\DefinitionSourceFactory;
 use SwooleTW\Hyperf\Foundation\Contracts\Application as ApplicationContract;
 use SwooleTW\Hyperf\Foundation\Events\LocaleUpdated;
+use SwooleTW\Hyperf\HttpMessage\Exceptions\HttpException;
+use SwooleTW\Hyperf\HttpMessage\Exceptions\NotFoundHttpException;
 use SwooleTW\Hyperf\Support\Environment;
 use SwooleTW\Hyperf\Support\ServiceProvider;
 
@@ -340,6 +342,21 @@ class Application extends Container implements ApplicationContract
         }
 
         $provider->callBootedCallbacks();
+    }
+
+    /**
+     * Throw an HttpException with the given data.
+     *
+     * @throws HttpException
+     * @throws NotFoundHttpException
+     */
+    public function abort(int $code, string $message = '', array $headers = []): void
+    {
+        if ($code == 404) {
+            throw new NotFoundHttpException($message, 0, null, $headers);
+        }
+
+        throw new HttpException($code, $message, 0, null, $headers);
     }
 
     /**

@@ -13,6 +13,8 @@ use SwooleTW\Hyperf\Event\EventDispatcher;
 use SwooleTW\Hyperf\Event\ListenerProvider;
 use SwooleTW\Hyperf\Foundation\Bootstrap\RegisterFacades;
 use SwooleTW\Hyperf\Foundation\Events\LocaleUpdated;
+use SwooleTW\Hyperf\HttpMessage\Exceptions\HttpException;
+use SwooleTW\Hyperf\HttpMessage\Exceptions\NotFoundHttpException;
 use SwooleTW\Hyperf\Support\Environment;
 use SwooleTW\Hyperf\Support\ServiceProvider;
 use SwooleTW\Hyperf\Tests\Foundation\Concerns\HasMockedApplication;
@@ -220,6 +222,35 @@ class FoundationApplicationTest extends TestCase
     protected function assertExpectationCount(int $times): void
     {
         $this->assertSame($times, m::getContainer()->mockery_getExpectationCount());
+    }
+
+    public function testAbortThrowsNotFoundHttpException()
+    {
+        $this->expectException(NotFoundHttpException::class);
+        $this->expectExceptionMessage('Page was not found');
+
+        $app = $this->getApplication();
+        $app->abort(404, 'Page was not found');
+    }
+
+    public function testAbortThrowsHttpException()
+    {
+        $this->expectException(HttpException::class);
+        $this->expectExceptionMessage('Request is bad');
+
+        $app = $this->getApplication();
+        $app->abort(400, 'Request is bad');
+    }
+
+    public function testAbortAcceptsHeaders()
+    {
+        try {
+            $app = $this->getApplication();
+            $app->abort(400, 'Bad request', ['X-FOO' => 'BAR']);
+            $this->fail(sprintf('abort must throw an %s.', HttpException::class));
+        } catch (HttpException $exception) {
+            $this->assertSame(['X-FOO' => 'BAR'], $exception->getHeaders());
+        }
     }
 }
 
