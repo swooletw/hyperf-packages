@@ -16,6 +16,7 @@ use Hyperf\ExceptionHandler\ExceptionHandler;
 use Hyperf\HttpMessage\Base\Response as BaseResponse;
 use Hyperf\HttpMessage\Exception\HttpException as HyperfHttpException;
 use Hyperf\HttpMessage\Exception\NotFoundHttpException;
+use Hyperf\HttpMessage\Upload\UploadedFile;
 use Hyperf\Support\MessageBag;
 use Hyperf\Validation\ValidationException;
 use Hyperf\ViewEngine\ViewErrorBag;
@@ -111,6 +112,17 @@ class Handler extends ExceptionHandler
         HttpResponseException::class,
         ModelNotFoundException::class,
         ValidationException::class,
+    ];
+
+    /**
+     * A list of the inputs that are never flashed for validation exceptions.
+     *
+     * @var array<int, string>
+     */
+    protected array $dontFlash = [
+        'current_password',
+        'password',
+        'password_confirmation',
     ];
 
     /**
@@ -212,6 +224,21 @@ class Handler extends ExceptionHandler
         $exceptions = Arr::wrap($exceptions);
 
         $this->dontReport = array_values(array_unique(array_merge($this->dontReport, $exceptions)));
+
+        return $this;
+    }
+
+    /**
+     * Indicate that the given attributes should never be flashed to the session on validation errors.
+     *
+     * @param  array|string  $attributes
+     * @return $this
+     */
+    public function dontFlash(array|string $attributes): self
+    {
+        $this->dontFlash = array_values(array_unique(
+            array_merge($this->dontFlash, Arr::wrap($attributes))
+        ));
 
         return $this;
     }
@@ -533,7 +560,7 @@ class Handler extends ExceptionHandler
      */
     protected function invalid(Request $request, ValidationException $exception): ResponseInterface
     {
-        $this->withErrors($exception->errors(), $exception->errorBag);
+        $this->withErrors($request, $exception->errors(), $exception->errorBag);
 
         $urlGenerator = $this->container->get(UrlGenerator::class);
         $redirectUrl = $exception->redirectTo
@@ -546,7 +573,7 @@ class Handler extends ExceptionHandler
     /**
      * Flash the exception errors to the session.
      */
-    protected function withErrors(mixed $provider, string $key = 'default'): void
+    protected function withErrors(Request $request, mixed $provider, string $key = 'default'): void
     {
         if (! Context::get(SessionInterface::class)) {
             return;
@@ -559,11 +586,40 @@ class Handler extends ExceptionHandler
         if (! $errors instanceof ViewErrorBag) {
             $errors = new ViewErrorBag();
         }
+
+        $flashInputs = $this->removeFilesFromInput(
+            Arr::except($request->all(), $this->dontFlash)
+        );
         /* @var Session $session */
         $session->flash('errors', $errors->put($key, $value));
+        if ($flashInputs) {
+            /* @var Session $session */
+            $session->flashInput($flashInputs);
+        }
         // because session middleware save session before exception handler
         // so we need to save session again to make sure flash message is saved
         $session->save();
+    }
+
+    /**
+     * Remove all uploaded files form the given input array.
+     *
+     * @param  array  $input
+     * @return array
+     */
+    protected function removeFilesFromInput(array $input): array
+    {
+        foreach ($input as $key => $value) {
+            if (is_array($value)) {
+                $input[$key] = $this->removeFilesFromInput($value);
+            }
+
+            if ($value instanceof UploadedFile) {
+                unset($input[$key]);
+            }
+        }
+
+        return $input;
     }
 
     /**

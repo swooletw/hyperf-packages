@@ -321,10 +321,12 @@ class FoundationExceptionHandlerTest extends TestCase
     public function testValidateFailed()
     {
         $this->request->shouldReceive('expectsJson')->once()->andReturn(false);
+        $this->request->shouldReceive('all')->once()->andReturn(['foo' => 'bar']);
 
         $session = m::mock(SessionInterface::class);
         $session->shouldReceive('get')->with('errors', m::type(ViewErrorBag::class))->andReturn(new MessageBag(['error' => 'My custom validation exception']));
         $session->shouldReceive('flash')->with('errors', m::type(ViewErrorBag::class))->once();
+        $session->shouldReceive('flashInput')->with(['foo' => 'bar'])->once();
         $session->shouldReceive('save')->once();
         $this->container->instance(SessionInterface::class, $session);
         Context::set(SessionInterface::class, $session);
