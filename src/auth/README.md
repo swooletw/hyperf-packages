@@ -1,2 +1,2 @@
-Auth for Hyperf
+Auth for Laravel Hyperf
 ===

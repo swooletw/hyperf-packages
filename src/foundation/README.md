@@ -1,2 +1,2 @@
-Foundation for Hyperf
+Foundation for Laravel Hyperf
 ===

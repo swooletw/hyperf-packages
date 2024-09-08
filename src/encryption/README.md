@@ -1,2 +1,2 @@
-Encryption for Hyperf
+Encryption for Laravel Hyperf
 ===

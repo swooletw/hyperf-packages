@@ -1,2 +1,2 @@
-Dispatcher for Hyperf
+Dispatcher for Laravel Hyperf
 ===

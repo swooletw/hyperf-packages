@@ -1,2 +1,2 @@
-Hashing for Hyperf
+Hashing for Laravel Hyperf
 ===

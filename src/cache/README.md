@@ -1,2 +1,2 @@
-Cache for Hyperf
+Cache for Laravel Hyperf
 ===

@@ -1,2 +1,2 @@
-Object Pool for Hyperf
+Object Pool for Laravel Hyperf
 ===

@@ -1,2 +1,2 @@
-Log for Hyperf
+Log for Laravel Hyperf
 ===

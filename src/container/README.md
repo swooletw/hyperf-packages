@@ -1,2 +1,2 @@
-Container for Hyperf
+Container for Laravel Hyperf
 ===
