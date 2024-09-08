@@ -1,6 +1,5 @@
 The MIT License (MIT)
 
-Copyright (c) Taylor Otwell
 Copyright (c) Hyperf
 Copyright (c) Laravel Hyperf
 
