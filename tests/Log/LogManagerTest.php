@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Tests\Log;
 
+use Closure;
 use Hyperf\Config\Config;
+use Hyperf\Context\Context;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Di\Container;
 use Hyperf\Di\Definition\DefinitionSource;
@@ -22,6 +24,7 @@ use Monolog\Logger as Monolog;
 use Monolog\Processor\MemoryUsageProcessor;
 use Monolog\Processor\PsrLogMessageProcessor;
 use Monolog\Processor\UidProcessor;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use ReflectionProperty;
 use RuntimeException;
@@ -36,9 +39,15 @@ use SwooleTW\Hyperf\Tests\TestCase;
  */
 class LogManagerTest extends TestCase
 {
+    public function tearDown(): void
+    {
+        parent::tearDown();
+        Context::destroy('__logger.shared_context');
+    }
+
     public function testLogManagerCachesLoggerInstances()
     {
-        $manager = new LogManager($this->getContainer());
+        $manager = new LogManager($this->getContainer(), new Dispatcher());
 
         $logger1 = $manager->channel('single')->getLogger();
         $logger2 = $manager->channel('single')->getLogger();
@@ -48,7 +57,7 @@ class LogManagerTest extends TestCase
 
     public function testLogManagerGetDefaultDriver()
     {
-        $manager = new LogManager($container = $this->getContainer());
+        $manager = new LogManager($container = $this->getContainer(), new Dispatcher());
         $container->get(ConfigInterface::class)
             ->set('logging.default', 'single');
         $this->assertEmpty($manager->getChannels());
@@ -61,7 +70,7 @@ class LogManagerTest extends TestCase
 
     public function testStackChannel()
     {
-        $manager = new LogManager($container = $this->getContainer());
+        $manager = new LogManager($container = $this->getContainer(), new Dispatcher());
         $config = $container->get(ConfigInterface::class);
 
         $config->set('logging.channels.stack', [
@@ -107,7 +116,7 @@ class LogManagerTest extends TestCase
 
     public function testLogManagerCreatesConfiguredMonologHandler()
     {
-        $manager = new LogManager($container = $this->getContainer());
+        $manager = new LogManager($container = $this->getContainer(), new Dispatcher());
         $config = $container->get(ConfigInterface::class);
         $config->set('logging.channels.nonbubblingstream', [
             'driver' => 'monolog',
@@ -154,7 +163,7 @@ class LogManagerTest extends TestCase
 
     public function testLogManagerCreatesMonologHandlerWithConfiguredFormatter()
     {
-        $manager = new LogManager($container = $this->getContainer());
+        $manager = new LogManager($container = $this->getContainer(), new Dispatcher());
         $config = $container->get(ConfigInterface::class);
         $config->set('logging.channels.newrelic', [
             'driver' => 'monolog',
@@ -194,7 +203,7 @@ class LogManagerTest extends TestCase
 
     public function testLogManagerCreatesMonologHandlerWithProperFormatter()
     {
-        $manager = new LogManager($container = $this->getContainer());
+        $manager = new LogManager($container = $this->getContainer(), new Dispatcher());
         $config = $container->get(ConfigInterface::class);
         $config->set('logging.channels.null', [
             'driver' => 'monolog',
@@ -221,7 +230,7 @@ class LogManagerTest extends TestCase
 
     public function testLogManagerCreatesMonologHandlerWithProcessors()
     {
-        $manager = new LogManager($container = $this->getContainer());
+        $manager = new LogManager($container = $this->getContainer(), new Dispatcher());
         $config = $container->get(ConfigInterface::class);
         $config->set('logging.channels.memory', [
             'driver' => 'monolog',
@@ -285,7 +294,7 @@ class LogManagerTest extends TestCase
 
     public function testLogManagerCreateSingleDriverWithConfiguredFormatter()
     {
-        $manager = new LogManager($container = $this->getContainer());
+        $manager = new LogManager($container = $this->getContainer(), new Dispatcher());
         $config = $container->get(ConfigInterface::class);
         $config->set('logging.channels.defaultsingle', [
             'driver' => 'single',
@@ -329,7 +338,7 @@ class LogManagerTest extends TestCase
 
     public function testLogManagerCreateDailyDriverWithConfiguredFormatter()
     {
-        $manager = new LogManager($container = $this->getContainer());
+        $manager = new LogManager($container = $this->getContainer(), new Dispatcher());
         $config = $container->get(ConfigInterface::class);
         $config->set('logging.channels.defaultdaily', [
             'driver' => 'daily',
@@ -373,7 +382,7 @@ class LogManagerTest extends TestCase
 
     public function testLogManagerCreateSyslogDriverWithConfiguredFormatter()
     {
-        $manager = new LogManager($container = $this->getContainer());
+        $manager = new LogManager($container = $this->getContainer(), new Dispatcher());
         $config = $container->get(ConfigInterface::class);
         $config->set('logging.channels.defaultsyslog', [
             'driver' => 'syslog',
@@ -447,7 +456,7 @@ class LogManagerTest extends TestCase
 
     public function testLogManagerCanUseOnDemandChannelInOnDemandStack()
     {
-        $manager = new LogManager($container = $this->getContainer());
+        $manager = new LogManager($container = $this->getContainer(), new Dispatcher());
         $container->get(ConfigInterface::class)
             ->set('logging.channels.test', [
                 'driver' => 'single',
@@ -483,7 +492,7 @@ class LogManagerTest extends TestCase
 
     public function testWrappingHandlerInFingersCrossedWhenActionLevelIsUsed()
     {
-        $manager = new LogManager($container = $this->getContainer());
+        $manager = new LogManager($container = $this->getContainer(), new Dispatcher());
         $container->get(ConfigInterface::class)
             ->set('logging.channels.fingerscrossed', [
                 'driver' => 'monolog',
@@ -526,7 +535,7 @@ class LogManagerTest extends TestCase
 
     public function testFingersCrossedHandlerStopsRecordBufferingAfterFirstFlushByDefault()
     {
-        $manager = new LogManager($container = $this->getContainer());
+        $manager = new LogManager($container = $this->getContainer(), new Dispatcher());
         $container->get(ConfigInterface::class)
             ->set('logging.channels.fingerscrossed', [
                 'driver' => 'monolog',
@@ -553,7 +562,7 @@ class LogManagerTest extends TestCase
 
     public function testFingersCrossedHandlerCanBeConfiguredToResumeBufferingAfterFlushing()
     {
-        $manager = new LogManager($container = $this->getContainer());
+        $manager = new LogManager($container = $this->getContainer(), new Dispatcher());
         $container->get(ConfigInterface::class)
             ->set('logging.channels.fingerscrossed', [
                 'driver' => 'monolog',
@@ -579,9 +588,138 @@ class LogManagerTest extends TestCase
         $this->assertFalse($stopBufferingValue);
     }
 
+    public function testItSharesContextWithAlreadyResolvedChannels()
+    {
+        $manager = new LogManager($container = $this->getContainer(), new Dispatcher());
+        $config = $container->get(ConfigInterface::class);
+        $config->set('logging.default', null);
+        $config->set('logging.channels.null', [
+            'driver' => 'monolog',
+            'handler' => NullHandler::class,
+        ]);
+        $channel = $manager->channel('null');
+        $context = null;
+
+        $channel->listen(function ($message) use (&$context) {
+            $context = $message->context;
+        });
+        $manager->shareContext([
+            'invocation-id' => 'expected-id',
+        ]);
+        $channel->info('xxxx');
+
+        $this->assertSame(['invocation-id' => 'expected-id'], $context);
+    }
+
+    public function testItSharesContextWithFreshlyResolvedChannels()
+    {
+        $manager = new LogManager($container = $this->getContainer(), new Dispatcher());
+        $config = $container->get(ConfigInterface::class);
+        $config->set('logging.default', null);
+        $config->set('logging.channels.null', [
+            'driver' => 'monolog',
+            'handler' => NullHandler::class,
+        ]);
+        $channel = $manager->channel('null');
+        $context = null;
+
+        $manager->shareContext([
+            'invocation-id' => 'expected-id',
+        ]);
+        $manager->channel('null')->listen(function ($message) use (&$context) {
+            $context = $message->context;
+        });
+        $manager->channel('null')->info('xxxx');
+
+        $this->assertSame(['invocation-id' => 'expected-id'], $context);
+    }
+
+    public function testContextCanBePubliclyAccessedByOtherLoggingSystems()
+    {
+        $manager = new LogManager($this->getContainer(), new Dispatcher());
+        $manager->shareContext([
+            'invocation-id' => 'expected-id',
+        ]);
+
+        $this->assertSame($manager->sharedContext(), ['invocation-id' => 'expected-id']);
+    }
+
+    public function testItSharesContextWithStacksWhenTheyAreResolved()
+    {
+        $manager = new LogManager($container = $this->getContainer(), new Dispatcher());
+        $config = $container->get(ConfigInterface::class);
+        $config->set('logging.default', null);
+        $config->set('logging.channels.null', [
+            'driver' => 'monolog',
+            'handler' => NullHandler::class,
+        ]);
+        $channel = $manager->channel('null');
+        $context = null;
+
+        $manager->shareContext([
+            'invocation-id' => 'expected-id',
+        ]);
+        $stack = $manager->stack(['null']);
+        $stack->listen(function ($message) use (&$context) {
+            $context = $message->context;
+        });
+        $stack->info('xxxx');
+
+        $this->assertSame(['invocation-id' => 'expected-id'], $context);
+    }
+
+    public function testItMergesSharedContextRatherThanReplacing()
+    {
+        $manager = new LogManager($container = $this->getContainer(), new Dispatcher());
+        $config = $container->get(ConfigInterface::class);
+        $config->set('logging.default', null);
+        $config->set('logging.channels.null', [
+            'driver' => 'monolog',
+            'handler' => NullHandler::class,
+        ]);
+        $channel = $manager->channel('null');
+        $context = null;
+
+        $manager->shareContext([
+            'invocation-id' => 'expected-id',
+        ]);
+        $manager->shareContext([
+            'invocation-start' => 1651800456,
+        ]);
+        $manager->channel('null')->listen(function ($message) use (&$context) {
+            $context = $message->context;
+        });
+        $manager->channel('null')->info('xxxx', [
+            'logged' => 'context',
+        ]);
+
+        $this->assertSame([
+            'invocation-id' => 'expected-id',
+            'invocation-start' => 1651800456,
+            'logged' => 'context',
+        ], $context);
+        $this->assertSame([
+            'invocation-id' => 'expected-id',
+            'invocation-start' => 1651800456,
+        ], $manager->sharedContext());
+    }
+
+    public function testFlushSharedContext()
+    {
+        $manager = new LogManager($this->getContainer(), new Dispatcher());
+
+        $manager->shareContext($context = ['foo' => 'bar']);
+
+        $this->assertSame($context, $manager->sharedContext());
+
+        $manager->flushSharedContext();
+
+        $this->assertEmpty($manager->sharedContext());
+    }
+
     public function testLogManagerCreateCustomFormatterWithTap()
     {
-        $manager = new LogManager($container = $this->getContainer());
+        $manager = new LogManager($container = $this->getContainer(), new Dispatcher());
         $container->get(ConfigInterface::class)
             ->set('logging.channels.custom', [
                 'driver' => 'single',
@@ -618,6 +756,7 @@ class LogManagerTest extends TestCase
         return new Container(
             new DefinitionSource([
                 ConfigInterface::class => fn () => $config,
+                EventDispatcherInterface::class => fn () => new Dispatcher(),
             ])
         );
     }
@@ -632,5 +771,24 @@ class CustomizeFormatter
                 '[%datetime%] %channel%.%level_name%: %message% %context% %extra%'
             ));
         }
+    }
+}
+
+class Dispatcher implements EventDispatcherInterface
+{
+    protected $listener;
+
+    public function dispatch(object $event)
+    {
+        if (! $this->listener) {
+            return;
+        }
+
+        ($this->listener)($event);
+    }
+
+    public function listen(string $event, Closure $listener)
+    {
+        $this->listener = $listener;
     }
 }

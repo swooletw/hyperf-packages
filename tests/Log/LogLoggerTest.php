@@ -1,0 +1,144 @@
+<?php
+
+declare(strict_types=1);
+
+namespace SwooleTW\Hyperf\Tests\Log;
+
+use Closure;
+use Hyperf\Context\Context;
+use Mockery as m;
+use Monolog\Logger as Monolog;
+use PHPUnit\Framework\TestCase;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use RuntimeException;
+use SwooleTW\Hyperf\Log\Events\MessageLogged;
+use SwooleTW\Hyperf\Log\Logger;
+
+/**
+ * @internal
+ * @coversNothing
+ */
+class LogLoggerTest extends TestCase
+{
+    protected function tearDown(): void
+    {
+        m::close();
+        Context::destroy('__logger.context');
+    }
+
+    public function testMethodsPassErrorAdditionsToMonolog()
+    {
+        $writer = new Logger($monolog = m::mock(Monolog::class));
+        $monolog->shouldReceive('error')->once()->with('foo', []);
+
+        $writer->error('foo');
+    }
+
+    public function testContextIsAddedToAllSubsequentLogs()
+    {
+        $writer = new Logger($monolog = m::mock(Monolog::class));
+        $writer->withContext(['bar' => 'baz']);
+
+        $monolog->shouldReceive('error')->once()->with('foo', ['bar' => 'baz']);
+
+        $writer->error('foo');
+    }
+
+    public function testContextIsFlushed()
+    {
+        $writer = new Logger($monolog = m::mock(Monolog::class));
+        $writer->withContext(['bar' => 'baz']);
+        $writer->withoutContext();
+
+        $monolog->expects('error')->with('foo', []);
+
+        $writer->error('foo');
+    }
+
+    public function testLoggerFiresEventsDispatcher()
+    {
+        $writer = new Logger($monolog = m::mock(Monolog::class), $events = new Dispatcher());
+        $monolog->shouldReceive('error')->once()->with('foo', []);
+
+        $context = [];
+
+        $events->listen(MessageLogged::class, function ($event) use (&$context) {
+            $context['__log.level'] = $event->level;
+            $context['__log.message'] = $event->message;
+            $context['__log.context'] = $event->context;
+        });
+
+        $writer->error('foo');
+        $this->assertTrue(isset($context['__log.level']));
+        $this->assertSame('error', $context['__log.level']);
+        $this->assertTrue(isset($context['__log.message']));
+        $this->assertSame('foo', $context['__log.message']);
+        $this->assertTrue(isset($context['__log.context']));
+        $this->assertEquals([], $context['__log.context']);
+    }
+
+    public function testListenShortcutFailsWithNoDispatcher()
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Events dispatcher has not been set.');
+
+        $writer = new Logger(m::mock(Monolog::class));
+        $writer->listen(function () {
+        });
+    }
+
+    public function testListenShortcut()
+    {
+        $writer = new Logger(m::mock(Monolog::class), $events = m::mock(Dispatcher::class));
+
+        $callback = function () {
+            return 'success';
+        };
+        $events->shouldReceive('listen')->with(MessageLogged::class, $callback)->once();
+
+        $writer->listen($callback);
+    }
+
+    public function testWithContext()
+    {
+        $writer = new Logger($monolog = m::mock(Monolog::class));
+
+        $writer->withContext(['foo' => 'bar']);
+        $writer->withContext(['baz' => 'qux']);
+
+        $monolog->shouldReceive('error')->once()->with('test message', ['foo' => 'bar', 'baz' => 'qux']);
+
+        $writer->error('test message');
+    }
+
+    public function testWithoutContext()
+    {
+        $writer = new Logger($monolog = m::mock(Monolog::class));
+
+        $writer->withContext(['foo' => 'bar']);
+        $writer->withoutContext();
+
+        $monolog->shouldReceive('error')->once()->with('test message', []);
+
+        $writer->error('test message');
+    }
+}
+
+class Dispatcher implements EventDispatcherInterface
+{
+    protected $listener;
+
+    public function dispatch(object $event)
+    {
+        if (! $this->listener) {
+            return;
+        }
+
+        ($this->listener)($event);
+    }
+
+    public function listen(string $event, Closure $listener)
+    {
+        $this->listener = $listener;
+    }
+}

@@ -6,6 +6,7 @@ namespace SwooleTW\Hyperf\Log;
 
 use Closure;
 use Hyperf\Collection\Collection;
+use Hyperf\Context\Context;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Stringable\Str;
 use InvalidArgumentException;
@@ -23,6 +24,7 @@ use Monolog\Logger as Monolog;
 use Monolog\Processor\ProcessorInterface;
 use Monolog\Processor\PsrLogMessageProcessor;
 use Psr\Container\ContainerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Stringable;
 use SwooleTW\Hyperf\Support\Environment;
@@ -80,7 +82,8 @@ class LogManager implements LoggerInterface
     public function stack(array $channels, ?string $channel = null): LoggerInterface
     {
         return new Logger(
-            $this->createStackDriver(compact('channels', 'channel'))
+            $this->createStackDriver(compact('channels', 'channel')),
+            $this->app->get(EventDispatcherInterface::class)
         );
     }
 
@@ -107,7 +110,7 @@ class LogManager implements LoggerInterface
     {
         try {
             return $this->channels[$name] ?? with($this->resolve($name, $config), function ($logger) use ($name) {
-                return $this->channels[$name] = $this->tap($name, new Logger($logger));
+                return $this->channels[$name] = $this->tap($name, new Logger($logger, $this->app->get(EventDispatcherInterface::class)));
             });
         } catch (Throwable $e) {
             return tap($this->createEmergencyLogger(), function ($logger) use ($e) {
@@ -153,7 +156,8 @@ class LogManager implements LoggerInterface
         );
 
         return new Logger(
-            new Monolog('hyperf', $this->prepareHandlers([$handler]))
+            new Monolog('hyperf', $this->prepareHandlers([$handler])),
+            $this->app->get(EventDispatcherInterface::class)
         );
     }
 
@@ -404,6 +408,60 @@ class LogManager implements LoggerInterface
     protected function formatter(): \Monolog\Formatter\FormatterInterface
     {
         return new LineFormatter(null, $this->dateFormat, true, true, true);
+    }
+
+    /**
+     * Share context across channels and stacks.
+     *
+     * @return $this
+     */
+    public function shareContext(array $context): self
+    {
+        foreach ($this->channels as $channel) {
+            $channel->withContext($context);
+        }
+
+        Context::override('__logger.shared_context', function ($currentContext) use ($context) {
+            return array_merge($currentContext ?: [], $context);
+        });
+
+        return $this;
+    }
+
+    /**
+     * The context shared across channels and stacks.
+     */
+    public function sharedContext(): array
+    {
+        return (array) Context::get('__logger.shared_context', []);
+    }
+
+    /**
+     * Flush the log context on all currently resolved channels.
+     *
+     * @return $this
+     */
+    public function withoutContext(): self
+    {
+        foreach ($this->channels as $channel) {
+            if (method_exists($channel, 'withoutContext')) {
+                $channel->withoutContext();
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Flush the shared context.
+     *
+     * @return $this
+     */
+    public function flushSharedContext(): self
+    {
+        Context::destroy('__logger.shared_context');
+
+        return $this;
     }
 
     /**
