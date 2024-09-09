@@ -10,19 +10,15 @@ use Hyperf\AsyncQueue\Event\BeforeHandle;
 use Hyperf\AsyncQueue\Event\Event;
 use Hyperf\AsyncQueue\Event\FailedHandle;
 use Hyperf\AsyncQueue\Event\RetryHandle;
+use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Event\Contract\ListenerInterface;
-use Psr\Container\ContainerInterface;
-use Psr\Log\LoggerInterface;
 use SwooleTW\Hyperf\Event\CallQueuedListener;
 
 class QueueHandleListener implements ListenerInterface
 {
-    protected LoggerInterface $logger;
-
-    public function __construct(ContainerInterface $container)
-    {
-        $this->logger = $container->get(LoggerInterface::class)
-            ->channel('stdout');
+    public function __construct(
+        protected StdoutLoggerInterface $logger
+    ) {
     }
 
     public function listen(): array
