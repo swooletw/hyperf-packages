@@ -1,0 +1,46 @@
+name: Bug Report
+description: "Report something that's broken."
+body:
+  - type: markdown
+    attributes:
+      value: "Please read [our full contribution guide](https://laravel-hyperf.com/docs/contributions#bug-reports) before submitting bug reports. If you notice improper DocBlock, PHPStan, or IDE warnings while using Laravel Hyperf, do not create a GitHub issue. Instead, please submit a pull request to fix the problem."
+  - type: input
+    attributes:
+      label: Hyperf Version
+      description: Provide the Hyperf version that you installed.
+      placeholder: 3.1.39
+    validations:
+      required: false
+  - type: input
+    attributes:
+      label: PHP Version
+      description: Provide the PHP version that you are using.
+      placeholder: 8.1.4
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Swoole Extension Version
+      description: Provide the Swoole extension version that you are using (You can get it by running `php --ri swoole`).
+      placeholder: 5.1.2
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Database Driver & Version
+      description: If applicable, provide the database driver and version you are using.
+      placeholder: "MySQL 8.0.31 for macOS 13.0 on arm64 (Homebrew)"
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Description
+      description: Provide a detailed description of the issue you are facing.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps To Reproduce
+      description: Provide detailed steps to reproduce your issue. If necessary, please provide a GitHub repository to demonstrate your issue.
+    validations:
+      required: true
