@@ -2,11 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Hyperf\Database\Schema;
+namespace SwooleTW\Hyperf\Support\Facades;
 
-use Hyperf\Context\ApplicationContext;
-use Hyperf\Database\ConnectionInterface;
-use Hyperf\Database\ConnectionResolverInterface;
+use SwooleTW\Hyperf\Database\Schema\SchemaProxy;
 
 /**
  * @method static bool hasTable(string $table)
@@ -37,33 +35,13 @@ use Hyperf\Database\ConnectionResolverInterface;
  * @method static \Hyperf\Database\Connection getConnection()
  * @method static Builder setConnection(\Hyperf\Database\Connection $connection)
  * @method static void blueprintResolver(\Closure $resolver)
+ *
+ * @see \Hyperf\Database\Schema\Builder
  */
-class Schema
+class Schema extends Facade
 {
-    public static function __callStatic($name, $arguments)
+    protected static function getFacadeAccessor()
     {
-        $container = ApplicationContext::getContainer();
-        $resolver = $container->get(ConnectionResolverInterface::class);
-        $connection = $resolver->connection();
-
-        return $connection->getSchemaBuilder()->{$name}(...$arguments);
-    }
-
-    public function __call($name, $arguments)
-    {
-        return self::__callStatic($name, $arguments);
-    }
-
-    /**
-     * Create a connection by ConnectionResolver.
-     */
-    public function connection(?string $name = null): ConnectionInterface
-    {
-        $container = ApplicationContext::getContainer();
-        $resolver = $container->get(ConnectionResolverInterface::class);
-
-        return $resolver->connection(
-            $name ?: $resolver->getDefaultConnection()
-        );
+        return SchemaProxy::class;
     }
 }

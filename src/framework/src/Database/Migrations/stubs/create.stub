@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Hyperf\Database\Migrations\Migration;
 use Hyperf\Database\Schema\Blueprint;
+use Hyperf\Database\Migrations\Migration;
 use SwooleTW\Hyperf\Support\Facades\Schema;
 
 return new class extends Migration
@@ -13,10 +13,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sessions', function (Blueprint $table) {
-            $table->string('id')->primary();
-            $table->text('payload');
-            $table->integer('last_activity')->index();
+        Schema::create('DummyTable', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->datetimes();
         });
     }
 
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sessions');
+        Schema::dropIfExists('DummyTable');
     }
-}
+};
