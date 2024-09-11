@@ -455,6 +455,7 @@ class Application extends Container implements ApplicationContract
                 \Hyperf\HttpServer\Response::class,
             ],
             \Hyperf\DbConnection\Db::class => ['db'],
+            \SwooleTW\Hyperf\Database\Schema\SchemaProxy::class => ['db.schema'],
             \SwooleTW\Hyperf\Auth\Contracts\FactoryContract::class => [
                 'auth',
                 \SwooleTW\Hyperf\Auth\AuthManager::class,
