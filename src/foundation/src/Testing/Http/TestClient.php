@@ -161,8 +161,15 @@ class TestClient extends HttpKernel
         // Initialize PSR-7 Request and Response objects.
         $uri = (new Uri($this->baseUri . ltrim($path, '/')))->withQuery(http_build_query($query));
 
+        $serverParams = [
+            'request_method' => $method,
+            'request_uri' => (new Uri(ltrim($path, '/')))->getPath(),
+            'query_string' => http_build_query($query),
+            'remote_addr' => '127.0.0.1',
+        ];
+
         $content = http_build_query($params);
-        if ($method == 'POST' && data_get($headers, 'Content-Type') == 'application/json') {
+        if (data_get($headers, 'Content-Type') == 'application/json') {
             $content = json_encode($json, JSON_UNESCAPED_UNICODE);
             $data = $json;
         }
@@ -171,7 +178,8 @@ class TestClient extends HttpKernel
 
         $request = new Psr7Request($method, $uri, $headers, $body);
 
-        return $request->withQueryParams($query)
+        return $request->withServerParams($serverParams)
+            ->withQueryParams($query)
             ->withCookieParams($cookies)
             ->withParsedBody($data)
             ->withUploadedFiles($this->normalizeFiles($multipart));
