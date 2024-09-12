@@ -7,7 +7,7 @@ namespace SwooleTW\Hyperf\Support\Facades;
 use Hyperf\DbConnection\Db as HyperfDb;
 
 /**
- * @method static Builder table(string $table)
+ * @method static Builder table(Expression|string $table)
  * @method static Expression raw($value)
  * @method static mixed selectOne(string $query, array $bindings = [], bool $useReadPdo = true)
  * @method static array select(string $query, array $bindings = [], bool $useReadPdo = true)
@@ -25,7 +25,7 @@ use Hyperf\DbConnection\Db as HyperfDb;
  * @method static void commit()
  * @method static int transactionLevel()
  * @method static array pretend(Closure $callback)
- * @method static ConnectionInterface connection(string $pool)
+ * @method static ConnectionInterface connection(?string $pool = null)
  *
  * @see HyperfDb
  */
