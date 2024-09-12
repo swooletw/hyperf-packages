@@ -52,9 +52,39 @@ trait MakesHttpRequests
         return $this->doRequest(__FUNCTION__, $uri, $data, $headers);
     }
 
-    protected function json($uri, array $data = [], array $headers = []): TestResponse
+    public function json(string $method, $uri, array $data = [], array $headers = [], $options = 0): TestResponse
     {
-        return $this->doRequest(__FUNCTION__, $uri, $data, $headers);
+        return $this->doRequest($method, $uri, $data, $headers);
+    }
+
+    protected function getJson($uri, array $data = [], array $headers = []): TestResponse
+    {
+        return $this->json('GET', $uri, $data, $headers);
+    }
+
+    protected function postJson($uri, array $data = [], array $headers = []): TestResponse
+    {
+        return $this->json('POST', $uri, $data, $headers);
+    }
+
+    protected function putJson($uri, array $data = [], array $headers = []): TestResponse
+    {
+        return $this->json('PUT', $uri, $data, $headers);
+    }
+
+    protected function patchJson($uri, array $data = [], array $headers = []): TestResponse
+    {
+        return $this->json('PATCH', $uri, $data, $headers);
+    }
+
+    protected function deleteJson($uri, array $data = [], array $headers = []): TestResponse
+    {
+        return $this->json('DELETE', $uri, $data, $headers);
+    }
+
+    protected function optionsJson($uri, array $data = [], array $headers = []): TestResponse
+    {
+        return $this->json('OPTIONS', $uri, $data, $headers);
     }
 
     protected function file($uri, array $data = [], array $headers = []): TestResponse

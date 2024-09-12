@@ -85,11 +85,12 @@ class TestClient extends HttpKernel
         ]);
     }
 
-    public function json(string $uri, array $data = [], array $headers = [], array $cookies = [])
+    public function json(string $method, string $uri, array $data = [], array $headers = [], array $cookies = [])
     {
         $headers['Content-Type'] = 'application/json';
+        $headers['Accept'] = 'application/json';
 
-        return $this->request('POST', $uri, [
+        return $this->request($method, $uri, [
             'headers' => $headers,
             'json' => $data,
             'cookies' => $cookies,
