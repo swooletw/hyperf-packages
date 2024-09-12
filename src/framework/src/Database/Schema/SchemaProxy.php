@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Database\Schema;
 
+use Hyperf\Context\ApplicationContext;
 use Hyperf\Database\ConnectionInterface;
 use Hyperf\Database\ConnectionResolverInterface;
 use Hyperf\Database\Schema\Builder;
-use SwooleTW\Hyperf\Foundation\ApplicationContext;
 
 /**
  * @mixin Builder
