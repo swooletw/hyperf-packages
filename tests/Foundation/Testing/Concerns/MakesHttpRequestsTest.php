@@ -138,6 +138,20 @@ class MakesHttpRequestsTest extends ApplicationTestCase
             ->assertSuccessFul()
             ->assertContent('foo');
     }
+
+    public function testGetServerParams()
+    {
+        $this->app->get(RouteFileCollector::class)
+            ->addRouteFile(BASE_PATH . '/routes/test-api.php');
+
+        $this->get('/server-params?foo=bar')
+            ->assertSuccessful()
+            ->assertJson([
+                'request_method' => 'GET',
+                'request_uri' => 'server-params',
+                'query_string' => 'foo=bar',
+            ]);
+    }
 }
 
 class MyMiddleware
