@@ -39,6 +39,7 @@
         "hyperf/signal": "~3.1.0",
         "hyperf/engine": "^2.1",
         "hyperf/db-connection": "~3.1.0",
+        "friendsofhyperf/command-signals": "~3.1.0",
         "symfony/error-handler": "^6.3"
     },
     "autoload": {

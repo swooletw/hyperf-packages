@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Console;
 
+use FriendsOfHyperf\CommandSignals\Traits\InteractsWithSignals;
 use Hyperf\Command\Command as HyperfCommand;
 use Hyperf\Command\Event\AfterExecute;
 use Hyperf\Command\Event\AfterHandle;
@@ -20,6 +21,8 @@ use function Hyperf\Coroutine\run;
 
 abstract class Command extends HyperfCommand
 {
+    use InteractsWithSignals;
+
     /**
      * Determine if the given argument is present.
      *

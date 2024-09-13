@@ -6,6 +6,7 @@ namespace SwooleTW\Hyperf\Devtool;
 
 use Hyperf\Support\Composer;
 use SwooleTW\Hyperf\Devtool\Generator\ComponentCommand;
+use SwooleTW\Hyperf\Devtool\Generator\ConsoleCommand;
 use SwooleTW\Hyperf\Devtool\Generator\EventCommand;
 use SwooleTW\Hyperf\Devtool\Generator\ListenerCommand;
 use SwooleTW\Hyperf\Devtool\Generator\ProviderCommand;
@@ -30,6 +31,7 @@ class ConfigProvider
                 TestCommand::class,
                 SessionTableCommand::class,
                 RuleCommand::class,
+                ConsoleCommand::class,
             ],
         ];
     }
