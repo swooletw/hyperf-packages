@@ -14,6 +14,7 @@ use Hyperf\Coroutine\Coroutine;
 use Swoole\ExitException;
 use SwooleTW\Hyperf\Foundation\ApplicationContext;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
@@ -93,6 +94,16 @@ abstract class Command extends HyperfCommand
     public function options()
     {
         return $this->option();
+    }
+
+    /**
+     * Call another console command without output.
+     */
+    public function callSilently(string $command, array $arguments = []): int
+    {
+        $arguments['command'] = $command;
+
+        return $this->getApplication()->find($command)->run($this->createInputFromArguments($arguments), new NullOutput());
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
