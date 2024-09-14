@@ -105,7 +105,7 @@ class AuthManager implements FactoryContract
         return new SessionGuard(
             $name,
             $this->createUserProvider($config['provider'] ?? null),
-            $this->app->make(SessionInterface::class)
+            $this->app->get(SessionInterface::class)
         );
     }
 
@@ -114,12 +114,11 @@ class AuthManager implements FactoryContract
      */
     public function createJwtDriver(string $name, array $config): JwtGuard
     {
-        /* @phpstan-ignore-next-line */
         return new JwtGuard(
             $name,
             $this->createUserProvider($config['provider'] ?? null),
-            $this->app->make(JWTManager::class),
-            $this->app->make(RequestInterface::class),
+            $this->app->get(JWTManager::class),
+            $this->app->get(RequestInterface::class),
             (int) $this->config->get('jwt.ttl', 120)
         );
     }
