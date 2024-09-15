@@ -66,6 +66,8 @@
         "ext-hash": "*",
         "ext-mbstring": "*",
         "ext-openssl": "*",
+        "ext-json": "*",
+        "ext-pdo": "*",
         "hyperf/async-queue": "~3.1.0",
         "hyperf/cache": "~3.1.0",
         "hyperf/command": "~3.1.0",
