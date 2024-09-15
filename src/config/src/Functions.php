@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Config;
 
 use Hyperf\Context\ApplicationContext;
-use SwooleTW\Hyperf\Config\Contracts\Repository as ConfigContract;
+use Hyperf\Contract\ConfigInterface;
 
 /**
  * Get / set the specified configuration value.
@@ -18,7 +18,7 @@ use SwooleTW\Hyperf\Config\Contracts\Repository as ConfigContract;
  */
 function config(mixed $key = null, mixed $default = null): mixed
 {
-    $config = ApplicationContext::getContainer()->get(ConfigContract::class);
+    $config = ApplicationContext::getContainer()->get(ConfigInterface::class);
 
     if (is_null($key)) {
         return $config;
