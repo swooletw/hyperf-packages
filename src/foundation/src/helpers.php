@@ -141,13 +141,17 @@ if (! function_exists('config_path')) {
 
 if (! function_exists('config')) {
     /**
-     * Get config value.
+     * Get / set the specified configuration value.
      *
+     * If an array is passed as the key, we will assume you want to set an array of values.
+     *
+     * @param  array<string, mixed>|string|null  $key
      * @param null|string $default
+     * @return ($key is null ? \SwooleTW\Hyperf\Config\Contracts\Repository : ($key is string ? mixed : null))
      */
-    function config(string $key, mixed $default = null): mixed
+    function config(mixed $key = null, mixed $default = null): mixed
     {
-        return \Hyperf\Config\config($key, $default);
+        return \SwooleTW\Hyperf\Config\config($key, $default);
     }
 }
 

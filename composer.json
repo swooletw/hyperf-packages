@@ -46,6 +46,7 @@
         "files": [
             "src/auth/src/Functions.php",
             "src/cache/src/Functions.php",
+            "src/config/src/Functions.php",
             "src/event/src/Functions.php",
             "src/foundation/src/helpers.php",
             "src/router/src/Functions.php",
