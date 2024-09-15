@@ -12,7 +12,7 @@ use SwooleTW\Hyperf\Config\Contracts\Repository as ConfigContract;
  *
  * If an array is passed as the key, we will assume you want to set an array of values.
  *
- * @param  array<string, mixed>|string|null  $key
+ * @param null|array<string, mixed>|string $key
  * @param null|string $default
  * @return ($key is null ? \SwooleTW\Hyperf\Config\Contracts\Repository : ($key is string ? mixed : null))
  */
