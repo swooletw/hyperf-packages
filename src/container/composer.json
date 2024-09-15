@@ -2,6 +2,13 @@
     "name": "swooletw/hyperf-container",
     "description": "The Container package for Hyperf.",
     "license": "MIT",
+    "keywords": [
+        "php",
+        "hyperf",
+        "container",
+        "swoole",
+        "laravel-hyperf"
+    ],
     "support": {
         "issues": "https://github.com/swooletw/hyperf-packages/issues",
         "source": "https://github.com/swooletw/hyperf-packages"
@@ -9,7 +16,7 @@
     "authors": [
         {
             "name": "Albert Chen",
-            "email": "albert.cht@pm.me",
+            "email": "albert@laravel-hyperf.com",
             "homepage": "https://albert-chen.com"
         }
     ],

@@ -8,7 +8,7 @@
         "dispatcher",
         "middleware",
         "swoole",
-        "laravel"
+        "laravel-hyperf"
     ],
     "support": {
         "issues": "https://github.com/swooletw/hyperf-packages/issues",
@@ -17,7 +17,7 @@
     "authors": [
         {
             "name": "Albert Chen",
-            "email": "albert.cht@pm.me",
+            "email": "albert@laravel-hyperf.com",
             "homepage": "https://albert-chen.com"
         }
     ],
