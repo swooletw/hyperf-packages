@@ -19,7 +19,7 @@ trait HasPendingCommand
      * @throws InvalidArgumentException
      * @throws \LogicException
      */
-    protected function pendingCommand(SymfonyCommand $command): SymfonyCommand
+    protected function pendingCommand(SymfonyCommand $command): ?SymfonyCommand
     {
         /** @var null|AnnotationCommand $annotation */
         $annotation = AnnotationCollector::getClassAnnotation($command::class, AnnotationCommand::class) ?? null;

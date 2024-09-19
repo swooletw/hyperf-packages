@@ -42,13 +42,19 @@ class CommandReplacer
             'name' => 'route:list',
             'description' => 'List all registered routes',
         ],
+        'describe:aspects' => 'aspect:list',
+        'describe:listeners' => null,
     ];
 
-    public static function replace(Command $command, bool $remainAlias = true): Command
+    public static function replace(Command $command, bool $remainAlias = true): ?Command
     {
         $commandName = $command->getName();
-        if (! $replace = static::$commands[$commandName] ?? null) {
+        if (! array_key_exists($commandName, static::$commands)) {
             return $command;
+        }
+
+        if (! $replace = static::$commands[$commandName] ?? null) {
+            return null;
         }
 
         $command->setName($replace['name'] ?? $replace);

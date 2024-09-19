@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Devtool;
 
 use Hyperf\Devtool\Generator\GeneratorCommand;
+use SwooleTW\Hyperf\Devtool\Commands\EventListCommand;
 use SwooleTW\Hyperf\Devtool\Generator\ComponentCommand;
 use SwooleTW\Hyperf\Devtool\Generator\ConsoleCommand;
 use SwooleTW\Hyperf\Devtool\Generator\EventCommand;
@@ -32,6 +33,7 @@ class ConfigProvider
                 SessionTableCommand::class,
                 RuleCommand::class,
                 ConsoleCommand::class,
+                EventListCommand::class,
             ],
         ];
     }

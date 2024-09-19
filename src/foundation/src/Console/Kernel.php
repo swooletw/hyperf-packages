@@ -214,9 +214,11 @@ class Kernel implements KernelContract
      */
     public function registerCommand(string $command): void
     {
-        $this->getArtisan()->add(
-            $this->pendingCommand($this->app->get($command))
-        );
+        if (! $command = $this->pendingCommand($this->app->get($command))) {
+            return;
+        }
+
+        $this->getArtisan()->add($command);
     }
 
     /**
