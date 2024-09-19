@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Devtool;
 
-use Hyperf\Support\Composer;
+use Hyperf\Devtool\Generator\GeneratorCommand;
 use SwooleTW\Hyperf\Devtool\Generator\ComponentCommand;
 use SwooleTW\Hyperf\Devtool\Generator\ConsoleCommand;
 use SwooleTW\Hyperf\Devtool\Generator\EventCommand;
@@ -18,7 +18,7 @@ class ConfigProvider
 {
     public function __invoke(): array
     {
-        if (! Composer::hasPackage('hyperf/devtool')) {
+        if (! class_exists(GeneratorCommand::class)) {
             return [];
         }
 
