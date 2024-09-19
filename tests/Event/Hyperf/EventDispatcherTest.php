@@ -15,7 +15,7 @@ use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\ListenerProviderInterface as PsrListenerProviderInterface;
 use ReflectionClass;
-use SwooleTW\Hyperf\Event\Contract\ListenerProviderInterface;
+use SwooleTW\Hyperf\Event\Contracts\ListenerProviderContract;
 use SwooleTW\Hyperf\Event\EventDispatcher;
 use SwooleTW\Hyperf\Event\EventDispatcherFactory;
 use SwooleTW\Hyperf\Event\ListenerProvider;
@@ -35,13 +35,13 @@ class EventDispatcherTest extends TestCase
 
     public function testInvokeDispatcher()
     {
-        $listeners = Mockery::mock(ListenerProviderInterface::class);
+        $listeners = Mockery::mock(ListenerProviderContract::class);
         $this->assertInstanceOf(EventDispatcherInterface::class, new EventDispatcher($listeners));
     }
 
     public function testInvokeDispatcherWithStdoutLogger()
     {
-        $listeners = Mockery::mock(ListenerProviderInterface::class);
+        $listeners = Mockery::mock(ListenerProviderContract::class);
         $logger = Mockery::mock(StdoutLoggerInterface::class);
         $this->assertInstanceOf(EventDispatcherInterface::class, $instance = new EventDispatcher($listeners, $logger));
         $reflectionClass = new ReflectionClass($instance);

@@ -430,7 +430,10 @@ class Application extends Container implements ApplicationContract
             ],
             \SwooleTW\Hyperf\Foundation\Console\Contracts\Kernel::class => ['artisan'],
             \Hyperf\Contract\ConfigInterface::class => ['config'],
-            \Psr\EventDispatcher\EventDispatcherInterface::class => ['events'],
+            \Psr\EventDispatcher\EventDispatcherInterface::class => [
+                'events',
+                \SwooleTW\Hyperf\Event\Contracts\EventDispatcherContract::class,
+            ],
             \Hyperf\HttpServer\Router\DispatcherFactory::class => ['router'],
             \Psr\Log\LoggerInterface::class => ['log'],
             \SwooleTW\Hyperf\Encryption\Encrypter::class => ['encrypter'],
