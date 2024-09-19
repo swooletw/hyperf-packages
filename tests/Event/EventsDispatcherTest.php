@@ -600,6 +600,27 @@ class EventsDispatcherTest extends TestCase
         unset($_SERVER['__event.test']);
     }
 
+    public function testGetRawListeners()
+    {
+        $d = $this->getEventDispatcher();
+
+        // Register some listeners
+        $d->listen('event1', 'Listener1');
+        $d->listen('event2', 'Listener2');
+        $d->listen('event3', 'Listener3');
+
+        // Get raw listeners
+        $rawListeners = $d->getRawListeners();
+
+        // Assert that the raw listeners are as expected
+        $this->assertArrayHasKey('event1', $rawListeners);
+        $this->assertArrayHasKey('event2', $rawListeners);
+        $this->assertArrayHasKey('event3', $rawListeners);
+        $this->assertSame('Listener1', $rawListeners['event1'][0]->listener);
+        $this->assertSame('Listener2', $rawListeners['event2'][0]->listener);
+        $this->assertSame('Listener3', $rawListeners['event3'][0]->listener);
+    }
+
     private function getEventDispatcher(): EventDispatcher
     {
         return new EventDispatcher(new ListenerProvider(), null, $this->container);

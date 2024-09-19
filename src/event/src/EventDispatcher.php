@@ -11,15 +11,15 @@ use Hyperf\Collection\Arr;
 use Hyperf\Context\ApplicationContext;
 use Hyperf\Stringable\Str;
 use Psr\Container\ContainerInterface;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\StoppableEventInterface;
 use Psr\Log\LoggerInterface;
 use ReflectionClass;
-use SwooleTW\Hyperf\Event\Contract\ListenerProviderInterface;
+use SwooleTW\Hyperf\Event\Contracts\EventDispatcherContract;
+use SwooleTW\Hyperf\Event\Contracts\ListenerProviderContract;
 use SwooleTW\Hyperf\Foundation\Contracts\Queue\ShouldQueue;
 use SwooleTW\Hyperf\Support\Traits\ReflectsClosures;
 
-class EventDispatcher implements EventDispatcherInterface
+class EventDispatcher implements EventDispatcherContract
 {
     use ReflectsClosures;
 
@@ -27,7 +27,7 @@ class EventDispatcher implements EventDispatcherInterface
     protected $queueResolver;
 
     public function __construct(
-        protected ListenerProviderInterface $listeners,
+        protected ListenerProviderContract $listeners,
         protected ?LoggerInterface $logger = null,
         protected ?ContainerInterface $container = null
     ) {
@@ -36,12 +36,18 @@ class EventDispatcher implements EventDispatcherInterface
         }
     }
 
+    /**
+     * Fire an event and call the listeners.
+     */
     public function dispatch(object|string $event, mixed $payload = [], bool $halt = false): object|string
     {
         return $this->invokeListeners($event, $payload, $halt);
     }
 
-    protected function dump(mixed $listener, object|string $event)
+    /**
+     * Dump the event and listeners to the log.
+     */
+    protected function dump(mixed $listener, object|string $event): void
     {
         if (! $this->logger) {
             return;
@@ -61,6 +67,9 @@ class EventDispatcher implements EventDispatcherInterface
         $this->logger->debug(sprintf('Event %s handled by %s listener.', $eventName, $listenerName));
     }
 
+    /**
+     * Register an event listener with the listener provider.
+     */
     public function listen(
         array|Closure|QueuedClosure|string $events,
         null|array|Closure|int|QueuedClosure|string $listener = null,
@@ -91,11 +100,17 @@ class EventDispatcher implements EventDispatcherInterface
         }
     }
 
+    /**
+     * Fire an event until the first non-null response is returned.
+     */
     public function until(object|string $event, mixed $payload = []): object|string
     {
         return $this->dispatch($event, $payload, true);
     }
 
+    /**
+     * Fire an event and call the listeners.
+     */
     protected function invokeListeners(object|string $event, mixed $payload, bool $halt = false): object|string
     {
         foreach ($this->getListeners($event) as $listener) {
@@ -111,12 +126,17 @@ class EventDispatcher implements EventDispatcherInterface
         return $event;
     }
 
+    /**
+     * Get all of the listeners for a given event name.
+     */
     public function getListeners(object|string $eventName): iterable
     {
         return $this->prepareListeners($eventName);
     }
 
     /**
+     * Get the listeners for a given event.
+     *
      * @return Closure[]
      */
     protected function prepareListeners(object|string $eventName): array
@@ -130,6 +150,11 @@ class EventDispatcher implements EventDispatcherInterface
         return $listeners;
     }
 
+    /**
+     * Create a callable for a class based listener.
+     *
+     * @param array|string $listener
+     */
     protected function makeListener(array|Closure|string $listener): Closure
     {
         if (is_string($listener) || (is_array($listener) && ((isset($listener[0]) && is_string($listener[0])) || is_callable($listener)))) {
@@ -145,6 +170,9 @@ class EventDispatcher implements EventDispatcherInterface
         };
     }
 
+    /**
+     * Create a class based listener.
+     */
     protected function createClassListener(array|string $listener): Closure
     {
         return function (object|string $event, mixed $payload) use ($listener) {
@@ -158,6 +186,9 @@ class EventDispatcher implements EventDispatcherInterface
         };
     }
 
+    /**
+     * Create a callable based listener.
+     */
     protected function createClassCallable(array|string $listener): callable
     {
         [$class, $method] = is_array($listener)
@@ -177,11 +208,17 @@ class EventDispatcher implements EventDispatcherInterface
         return [$listener, $method];
     }
 
+    /**
+     * Parse the class listener into class and method.
+     */
     protected function parseClassCallable(string $listener): array
     {
         return Str::parseCallback($listener, 'handle');
     }
 
+    /**
+     * Register an event and payload to be fired later.
+     */
     public function push(string $event, mixed $payload = []): void
     {
         $this->listen($event . '_pushed', function () use ($event, $payload) {
@@ -189,11 +226,17 @@ class EventDispatcher implements EventDispatcherInterface
         });
     }
 
+    /**
+     * Flush a set of pushed events.
+     */
     public function flush(string $event): void
     {
         $this->dispatch($event . '_pushed');
     }
 
+    /**
+     * Forget all of the pushed listeners.
+     */
     public function forgetPushed(): void
     {
         foreach ($this->listeners->all() as $key => $_) {
@@ -203,26 +246,43 @@ class EventDispatcher implements EventDispatcherInterface
         }
     }
 
+    /**
+     * Remove a set of listeners from the dispatcher.
+     */
     public function forget(string $event): void
     {
         $this->listeners->forget($event);
     }
 
+    /**
+     * Determine if a given event has listeners.
+     */
     public function hasListeners(string $eventName): bool
     {
         return $this->listeners->has($eventName);
     }
 
+    /**
+     * Determine if the given event has any wildcard listeners.
+     */
     public function hasWildcardListeners(string $eventName): bool
     {
         return $this->listeners->hasWildcard($eventName);
     }
 
+    /**
+     * Get the queue implementation from the resolver.
+     */
     protected function resolveQueue(): QueueFactory
     {
         return call_user_func($this->queueResolver);
     }
 
+    /**
+     * Set the queue resolver implementation.
+     *
+     * @return $this
+     */
     public function setQueueResolver(callable $resolver): static
     {
         $this->queueResolver = $resolver;
@@ -230,6 +290,9 @@ class EventDispatcher implements EventDispatcherInterface
         return $this;
     }
 
+    /**
+     * Determine if the event handler should be queued.
+     */
     protected function handlerShouldBeQueued(object|string $class): bool
     {
         try {
@@ -243,6 +306,9 @@ class EventDispatcher implements EventDispatcherInterface
         }
     }
 
+    /**
+     * Create a callable for putting an event handler on the queue.
+     */
     protected function createQueuedHandlerCallable(object|string $class, string $method): Closure
     {
         return function () use ($class, $method) {
@@ -256,6 +322,9 @@ class EventDispatcher implements EventDispatcherInterface
         };
     }
 
+    /**
+     * Determine if the event handler wants to be queued.
+     */
     protected function handlerWantsToBeQueued(object|string $class, array $arguments): bool
     {
         $instance = is_string($class) ? $this->container->get($class) : $class;
@@ -267,6 +336,9 @@ class EventDispatcher implements EventDispatcherInterface
         return true;
     }
 
+    /**
+     * Queue the handler execution.
+     */
     protected function queueHandler(object|string $class, string $method, array $arguments): void
     {
         [$listener, $job] = $this->createListenerAndJob($class, $method, $arguments);
@@ -282,6 +354,9 @@ class EventDispatcher implements EventDispatcherInterface
         $connection->push($job, $delay);
     }
 
+    /**
+     * Create a listener and job for the queued listener.
+     */
     protected function createListenerAndJob(object|string $class, string $method, array $arguments): array
     {
         $listener = is_string($class) ? (new ReflectionClass($class))->newInstanceWithoutConstructor() : $class;
@@ -292,6 +367,11 @@ class EventDispatcher implements EventDispatcherInterface
         )];
     }
 
+    /**
+     * Propagate the listener options to the job.
+     *
+     * @return CallQueuedListener
+     */
     protected function propagateListenerOptions(mixed $listener, CallQueuedListener $job): mixed
     {
         return tap($job, function ($job) use ($listener) {
@@ -299,6 +379,9 @@ class EventDispatcher implements EventDispatcherInterface
         });
     }
 
+    /**
+     * Register an event subscriber with the dispatcher.
+     */
     public function subscribe(object|string $subscriber): void
     {
         $subscriber = $this->resolveSubscriber($subscriber);
@@ -320,6 +403,19 @@ class EventDispatcher implements EventDispatcherInterface
         }
     }
 
+    /**
+     * Gets the raw, unprepared listeners.
+     */
+    public function getRawListeners(): array
+    {
+        return $this->listeners->all();
+    }
+
+    /**
+     * Resolve the subscriber instance.
+     *
+     * @return object
+     */
     protected function resolveSubscriber(object|string $subscriber): mixed
     {
         if (is_string($subscriber)) {
