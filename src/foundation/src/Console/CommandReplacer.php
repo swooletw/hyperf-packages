@@ -31,7 +31,6 @@ class CommandReplacer
         'gen:process' => 'make:process',
         'gen:request' => 'make:request',
         'gen:resource' => 'make:resource',
-        'gen:seeder' => 'make:seeder',
         'gen:swagger' => 'make:swagger',
         'gen:migration-from-database' => 'make:migration-from-database',
         'gen:view-engine-cache' => 'make:view-engine-cache',
