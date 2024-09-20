@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace %NAMESPACE%;
 
-use SwooleTW\Hyperf\Database\Eloquent\Model;
+use %USES%;
 
 class %CLASS% extends Model
 {

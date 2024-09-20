@@ -53,6 +53,18 @@ class ModelCommand extends GeneratorCommand
         return 0;
     }
 
+    /**
+     * Replace the class name for the given stub.
+     */
+    protected function replaceClass(string $stub, string $name): string
+    {
+        $stub = parent::replaceClass($stub, $name);
+
+        $uses = $this->getConfig()['uses'] ?? \SwooleTW\Hyperf\Database\Eloquent\Model::class;
+
+        return str_replace('%USES%', $uses, $stub);
+    }
+
     protected function getStub(): string
     {
         return $this->getConfig()['stub'] ?? __DIR__ . '/stubs/model.stub';
