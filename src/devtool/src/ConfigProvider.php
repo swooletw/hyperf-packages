@@ -9,9 +9,12 @@ use SwooleTW\Hyperf\Devtool\Commands\EventListCommand;
 use SwooleTW\Hyperf\Devtool\Generator\ComponentCommand;
 use SwooleTW\Hyperf\Devtool\Generator\ConsoleCommand;
 use SwooleTW\Hyperf\Devtool\Generator\EventCommand;
+use SwooleTW\Hyperf\Devtool\Generator\FactoryCommand;
 use SwooleTW\Hyperf\Devtool\Generator\ListenerCommand;
+use SwooleTW\Hyperf\Devtool\Generator\ModelCommand;
 use SwooleTW\Hyperf\Devtool\Generator\ProviderCommand;
 use SwooleTW\Hyperf\Devtool\Generator\RuleCommand;
+use SwooleTW\Hyperf\Devtool\Generator\SeederCommand;
 use SwooleTW\Hyperf\Devtool\Generator\SessionTableCommand;
 use SwooleTW\Hyperf\Devtool\Generator\TestCommand;
 
@@ -33,6 +36,9 @@ class ConfigProvider
                 SessionTableCommand::class,
                 RuleCommand::class,
                 ConsoleCommand::class,
+                ModelCommand::class,
+                FactoryCommand::class,
+                SeederCommand::class,
                 EventListCommand::class,
             ],
         ];

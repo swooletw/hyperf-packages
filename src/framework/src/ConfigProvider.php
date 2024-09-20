@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf;
 
 use Hyperf\Database\Commands\Migrations\BaseCommand as MigrationBaseCommand;
-use Hyperf\Database\Commands\ModelCommand as HyperfModelCommand;
 use Hyperf\Database\Commands\Seeders\BaseCommand as SeederBaseCommand;
 use Hyperf\Database\Migrations\Migration;
 use Hyperf\Database\Migrations\MigrationCreator as HyperfMigrationCreator;
 use Hyperf\Database\Model\Factory as HyperfDatabaseFactory;
-use SwooleTW\Hyperf\Database\Commands\ModelCommand;
 use SwooleTW\Hyperf\Database\Eloquent\Factories\FactoryInvoker as DatabaseFactoryInvoker;
 use SwooleTW\Hyperf\Database\Migrations\MigrationCreator;
 
@@ -19,9 +17,6 @@ class ConfigProvider
     public function __invoke(): array
     {
         $commands = [];
-        if (class_exists(HyperfModelCommand::class)) {
-            $commands[] = ModelCommand::class;
-        }
 
         return [
             'dependencies' => [

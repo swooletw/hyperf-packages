@@ -4,15 +4,10 @@ declare(strict_types=1);
 
 namespace %NAMESPACE%;
 
-%USES%
+use SwooleTW\Hyperf\Database\Eloquent\Model;
 
-class %CLASS% extends %INHERITANCE%
+class %CLASS% extends Model
 {
-    /**
-     * The table associated with the model.
-     */
-    protected ?string $table = '%TABLE%';
-
     /**
      * The attributes that are mass assignable.
      */
