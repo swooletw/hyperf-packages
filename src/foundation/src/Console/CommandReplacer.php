@@ -29,7 +29,7 @@ class CommandReplacer
         'gen:nsq-consumer' => 'make:nsq-consumer',
         'gen:observer' => 'make:observer',
         'gen:process' => 'make:process',
-        'gen:request' => 'make:request',
+        'gen:request' => null,
         'gen:resource' => 'make:resource',
         'gen:swagger' => 'make:swagger',
         'gen:migration-from-database' => 'make:migration-from-database',

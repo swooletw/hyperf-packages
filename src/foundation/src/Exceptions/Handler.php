@@ -17,7 +17,6 @@ use Hyperf\HttpMessage\Base\Response as BaseResponse;
 use Hyperf\HttpMessage\Exception\HttpException as HyperfHttpException;
 use Hyperf\HttpMessage\Upload\UploadedFile;
 use Hyperf\Support\MessageBag;
-use Hyperf\Validation\UnauthorizedException;
 use Hyperf\Validation\ValidationException;
 use Hyperf\ViewEngine\ViewErrorBag;
 use InvalidArgumentException;
@@ -781,7 +780,6 @@ class Handler extends ExceptionHandler implements ExceptionHandlerContract
                 $e->getCode(),
                 $e
             ),
-            $e instanceof UnauthorizedException => new AccessDeniedHttpException($e->getMessage(), 0, $e),
             $e instanceof AuthorizationException && ! $e->hasStatus() => new AccessDeniedHttpException($e->getMessage(), 0, $e),
             default => $e,
         };

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Providers;
 
-use Hyperf\Validation\Request\FormRequest;
+use Hyperf\Validation\Contract\ValidatesWhenResolved;
 use SwooleTW\Hyperf\Support\ServiceProvider;
 
 class FormRequestServiceProvider extends ServiceProvider
@@ -14,9 +14,7 @@ class FormRequestServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        /* @phpstan-ignore-next-line */
-        $this->app->resolving(FormRequest::class, function (FormRequest $request) {
-            /* @phpstan-ignore-next-line */
+        $this->app->resolving(ValidatesWhenResolved::class, function (ValidatesWhenResolved $request) {
             $request->validateResolved();
         });
     }
