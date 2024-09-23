@@ -12,7 +12,7 @@ class AuthorizationException extends Exception
     /**
      * The response from the gate.
      */
-    protected ?Response $response;
+    protected ?Response $response = null;
 
     /**
      * The HTTP response status code.
