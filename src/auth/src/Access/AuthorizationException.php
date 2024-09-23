@@ -12,7 +12,7 @@ class AuthorizationException extends Exception
     /**
      * The response from the gate.
      */
-    protected Response $response;
+    protected ?Response $response;
 
     /**
      * The HTTP response status code.
@@ -32,7 +32,7 @@ class AuthorizationException extends Exception
     /**
      * Get the response from the gate.
      */
-    public function response(): Response
+    public function response(): ?Response
     {
         return $this->response;
     }
@@ -40,7 +40,7 @@ class AuthorizationException extends Exception
     /**
      * Set the response from the gate.
      */
-    public function setResponse(Response $response): static
+    public function setResponse(?Response $response): static
     {
         $this->response = $response;
 
