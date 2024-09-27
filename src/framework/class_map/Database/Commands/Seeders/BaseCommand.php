@@ -8,6 +8,14 @@ use Hyperf\Command\Command;
 
 abstract class BaseCommand extends Command
 {
+    protected function getSeederPaths(): array
+    {
+        return array_merge(
+            $this->seed->paths(),
+            [$this->getSeederPath()]
+        );
+    }
+
     /**
      * Get seeder path (either specified by '--path' option or default location).
      */
