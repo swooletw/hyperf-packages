@@ -11,7 +11,7 @@ abstract class BaseCommand extends Command
     /**
      * Get seeder path (either specified by '--path' option or default location).
      */
-    protected function getSeederPath(): string
+    protected function getSeederPaths(): string
     {
         if (! is_null($targetPath = $this->input->getOption('path'))) {
             return ! $this->usingRealPath()
