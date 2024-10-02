@@ -23,22 +23,20 @@ class ConfigProvider
 {
     public function __invoke(): array
     {
-        $commands = [
-            InstallCommand::class,
-            MigrateCommand::class,
-            FreshCommand::class,
-            RefreshCommand::class,
-            ResetCommand::class,
-            RollbackCommand::class,
-            StatusCommand::class,
-        ];
-
         return [
             'dependencies' => [
                 HyperfDatabaseFactory::class => DatabaseFactoryInvoker::class,
                 HyperfMigrationCreator::class => MigrationCreator::class,
             ],
-            'commands' => $commands,
+            'commands' => [
+                InstallCommand::class,
+                MigrateCommand::class,
+                FreshCommand::class,
+                RefreshCommand::class,
+                ResetCommand::class,
+                RollbackCommand::class,
+                StatusCommand::class,
+            ];
             'annotations' => [
                 'scan' => [
                     'class_map' => [
