@@ -6,6 +6,13 @@ namespace SwooleTW\Hyperf;
 
 use Hyperf\Database\Commands\Migrations\BaseCommand as MigrationBaseCommand;
 use Hyperf\Database\Commands\Seeders\BaseCommand as SeederBaseCommand;
+use Hyperf\Database\Commands\Migrations\FreshCommand;
+use Hyperf\Database\Commands\Migrations\InstallCommand;
+use Hyperf\Database\Commands\Migrations\MigrateCommand;
+use Hyperf\Database\Commands\Migrations\RefreshCommand;
+use Hyperf\Database\Commands\Migrations\ResetCommand;
+use Hyperf\Database\Commands\Migrations\RollbackCommand;
+use Hyperf\Database\Commands\Migrations\StatusCommand;
 use Hyperf\Database\Migrations\Migration;
 use Hyperf\Database\Migrations\MigrationCreator as HyperfMigrationCreator;
 use Hyperf\Database\Model\Factory as HyperfDatabaseFactory;
@@ -16,7 +23,15 @@ class ConfigProvider
 {
     public function __invoke(): array
     {
-        $commands = [];
+        $commands = [
+            InstallCommand::class,
+            MigrateCommand::class,
+            FreshCommand::class,
+            RefreshCommand::class,
+            ResetCommand::class,
+            RollbackCommand::class,
+            StatusCommand::class,
+        ];
 
         return [
             'dependencies' => [
