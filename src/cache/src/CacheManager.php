@@ -264,7 +264,7 @@ class CacheManager implements FactoryContract
 
             $store = $this->getStore($name)->getStore();
 
-            return new StackStoreProxy($store, $config['max_ttl'] ?? null);
+            return new StackStoreProxy($store, $config['ttl'] ?? null);
         })->all();
 
         return $this->repository(new StackStore($stores));

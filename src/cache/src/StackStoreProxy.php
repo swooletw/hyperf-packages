@@ -9,7 +9,7 @@ use SwooleTW\Hyperf\Cache\Contracts\Store;
 
 class StackStoreProxy implements Store
 {
-    public function __construct(protected Store $store, protected ?int $maxTTL = null)
+    public function __construct(protected Store $store, protected ?int $ttl = null)
     {
     }
 
@@ -25,11 +25,11 @@ class StackStoreProxy implements Store
 
     public function put(string $key, mixed $value, int $seconds): bool
     {
-        if (is_null($this->maxTTL) || $seconds < $this->maxTTL) {
+        if (is_null($this->ttl) || $seconds < $this->ttl) {
             return $this->call(__FUNCTION__, func_get_args());
         }
 
-        return $this->store->put($key, $value, $this->maxTTL);
+        return $this->store->put($key, $value, $this->ttl);
     }
 
     public function putMany(array $values, int $seconds): bool
@@ -49,11 +49,11 @@ class StackStoreProxy implements Store
 
     public function forever(string $key, mixed $value): bool
     {
-        if (is_null($this->maxTTL)) {
+        if (is_null($this->ttl)) {
             return $this->call(__FUNCTION__, func_get_args());
         }
 
-        return $this->store->put($key, $value, $this->maxTTL);
+        return $this->store->put($key, $value, $this->ttl);
     }
 
     public function forget(string $key): bool
