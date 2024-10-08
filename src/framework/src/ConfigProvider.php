@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf;
 
+use Hyperf\Command\Concerns\Confirmable;
 use Hyperf\Database\Commands\Migrations\BaseCommand as MigrationBaseCommand;
 use Hyperf\Database\Commands\Migrations\FreshCommand;
 use Hyperf\Database\Commands\Migrations\InstallCommand;
@@ -45,6 +46,7 @@ class ConfigProvider
                         Migration::class => __DIR__ . '/../class_map/Database/Migrations/Migration.php',
                         MigrationBaseCommand::class => __DIR__ . '/../class_map/Database/Commands/Migrations/BaseCommand.php',
                         SeederBaseCommand::class => __DIR__ . '/../class_map/Database/Commands/Seeders/BaseCommand.php',
+                        Confirmable::class => __DIR__ . '/../class_map/Command/Concerns/Confirmable.php',
                     ],
                 ],
             ],
