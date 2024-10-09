@@ -90,7 +90,8 @@
         "monolog/monolog": "^3.1",
         "nesbot/carbon": "^2.16",
         "ramsey/uuid": "^4.7",
-        "symfony/error-handler": "^6.3"
+        "symfony/error-handler": "^6.3",
+        "symfony/finder": "^7.0"
     },
     "replace": {
         "swooletw/hyperf-auth": "self.version",
@@ -125,6 +126,7 @@
         "hyperf/testing": "~3.1.0",
         "hyperf/view-engine": "~3.1.0",
         "league/flysystem": "^3.0",
+        "league/flysystem-aws-s3-v3": "*",
         "filp/whoops": "^2.15",
         "mockery/mockery": "^1.5.1",
         "phpstan/phpstan": "^1.11.5",
