@@ -199,6 +199,7 @@ class EventFake implements EventDispatcherInterface
         if ($this->shouldFakeEvent($name, $payload)) {
             $this->events[$name][] = func_get_args();
 
+            /* @phpstan-ignore-next-line */
             return;
         }
 
