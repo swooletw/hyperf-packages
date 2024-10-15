@@ -49,11 +49,11 @@ abstract class ObjectPool implements ObjectPoolInterface
 
         $this->handleFrequency();
 
-        if (! $maxLifetime = $this->option->getMaxLifetime()) {
+        if (! $this->option->getMaxLifetime()) {
             return $object;
         }
 
-        // destroy and generate new object if exceedes maxLifetime
+        // destroy and generate new object if exceeds maxLifetime
         if ($this->exceedsMaxLifetime($object)) {
             $this->destroyObject($object);
 
