@@ -162,7 +162,7 @@ class AuthManager implements FactoryContract
     /**
      * Set the default guard the factory should serve.
      */
-    public function shouldUse(string $name): void
+    public function shouldUse(?string $name): void
     {
         $name = $name ?: $this->getDefaultDriver();
 
