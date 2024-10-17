@@ -118,11 +118,9 @@ class Response extends HyperfResponse implements ResponseContract
             $swooleResponse->header($key, $value);
         }
 
-        if ($result = $callback($this)) {
+        while ($content = $callback($this)) {
             /* @phpstan-ignore-next-line */
-            return $response->setBody(
-                new SwooleStream($result)
-            );
+            $response->write($content);
         }
 
         return $response;

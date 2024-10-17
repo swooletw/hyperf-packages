@@ -136,9 +136,9 @@ class ResponseTest extends TestCase
         $response = new \SwooleTW\Hyperf\Http\Response();
         $response->setConnection($connection);
 
-        $content = 'Streaming content';
+        $content = new SwooleStream('Streaming content');
         $result = $response->stream(
-            fn () => $content,
+            fn () => $content->eof() ? false : $content->read(1024),
             ['X-Download' => 'Yes']
         );
 
@@ -160,9 +160,9 @@ class ResponseTest extends TestCase
         $response = new \SwooleTW\Hyperf\Http\Response();
         $response->setConnection($connection);
 
-        $content = 'File content';
+        $content = new SwooleStream('File content');
         $result = $response->streamDownload(
-            fn () => $content,
+            fn () => $content->eof() ? false : $content->read(1024),
             'test.txt',
             ['X-Download' => 'Yes']
         );
