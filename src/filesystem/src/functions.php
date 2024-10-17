@@ -1,25 +1,24 @@
 <?php
 
-namespace SwooleTW\Hyperf\FileSystem;
+declare(strict_types=1);
 
-if (! function_exists('SwooleTW\Hyperf\FileSystem\join_paths')) {
-    /**
-     * Join the given paths together.
-     *
-     * @param  string|null  $basePath
-     * @param  string  ...$paths
-     * @return string
-     */
-    function join_paths($basePath, ...$paths)
-    {
-        foreach ($paths as $index => $path) {
-            if (empty($path) && $path !== '0') {
-                unset($paths[$index]);
-            } else {
-                $paths[$index] = DIRECTORY_SEPARATOR.ltrim($path, DIRECTORY_SEPARATOR);
-            }
+namespace SwooleTW\Hyperf\Filesystem;
+
+/**
+ * Join the given paths together.
+ *
+ * @param null|string $basePath
+ * @param string ...$paths
+ */
+function join_paths($basePath, ...$paths): string
+{
+    foreach ($paths as $index => $path) {
+        if (empty($path) && $path !== '0') {
+            unset($paths[$index]);
+        } else {
+            $paths[$index] = DIRECTORY_SEPARATOR . ltrim((string) $path, DIRECTORY_SEPARATOR);
         }
-
-        return $basePath.implode('', $paths);
     }
+
+    return $basePath . implode('', $paths);
 }

@@ -24,26 +24,29 @@
     "autoload": {
         "psr-4": {
             "SwooleTW\\Hyperf\\Filesystem": "src/"
-        }
+        },
+        "files": [
+            "src/Functions.php"
+        ]
     },
     "require": {
         "php": "^8.2",
-        "hyperf/collection": "^11.0",
-        "hyperf/macroable": "^11.0",
-        "hyperf/support": "^11.0"
+        "hyperf/collection": "~3.1.0",
+        "hyperf/macroable": "~3.1.0",
+        "hyperf/support": "~3.1.0",
+        "swooletw/object-pool": "dev-master"
     },
     "suggest": {
         "ext-fileinfo": "Required to use the Filesystem class.",
         "ext-ftp": "Required to use the Flysystem FTP driver.",
         "ext-hash": "Required to use the Filesystem class.",
-        "illuminate/http": "Required for handling uploaded files (^7.0).",
         "league/flysystem": "Required to use the Flysystem local driver (^3.0.16).",
+        "league/flysystem-path-prefixing": "Required to use the scoped driver (^3.3).",
+        "league/flysystem-read-only": "Required to use read-only disks (^3.3)",
         "league/flysystem-aws-s3-v3": "Required to use the Flysystem S3 driver (^3.0).",
         "league/flysystem-ftp": "Required to use the Flysystem FTP driver (^3.0).",
         "league/flysystem-sftp-v3": "Required to use the Flysystem SFTP driver (^3.0).",
-        "psr/http-message": "Required to allow Storage::put to accept a StreamInterface (^1.0).",
-        "symfony/filesystem": "Required to enable support for relative symbolic links (^7.0).",
-        "symfony/mime": "Required to enable support for guessing extensions (^7.0)."
+        "swooletw/hyperf-http": "Required to allow Storage::put to accept a StreamInterface."
     },
     "config": {
         "sort-packages": true

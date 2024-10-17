@@ -1,11 +1,15 @@
 <?php
 
-namespace SwooleTW\Hyperf\FileSystem;
+declare(strict_types=1);
+
+namespace SwooleTW\Hyperf\Filesystem;
 
 use Aws\S3\S3Client;
+use DateTimeInterface;
 use Hyperf\Conditionable\Conditionable;
 use League\Flysystem\AwsS3V3\AwsS3V3Adapter as S3Adapter;
 use League\Flysystem\FilesystemOperator;
+use RuntimeException;
 
 class AwsS3V3Adapter extends FilesystemAdapter
 {
@@ -13,19 +17,11 @@ class AwsS3V3Adapter extends FilesystemAdapter
 
     /**
      * The AWS S3 client.
-     *
-     * @var \Aws\S3\S3Client
      */
-    protected $client;
+    protected S3Client $client;
 
     /**
      * Create a new AwsS3V3FilesystemAdapter instance.
-     *
-     * @param  \League\Flysystem\FilesystemOperator  $driver
-     * @param  \League\Flysystem\AwsS3V3\AwsS3V3Adapter  $adapter
-     * @param  array  $config
-     * @param  \Aws\S3\S3Client  $client
-     * @return void
      */
     public function __construct(FilesystemOperator $driver, S3Adapter $adapter, array $config, S3Client $client)
     {
@@ -37,12 +33,9 @@ class AwsS3V3Adapter extends FilesystemAdapter
     /**
      * Get the URL for the file at the given path.
      *
-     * @param  string  $path
-     * @return string
-     *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
-    public function url($path)
+    public function url(string $path): string
     {
         // If an explicit base URL has been set on the disk configuration then we will use
         // it as the base URL instead of the default path. This allows the developer to
@@ -52,29 +45,23 @@ class AwsS3V3Adapter extends FilesystemAdapter
         }
 
         return $this->client->getObjectUrl(
-            $this->config['bucket'], $this->prefixer->prefixPath($path)
+            $this->config['bucket'],
+            $this->prefixer->prefixPath($path)
         );
     }
 
     /**
      * Determine if temporary URLs can be generated.
-     *
-     * @return bool
      */
-    public function providesTemporaryUrls()
+    public function providesTemporaryUrls(): bool
     {
         return true;
     }
 
     /**
      * Get a temporary URL for the file at the given path.
-     *
-     * @param  string  $path
-     * @param  \DateTimeInterface  $expiration
-     * @param  array  $options
-     * @return string
      */
-    public function temporaryUrl($path, $expiration, array $options = [])
+    public function temporaryUrl(string $path, DateTimeInterface $expiration, array $options = []): string
     {
         $command = $this->client->getCommand('GetObject', array_merge([
             'Bucket' => $this->config['bucket'],
@@ -82,7 +69,9 @@ class AwsS3V3Adapter extends FilesystemAdapter
         ], $options));
 
         $uri = $this->client->createPresignedRequest(
-            $command, $expiration, $options
+            $command,
+            $expiration,
+            $options
         )->getUri();
 
         // If an explicit base URL has been set on the disk configuration then we will use
@@ -97,13 +86,8 @@ class AwsS3V3Adapter extends FilesystemAdapter
 
     /**
      * Get a temporary upload URL for the file at the given path.
-     *
-     * @param  string  $path
-     * @param  \DateTimeInterface  $expiration
-     * @param  array  $options
-     * @return array
      */
-    public function temporaryUploadUrl($path, $expiration, array $options = [])
+    public function temporaryUploadUrl(string $path, DateTimeInterface $expiration, array $options = []): array
     {
         $command = $this->client->getCommand('PutObject', array_merge([
             'Bucket' => $this->config['bucket'],
@@ -111,7 +95,9 @@ class AwsS3V3Adapter extends FilesystemAdapter
         ], $options));
 
         $signedRequest = $this->client->createPresignedRequest(
-            $command, $expiration, $options
+            $command,
+            $expiration,
+            $options
         );
 
         $uri = $signedRequest->getUri();
@@ -131,10 +117,8 @@ class AwsS3V3Adapter extends FilesystemAdapter
 
     /**
      * Get the underlying S3 client.
-     *
-     * @return \Aws\S3\S3Client
      */
-    public function getClient()
+    public function getClient(): S3Client
     {
         return $this->client;
     }

@@ -34,6 +34,7 @@
             "SwooleTW\\Hyperf\\Dispatcher\\": "src/dispatcher/src/",
             "SwooleTW\\Hyperf\\Encryption\\": "src/encryption/src/",
             "SwooleTW\\Hyperf\\Event\\": "src/event/src/",
+            "SwooleTW\\Hyperf\\Filesystem\\": "src/filesystem/src/",
             "SwooleTW\\Hyperf\\Foundation\\": "src/foundation/src/",
             "SwooleTW\\Hyperf\\Hashing\\": "src/hashing/src/",
             "SwooleTW\\Hyperf\\Http\\": "src/http/src/",
@@ -48,6 +49,7 @@
             "src/cache/src/Functions.php",
             "src/config/src/Functions.php",
             "src/event/src/Functions.php",
+            "src/filesystem/src/Functions.php",
             "src/foundation/src/helpers.php",
             "src/router/src/Functions.php",
             "src/support/src/helpers.php"
@@ -103,6 +105,7 @@
         "swooletw/hyperf-dispatcher": "self.version",
         "swooletw/hyperf-encryption": "self.version",
         "swooletw/hyperf-event": "self.version",
+        "swooletw/hyperf-filesystem": "self.version",
         "swooletw/hyperf-framework": "self.version",
         "swooletw/hyperf-foundation": "self.version",
         "swooletw/hyperf-hashing": "self.version",
@@ -116,7 +119,8 @@
     "suggest": {
         "hyperf/redis": "Required to use redis driver. (^3.1).",
         "hyperf/session": "Required to use session guard. (^3.1).",
-        "friendsofhyperf/tinker": "Required to use the tinker console command (^3.1)."
+        "friendsofhyperf/tinker": "Required to use the tinker console command (^3.1).",
+        "league/flysystem-read-only": "Required to use read-only disks (^3.3)"
     },
     "require-dev": {
         "fakerphp/faker": "^2.0",
@@ -126,7 +130,10 @@
         "hyperf/testing": "~3.1.0",
         "hyperf/view-engine": "~3.1.0",
         "league/flysystem": "^3.0",
+        "league/flysystem-path-prefixing": "^3.3",
+        "league/flysystem-read-only": "^3.3",
         "league/flysystem-aws-s3-v3": "*",
+        "league/flysystem-ftp": "*",
         "filp/whoops": "^2.15",
         "mockery/mockery": "^1.5.1",
         "phpstan/phpstan": "^1.11.5",
@@ -148,6 +155,7 @@
                 "SwooleTW\\Hyperf\\Dispatcher\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Encryption\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Event\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Filesystem\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Foundation\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Hashing\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Http\\ConfigProvider",

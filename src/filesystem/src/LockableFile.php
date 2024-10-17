@@ -2,10 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\FileSystem;
+namespace SwooleTW\Hyperf\Filesystem;
 
+use Closure;
 use Exception;
-use SwooleTW\Hyperf\FileSystem\Exceptions\LockTimeoutException;
+use Hyperf\Coroutine\Coroutine;
+use Hyperf\Coroutine\Locker;
+use SwooleTW\Hyperf\Filesystem\Exceptions\LockTimeoutException;
 
 class LockableFile
 {
@@ -69,10 +72,8 @@ class LockableFile
 
     /**
      * Get the file size.
-     *
-     * @return int
      */
-    public function size()
+    public function size(): int
     {
         return filesize($this->path);
     }
@@ -114,9 +115,11 @@ class LockableFile
      */
     public function getSharedLock(bool $block = false): static
     {
-        if (! flock($this->handle, LOCK_SH | ($block ? 0 : LOCK_NB))) {
-            throw new LockTimeoutException("Unable to acquire file lock at path [{$this->path}].");
-        }
+        $this->atomic(function () use ($block) {
+            if (! flock($this->handle, LOCK_SH | ($block ? 0 : LOCK_NB))) {
+                throw new LockTimeoutException("Unable to acquire file lock at path [{$this->path}].");
+            }
+        });
 
         $this->isLocked = true;
 
@@ -132,9 +135,11 @@ class LockableFile
      */
     public function getExclusiveLock(bool $block = false): static
     {
-        if (! flock($this->handle, LOCK_EX | ($block ? 0 : LOCK_NB))) {
-            throw new LockTimeoutException("Unable to acquire file lock at path [{$this->path}].");
-        }
+        $this->atomic(function () use ($block) {
+            if (! flock($this->handle, LOCK_EX | ($block ? 0 : LOCK_NB))) {
+                throw new LockTimeoutException("Unable to acquire file lock at path [{$this->path}].");
+            }
+        });
 
         $this->isLocked = true;
 
@@ -148,7 +153,7 @@ class LockableFile
      */
     public function releaseLock(): static
     {
-        flock($this->handle, LOCK_UN);
+        $this->atomic(fn () => flock($this->handle, LOCK_UN));
 
         $this->isLocked = false;
 
@@ -165,5 +170,22 @@ class LockableFile
         }
 
         return fclose($this->handle);
+    }
+
+    protected function atomic(Closure $callback): mixed
+    {
+        if (! Coroutine::inCoroutine()) {
+            return $callback();
+        }
+
+        try {
+            while (! Locker::lock($this->path)) {
+                usleep(1000);
+            }
+
+            return $callback();
+        } finally {
+            Locker::unlock($this->path);
+        }
     }
 }
