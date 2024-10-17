@@ -456,6 +456,10 @@ class FilesystemAdapterTest extends TestCase
     #[RequiresPhpExtension('ftp')]
     public function testCreateFtpDriver()
     {
+        if (! class_exists(FtpAdapter::class)) {
+            $this->markTestSkipped('league/flysystem-ftp is not installed.');
+        }
+
         $filesystem = new FilesystemManager(m::mock(ContainerInterface::class));
 
         $driver = $filesystem->createFtpDriver([
