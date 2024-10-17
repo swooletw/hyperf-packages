@@ -445,7 +445,8 @@ class Application extends Container implements ApplicationContract
                 'cache.store',
                 \SwooleTW\Hyperf\Cache\Repository::class,
             ],
-            \League\Flysystem\Filesystem::class => ['files'],
+            \SwooleTW\Hyperf\Filesystem\Filesystem::class => ['files'],
+            \SwooleTW\Hyperf\Filesystem\FilesystemManager::class => ['filesystem'],
             \Hyperf\Contract\TranslatorInterface::class => ['translator'],
             \Hyperf\Validation\Contract\ValidatorFactoryInterface::class => ['validator'],
             \Psr\Http\Message\ServerRequestInterface::class => [
