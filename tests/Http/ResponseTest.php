@@ -131,14 +131,19 @@ class ResponseTest extends TestCase
         $psrResponse = new \Hyperf\HttpMessage\Server\Response();
         Context::set(ResponseInterface::class, $psrResponse);
 
-        $swooleResponse = new \Swoole\Http\Response();
+        $swooleResponse = Mockery::mock(\Swoole\Http\Response::class)
+            ->makePartial();
+        $swooleResponse->shouldReceive('write')
+            ->with($content = 'Streaming content')
+            ->once()
+            ->andReturnTrue();
         $connection = new \Hyperf\Engine\Http\WritableConnection($swooleResponse);
         $response = new \SwooleTW\Hyperf\Http\Response();
         $response->setConnection($connection);
 
-        $content = new SwooleStream('Streaming content');
+        $stream = new SwooleStream($content);
         $result = $response->stream(
-            fn () => $content->eof() ? false : $content->read(1024),
+            fn () => $stream->eof() ? false : $stream->read(1024),
             ['X-Download' => 'Yes']
         );
 
@@ -147,7 +152,6 @@ class ResponseTest extends TestCase
             'Content-Type' => ['text/event-stream'],
             'X-Download' => ['Yes'],
         ], $result->getHeaders());
-        $this->assertEquals($content, (string) $result->getBody());
     }
 
     public function testStreamDownload()
@@ -155,20 +159,24 @@ class ResponseTest extends TestCase
         $psrResponse = new \Hyperf\HttpMessage\Server\Response();
         Context::set(ResponseInterface::class, $psrResponse);
 
-        $swooleResponse = new \Swoole\Http\Response();
+        $swooleResponse = Mockery::mock(\Swoole\Http\Response::class)
+            ->makePartial();
+        $swooleResponse->shouldReceive('write')
+            ->with($content = 'File content')
+            ->once()
+            ->andReturnTrue();
         $connection = new \Hyperf\Engine\Http\WritableConnection($swooleResponse);
         $response = new \SwooleTW\Hyperf\Http\Response();
         $response->setConnection($connection);
 
-        $content = new SwooleStream('File content');
+        $stream = new SwooleStream($content);
         $result = $response->streamDownload(
-            fn () => $content->eof() ? false : $content->read(1024),
+            fn () => $stream->eof() ? false : $stream->read(1024),
             'test.txt',
             ['X-Download' => 'Yes']
         );
 
         $this->assertInstanceOf(ResponseInterface::class, $result);
-        $this->assertEquals($content, (string) $result->getBody());
         $this->assertEquals([
             'Content-Type' => ['application/octet-stream'],
             'Content-Description' => ['File Transfer'],
