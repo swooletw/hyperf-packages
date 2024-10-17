@@ -2,41 +2,36 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Support;
+namespace SwooleTW\Hyperf\ObjectPool\Traits;
 
 use Closure;
 use InvalidArgumentException;
 use SwooleTW\Hyperf\ObjectPool\PoolProxy;
 
-abstract class PoolManager extends Manager
+trait HasPoolProxy
 {
-    /**
-     * The array of drivers which will be wrapped as pool proxies.
-     */
-    protected array $poolables = [];
-
     /**
      * The array of release callbacks for the drivers.
      */
     protected array $releaseCallbacks = [];
 
     /**
-     * Create a new driver instance.
-     *
-     * @throws InvalidArgumentException
+     * Create a new pool proxy.
      */
-    protected function createDriver(string $driver): mixed
+    protected function createPoolProxy(string $driver, Closure $resolver, array $config = []): mixed
     {
-        $instance = parent::createDriver($driver);
+        $proxyClass = property_exists($this, 'poolProxyClass')
+            ? $this->poolProxyClass
+            : PoolProxy::class;
 
-        if (! in_array($driver, $this->poolables)) {
-            return $instance;
+        if (! is_subclass_of($proxyClass, PoolProxy::class)) {
+            throw new InvalidArgumentException('The pool proxy class must be an instance of ' . PoolProxy::class);
         }
 
-        return new PoolProxy(
+        return new $proxyClass(
             static::class . ':' . $driver,
-            fn () => $instance,
-            $this->getPoolConfig($driver),
+            $resolver,
+            $config,
             $this->getReleaseCallback($driver)
         );
     }
@@ -58,11 +53,6 @@ abstract class PoolManager extends Manager
     {
         return $this->releaseCallbacks[$driver] ?? null;
     }
-
-    /**
-     * Get the pool configuration for the driver.
-     */
-    abstract public function getPoolConfig(string $driver): array;
 
     /**
      * Add a driver to the poolables list.
