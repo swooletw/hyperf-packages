@@ -10,6 +10,7 @@ use Hyperf\Support\Traits\InteractsWithTime;
 use SwooleTW\Hyperf\Cache\Contracts\LockProvider;
 use SwooleTW\Hyperf\Cache\Contracts\Store;
 use SwooleTW\Hyperf\Cache\Exceptions\LockTimeoutException;
+use SwooleTW\Hyperf\Filesystem\LockableFile;
 
 class FileStore implements Store, LockProvider
 {
