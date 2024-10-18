@@ -643,7 +643,7 @@ class FilesystemAdapter implements CloudFilesystemContract
      *
      * @throws RuntimeException
      */
-    public function temporaryUploadUrl(string $path, DateTimeInterface $expiration, array $options = []): array
+    public function temporaryUploadUrl(string $path, DateTimeInterface $expiration, array $options = []): array|string
     {
         if (method_exists($this->adapter, 'temporaryUploadUrl')) {
             return $this->adapter->temporaryUploadUrl($path, $expiration, $options);

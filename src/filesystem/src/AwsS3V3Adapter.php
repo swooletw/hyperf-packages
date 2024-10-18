@@ -87,7 +87,7 @@ class AwsS3V3Adapter extends FilesystemAdapter
     /**
      * Get a temporary upload URL for the file at the given path.
      */
-    public function temporaryUploadUrl(string $path, DateTimeInterface $expiration, array $options = []): array
+    public function temporaryUploadUrl(string $path, DateTimeInterface $expiration, array $options = []): array|string
     {
         $command = $this->client->getCommand('PutObject', array_merge([
             'Bucket' => $this->config['bucket'],

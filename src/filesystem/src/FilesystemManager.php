@@ -6,8 +6,10 @@ namespace SwooleTW\Hyperf\Filesystem;
 
 use Aws\S3\S3Client;
 use Closure;
+use Google\Cloud\Storage\StorageClient as GcsClient;
 use Hyperf\Collection\Arr;
 use Hyperf\Contract\ConfigInterface;
+use Hyperf\Stringable\Str;
 use InvalidArgumentException;
 use League\Flysystem\AwsS3V3\AwsS3V3Adapter as S3Adapter;
 use League\Flysystem\AwsS3V3\PortableVisibilityConverter as AwsS3PortableVisibilityConverter;
@@ -16,6 +18,7 @@ use League\Flysystem\FilesystemAdapter as FlysystemAdapter;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\Ftp\FtpAdapter;
 use League\Flysystem\Ftp\FtpConnectionOptions;
+use League\Flysystem\GoogleCloudStorage\GoogleCloudStorageAdapter as GcsAdapter;
 use League\Flysystem\Local\LocalFilesystemAdapter as LocalAdapter;
 use League\Flysystem\PathPrefixing\PathPrefixedAdapter;
 use League\Flysystem\PhpseclibV3\SftpAdapter;
@@ -27,6 +30,7 @@ use Psr\Container\ContainerInterface;
 use SwooleTW\Hyperf\Filesystem\Contracts\Cloud;
 use SwooleTW\Hyperf\Filesystem\Contracts\Factory as FactoryContract;
 use SwooleTW\Hyperf\Filesystem\Contracts\Filesystem;
+use SwooleTW\Hyperf\Filesystem\GoogleCloudStorageAdapter;
 use SwooleTW\Hyperf\ObjectPool\Traits\HasPoolProxy;
 
 /**
@@ -55,7 +59,7 @@ class FilesystemManager implements FactoryContract
     /**
      * The array of drivers which will be wrapped as pool proxies.
      */
-    protected array $poolables = ['s3'];
+    protected array $poolables = ['s3', 'gcs'];
 
     /**
      * Create a new filesystem manager instance.
@@ -276,6 +280,76 @@ class FilesystemManager implements FactoryContract
         }
 
         return Arr::except($config, ['token']);
+    }
+
+    /**
+     * Create an instance of the Google Cloud Storage driver.
+     */
+    public function createGcsDriver(array $config): Cloud
+    {
+        $gcsConfig = $this->formatGcsConfig($config);
+        $client = $this->createGcsClient($gcsConfig);
+
+        $visibilityHandlerClass = Arr::get($config, 'visibilityHandler');
+        $defaultVisibility = in_array(
+            $visibility = Arr::get($config, 'visibility'),
+            [
+                Visibility::PRIVATE,
+                Visibility::PUBLIC,
+            ]
+        ) ? $visibility : Visibility::PRIVATE;
+
+
+        $adapter = new GcsAdapter(
+            $client->bucket(Arr::get($config, 'bucket')),
+            Arr::get($config, 'root'),
+            Arr::get($config, 'visibilityHandler') ? new $visibilityHandlerClass() : null,
+            $defaultVisibility
+        );
+
+        return new GoogleCloudStorageAdapter(
+            new Flysystem($adapter, $gcsConfig),
+            $adapter,
+            $gcsConfig,
+            $client
+        );
+    }
+
+    protected function formatGcsConfig(array $config): array
+    {
+        // Google's SDK expects camelCase keys, but we can use snake_case in the config.
+        foreach ($config as $key => $value) {
+            $config[Str::camel($key)] = $value;
+        }
+
+        if (! Arr::has($config, 'root')) {
+            $config['root'] = Arr::get($config, 'pathPrefix') ?? '';
+        }
+
+        return $config;
+    }
+
+    protected function createGcsClient(array $config): GcsClient
+    {
+        $options = [];
+
+        if ($keyFilePath = Arr::get($config, 'keyFilePath')) {
+            $options['keyFilePath'] = $keyFilePath;
+        }
+
+        if ($keyFile = Arr::get($config, 'keyFile')) {
+            $options['keyFile'] = $keyFile;
+        }
+
+        if ($projectId = Arr::get($config, 'projectId')) {
+            $options['projectId'] = $projectId;
+        }
+
+        if ($apiEndpoint = Arr::get($config, 'apiEndpoint')) {
+            $options['apiEndpoint'] = $apiEndpoint;
+        }
+
+        return new GcsClient($options);
     }
 
     /**
