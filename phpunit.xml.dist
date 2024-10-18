@@ -6,7 +6,8 @@
          stopOnError="false"
          stopOnFailure="false"
          backupStaticProperties="false"
-         displayDetailsOnTestsThatTriggerDeprecations="true">
+         displayDetailsOnTestsThatTriggerDeprecations="true"
+         displayDetailsOnTestsThatTriggerWarnings="true">
     <testsuites>
         <testsuite name="Hyperf Packages Test Suite">
             <directory suffix="Test.php">./tests</directory>
