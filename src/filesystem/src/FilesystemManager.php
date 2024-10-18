@@ -30,7 +30,6 @@ use Psr\Container\ContainerInterface;
 use SwooleTW\Hyperf\Filesystem\Contracts\Cloud;
 use SwooleTW\Hyperf\Filesystem\Contracts\Factory as FactoryContract;
 use SwooleTW\Hyperf\Filesystem\Contracts\Filesystem;
-use SwooleTW\Hyperf\Filesystem\GoogleCloudStorageAdapter;
 use SwooleTW\Hyperf\ObjectPool\Traits\HasPoolProxy;
 
 /**
@@ -298,7 +297,6 @@ class FilesystemManager implements FactoryContract
                 Visibility::PUBLIC,
             ]
         ) ? $visibility : Visibility::PRIVATE;
-
 
         $adapter = new GcsAdapter(
             $client->bucket(Arr::get($config, 'bucket')),
