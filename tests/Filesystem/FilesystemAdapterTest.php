@@ -539,7 +539,7 @@ class FilesystemAdapterTest extends TestCase
 
     public function testThrowExceptionsForPut()
     {
-        if (shell_exec('whoami') === 'root') {
+        if (trim(shell_exec('whoami')) === 'root') {
             $this->markTestSkipped('Cannot test file permissions as root user.');
             return;
         }
