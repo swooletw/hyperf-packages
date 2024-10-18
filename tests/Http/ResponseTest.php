@@ -128,19 +128,14 @@ class ResponseTest extends TestCase
 
     public function testStream()
     {
-        $psrResponse = new \Hyperf\HttpMessage\Server\Response();
-        Context::set(ResponseInterface::class, $psrResponse);
-
-        $swooleResponse = Mockery::mock(\Swoole\Http\Response::class)
-            ->makePartial();
-        $swooleResponse->shouldReceive('write')
+        $psrResponse = Mockery::mock(\Hyperf\HttpMessage\Server\Response::class)->makePartial();
+        $psrResponse->shouldReceive('write')
             ->with($content = 'Streaming content')
             ->once()
             ->andReturnTrue();
-        $connection = new \Hyperf\Engine\Http\WritableConnection($swooleResponse);
-        $response = new \SwooleTW\Hyperf\Http\Response();
-        $response->setConnection($connection);
+        Context::set(ResponseInterface::class, $psrResponse);
 
+        $response = new \SwooleTW\Hyperf\Http\Response();
         $stream = new SwooleStream($content);
         $result = $response->stream(
             fn () => $stream->eof() ? false : $stream->read(1024),
@@ -156,19 +151,14 @@ class ResponseTest extends TestCase
 
     public function testStreamDownload()
     {
-        $psrResponse = new \Hyperf\HttpMessage\Server\Response();
-        Context::set(ResponseInterface::class, $psrResponse);
-
-        $swooleResponse = Mockery::mock(\Swoole\Http\Response::class)
-            ->makePartial();
-        $swooleResponse->shouldReceive('write')
+        $psrResponse = Mockery::mock(\Hyperf\HttpMessage\Server\Response::class)->makePartial();
+        $psrResponse->shouldReceive('write')
             ->with($content = 'File content')
             ->once()
             ->andReturnTrue();
-        $connection = new \Hyperf\Engine\Http\WritableConnection($swooleResponse);
-        $response = new \SwooleTW\Hyperf\Http\Response();
-        $response->setConnection($connection);
+        Context::set(ResponseInterface::class, $psrResponse);
 
+        $response = new \SwooleTW\Hyperf\Http\Response();
         $stream = new SwooleStream($content);
         $result = $response->streamDownload(
             fn () => $stream->eof() ? false : $stream->read(1024),

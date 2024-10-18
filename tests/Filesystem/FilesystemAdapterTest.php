@@ -653,15 +653,11 @@ class FilesystemAdapterTest extends TestCase
             ->andReturn($response = new Response());
         ApplicationContext::setContainer($container);
 
-        $psrResponse = new \Hyperf\HttpMessage\Server\Response();
-        Context::set(ResponseInterface::class, $psrResponse);
-
-        $swooleResponse = m::mock(\Swoole\Http\Response::class)->makePartial();
-        $swooleResponse->shouldReceive('write')
+        $psrResponse = m::mock(\Hyperf\HttpMessage\Server\Response::class)->makePartial();
+        $psrResponse->shouldReceive('write')
             ->with($content)
             ->once()
             ->andReturnTrue();
-        $connection = new \Hyperf\Engine\Http\WritableConnection($swooleResponse);
-        $response->setConnection($connection);
+        Context::set(ResponseInterface::class, $psrResponse);
     }
 }

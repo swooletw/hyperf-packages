@@ -113,9 +113,11 @@ class Response extends HyperfResponse implements ResponseContract
         }
 
         /* @phpstan-ignore-next-line */
-        $swooleResponse = $this->getConnection()->getSocket();
-        foreach ($response->getHeaders() as $key => $value) {
-            $swooleResponse->header($key, $value);
+        if ($responseConnection = $this->getConnection()) {
+            $swooleResponse = $responseConnection->getSocket();
+            foreach ($response->getHeaders() as $key => $value) {
+                $swooleResponse->header($key, $value);
+            }
         }
 
         while ($content = $callback($this)) {
