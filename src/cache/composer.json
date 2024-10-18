@@ -37,7 +37,8 @@
         "psr/simple-cache": "^3.0"
     },
     "suggest": {
-        "hyperf/redis": "Required to use redis driver. (~3.1.0)"
+        "hyperf/redis": "Required to use redis driver. (~3.1.0)",
+        "swooletw/cache": "Required to use file lock. (~3.1.0)"
     },
     "config": {
         "sort-packages": true
