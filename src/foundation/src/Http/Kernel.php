@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Http;
 
+use Hyperf\Context\RequestContext;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Coordinator\Constants;
 use Hyperf\Coordinator\CoordinatorManager;
 use Hyperf\HttpMessage\Server\Request;
 use Hyperf\HttpMessage\Server\Response;
+use Hyperf\HttpMessage\Upload\UploadedFile as HyperfUploadedFile;
 use Hyperf\HttpServer\Event\RequestHandled;
 use Hyperf\HttpServer\Event\RequestReceived;
 use Hyperf\HttpServer\Event\RequestTerminated;
@@ -18,6 +20,7 @@ use Psr\Http\Message\ResponseInterface;
 use SwooleTW\Hyperf\Foundation\Exceptions\Handlers\HttpExceptionHandler;
 use SwooleTW\Hyperf\Foundation\Http\Contracts\MiddlewareContract;
 use SwooleTW\Hyperf\Foundation\Http\Traits\HasMiddleware;
+use SwooleTW\Hyperf\Http\UploadedFile;
 use Throwable;
 
 class Kernel extends HyperfServer implements MiddlewareContract
@@ -41,6 +44,15 @@ class Kernel extends HyperfServer implements MiddlewareContract
             CoordinatorManager::until(Constants::WORKER_START)->yield();
 
             [$request, $response] = $this->initRequestAndResponse($swooleRequest, $swooleResponse);
+
+            // Convert Hyperf's uploaded files to Laravel style UploadedFile
+            if ($uploadedFiles = $request->getUploadedFiles()) {
+                $request = $request->withUploadedFiles(array_map(function (HyperfUploadedFile $uploadedFile) {
+                    return UploadedFile::createFromBase($uploadedFile);
+                }, $uploadedFiles));
+
+                RequestContext::set($request);
+            }
 
             $this->dispatchRequestReceivedEvent(
                 $request = $this->coreMiddleware->dispatch($request),
