@@ -22,10 +22,10 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use SwooleTW\Hyperf\Foundation\Http\Kernel as HttpKernel;
+use SwooleTW\Hyperf\Foundation\Testing\Coroutine\Waiter;
 use Throwable;
 
 use function Hyperf\Collection\data_get;
-use function Hyperf\Coroutine\wait;
 
 class TestClient extends HttpKernel
 {
@@ -34,6 +34,8 @@ class TestClient extends HttpKernel
     protected float $waitTimeout = 10.0;
 
     protected string $baseUri = 'http://127.0.0.1/';
+
+    protected static ?Waiter $waiter = null;
 
     public function __construct(ContainerInterface $container, $server = 'http')
     {
@@ -125,7 +127,7 @@ class TestClient extends HttpKernel
 
     public function request(string $method, string $path, array $options = [])
     {
-        return wait(function () use ($method, $path, $options) {
+        return $this->getWaiter()->wait(function () use ($method, $path, $options) {
             return $this->execute(
                 $this->initRequest($method, $path, $options)
             );
@@ -134,7 +136,7 @@ class TestClient extends HttpKernel
 
     public function sendRequest(ServerRequestInterface $psr7Request): ResponseInterface
     {
-        return wait(function () use ($psr7Request) {
+        return $this->getWaiter()->wait(function () use ($psr7Request) {
             return $this->execute($psr7Request);
         }, $this->waitTimeout);
     }
@@ -290,5 +292,14 @@ class TestClient extends HttpKernel
         return [
             HttpExceptionHandler::class,
         ];
+    }
+
+    protected function getWaiter(): Waiter
+    {
+        if (static::$waiter) {
+            return static::$waiter;
+        }
+
+        return static::$waiter = new Waiter();
     }
 }
