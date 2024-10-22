@@ -21,6 +21,7 @@ use Hyperf\Testing\HttpMessage\Upload\UploadedFile;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\UploadedFileInterface;
 use SwooleTW\Hyperf\Foundation\Http\Kernel as HttpKernel;
 use SwooleTW\Hyperf\Foundation\Testing\Coroutine\Waiter;
 use Throwable;
@@ -127,6 +128,17 @@ class TestClient extends HttpKernel
 
     public function request(string $method, string $path, array $options = [])
     {
+        if (isset($options['form_params'])) {
+            [$multipart, $formParams] = collect($options['form_params'])->partition(function ($value) {
+                return $value instanceof UploadedFileInterface;
+            })->map(fn ($collection) => $collection->all())->all();
+
+            if (! empty($multipart)) {
+                $options['form_params'] = $formParams;
+                $options['multipart'] = $multipart;
+            }
+        }
+
         return $this->getWaiter()->wait(function () use ($method, $path, $options) {
             return $this->execute(
                 $this->initRequest($method, $path, $options)
@@ -249,7 +261,13 @@ class TestClient extends HttpKernel
         $files = [];
         $fileSystem = $this->container->get(Filesystem::class);
 
-        foreach ($multipart as $item) {
+        foreach ($multipart as $name => $item) {
+            if ($item instanceof UploadedFileInterface) {
+                $files[$name] = $item;
+
+                continue;
+            }
+
             if (isset($item['name'], $item['contents'], $item['filename'])) {
                 $name = $item['name'];
                 $contents = $item['contents'];
