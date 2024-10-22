@@ -336,7 +336,7 @@ class UploadedFile extends HyperfUploadedFile
      *
      * @return StreamInterface stream representation of the uploaded file
      * @throws FileException in cases when no stream is available or can be
-     *                          created
+     *                       created
      */
     public function getStream(): StreamInterface
     {
