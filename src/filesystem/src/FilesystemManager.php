@@ -289,9 +289,9 @@ class FilesystemManager implements FactoryContract
         $gcsConfig = $this->formatGcsConfig($config);
         $client = $this->createGcsClient($gcsConfig);
 
-        $visibilityHandlerClass = Arr::get($config, 'visibilityHandler');
+        $visibilityHandlerClass = Arr::get($gcsConfig, 'visibilityHandler');
         $defaultVisibility = in_array(
-            $visibility = Arr::get($config, 'visibility'),
+            $visibility = Arr::get($gcsConfig, 'visibility'),
             [
                 Visibility::PRIVATE,
                 Visibility::PUBLIC,
@@ -299,9 +299,9 @@ class FilesystemManager implements FactoryContract
         ) ? $visibility : Visibility::PRIVATE;
 
         $adapter = new GcsAdapter(
-            $client->bucket(Arr::get($config, 'bucket')),
-            Arr::get($config, 'root'),
-            Arr::get($config, 'visibilityHandler') ? new $visibilityHandlerClass() : null,
+            $client->bucket(Arr::get($gcsConfig, 'bucket')),
+            Arr::get($gcsConfig, 'root'),
+            Arr::get($gcsConfig, 'visibilityHandler') ? new $visibilityHandlerClass() : null,
             $defaultVisibility
         );
 
