@@ -53,7 +53,7 @@ class UploadedFileTest extends TestCase
         $this->expectException(FileNotFoundException::class);
 
         new UploadedFile(
-            __DIR__ . '/Fixtures/not_here',
+            __DIR__ . '/fixtures/not_here',
             'original.gif',
             null
         );
@@ -62,7 +62,7 @@ class UploadedFileTest extends TestCase
     public function testFileUploadsWithNoMimeType()
     {
         $file = new UploadedFile(
-            __DIR__ . '/Fixtures/test.gif',
+            __DIR__ . '/fixtures/test.gif',
             'original.gif',
             null,
             UPLOAD_ERR_OK
@@ -81,7 +81,7 @@ class UploadedFileTest extends TestCase
     public function testFileUploadsWithUnknownMimeType()
     {
         $file = new UploadedFile(
-            __DIR__ . '/Fixtures/.unknownextension',
+            __DIR__ . '/fixtures/.unknownextension',
             'original.gif',
             null,
             UPLOAD_ERR_OK
@@ -93,7 +93,7 @@ class UploadedFileTest extends TestCase
     public function testGuessClientExtension()
     {
         $file = new UploadedFile(
-            __DIR__ . '/Fixtures/test.gif',
+            __DIR__ . '/fixtures/test.gif',
             'original.gif',
             'image/gif',
             null
@@ -105,7 +105,7 @@ class UploadedFileTest extends TestCase
     public function testGuessClientExtensionWithIncorrectMimeType()
     {
         $file = new UploadedFile(
-            __DIR__ . '/Fixtures/test.gif',
+            __DIR__ . '/fixtures/test.gif',
             'original.gif',
             'image/png',
             null
@@ -117,7 +117,7 @@ class UploadedFileTest extends TestCase
     public function testCaseSensitiveMimeType()
     {
         $file = new UploadedFile(
-            __DIR__ . '/Fixtures/case-sensitive-mime-type.xlsm',
+            __DIR__ . '/fixtures/case-sensitive-mime-type.xlsm',
             'test.xlsm',
             'application/vnd.ms-excel.sheet.macroEnabled.12',
             null
@@ -129,7 +129,7 @@ class UploadedFileTest extends TestCase
     public function testErrorIsOkByDefault()
     {
         $file = new UploadedFile(
-            __DIR__ . '/Fixtures/test.gif',
+            __DIR__ . '/fixtures/test.gif',
             'original.gif',
             'image/gif',
             null
@@ -141,7 +141,7 @@ class UploadedFileTest extends TestCase
     public function testGetClientOriginalName()
     {
         $file = new UploadedFile(
-            __DIR__ . '/Fixtures/test.gif',
+            __DIR__ . '/fixtures/test.gif',
             'original.gif',
             'image/gif',
             null
@@ -153,7 +153,7 @@ class UploadedFileTest extends TestCase
     public function testGetClientOriginalExtension()
     {
         $file = new UploadedFile(
-            __DIR__ . '/Fixtures/test.gif',
+            __DIR__ . '/fixtures/test.gif',
             'original.gif',
             'image/gif',
             null
@@ -166,20 +166,20 @@ class UploadedFileTest extends TestCase
     {
         $this->expectException(FileException::class);
         $file = new UploadedFile(
-            __DIR__ . '/Fixtures/test.gif',
+            __DIR__ . '/fixtures/test.gif',
             'original.gif',
             'image/gif',
             UPLOAD_ERR_OK
         );
 
-        $file->move(__DIR__ . '/Fixtures/directory');
+        $file->move(__DIR__ . '/fixtures/directory');
     }
 
     public static function failedUploadedFile()
     {
         foreach ([UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE, UPLOAD_ERR_PARTIAL, UPLOAD_ERR_NO_FILE, UPLOAD_ERR_CANT_WRITE, UPLOAD_ERR_NO_TMP_DIR, UPLOAD_ERR_EXTENSION] as $error) {
             yield [new UploadedFile(
-                __DIR__ . '/Fixtures/test.gif',
+                __DIR__ . '/fixtures/test.gif',
                 'original.gif',
                 'image/gif',
                 $error
@@ -205,13 +205,13 @@ class UploadedFileTest extends TestCase
 
         $this->expectException($exceptionClass);
 
-        $file->move(__DIR__ . '/Fixtures/directory');
+        $file->move(__DIR__ . '/fixtures/directory');
     }
 
     public function testGetClientOriginalNameSanitizeFilename()
     {
         $file = new UploadedFile(
-            __DIR__ . '/Fixtures/test.gif',
+            __DIR__ . '/fixtures/test.gif',
             '../../original.gif',
             'image/gif'
         );
@@ -222,26 +222,26 @@ class UploadedFileTest extends TestCase
     public function testGetSize()
     {
         $file = new UploadedFile(
-            __DIR__ . '/Fixtures/test.gif',
+            __DIR__ . '/fixtures/test.gif',
             'original.gif',
             'image/gif'
         );
 
-        $this->assertEquals(filesize(__DIR__ . '/Fixtures/test.gif'), $file->getSize());
+        $this->assertEquals(filesize(__DIR__ . '/fixtures/test.gif'), $file->getSize());
 
         $file = new UploadedFile(
-            __DIR__ . '/Fixtures/test',
+            __DIR__ . '/fixtures/test',
             'original.gif',
             'image/gif'
         );
 
-        $this->assertEquals(filesize(__DIR__ . '/Fixtures/test'), $file->getSize());
+        $this->assertEquals(filesize(__DIR__ . '/fixtures/test'), $file->getSize());
     }
 
     public function testGetExtension()
     {
         $file = new UploadedFile(
-            __DIR__ . '/Fixtures/test.gif',
+            __DIR__ . '/fixtures/test.gif',
             'original.gif',
             'image/gif'
         );
@@ -252,7 +252,7 @@ class UploadedFileTest extends TestCase
     public function testIsValid()
     {
         $file = new UploadedFile(
-            __DIR__ . '/Fixtures/test.gif',
+            __DIR__ . '/fixtures/test.gif',
             'original.gif',
             null,
             UPLOAD_ERR_OK,
@@ -270,7 +270,7 @@ class UploadedFileTest extends TestCase
     public function testIsInvalidOnUploadError($error)
     {
         $file = new UploadedFile(
-            __DIR__ . '/Fixtures/test.gif',
+            __DIR__ . '/fixtures/test.gif',
             'original.gif',
             null,
             $error
@@ -293,7 +293,7 @@ class UploadedFileTest extends TestCase
     public function testIsInvalidIfNotHttpUpload()
     {
         $file = new UploadedFile(
-            __DIR__ . '/Fixtures/test.gif',
+            __DIR__ . '/fixtures/test.gif',
             'original.gif',
             null,
             UPLOAD_ERR_OK
@@ -322,7 +322,7 @@ class UploadedFileTest extends TestCase
     public function testGetClientOriginalPath()
     {
         $file = new UploadedFile(
-            __DIR__ . '/Fixtures/test.gif',
+            __DIR__ . '/fixtures/test.gif',
             'test.gif',
             'image/gif'
         );
@@ -333,7 +333,7 @@ class UploadedFileTest extends TestCase
     public function testGetClientOriginalPathWebkitDirectory()
     {
         $file = new UploadedFile(
-            __DIR__ . '/Fixtures/webkitdirectory/test.txt',
+            __DIR__ . '/fixtures/webkitdirectory/test.txt',
             'webkitdirectory/test.txt',
             'text/plain',
         );
@@ -344,7 +344,7 @@ class UploadedFileTest extends TestCase
     public function testGetMimeType()
     {
         $file = new UploadedFile(
-            __DIR__ . '/Fixtures/test.gif',
+            __DIR__ . '/fixtures/test.gif',
             'test.gif'
         );
 
@@ -354,7 +354,7 @@ class UploadedFileTest extends TestCase
     public function testGuessExtensionWithoutMimeType()
     {
         $file = new UploadedFile(
-            __DIR__ . '/Fixtures/directory/.empty',
+            __DIR__ . '/fixtures/directory/.empty',
             '.empty'
         );
 
