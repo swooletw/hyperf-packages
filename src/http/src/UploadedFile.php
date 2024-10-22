@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Http;
 
+use const DIRECTORY_SEPARATOR;
 use Hyperf\Collection\Arr;
 use Hyperf\Context\ApplicationContext;
 use Hyperf\HttpMessage\Stream\StandardStream;
 use Hyperf\HttpMessage\Upload\UploadedFile as HyperfUploadedFile;
 use Hyperf\Macroable\Macroable;
 use Hyperf\Stringable\Str;
-use Hyperf\Support\MimeTypeExtensionGuesser;
 use Psr\Http\Message\StreamInterface;
 use SwooleTW\Hyperf\Filesystem\FilesystemManager;
 use SwooleTW\Hyperf\Http\Exceptions\CannotWriteFileException;
@@ -23,9 +23,9 @@ use SwooleTW\Hyperf\Http\Exceptions\NoFileException;
 use SwooleTW\Hyperf\Http\Exceptions\NoTmpDirFileException;
 use SwooleTW\Hyperf\Http\Exceptions\PartialFileException;
 use SwooleTW\Hyperf\Http\Testing\FileFactory;
-use SwooleTW\Hyperf\Support\FileinfoMimeTypeGuesser;
 
-use const DIRECTORY_SEPARATOR;
+use SwooleTW\Hyperf\Support\FileinfoMimeTypeGuesser;
+use SwooleTW\Hyperf\Support\MimeTypeExtensionGuesser;
 
 class UploadedFile extends HyperfUploadedFile
 {

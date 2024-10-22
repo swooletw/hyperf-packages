@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Http\Testing;
 
-use Hyperf\Support\MimeTypeExtensionGuesser;
 use SwooleTW\Hyperf\Http\UploadedFile;
+use SwooleTW\Hyperf\Support\MimeTypeExtensionGuesser;
 
 class File extends UploadedFile
 {
@@ -103,7 +103,7 @@ class File extends UploadedFile
 
         return (new MimeTypeExtensionGuesser())->guessMimeType(
             pathinfo($this->name, PATHINFO_EXTENSION)
-        );
+        ) ?: 'application/octet-stream';
     }
 
     /**
