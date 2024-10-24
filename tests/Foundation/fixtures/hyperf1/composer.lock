@@ -5,11 +5,30 @@
             "version": "0.1",
             "extra": {
                 "hyperf": {
-                    "providers": "SwooleTW\\Hyperf\\Tests\\Foundation\\Bootstrap\\TestOneServiceProvider"
+                    "providers": [
+                        "SwooleTW\\Hyperf\\Tests\\Foundation\\Bootstrap\\TestOneServiceProvider"
+                    ],
+                    "dont-discover": [
+                        "package-three"
+                    ]
                 }
             },
             "scripts": {
                 "foo": "script-one"
+            }
+        },
+        {
+            "name": "package-three",
+            "version": "0.1",
+            "extra": {
+                "hyperf": {
+                    "providers": [
+                        "SwooleTW\\Hyperf\\Tests\\Foundation\\Bootstrap\\TestThreeServiceProvider"
+                    ]
+                }
+            },
+            "scripts": {
+                "foo": "script-three"
             }
         }
     ],

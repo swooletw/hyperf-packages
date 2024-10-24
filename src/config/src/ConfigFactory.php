@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Config;
 
 use Hyperf\Collection\Arr;
-use Hyperf\Config\ProviderConfig;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Finder\Finder;
 

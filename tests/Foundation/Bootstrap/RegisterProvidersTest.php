@@ -20,6 +20,13 @@ class RegisterProvidersTest extends TestCase
 {
     use HasMockedApplication;
 
+    public function tearDown(): void
+    {
+        Composer::setBasePath(null);
+
+        parent::tearDown();
+    }
+
     public function testRegisterProviders()
     {
         $config = m::mock(ConfigInterface::class);
@@ -38,11 +45,11 @@ class RegisterProvidersTest extends TestCase
 
         (new RegisterProviders())->bootstrap($app);
 
-        // reset base path, otherwise it will affect other tests
-        Composer::setBasePath(null);
-
         $this->assertSame('foo', $app->get('foo'));
         $this->assertSame('bar', $app->get('bar'));
+
+        // should not register TestThreeServiceProvider because of `dont-discover`
+        $this->assertFalse($app->bound('baz'));
     }
 }
 
@@ -62,6 +69,16 @@ class TestTwoServiceProvider extends ServiceProvider
     {
         $this->app->bind('bar', function () {
             return 'bar';
+        });
+    }
+}
+
+class TestThreeServiceProvider extends ServiceProvider
+{
+    public function register(): void
+    {
+        $this->app->bind('baz', function () {
+            return 'baz';
         });
     }
 }

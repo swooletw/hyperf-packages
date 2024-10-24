@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Container;
 
-use Hyperf\Config\ProviderConfig;
 use Hyperf\Di\Exception\Exception;
+use SwooleTW\Hyperf\Config\ProviderConfig;
 
 class DefinitionSourceFactory
 {

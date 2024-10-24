@@ -16,18 +16,28 @@ class RegisterProviders
      */
     public function bootstrap(ApplicationContract $app): void
     {
-        $providers = array_map(
-            fn (array $package) => Arr::wrap(($package['hyperf']['providers'] ?? []) ?? []),
-            Composer::getMergedExtra()
-        );
-        $providers = array_unique(
-            array_merge(
-                Arr::flatten($providers),
-                $app->get(ConfigInterface::class)->get('app.providers', [])
-            )
+        $providers = [];
+        $packagesToIgnore = Composer::getMergedExtra('hyperf')['dont-discover'] ?? [];
+
+        if (! in_array('*', $packagesToIgnore)) {
+            $providers = array_map(
+                fn (array $package) => Arr::wrap(($package['hyperf']['providers'] ?? []) ?? []),
+                Composer::getMergedExtra()
+            );
+            $providers = array_filter(
+                $providers,
+                fn ($package) => ! in_array($package, $packagesToIgnore),
+                ARRAY_FILTER_USE_KEY
+            );
+            $providers = Arr::flatten($providers);
+        }
+
+        $providers = array_merge(
+            $providers,
+            $app->get(ConfigInterface::class)->get('app.providers', [])
         );
 
-        foreach ($providers as $providerClass) {
+        foreach (array_unique($providers) as $providerClass) {
             $app->register($providerClass);
         }
     }
