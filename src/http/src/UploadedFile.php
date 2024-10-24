@@ -150,7 +150,7 @@ class UploadedFile extends HyperfUploadedFile
      */
     public function guessClientExtension(): ?string
     {
-        $clientExtension = pathinfo($this->getPathname(), PATHINFO_EXTENSION);
+        $clientExtension = $this->getClientOriginalExtension();
         $extensions = ApplicationContext::getContainer()
             ->get(MimeTypeExtensionGuesser::class)
             ->guessExtensions($this->getClientMediaType());
@@ -200,7 +200,7 @@ class UploadedFile extends HyperfUploadedFile
         // Fix buggy getExtension method in HyperfUploadedFile.
         // A file extension should not rely on unsafe client data
         // and is not mandatory for a file.
-        $clientExtension = pathinfo($this->getPathname(), PATHINFO_EXTENSION);
+        $clientExtension = $this->getClientOriginalExtension();
         $extensions = ApplicationContext::getContainer()
             ->get(MimeTypeExtensionGuesser::class)
             ->guessExtensions($this->getMimeType());
