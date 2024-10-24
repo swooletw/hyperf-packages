@@ -192,11 +192,9 @@ class UploadedFile extends HyperfUploadedFile
      */
     public function getExtension(): string
     {
-        if ($extension = $this->guessClientExtension()) {
-            return $extension;
-        }
-
-        return parent::getExtension();
+        // Fix buggy getExtension method in HyperfUploadedFile
+        // An extension is not mandatory for a file
+        return $this->guessClientExtension() ?: '';
     }
 
     /**
