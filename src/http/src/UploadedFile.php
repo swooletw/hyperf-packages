@@ -150,9 +150,14 @@ class UploadedFile extends HyperfUploadedFile
      */
     public function guessClientExtension(): ?string
     {
-        return ApplicationContext::getContainer()
+        $clientExtension = pathinfo($this->getPathname(), PATHINFO_EXTENSION);
+        $extensions = ApplicationContext::getContainer()
             ->get(MimeTypeExtensionGuesser::class)
-            ->guessExtension($this->getClientMediaType());
+            ->guessExtensions($this->getClientMediaType());
+
+        return in_array($clientExtension, $extensions)
+            ? $clientExtension
+            : ($extensions[0] ?? null);
     }
 
     /**
@@ -182,9 +187,9 @@ class UploadedFile extends HyperfUploadedFile
     /**
      * Returns the extension based on the mime type.
      *
-     * If the mime type is unknown, returns extension by filename.
+     * If the mime type is unknown, returns empty string (to be compatible with Hyperf).
      *
-     * This method uses the mime type as guessed by getMimeType()
+     * This method uses the mime type by getMimeType()
      * to guess the file extension.
      *
      * @see MimeTypes
@@ -192,9 +197,17 @@ class UploadedFile extends HyperfUploadedFile
      */
     public function getExtension(): string
     {
-        // Fix buggy getExtension method in HyperfUploadedFile
-        // An extension is not mandatory for a file
-        return $this->guessClientExtension() ?: '';
+        // Fix buggy getExtension method in HyperfUploadedFile.
+        // A file extension should not rely on unsafe client data
+        // and is not mandatory for a file.
+        $clientExtension = pathinfo($this->getPathname(), PATHINFO_EXTENSION);
+        $extensions = ApplicationContext::getContainer()
+            ->get(MimeTypeExtensionGuesser::class)
+            ->guessExtensions($this->getMimeType());
+
+        return in_array($clientExtension, $extensions)
+            ? $clientExtension
+            : '';
     }
 
     /**

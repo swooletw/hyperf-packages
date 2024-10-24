@@ -3573,9 +3573,19 @@ class MimeTypeExtensionGuesser
         'zz' => ['application/zlib'],
     ];
 
+    public function guessExtensions(string $mimeType): array
+    {
+        return static::MAP[$mimeType] ?? [];
+    }
+
     public function guessExtension(string $mimeType): ?string
     {
         return static::MAP[$mimeType][0] ?? null;
+    }
+
+    public function guessMimeTypes(string $extension): array
+    {
+        return static::REVERSE_MAP[$extension] ?? [];
     }
 
     public function guessMimeType(string $extension): ?string
