@@ -199,7 +199,7 @@ class UploadedFile extends HyperfUploadedFile
     {
         // Fix buggy getExtension method in HyperfUploadedFile.
         // A file extension should not rely on unsafe client data
-        // and is not mandatory for a file.
+        // and it's not mandatory for a file.
         $clientExtension = $this->getClientOriginalExtension();
         $extensions = ApplicationContext::getContainer()
             ->get(MimeTypeExtensionGuesser::class)
@@ -207,7 +207,7 @@ class UploadedFile extends HyperfUploadedFile
 
         return in_array($clientExtension, $extensions)
             ? $clientExtension
-            : '';
+            : ($extensions ? $extensions[0] : '');
     }
 
     /**
