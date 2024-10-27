@@ -6,10 +6,10 @@ namespace SwooleTW\Hyperf\Filesystem;
 
 use Hyperf\HttpMessage\Upload\UploadedFile;
 use Psr\Http\Message\StreamInterface;
-use SwooleTW\Hyperf\Filesystem\Contracts\Filesystem;
+use SwooleTW\Hyperf\Filesystem\Contracts\Cloud;
 use SwooleTW\Hyperf\ObjectPool\PoolProxy;
 
-class FilesystemPoolProxy extends PoolProxy implements Filesystem
+class FilesystemPoolProxy extends PoolProxy implements Cloud
 {
     /**
      * Get the full path to the file that exists at the given relative path.
@@ -197,6 +197,14 @@ class FilesystemPoolProxy extends PoolProxy implements Filesystem
      * Recursively delete a directory.
      */
     public function deleteDirectory(string $directory): bool
+    {
+        return $this->__call(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * Get the URL for the file at the given path.
+     */
+    public function url(string $path): string
     {
         return $this->__call(__FUNCTION__, func_get_args());
     }

@@ -446,7 +446,10 @@ class Application extends Container implements ApplicationContract
                 \SwooleTW\Hyperf\Cache\Repository::class,
             ],
             \SwooleTW\Hyperf\Filesystem\Filesystem::class => ['files'],
-            \SwooleTW\Hyperf\Filesystem\FilesystemManager::class => ['filesystem'],
+            \SwooleTW\Hyperf\Filesystem\Contracts\Factory::class => [
+                'filesystem',
+                \SwooleTW\Hyperf\Filesystem\FilesystemManager::class,
+            ],
             \Hyperf\Contract\TranslatorInterface::class => ['translator'],
             \Hyperf\Validation\Contract\ValidatorFactoryInterface::class => ['validator'],
             \Psr\Http\Message\ServerRequestInterface::class => [
