@@ -67,7 +67,9 @@ class EventListCommand extends HyperfCommand
                 $listener = $listener->listener;
                 if (is_array($listener) && count($listener) === 2) {
                     [$object, $method] = $listener;
-                    $listenerClassName = get_class($object);
+                    $listenerClassName = is_string($object)
+                        ? $object
+                        : get_class($object);
 
                     return implode('::', [$listenerClassName, $method]);
                 }

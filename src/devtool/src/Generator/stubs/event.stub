@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace %NAMESPACE%;
 
+use SwooleTW\Hyperf\Foundation\Events\Dispatchable;
+
 class %CLASS%
 {
+    use Dispatchable;
+
     /**
      * Create a new event instance.
      */
