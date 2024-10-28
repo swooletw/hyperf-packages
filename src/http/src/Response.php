@@ -8,10 +8,12 @@ use Hyperf\Codec\Json;
 use Hyperf\Context\ApplicationContext;
 use Hyperf\Contract\Arrayable;
 use Hyperf\Contract\Jsonable;
+use Hyperf\HttpMessage\Server\Chunk\Chunkable;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\HttpServer\Response as HyperfResponse;
 use Hyperf\View\RenderInterface;
 use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
 use SwooleTW\Hyperf\Http\Contracts\ResponseContract;
 
 class Response extends HyperfResponse implements ResponseContract
@@ -104,6 +106,10 @@ class Response extends HyperfResponse implements ResponseContract
     public function stream(callable $callback, array $headers = []): ResponseInterface
     {
         $response = $this->getResponse();
+        if (! $response instanceof Chunkable) {
+            throw new RuntimeException('The response is not a chunkable response.');
+        }
+
         foreach ($headers as $key => $value) {
             $response->addHeader($key, $value);
         }
@@ -120,9 +126,9 @@ class Response extends HyperfResponse implements ResponseContract
             }
         }
 
-        while ($content = $callback($this)) {
-            /* @phpstan-ignore-next-line */
-            $response->write($content);
+        $output = new StreamOutput($response);
+        if ($result = $callback($output)) {
+            $output->write($result);
         }
 
         return $response;
@@ -143,8 +149,8 @@ class Response extends HyperfResponse implements ResponseContract
             'Content-Transfer-Encoding' => 'binary',
             'Pragma' => 'no-cache',
         ];
-        if (! empty($filename)) {
-            $downloadHeaders['Content-Disposition'] = "{$disposition}; filename={$filename}; filename*=UTF-8''" . rawurlencode($filename);
+        if ($filename) {
+            $downloadHeaders['Content-Disposition'] = HeaderUtils::makeDisposition($disposition, $filename);
         }
 
         foreach ($headers as $key => $value) {

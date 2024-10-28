@@ -15,7 +15,9 @@ use Mockery;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
 use SwooleTW\Hyperf\Http\Response;
+use Swow\Psr7\Message\ResponsePlusInterface;
 
 /**
  * @internal
@@ -149,6 +151,40 @@ class ResponseTest extends TestCase
         ], $result->getHeaders());
     }
 
+    public function testStreamWithStringResult()
+    {
+        $psrResponse = Mockery::mock(\Hyperf\HttpMessage\Server\Response::class)->makePartial();
+        $psrResponse->shouldReceive('write')
+            ->with($content = 'Streaming content')
+            ->once()
+            ->andReturnTrue();
+        Context::set(ResponseInterface::class, $psrResponse);
+
+        $response = new \SwooleTW\Hyperf\Http\Response();
+        $result = $response->stream(
+            fn () => $content,
+            ['X-Download' => 'Yes']
+        );
+
+        $this->assertInstanceOf(ResponseInterface::class, $result);
+        $this->assertEquals([
+            'Content-Type' => ['text/event-stream'],
+            'X-Download' => ['Yes'],
+        ], $result->getHeaders());
+    }
+
+    public function testStreamWithNonChunkable()
+    {
+        $psrResponse = Mockery::mock(ResponsePlusInterface::class);
+        Context::set(ResponseInterface::class, $psrResponse);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('The response is not a chunkable response.');
+
+        (new \SwooleTW\Hyperf\Http\Response())
+            ->stream(fn () => 'test');
+    }
+
     public function testStreamDownload()
     {
         $psrResponse = Mockery::mock(\Hyperf\HttpMessage\Server\Response::class)->makePartial();
@@ -172,7 +208,7 @@ class ResponseTest extends TestCase
             'Content-Description' => ['File Transfer'],
             'Content-Transfer-Encoding' => ['binary'],
             'Pragma' => ['no-cache'],
-            'Content-Disposition' => ["attachment; filename=test.txt; filename*=UTF-8''test.txt"],
+            'Content-Disposition' => ['attachment; filename=test.txt'],
             'X-Download' => ['Yes'],
         ], $result->getHeaders());
     }

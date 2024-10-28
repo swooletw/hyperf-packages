@@ -41,6 +41,7 @@ use SwooleTW\Hyperf\Filesystem\Contracts\Cloud as CloudFilesystemContract;
 use SwooleTW\Hyperf\Filesystem\Contracts\Filesystem as FilesystemContract;
 use SwooleTW\Hyperf\Http\Contracts\ResponseContract;
 use SwooleTW\Hyperf\Http\HeaderUtils;
+use SwooleTW\Hyperf\Http\StreamOutput;
 
 /**
  * @mixin \League\Flysystem\FilesystemOperator
@@ -258,9 +259,9 @@ class FilesystemAdapter implements CloudFilesystemContract
         $chunkSize = 64 * 1024;
         $stream = $this->readStream($path);
 
-        return $response->stream(function () use ($stream, $chunkSize) {
+        return $response->stream(function (StreamOutput $output) use ($stream, $chunkSize) {
             while (! feof($stream)) {
-                return fread($stream, $chunkSize);
+                $output->write(fread($stream, $chunkSize));
             }
 
             fclose($stream);
