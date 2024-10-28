@@ -127,7 +127,7 @@ class Response extends HyperfResponse implements ResponseContract
         }
 
         $output = new StreamOutput($response);
-        if ($result = $callback($output)) {
+        if (! is_null($result = $callback($output))) {
             $output->write($result);
         }
 
