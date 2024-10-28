@@ -42,11 +42,8 @@ class Event extends Facade
 {
     /**
      * Replace the bound instance with a fake.
-     *
-     * @param array|string $eventsToFake
-     * @return \SwooleTW\Hyperf\Support\Testing\Fakes\EventFake
      */
-    public static function fake($eventsToFake = [])
+    public static function fake(array|string $eventsToFake = []): EventFake
     {
         static::swap($fake = new EventFake(static::getFacadeRoot(), $eventsToFake));
 
@@ -57,11 +54,8 @@ class Event extends Facade
 
     /**
      * Replace the bound instance with a fake that fakes all events except the given events.
-     *
-     * @param string|string[] $eventsToAllow
-     * @return \SwooleTW\Hyperf\Support\Testing\Fakes\EventFake
      */
-    public static function fakeExcept($eventsToAllow)
+    public static function fakeExcept(array|string $eventsToAllow): EventFake
     {
         return static::fake([
             function ($eventName) use ($eventsToAllow) {
@@ -72,10 +66,8 @@ class Event extends Facade
 
     /**
      * Replace the bound instance with a fake during the given callable's execution.
-     *
-     * @return mixed
      */
-    public static function fakeFor(callable $callable, array $eventsToFake = [])
+    public static function fakeFor(callable $callable, array $eventsToFake = []): mixed
     {
         $originalDispatcher = static::getFacadeRoot();
 
@@ -90,10 +82,8 @@ class Event extends Facade
 
     /**
      * Replace the bound instance with a fake during the given callable's execution.
-     *
-     * @return mixed
      */
-    public static function fakeExceptFor(callable $callable, array $eventsToAllow = [])
+    public static function fakeExceptFor(callable $callable, array $eventsToAllow = []): mixed
     {
         $originalDispatcher = static::getFacadeRoot();
 

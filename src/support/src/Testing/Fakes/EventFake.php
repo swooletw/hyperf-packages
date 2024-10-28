@@ -8,6 +8,7 @@ use Closure;
 use Hyperf\Collection\Arr;
 use Hyperf\Collection\Collection;
 use Hyperf\Stringable\Str;
+use Hyperf\Support\Traits\ForwardsCalls;
 use PHPUnit\Framework\Assert as PHPUnit;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use ReflectionFunction;
@@ -15,6 +16,7 @@ use SwooleTW\Hyperf\Support\Traits\ReflectsClosures;
 
 class EventFake implements EventDispatcherInterface
 {
+    use ForwardsCalls;
     use ReflectsClosures;
 
     /**
@@ -28,28 +30,41 @@ class EventFake implements EventDispatcherInterface
     protected array $eventsToFake = [];
 
     /**
+     * The event types that should be dispatched instead of intercepted.
+     */
+    protected array $eventsToDispatch = [];
+
+    /**
      * All of the events that have been intercepted keyed by type.
      */
     protected array $events = [];
 
     /**
      * Create a new event fake instance.
-     *
-     * @param array|string $eventsToFake
      */
-    public function __construct(EventDispatcherInterface $dispatcher, $eventsToFake = [])
+    public function __construct(EventDispatcherInterface $dispatcher, array|string $eventsToFake = [])
     {
         $this->dispatcher = $dispatcher;
         $this->eventsToFake = Arr::wrap($eventsToFake);
     }
 
     /**
-     * Assert if an event has a listener attached to it.
-     *
-     * @param string $expectedEvent
-     * @param string $expectedListener
+     * Specify the events that should be dispatched instead of faked.
      */
-    public function assertListening($expectedEvent, $expectedListener)
+    public function except(array|string $eventsToDispatch): static
+    {
+        $this->eventsToDispatch = array_merge(
+            $this->eventsToDispatch,
+            Arr::wrap($eventsToDispatch)
+        );
+
+        return $this;
+    }
+
+    /**
+     * Assert if an event has a listener attached to it.
+     */
+    public function assertListening(string $expectedEvent, string $expectedListener): void
     {
         /* @phpstan-ignore-next-line */
         foreach ($this->dispatcher->getListeners($expectedEvent) as $listenerClosure) {
@@ -81,11 +96,8 @@ class EventFake implements EventDispatcherInterface
 
     /**
      * Assert if an event was dispatched based on a truth-test callback.
-     *
-     * @param Closure|string $event
-     * @param null|callable|int $callback
      */
-    public function assertDispatched($event, $callback = null)
+    public function assertDispatched(Closure|string $event, null|callable|int $callback = null): void
     {
         if ($event instanceof Closure) {
             [$event, $callback] = [$this->firstClosureParameterType($event), $event];
@@ -104,11 +116,8 @@ class EventFake implements EventDispatcherInterface
 
     /**
      * Assert if an event was dispatched a number of times.
-     *
-     * @param string $event
-     * @param int $times
      */
-    public function assertDispatchedTimes($event, $times = 1)
+    public function assertDispatchedTimes(string $event, int $times = 1): void
     {
         $count = $this->dispatched($event)->count();
 
@@ -121,11 +130,8 @@ class EventFake implements EventDispatcherInterface
 
     /**
      * Determine if an event was dispatched based on a truth-test callback.
-     *
-     * @param Closure|string $event
-     * @param null|callable $callback
      */
-    public function assertNotDispatched($event, $callback = null)
+    public function assertNotDispatched(Closure|string $event, ?callable $callback = null): void
     {
         if ($event instanceof Closure) {
             [$event, $callback] = [$this->firstClosureParameterType($event), $event];
@@ -141,7 +147,7 @@ class EventFake implements EventDispatcherInterface
     /**
      * Assert that no events were dispatched.
      */
-    public function assertNothingDispatched()
+    public function assertNothingDispatched(): void
     {
         $count = count(Arr::flatten($this->events));
 
@@ -154,12 +160,8 @@ class EventFake implements EventDispatcherInterface
 
     /**
      * Get all of the events matching a truth-test callback.
-     *
-     * @param string $event
-     * @param null|callable $callback
-     * @return \Hyperf\Collection\Collection
      */
-    public function dispatched($event, $callback = null)
+    public function dispatched(string $event, ?callable $callback = null): Collection
     {
         if (! $this->hasDispatched($event)) {
             return Collection::make();
@@ -176,23 +178,57 @@ class EventFake implements EventDispatcherInterface
 
     /**
      * Determine if the given event has been dispatched.
-     *
-     * @param string $event
-     * @return bool
      */
-    public function hasDispatched($event)
+    public function hasDispatched(string $event): bool
     {
         return isset($this->events[$event]) && ! empty($this->events[$event]);
     }
 
     /**
-     * Fire an event and call the listeners.
-     *
-     * @param object|string $event
-     * @param mixed $payload
-     * @param bool $halt
+     * Register an event listener with the dispatcher.
      */
-    public function dispatch($event, $payload = [], $halt = false)
+    public function listen(array|Closure|string $events, mixed $listener = null): void
+    {
+        /* @phpstan-ignore-next-line */
+        $this->dispatcher->listen($events, $listener);
+    }
+
+    /**
+     * Determine if a given event has listeners.
+     */
+    public function hasListeners(string $eventName): bool
+    {
+        /* @phpstan-ignore-next-line */
+        return $this->dispatcher->hasListeners($eventName);
+    }
+
+    /**
+     * Register an event and payload to be dispatched later.
+     */
+    public function push(string $event, array $payload = []): void
+    {
+    }
+
+    /**
+     * Register an event subscriber with the dispatcher.
+     */
+    public function subscribe(object|string $subscriber): void
+    {
+        /* @phpstan-ignore-next-line */
+        $this->dispatcher->subscribe($subscriber);
+    }
+
+    /**
+     * Flush a set of pushed events.
+     */
+    public function flush(string $event): void
+    {
+    }
+
+    /**
+     * Fire an event and call the listeners.
+     */
+    public function dispatch(object|string $event, mixed $payload = [], bool $halt = false)
     {
         $name = is_object($event) ? get_class($event) : (string) $event;
 
@@ -209,12 +245,8 @@ class EventFake implements EventDispatcherInterface
 
     /**
      * Determine if an event should be faked or actually dispatched.
-     *
-     * @param string $eventName
-     * @param mixed $payload
-     * @return bool
      */
-    protected function shouldFakeEvent($eventName, $payload)
+    protected function shouldFakeEvent(string $eventName, mixed $payload): bool
     {
         if (empty($this->eventsToFake)) {
             return true;
@@ -227,5 +259,69 @@ class EventFake implements EventDispatcherInterface
                             : $event === $eventName;
             })
             ->isNotEmpty();
+    }
+
+    /**
+     * Push the event onto the fake events array immediately or after the next database transaction.
+     */
+    protected function fakeEvent(object|string $event, string $name, array $arguments): void
+    {
+        $this->events[$name][] = $arguments;
+    }
+
+    /**
+     * Determine whether an event should be dispatched or not.
+     */
+    protected function shouldDispatchEvent(string $eventName, mixed $payload): bool
+    {
+        if (empty($this->eventsToDispatch)) {
+            return false;
+        }
+
+        return Collection::make($this->eventsToDispatch)
+            ->filter(function ($event) use ($eventName, $payload) {
+                return $event instanceof Closure
+                    ? $event($eventName, $payload)
+                    : $event === $eventName;
+            })
+            ->isNotEmpty();
+    }
+
+    /**
+     * Remove a set of listeners from the dispatcher.
+     */
+    public function forget(string $event): void
+    {
+    }
+
+    /**
+     * Forget all of the queued listeners.
+     */
+    public function forgetPushed(): void
+    {
+    }
+
+    /**
+     * Dispatch an event and call the listeners.
+     */
+    public function until(object|string $event, mixed $payload = []): mixed
+    {
+        return $this->dispatch($event, $payload, true);
+    }
+
+    /**
+     * Get the events that have been dispatched.
+     */
+    public function dispatchedEvents(): array
+    {
+        return $this->events;
+    }
+
+    /**
+     * Handle dynamic method calls to the dispatcher.
+     */
+    public function __call(string $method, array $parameters): mixed
+    {
+        return $this->forwardCallTo($this->dispatcher, $method, $parameters);
     }
 }
