@@ -159,6 +159,7 @@ abstract class ObjectPool implements ObjectPoolInterface
         if (! is_object($object)) {
             throw new RuntimeException('Object pool exhausted. Cannot create new object before wait_timeout.');
         }
+
         return $object;
     }
 
