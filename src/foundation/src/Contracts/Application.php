@@ -45,6 +45,23 @@ interface Application extends Container
     public function path(string $path = ''): string;
 
     /**
+     * Get the path to the resources directory.
+     */
+    public function resourcePath(string $path = ''): string;
+
+    /**
+     * Get the path to the views directory.
+     *
+     * This method returns the first configured path in the array of view paths.
+     */
+    public function viewPath(string $path = ''): string;
+
+    /**
+     * Join the given paths together.
+     */
+    public function joinPaths(string $basePath, string $path = ''): string;
+
+    /**
      * Get or check the current application environment.
      *
      * @param array|string ...$environments

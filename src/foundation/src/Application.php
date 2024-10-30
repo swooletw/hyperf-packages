@@ -20,6 +20,7 @@ use SwooleTW\Hyperf\Support\Environment;
 use SwooleTW\Hyperf\Support\ServiceProvider;
 
 use function Hyperf\Collection\data_get;
+use function SwooleTW\Hyperf\Filesystem\join_paths;
 
 class Application extends Container implements ApplicationContract
 {
@@ -154,11 +155,7 @@ class Application extends Container implements ApplicationContract
      */
     public function path(string $path = ''): string
     {
-        if (empty($path)) {
-            return $this->basePath('app');
-        }
-
-        return $this->basePath('app' . DIRECTORY_SEPARATOR . ltrim($path, DIRECTORY_SEPARATOR));
+        return $this->joinPaths($this->basePath('app'), $path);
     }
 
     /**
@@ -166,11 +163,38 @@ class Application extends Container implements ApplicationContract
      */
     public function basePath(string $path = ''): string
     {
-        if (empty($path)) {
-            return $this->basePath;
-        }
+        return $this->joinPaths($this->basePath, $path);
+    }
 
-        return $this->basePath . DIRECTORY_SEPARATOR . ltrim($path, DIRECTORY_SEPARATOR);
+    /**
+     * Get the path to the resources directory.
+     */
+    public function resourcePath(string $path = ''): string
+    {
+        return $this->joinPaths($this->basePath('resources'), $path);
+    }
+
+    /**
+     * Get the path to the views directory.
+     *
+     * This method returns the first configured path in the array of view paths.
+     */
+    public function viewPath(string $path = ''): string
+    {
+        $viewPath = rtrim(
+            $this['config']->get('view.config.view_path') ?: $this->basePath('resources/views'),
+            DIRECTORY_SEPARATOR
+        );
+
+        return $this->joinPaths($viewPath, $path);
+    }
+
+    /**
+     * Join the given paths together.
+     */
+    public function joinPaths(string $basePath, string $path = ''): string
+    {
+        return join_paths($basePath, $path);
     }
 
     /**
