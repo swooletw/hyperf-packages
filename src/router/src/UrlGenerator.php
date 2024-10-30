@@ -26,7 +26,7 @@ class UrlGenerator
      *
      * @throws InvalidArgumentException
      */
-    public function route(string $name, array $parameters = [], string $server = 'http'): string
+    public function route(string $name, array $parameters = [], bool $absolute = true, string $server = 'http'): string
     {
         $namedRoutes = $this->container->get(DispatcherFactory::class)->getRouter($server)->getNamedRoutes();
 
@@ -54,7 +54,9 @@ class UrlGenerator
             $uri .= '?' . http_build_query($parameters);
         }
 
-        return $uri;
+        return $absolute
+            ? $this->getRootUrl($this->getSchemeForUrl(null)) . $uri
+            : $uri;
     }
 
     /**

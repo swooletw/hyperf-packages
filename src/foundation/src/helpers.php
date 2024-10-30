@@ -451,9 +451,9 @@ if (! function_exists('route')) {
      *
      * @throws InvalidArgumentException
      */
-    function route(string $name, array $parameters = [], string $server = 'http'): string
+    function route(string $name, array $parameters = [], bool $absolute = true, string $server = 'http'): string
     {
-        return \SwooleTW\Hyperf\Router\route($name, $parameters, $server);
+        return \SwooleTW\Hyperf\Router\route($name, $parameters, $absolute, $server);
     }
 }
 

@@ -12,9 +12,9 @@ use InvalidArgumentException;
  *
  * @throws InvalidArgumentException
  */
-function route(string $name, array $parameters = [], string $server = 'http'): string
+function route(string $name, array $parameters = [], bool $absolute = true, string $server = 'http'): string
 {
-    return ApplicationContext::getContainer()->get(UrlGenerator::class)->route($name, $parameters, $server);
+    return ApplicationContext::getContainer()->get(UrlGenerator::class)->route($name, $parameters, $absolute, $server);
 }
 
 /**
