@@ -540,6 +540,17 @@ class RequestTest extends TestCase
         $this->assertSame('http://localhost/path?key=value', $request->fullUrlWithoutQuery(['foo']));
     }
 
+    public function testRoot()
+    {
+        $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);
+        $psrRequest->shouldReceive('getServerParams')->with('HTTPS')->andReturn(['on']);
+        $psrRequest->shouldReceive('getHeader')->with('HOST')->andReturn(['example.com:8080']);
+        Context::set(ServerRequestInterface::class, $psrRequest);
+        $request = new Request();
+
+        $this->assertSame('https://example.com:8080', $request->root());
+    }
+
     public function testMethod()
     {
         $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);

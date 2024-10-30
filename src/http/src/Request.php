@@ -586,6 +586,14 @@ class Request extends HyperfRequest implements RequestContract
     }
 
     /**
+     * Get the root URL for the application.
+     */
+    public function root(): string
+    {
+        return rtrim($this->getSchemeAndHttpHost(), '/');
+    }
+
+    /**
      * Get the full URL for the request with the added query string parameters.
      */
     public function fullUrlWithQuery(array $query): string

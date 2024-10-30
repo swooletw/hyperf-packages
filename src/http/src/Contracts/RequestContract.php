@@ -278,6 +278,11 @@ interface RequestContract extends RequestInterface
     public function fullUrlWithQuery(array $query): string;
 
     /**
+     * Get the root URL for the application.
+     */
+    public function root(): string;
+
+    /**
      * Get the full URL for the request without the given query string parameters.
      */
     public function fullUrlWithoutQuery(array|string $keys): string;

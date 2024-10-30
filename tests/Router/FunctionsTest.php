@@ -26,15 +26,15 @@ class FunctionsTest extends TestCase
         $urlGenerator = $this->mockUrlGenerator();
 
         $urlGenerator->shouldReceive('route')
-            ->with('foo', ['bar'], 'http')
+            ->with('foo', ['bar'], true, 'http')
             ->andReturn('foo-bar');
 
         $urlGenerator->shouldReceive('route')
-            ->with('foo', ['bar'], 'baz')
+            ->with('foo', ['bar'], true, 'baz')
             ->andReturn('foo-bar-baz');
 
         $this->assertEquals('foo-bar', route('foo', ['bar']));
-        $this->assertEquals('foo-bar-baz', route('foo', ['bar'], 'baz'));
+        $this->assertEquals('foo-bar-baz', route('foo', ['bar'], true, 'baz'));
     }
 
     public function testUrl()
