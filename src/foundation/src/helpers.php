@@ -487,7 +487,6 @@ if (! function_exists('asset')) {
     }
 }
 
-
 if (! function_exists('auth')) {
     /**
      * Get auth guard.
