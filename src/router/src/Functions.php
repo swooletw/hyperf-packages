@@ -37,3 +37,11 @@ function secure_url(string $path, array $extra = []): string
 {
     return ApplicationContext::getContainer()->get(UrlGenerator::class)->secure($path, $extra);
 }
+
+/**
+ * Generate an asset path for the application.
+ */
+function asset(string $path, ?bool $secure = null): string
+{
+    return ApplicationContext::getContainer()->get(UrlGenerator::class)->asset($path, $secure);
+}

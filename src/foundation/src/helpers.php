@@ -477,6 +477,17 @@ if (! function_exists('secure_url')) {
     }
 }
 
+if (! function_exists('asset')) {
+    /**
+     * Generate an asset path for the application.
+     */
+    function asset(string $path, ?bool $secure = null): string
+    {
+        return \SwooleTW\Hyperf\Router\asset($path, $secure);
+    }
+}
+
+
 if (! function_exists('auth')) {
     /**
      * Get auth guard.
