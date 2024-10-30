@@ -78,7 +78,7 @@ class LocalFilesystemAdapter extends FilesystemAdapter
     }
 
     /**
-     * Indiate that signed URLs should serve the corresponding files.
+     * Indicate that signed URLs should serve the corresponding files.
      *
      * @return $this
      */
