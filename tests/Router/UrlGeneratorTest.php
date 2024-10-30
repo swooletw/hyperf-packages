@@ -57,11 +57,19 @@ class UrlGeneratorTest extends TestCase
 
     public function testRoute()
     {
-        if (! defined('BASE_PATH')) {
-            $this->markTestSkipped('skip it because DispatcherFactory in hyperf is dirty.');
-        }
+        $this->skipDirtyBasePath();
 
         $this->mockRouter();
+
+        Context::destroy('__request.root.uri');
+
+        $config = Mockery::mock(ConfigInterface::class);
+        $config->shouldReceive('get')
+            ->with('app.url')
+            ->andReturn('http://example.com');
+        $this->container->shouldReceive('get')
+            ->with(ConfigInterface::class)
+            ->andReturn($config);
 
         $this->router
             ->shouldReceive('getNamedRoutes')
@@ -73,21 +81,20 @@ class UrlGeneratorTest extends TestCase
 
         $urlGenerator = new UrlGenerator($this->container);
 
-        $this->assertEquals('/foo', $urlGenerator->route('foo'));
-        $this->assertEquals('/foo?bar=1', $urlGenerator->route('foo', ['bar' => 1]));
-        $this->assertEquals('/foo?bar=1&baz=2', $urlGenerator->route('foo', ['bar' => 1, 'baz' => 2]));
-        $this->assertEquals('/foo', $urlGenerator->route('bar'));
-        $this->assertEquals('/foo/1', $urlGenerator->route('bar', ['bar' => 1]));
-        $this->assertEquals('/foo/1?baz=2', $urlGenerator->route('bar', ['bar' => 1, 'baz' => 2]));
-        $this->assertEquals('/foo/1/baz', $urlGenerator->route('baz', ['bar' => 1]));
-        $this->assertEquals('/foo/1/baz?baz=2', $urlGenerator->route('baz', ['bar' => 1, 'baz' => 2]));
+        $this->assertEquals('http://example.com/foo', $urlGenerator->route('foo'));
+        $this->assertEquals('http://example.com/foo?bar=1', $urlGenerator->route('foo', ['bar' => 1]));
+        $this->assertEquals('http://example.com/foo?bar=1&baz=2', $urlGenerator->route('foo', ['bar' => 1, 'baz' => 2]));
+        $this->assertEquals('http://example.com/foo', $urlGenerator->route('bar'));
+
+        $this->assertEquals('/foo/1', $urlGenerator->route('bar', ['bar' => 1], false));
+        $this->assertEquals('/foo/1?baz=2', $urlGenerator->route('bar', ['bar' => 1, 'baz' => 2], false));
+        $this->assertEquals('/foo/1/baz', $urlGenerator->route('baz', ['bar' => 1], false));
+        $this->assertEquals('/foo/1/baz?baz=2', $urlGenerator->route('baz', ['bar' => 1, 'baz' => 2], false));
     }
 
     public function testRouteWithNotDefined()
     {
-        if (! defined('BASE_PATH')) {
-            $this->markTestSkipped('skip it because DispatcherFactory in hyperf is dirty.');
-        }
+        $this->skipDirtyBasePath();
 
         $this->mockRouter();
 
@@ -108,7 +115,10 @@ class UrlGeneratorTest extends TestCase
 
         $urlGenerator = new UrlGenerator($this->container);
 
-        $this->assertEquals('http://example.com/foo', $urlGenerator->to('foo'));
+        $this->assertSame('http://example.com/foo/bar', $urlGenerator->to('foo/bar'));
+        $this->assertSame('https://example.com/foo/bar', $urlGenerator->to('foo/bar', [], true));
+        $this->assertSame('https://example.com/foo/bar/baz/boom', $urlGenerator->to('foo/bar', ['baz', 'boom'], true));
+        $this->assertSame('https://example.com/foo/bar/baz?foo=bar', $urlGenerator->to('foo/bar?foo=bar', ['baz'], true));
     }
 
     public function testToWithValidUrl()
@@ -155,6 +165,78 @@ class UrlGeneratorTest extends TestCase
 
         $this->assertEquals('http://example.com/foo', $urlGenerator->to('foo'));
         $this->assertEquals('http://example.com', Context::get('__request.root.uri')->toString());
+    }
+
+    public function testQueryGeneration()
+    {
+        $this->mockRequest();
+
+        $urlGenerator = new UrlGenerator($this->container);
+
+        $this->assertSame('http://example.com/foo/bar', $urlGenerator->query('foo/bar'));
+        $this->assertSame('http://example.com/foo/bar?0=foo', $urlGenerator->query('foo/bar', ['foo']));
+        $this->assertSame('http://example.com/foo/bar?baz=boom', $urlGenerator->query('foo/bar', ['baz' => 'boom']));
+        $this->assertSame('http://example.com/foo/bar?baz=zee&zal=bee', $urlGenerator->query('foo/bar?baz=boom&zal=bee', ['baz' => 'zee']));
+        $this->assertSame('http://example.com/foo/bar?zal=bee', $urlGenerator->query('foo/bar?baz=boom&zal=bee', ['baz' => null]));
+        $this->assertSame('http://example.com/foo/bar?baz=boom', $urlGenerator->query('foo/bar?baz=boom', ['nonexist' => null]));
+        $this->assertSame('http://example.com/foo/bar', $urlGenerator->query('foo/bar?baz=boom', ['baz' => null]));
+        $this->assertSame('http://example.com/foo/bar?baz[0]=boom&baz[1]=bam&baz[2]=bim', urldecode($urlGenerator->query('foo/bar', ['baz' => ['boom', 'bam', 'bim']])));
+    }
+
+    public function testAssetGeneration()
+    {
+        $this->mockRequest();
+
+        $urlGenerator = new UrlGenerator($this->container);
+
+        $this->assertSame('http://example.com/foo/bar', $urlGenerator->asset('foo/bar'));
+        $this->assertSame('https://example.com/foo/bar', $urlGenerator->asset('foo/bar', true));
+    }
+
+    public function testBasicGenerationWithHostFormatting()
+    {
+        $this->skipDirtyBasePath();
+
+        $this->mockRequest();
+        $this->mockRouter();
+
+        $this->router
+            ->shouldReceive('getNamedRoutes')
+            ->andReturn([
+                'plain' => ['/named-route'],
+            ]);
+
+        $urlGenerator = new UrlGenerator($this->container);
+
+        $urlGenerator->formatHostUsing(function ($host) {
+            return str_replace('example.com', 'example.org', $host);
+        });
+
+        $this->assertSame('http://example.org/foo/bar', $urlGenerator->to('foo/bar'));
+        $this->assertSame('/named-route', $urlGenerator->route('plain', [], false));
+    }
+
+    public function testBasicGenerationWithPathFormatting()
+    {
+        $this->skipDirtyBasePath();
+
+        $this->mockRequest();
+        $this->mockRouter();
+
+        $this->router
+            ->shouldReceive('getNamedRoutes')
+            ->andReturn([
+                'plain' => ['/named-route'],
+            ]);
+
+        $urlGenerator = new UrlGenerator($this->container);
+
+        $urlGenerator->formatPathUsing(function ($path) {
+            return '/something' . $path;
+        });
+
+        $this->assertSame('http://example.com/something/foo/bar', $urlGenerator->to('foo/bar'));
+        $this->assertSame('/something/named-route', $urlGenerator->route('plain', [], false));
     }
 
     public function testSecure()
@@ -302,6 +384,112 @@ class UrlGeneratorTest extends TestCase
         $this->assertEquals(['key' => '1', 'normal' => 'value'], $result);
     }
 
+    public function testSignedUrl()
+    {
+        $this->skipDirtyBasePath();
+
+        $this->mockRequest();
+        $this->mockRouter();
+
+        $this->router
+            ->shouldReceive('getNamedRoutes')
+            ->andReturn([
+                'foo' => ['/foo'],
+            ]);
+
+        $urlGenerator = new UrlGenerator($this->container);
+        $urlGenerator->setSignedKey('secret');
+
+        $request = new Request();
+
+        $this->mockRequest(
+            $urlGenerator->signedRoute('foo')
+        );
+
+        $this->assertTrue($urlGenerator->hasValidSignature($request));
+
+        $this->mockRequest(
+            $urlGenerator->signedRoute('foo') . '&tampered=true'
+        );
+
+        $this->assertFalse($urlGenerator->hasValidSignature($request));
+    }
+
+    public function testSignedRelativeUrl()
+    {
+        $this->skipDirtyBasePath();
+
+        $this->mockRequest();
+        $this->mockRouter();
+
+        $this->router
+            ->shouldReceive('getNamedRoutes')
+            ->andReturn([
+                'foo' => ['/foo'],
+            ]);
+
+        $urlGenerator = new UrlGenerator($this->container);
+        $urlGenerator->setSignedKey('secret');
+
+        $request = new Request();
+
+        $this->mockRequest(
+            $urlGenerator->signedRoute('foo', [], null, false)
+        );
+
+        $this->assertTrue($urlGenerator->hasValidSignature($request));
+
+        $this->mockRequest(
+            $urlGenerator->signedRoute('foo', [], null, false) . '&tampered=true'
+        );
+
+        $this->assertFalse($urlGenerator->hasValidSignature($request));
+    }
+
+    public function testSignedUrlParameterCannotBeNamedSignature()
+    {
+        $this->skipDirtyBasePath();
+
+        $this->mockRequest();
+        $this->mockRouter();
+
+        $this->router
+            ->shouldReceive('getNamedRoutes')
+            ->andReturn([
+                'foo' => ['/foo/{signature}'],
+            ]);
+
+        $urlGenerator = new UrlGenerator($this->container);
+        $urlGenerator->setSignedKey('secret');
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('reserved');
+
+        Request::create($urlGenerator->signedRoute('foo', ['signature' => 'bar']));
+    }
+
+    public function testSignedUrlParameterCannotBeNamedExpires()
+    {
+        $this->skipDirtyBasePath();
+
+        $this->mockRequest();
+        $this->mockRouter();
+
+        $this->router
+            ->shouldReceive('getNamedRoutes')
+            ->andReturn([
+                'foo' => ['/foo/{expires}'],
+            ]);
+
+        $urlGenerator = new UrlGenerator($this->container);
+        $urlGenerator->setSignedKey('secret');
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('reserved');
+
+        Request::create($urlGenerator->signedRoute('foo', ['expires' => 253402300799]));
+    }
+
     private function mockContainer()
     {
         /** @var ContainerInterface|MockInterface */
@@ -316,13 +504,13 @@ class UrlGeneratorTest extends TestCase
         $this->container = $container;
     }
 
-    private function mockRouter()
+    private function mockRouter(?NamedRouteCollector $router = null)
     {
         /** @var DispatcherFactory|MockInterface */
         $factory = Mockery::mock(DispatcherFactory::class);
 
         /** @var MockInterface|NamedRouteCollector */
-        $router = Mockery::mock(NamedRouteCollector::class);
+        $router = $router ?: Mockery::mock(NamedRouteCollector::class);
 
         $this->container
             ->shouldReceive('get')
@@ -337,8 +525,19 @@ class UrlGeneratorTest extends TestCase
         $this->router = $router;
     }
 
-    private function mockRequest()
+    private function mockRequest(?string $uri = null)
     {
-        RequestContext::set(new ServerRequest('GET', 'http://example.com/foo?bar=baz#boom'));
+        $request = new ServerRequest('GET', $uri ?: 'http://example.com/foo?bar=baz#boom');
+        parse_str($request->getUri()->getQuery(), $result);
+        $request = $request->withQueryParams($result);
+
+        RequestContext::set($request);
+    }
+
+    private function skipDirtyBasePath(): void
+    {
+        if (! defined('BASE_PATH')) {
+            $this->markTestSkipped('skip it because DispatcherFactory in hyperf is dirty.');
+        }
     }
 }

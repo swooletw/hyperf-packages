@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Router;
 
+use BackedEnum;
+use Carbon\Carbon;
+use Closure;
+use DateInterval;
+use DateTimeInterface;
+use Hyperf\Collection\Arr;
 use Hyperf\Context\Context;
 use Hyperf\Context\RequestContext;
 use Hyperf\Contract\ConfigInterface;
@@ -12,11 +18,33 @@ use Hyperf\Contract\SessionInterface;
 use Hyperf\HttpMessage\Uri\Uri;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Router\DispatcherFactory;
+use Hyperf\Macroable\Macroable;
+use Hyperf\Stringable\Str;
+use Hyperf\Support\Traits\InteractsWithTime;
 use InvalidArgumentException;
 use SwooleTW\Hyperf\Router\Contracts\UrlRoutable;
 
 class UrlGenerator
 {
+    use InteractsWithTime;
+    use Macroable;
+
+    /**
+     * The callback to use to format hosts.
+     *
+     * @var Closure
+     */
+    protected $formatHostUsing;
+
+    /**
+     * The callback to use to format paths.
+     *
+     * @var Closure
+     */
+    protected $formatPathUsing;
+
+    protected ?string $signedKey = null;
+
     public function __construct(protected ContainerInterface $container)
     {
     }
@@ -48,15 +76,16 @@ class UrlGenerator
             return $uri . $value;
         }, '');
 
-        $uri = $this->trimPath($uri);
+        $path = $this->format(
+            $absolute ? $this->getRootUrl($this->getSchemeForUrl(null)) : '',
+            $uri
+        );
 
         if (! empty($parameters)) {
-            $uri .= '?' . http_build_query($parameters);
+            $path .= '?' . http_build_query($parameters);
         }
 
-        return $absolute
-            ? $this->getRootUrl($this->getSchemeForUrl(null)) . $uri
-            : $uri;
+        return $absolute ? $path : "/{$path}";
     }
 
     /**
@@ -71,8 +100,26 @@ class UrlGenerator
         $extra = $this->formatParameters($extra);
         $tail = implode('/', array_map('rawurlencode', $extra));
         $root = $this->getRootUrl($this->getSchemeForUrl($secure));
+        [$path, $query] = $this->extractQueryString($path);
 
-        return $this->trimUrl($root, $path, $tail);
+        return $this->format(
+            $root,
+            '/' . trim($path . '/' . $tail, '/')
+        ) . $query;
+    }
+
+    /**
+     * Generate an absolute URL with the given query parameters.
+     */
+    public function query(string $path, array $query = [], array $extra = [], ?bool $secure = null): string
+    {
+        [$path, $existingQueryString] = $this->extractQueryString($path);
+
+        parse_str(Str::after($existingQueryString, '?'), $existingQueryArray);
+
+        return rtrim($this->to($path . '?' . Arr::query(
+            array_merge($existingQueryArray, $query)
+        ), $extra, $secure), '?');
     }
 
     /**
@@ -81,6 +128,151 @@ class UrlGenerator
     public function secure(string $path, array $extra = []): string
     {
         return $this->to($path, $extra, true);
+    }
+
+    /**
+     * Generate the URL to an application asset.
+     */
+    public function asset(string $path, ?bool $secure = null): string
+    {
+        if ($this->isValidUrl($path)) {
+            return $path;
+        }
+
+        $root = $this->getRootUrl($this->getSchemeForUrl($secure));
+
+        return Str::finish($root, '/') . trim($path, '/');
+    }
+
+    /**
+     * Generate the URL to a secure asset.
+     */
+    public function secureAsset(string $path): string
+    {
+        return $this->asset($path, true);
+    }
+
+    /**
+     * Generate the URL to an asset from a custom root domain such as CDN, etc.
+     */
+    public function assetFrom(string $root, string $path, ?bool $secure = null): string
+    {
+        $root = $this->getRootUrl($this->getSchemeForUrl($secure));
+
+        return $root . '/' . trim($path, '/');
+    }
+
+    /**
+     * Get the default scheme for a raw URL.
+     */
+    public function formatScheme(?bool $secure = null): string
+    {
+        return $this->getSchemeForUrl($secure) . '://';
+    }
+
+    /**
+     * Create a signed route URL for a named route.
+     *
+     * @throws InvalidArgumentException
+     */
+    public function signedRoute(BackedEnum|string $name, array $parameters = [], null|DateInterval|DateTimeInterface|int $expiration = null, bool $absolute = true, string $server = 'http'): string
+    {
+        $this->ensureSignedRouteParametersAreNotReserved(
+            $parameters = Arr::wrap($parameters)
+        );
+
+        if ($expiration) {
+            $parameters = $parameters + ['expires' => $this->availableAt($expiration)];
+        }
+
+        ksort($parameters);
+
+        return $this->route($name, $parameters + [
+            'signature' => hash_hmac(
+                'sha256',
+                $this->route($name, $parameters, $absolute, $server),
+                $this->getSignedKey()
+            ),
+        ], $absolute, $server);
+    }
+
+    /**
+     * Ensure the given signed route parameters are not reserved.
+     */
+    protected function ensureSignedRouteParametersAreNotReserved(mixed $parameters): void
+    {
+        if (array_key_exists('signature', $parameters)) {
+            throw new InvalidArgumentException(
+                '"Signature" is a reserved parameter when generating signed routes. Please rename your route parameter.'
+            );
+        }
+
+        if (array_key_exists('expires', $parameters)) {
+            throw new InvalidArgumentException(
+                '"Expires" is a reserved parameter when generating signed routes. Please rename your route parameter.'
+            );
+        }
+    }
+
+    /**
+     * Create a temporary signed route URL for a named route.
+     */
+    public function temporarySignedRoute(BackedEnum|string $name, null|DateInterval|DateTimeInterface|int $expiration, array $parameters = [], bool $absolute = true, string $server = 'http'): string
+    {
+        return $this->signedRoute($name, $parameters, $expiration, $absolute, $server);
+    }
+
+    /**
+     * Determine if the given request has a valid signature.
+     */
+    public function hasValidSignature(RequestInterface $request, bool $absolute = true, array $ignoreQuery = []): bool
+    {
+        return $this->hasCorrectSignature($request, $absolute, $ignoreQuery)
+            && $this->signatureHasNotExpired($request);
+    }
+
+    /**
+     * Determine if the given request has a valid signature for a relative URL.
+     */
+    public function hasValidRelativeSignature(RequestInterface $request, array $ignoreQuery = []): bool
+    {
+        return $this->hasValidSignature($request, false, $ignoreQuery);
+    }
+
+    /**
+     * Determine if the signature from the given request matches the URL.
+     */
+    public function hasCorrectSignature(RequestInterface $request, bool $absolute = true, array $ignoreQuery = []): bool
+    {
+        $ignoreQuery[] = 'signature';
+
+        /* @phpstan-ignore-next-line */
+        $url = $absolute ? $request->url() : '/' . $request->path();
+
+        $queryString = http_build_query(
+            array_filter($request->query(), fn ($value, $key) => ! in_array($key, $ignoreQuery), ARRAY_FILTER_USE_BOTH)
+        );
+
+        $original = rtrim($url . '?' . $queryString, '?');
+
+        if (hash_equals(
+            hash_hmac('sha256', $original, $this->getSignedKey()),
+            (string) $request->query('signature', '')
+        )) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Determine if the expires timestamp from the given request is not from the past.
+     */
+    public function signatureHasNotExpired(RequestInterface $request): bool
+    {
+        $expires = $request->query('expires');
+
+        return ! ($expires && Carbon::now()->getTimestamp() > $expires);
     }
 
     /**
@@ -101,10 +293,8 @@ class UrlGenerator
 
     /**
      * Get the URL for the previous request.
-     *
-     * @param mixed $fallback
      */
-    public function previous($fallback = false): string
+    public function previous(bool|string $fallback = false): string
     {
         if (! RequestContext::has()) {
             return $this->getPreviousUrlFromSession()
@@ -143,17 +333,25 @@ class UrlGenerator
             ->previousUrl();
     }
 
-    private function trimPath(string $path, string $tail = ''): string
+    /**
+     * Format the given URL segments into a single URL.
+     */
+    public function format(string $root, string $path): string
     {
-        return '/' . trim($path . '/' . $tail, '/');
+        $path = '/' . trim($path, '/');
+
+        if ($this->formatHostUsing) {
+            $root = call_user_func($this->formatHostUsing, $root);
+        }
+
+        if ($this->formatPathUsing) {
+            $path = call_user_func($this->formatPathUsing, $path);
+        }
+
+        return trim($root . $path, '/');
     }
 
-    private function trimUrl(string $root, string $path, string $tail = ''): string
-    {
-        return trim($root . $this->trimPath($path, $tail), '/');
-    }
-
-    private function isValidUrl($path): bool
+    public function isValidUrl(string $path): bool
     {
         foreach (['#', '//', 'mailto:', 'tel:', 'sms:', 'http://', 'https://'] as $value) {
             if (str_starts_with($path, $value)) {
@@ -164,7 +362,37 @@ class UrlGenerator
         return filter_var($path, FILTER_VALIDATE_URL) !== false;
     }
 
-    private function formatParameters(array $parameters): array
+    /**
+     * Set a callback to be used to format the host of generated URLs.
+     */
+    public function formatHostUsing(Closure $callback): static
+    {
+        $this->formatHostUsing = $callback;
+
+        return $this;
+    }
+
+    /**
+     * Set a callback to be used to format the path of generated URLs.
+     */
+    public function formatPathUsing(Closure $callback): static
+    {
+        $this->formatPathUsing = $callback;
+
+        return $this;
+    }
+
+    /**
+     * Set signed key for signing urls.
+     */
+    public function setSignedKey(?string $signedKey = null): static
+    {
+        $this->signedKey = $signedKey;
+
+        return $this;
+    }
+
+    protected function formatParameters(array $parameters): array
     {
         foreach ($parameters as $key => $parameter) {
             if ($parameter instanceof UrlRoutable) {
@@ -175,7 +403,29 @@ class UrlGenerator
         return $parameters;
     }
 
-    private function getSchemeForUrl(?bool $secure): string
+    protected function extractQueryString(string $path): array
+    {
+        if (($queryPosition = strpos($path, '?')) !== false) {
+            return [
+                substr($path, 0, $queryPosition),
+                substr($path, $queryPosition),
+            ];
+        }
+
+        return [$path, ''];
+    }
+
+    protected function getSignedKey(): string
+    {
+        if ($this->signedKey) {
+            return $this->signedKey;
+        }
+
+        return $this->container->get(ConfigInterface::class)
+            ->get('app.key');
+    }
+
+    protected function getSchemeForUrl(?bool $secure): string
     {
         if (is_null($secure)) {
             return $this->getRequestUri()->getScheme();
@@ -184,7 +434,7 @@ class UrlGenerator
         return $secure ? 'https' : 'http';
     }
 
-    private function getRootUrl(string $scheme): string
+    protected function getRootUrl(string $scheme): string
     {
         $root = Context::getOrSet('__request.root.uri', function () {
             $requestUri = $this->getRequestUri()->toString();
@@ -196,7 +446,7 @@ class UrlGenerator
         return $root->withScheme($scheme)->toString();
     }
 
-    private function getRequestUri(): Uri
+    protected function getRequestUri(): Uri
     {
         if (RequestContext::has()) {
             return $this->container->get(RequestInterface::class)->getUri();
