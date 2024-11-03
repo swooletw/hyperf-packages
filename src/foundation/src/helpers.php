@@ -314,17 +314,13 @@ if (! function_exists('resolve')) {
      *
      * @template T
      *
-     * @param callable|class-string<T> $abstract
+     * @param string|class-string<TClass>  $name
      *
-     * @return Closure|ContainerInterface|T
+     * @return ($name is class-string<TClass> ? TClass : mixed)
      */
-    function resolve(callable|string $abstract, array $parameters = [])
+    function resolve(string $name, array $parameters = [])
     {
-        if (is_callable($abstract)) {
-            return \Closure::fromCallable($abstract);
-        }
-
-        return app($abstract, $parameters);
+        return app($name, $parameters);
     }
 }
 
