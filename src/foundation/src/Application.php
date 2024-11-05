@@ -460,7 +460,10 @@ class Application extends Container implements ApplicationContract
             ],
             \Hyperf\HttpServer\Router\DispatcherFactory::class => ['router'],
             \Psr\Log\LoggerInterface::class => ['log'],
-            \SwooleTW\Hyperf\Encryption\Encrypter::class => ['encrypter'],
+            \SwooleTW\Hyperf\Encryption\Contracts\Encrypter::class => [
+                'encrypter',
+                \SwooleTW\Hyperf\Encryption\Encrypter::class,
+            ],
             \SwooleTW\Hyperf\Cache\Contracts\Factory::class => [
                 'cache',
                 \SwooleTW\Hyperf\Cache\CacheManager::class,

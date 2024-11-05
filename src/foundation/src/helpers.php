@@ -21,6 +21,7 @@ use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
+use SwooleTW\Hyperf\Auth\Contracts\Gate;
 use SwooleTW\Hyperf\Cookie\Contracts\Cookie as CookieContract;
 use SwooleTW\Hyperf\Foundation\Exceptions\Contracts\ExceptionHandler as ExceptionHandlerContract;
 use SwooleTW\Hyperf\Http\Contracts\RequestContract;
@@ -30,6 +31,8 @@ use SwooleTW\Hyperf\HttpMessage\Exceptions\HttpResponseException;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\NotFoundHttpException;
 use SwooleTW\Hyperf\Router\UrlGenerator;
 use SwooleTW\Hyperf\Support\Contracts\Responsable;
+
+use function SwooleTW\Hyperf\Filesystem\join_paths;
 
 if (! function_exists('abort')) {
     /**
@@ -105,7 +108,7 @@ if (! function_exists('app_path')) {
      */
     function app_path(string $path = ''): string
     {
-        return base_path("app/{$path}");
+        return join_paths(app()->basePath('app'), $path);
     }
 }
 
@@ -115,7 +118,7 @@ if (! function_exists('database_path')) {
      */
     function database_path(string $path = ''): string
     {
-        return base_path("database/{$path}");
+        return join_paths(app()->basePath('database'), $path);
     }
 }
 
@@ -125,7 +128,7 @@ if (! function_exists('storage_path')) {
      */
     function storage_path(string $path = ''): string
     {
-        return base_path("storage/{$path}");
+        return join_paths(app()->basePath('storage'), $path);
     }
 }
 
@@ -135,7 +138,80 @@ if (! function_exists('config_path')) {
      */
     function config_path(string $path = ''): string
     {
-        return base_path("config/{$path}");
+        return join_paths(app()->basePath('config'), $path);
+    }
+}
+
+if (! function_exists('resource_path')) {
+    /**
+     * Get the path to the resources folder.
+     */
+    function resource_path(string $path = ''): string
+    {
+        return app()->resourcePath($path);
+    }
+}
+
+if (! function_exists('lang_path')) {
+    /**
+     * Get the path to the language folder.
+     */
+    function lang_path(string $path = ''): string
+    {
+        return join_paths(app()->basePath('lang'), $path);
+    }
+}
+
+if (! function_exists('public_path')) {
+    /**
+     * Get the path to the public folder.
+     */
+    function public_path(string $path = ''): string
+    {
+        return join_paths(app()->basePath('public'), $path);
+    }
+}
+
+if (! function_exists('bcrypt')) {
+    /**
+     * Hash the given value against the bcrypt algorithm.
+     */
+    function bcrypt(string $value, array $options = []): string
+    {
+        /* @phpstan-ignore-next-line */
+        return app('hash')->driver('bcrypt')->make($value, $options);
+    }
+}
+
+if (! function_exists('encrypt')) {
+    /**
+     * Encrypt the given value.
+     */
+    function encrypt(mixed $value, bool $serialize = true): string
+    {
+        /* @phpstan-ignore-next-line */
+        return app('encrypter')->encrypt($value, $serialize);
+    }
+}
+
+if (! function_exists('decrypt')) {
+    /**
+     * Decrypt the given value.
+     */
+    function decrypt(string $value, bool $unserialize = true): mixed
+    {
+        /* @phpstan-ignore-next-line */
+        return app('encrypter')->decrypt($value, $unserialize);
+    }
+}
+
+if (! function_exists('method_field')) {
+    /**
+     * Generate a form field to spoof the HTTP verb used by forms.
+     */
+    function method_field(string $method): string
+    {
+        return '<input type="hidden" name="_method" value="' . $method . '">';
     }
 }
 
@@ -308,13 +384,26 @@ if (! function_exists('now')) {
     }
 }
 
+if (! function_exists('policy')) {
+    /**
+     * Get a policy instance for a given class.
+     *
+     * @return mixed|void
+     * @throws \InvalidArgumentException
+     */
+    function policy(object|string $class)
+    {
+        return app(Gate::class)->getPolicyFor($class);
+    }
+}
+
 if (! function_exists('resolve')) {
     /**
      * Resolve a service from the container.
      *
      * @template T
      *
-     * @param string|class-string<TClass>  $name
+     * @param class-string<TClass>|string $name
      *
      * @return ($name is class-string<TClass> ? TClass : mixed)
      */
@@ -373,6 +462,24 @@ if (! function_exists('redirect')) {
     }
 }
 
+if (! function_exists('to_route')) {
+    /**
+     * Create a new redirect response to a named route.
+     */
+    function to_route(string $route, array $parameters = [], int $status = 302, array $headers = []): ResponseInterface
+    {
+        $response = redirect(route($route, $parameters), $status);
+        if ($headers) {
+            foreach ($headers as $key => $value) {
+                /* @var \Psr\Http\Message\ResponseInterface $response */
+                $response = $response->withHeader($key, $value);
+            }
+        }
+
+        return $response;
+    }
+}
+
 if (! function_exists('report')) {
     /**
      * Report an exception.
@@ -384,6 +491,32 @@ if (! function_exists('report')) {
         }
 
         app(ExceptionHandlerContract::class)->report($exception);
+    }
+}
+
+if (! function_exists('rescue')) {
+    /**
+     * Catch a potential exception and return a default value.
+     *
+     * @template TValue
+     * @template TFallback
+     *
+     * @param callable(): TValue $callback
+     * @param (callable(\Throwable): TFallback)|TFallback $rescue
+     * @param bool|callable(\Throwable): bool $report
+     * @return TFallback|TValue
+     */
+    function rescue(callable $callback, $rescue = null, $report = true)
+    {
+        try {
+            return $callback();
+        } catch (Throwable $e) {
+            if (value($report, $e)) {
+                report($e);
+            }
+
+            return value($rescue, $e);
+        }
     }
 }
 
