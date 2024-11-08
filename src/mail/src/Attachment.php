@@ -117,6 +117,8 @@ class Attachment
 
     /**
      * Attach the attachment to a built-in mail type.
+     *
+     * @phpstan-ignore-next-line
      */
     public function attachTo(Mailable|MailMessage|Message $mail, array $options = []): mixed
     {
