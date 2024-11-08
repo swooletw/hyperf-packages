@@ -76,6 +76,9 @@ return (new Config())
                 'use_trait'
             ],
         ],
+        'phpdoc_to_comment' => [
+            'ignored_tags' => ['var'],
+        ],
         'php_unit_strict' => false,
         'phpdoc_separation' => false,
         'single_quote' => true,
