@@ -5,6 +5,8 @@ declare(strict_types=1);
 use Hyperf\Collection\Collection;
 use Hyperf\Context\ApplicationContext;
 use Hyperf\Tappable\HigherOrderTapProxy;
+use Hyperf\ViewEngine\Contract\DeferringDisplayableValue;
+use SwooleTW\Hyperf\Support\Contracts\Htmlable;
 use SwooleTW\Hyperf\Support\Environment;
 
 if (! function_exists('value')) {
@@ -43,6 +45,28 @@ if (! function_exists('environment')) {
         }
 
         return $environment;
+    }
+}
+
+if (! function_exists('e')) {
+    /**
+     * Encode HTML special characters in a string.
+     */
+    function e(null|BackedEnum|DeferringDisplayableValue|float|Htmlable|int|string $value, bool $doubleEncode = true): string
+    {
+        if ($value instanceof DeferringDisplayableValue) {
+            $value = $value->resolveDisplayableValue();
+        }
+
+        if ($value instanceof Htmlable) {
+            return $value->toHtml();
+        }
+
+        if ($value instanceof BackedEnum) {
+            $value = $value->value;
+        }
+
+        return htmlspecialchars($value ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', $doubleEncode);
     }
 }
 

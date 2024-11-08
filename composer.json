@@ -40,6 +40,7 @@
             "SwooleTW\\Hyperf\\Http\\": "src/http/src/",
             "SwooleTW\\Hyperf\\JWT\\": "src/jwt/src/",
             "SwooleTW\\Hyperf\\Log\\": "src/log/src/",
+            "SwooleTW\\Hyperf\\Mail\\": "src/mail/src/",
             "SwooleTW\\Hyperf\\ObjectPool\\": "src/object-pool/src/",
             "SwooleTW\\Hyperf\\Router\\": "src/router/src/",
             "SwooleTW\\Hyperf\\Support\\": "src/support/src/"
@@ -92,7 +93,11 @@
         "monolog/monolog": "^3.1",
         "nesbot/carbon": "^2.16",
         "ramsey/uuid": "^4.7",
-        "symfony/error-handler": "^6.3"
+        "symfony/error-handler": "^6.3",
+        "league/commonmark": "^2.2",
+        "psr/log": "^1.0|^2.0|^3.0",
+        "symfony/mailer": "^6.2",
+        "tijsverkoyen/css-to-inline-styles": "^2.2.5"
     },
     "replace": {
         "swooletw/hyperf-auth": "self.version",
@@ -111,6 +116,7 @@
         "swooletw/hyperf-http": "self.version",
         "swooletw/hyperf-jwt": "self.version",
         "swooletw/hyperf-log": "self.version",
+        "swooletw/hyperf-mail": "self.version",
         "swooletw/hyperf-object-pool": "self.version",
         "swooletw/hyperf-router": "self.version",
         "swooletw/hyperf-support": "self.version"
@@ -119,7 +125,11 @@
         "hyperf/redis": "Required to use redis driver. (^3.1).",
         "hyperf/session": "Required to use session guard. (^3.1).",
         "friendsofhyperf/tinker": "Required to use the tinker console command (^3.1).",
-        "league/flysystem-read-only": "Required to use read-only disks (^3.3)"
+        "league/flysystem-read-only": "Required to use read-only disks (^3.3)",
+        "aws/aws-sdk-php": "Required to use the SES mail driver (^3.235.5).",
+        "symfony/http-client": "Required to use the Symfony API mail transports (^6.2).",
+        "symfony/mailgun-mailer": "Required to enable support for the Mailgun mail transport (^6.2).",
+        "symfony/postmark-mailer": "Required to enable support for the Postmark mail transport (^6.2)."
     },
     "require-dev": {
         "fakerphp/faker": "^2.0",
@@ -160,6 +170,7 @@
                 "SwooleTW\\Hyperf\\Http\\ConfigProvider",
                 "SwooleTW\\Hyperf\\JWT\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Log\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Mail\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Router\\ConfigProvider"
             ]
         },
