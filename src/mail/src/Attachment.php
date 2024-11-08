@@ -122,6 +122,7 @@ class Attachment
      */
     public function attachTo(Mailable|MailMessage|Message $mail, array $options = []): mixed
     {
+        /** @var Mailable $mail */
         return $this->attachWith(
             fn ($path) => $mail->attach($path, [
                 'as' => $options['as'] ?? $this->as,
