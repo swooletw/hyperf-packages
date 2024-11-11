@@ -467,13 +467,13 @@ class FilesystemManager implements FactoryContract
      *
      * @return $this
      */
-    public function extend(string $driver, Closure $callback, bool $poolable = true): static
+    public function extend(string $driver, Closure $callback, bool $poolable = false): static
     {
-        $this->customCreators[$driver] = $callback;
-
         if ($poolable) {
             $this->addPoolable($driver);
         }
+
+        $this->customCreators[$driver] = $callback;
 
         return $this;
     }

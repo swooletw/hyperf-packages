@@ -385,7 +385,7 @@ class Mailer implements MailerContract
         }
 
         return tap(new MessageSending($message, $data), function ($event) {
-            $this->events?->dispatch($event);
+            $this->events->dispatch($event);
         })->shouldSend();
     }
 

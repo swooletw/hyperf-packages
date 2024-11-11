@@ -503,12 +503,16 @@ class MailManager implements FactoryContract
     }
 
     /**
-     * Register a custom transport creator Closure.
+     * Register a custom driver creator Closure.
      *
      * @return $this
      */
-    public function extend(string $driver, Closure $callback): static
+    public function extend(string $driver, Closure $callback, bool $poolable = false): static
     {
+        if ($poolable) {
+            $this->addPoolable($driver);
+        }
+
         $this->customCreators[$driver] = $callback;
 
         return $this;

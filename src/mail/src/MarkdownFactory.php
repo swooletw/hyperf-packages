@@ -10,8 +10,8 @@ use Hyperf\ViewEngine\Contract\FactoryInterface;
 class MarkdownFactory
 {
     public function __construct(
-        protected readonly FactoryInterface $factory,
-        protected readonly ConfigInterface $config,
+        protected FactoryInterface $factory,
+        protected ConfigInterface $config,
     ) {
     }
 

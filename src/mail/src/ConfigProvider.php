@@ -24,6 +24,12 @@ class ConfigProvider
                     'source' => __DIR__ . '/../publish/mail.php',
                     'destination' => BASE_PATH . '/config/autoload/mail.php',
                 ],
+                [
+                    'id' => 'resources',
+                    'description' => 'The resources for mail.',
+                    'source' => __DIR__ . '/../publish/resources/views/',
+                    'destination' => BASE_PATH . '/storage/view/mail/',
+                ],
             ],
         ];
     }

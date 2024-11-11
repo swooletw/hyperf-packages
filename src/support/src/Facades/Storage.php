@@ -24,7 +24,7 @@ use SwooleTW\Hyperf\Filesystem\FilesystemManager;
  * @method static string getDefaultCloudDriver()
  * @method static \SwooleTW\Hyperf\Filesystem\FilesystemManager forgetDisk(array|string $disk)
  * @method static void purge(string|null $name = null)
- * @method static \SwooleTW\Hyperf\Filesystem\FilesystemManager extend(string $driver, \Closure $callback)
+ * @method static \SwooleTW\Hyperf\Filesystem\FilesystemManager extend(string $driver, \Closure $callback, bool $poolable = false)
  * @method static \SwooleTW\Hyperf\Filesystem\FilesystemManager setApplication(\Psr\Container\ContainerInterface $app)
  * @method static string path(string $path)
  * @method static bool exists(string $path)
