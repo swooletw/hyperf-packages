@@ -44,7 +44,7 @@ trait InteractsWithTime
     /**
      * Travel to another time.
      *
-     * @param null|bool|Closure|DateTimeInterface|\Illuminate\Support\Carbon|string $date
+     * @param null|bool|\Carbon\Carbon|Closure|DateTimeInterface|string $date
      * @param null|callable $callback
      * @return mixed
      */

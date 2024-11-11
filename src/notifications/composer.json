@@ -1,0 +1,53 @@
+{
+    "name": "swooletw/hyperf-notifications",
+    "type": "library",
+    "description": "The notifications package for Hyperf.",
+    "license": "MIT",
+    "keywords": [
+        "php",
+        "hyperf",
+        "notifications",
+        "swoole",
+        "laravel-hyperf"
+    ],
+    "authors": [
+        {
+            "name": "Albert Chen",
+            "email": "albert@laravel-hyperf.com",
+            "homepage": "https://albert-chen.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/swooletw/hyperf-packages/issues",
+        "source": "https://github.com/swooletw/hyperf-packages"
+    },
+    "autoload": {
+        "psr-4": {
+            "SwooleTW\\Hyperf\\Notifications\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.1",
+        "hyperf/config": "~3.1.0",
+        "hyperf/stringable": "~3.1.0",
+        "hyperf/contract": "~3.1.0",
+        "hyperf/collection": "~3.1.0",
+        "hyperf/context": "~3.1.0",
+        "hyperf/database": "~3.1.0",
+        "hyperf/di": "~3.1.0",
+        "swooletw/hyperf-support": "~3.1.0",
+        "swooletw/hyperf-mail": "~3.1.0",
+        "swooletw/hyperf-object-pool": "~3.1.0"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "hyperf": {
+            "config": "SwooleTW\\Hyperf\\Notifications\\ConfigProvider"
+        },
+        "branch-alias": {
+            "dev-main": "3.1-dev"
+        }
+    }
+}

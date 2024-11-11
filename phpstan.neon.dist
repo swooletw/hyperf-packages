@@ -25,6 +25,7 @@ parameters:
     - %currentWorkingDirectory%/src/http/src/RequestMacro.php
     - %currentWorkingDirectory%/src/log/src/Adapter/*
     - %currentWorkingDirectory%/src/support/src/Js.php
+    - %currentWorkingDirectory%/src/notifications/src/DatabaseNotification.php
   ignoreErrors:
     - '#Result of method .* \(void\) is used\.#'
     - '#Unsafe usage of new static#'

@@ -41,6 +41,7 @@
             "SwooleTW\\Hyperf\\JWT\\": "src/jwt/src/",
             "SwooleTW\\Hyperf\\Log\\": "src/log/src/",
             "SwooleTW\\Hyperf\\Mail\\": "src/mail/src/",
+            "SwooleTW\\Hyperf\\Notifications\\": "src/notifications/src/",
             "SwooleTW\\Hyperf\\ObjectPool\\": "src/object-pool/src/",
             "SwooleTW\\Hyperf\\Router\\": "src/router/src/",
             "SwooleTW\\Hyperf\\Support\\": "src/support/src/"
@@ -117,6 +118,7 @@
         "swooletw/hyperf-jwt": "self.version",
         "swooletw/hyperf-log": "self.version",
         "swooletw/hyperf-mail": "self.version",
+        "swooletw/hyperf-notifications": "self.version",
         "swooletw/hyperf-object-pool": "self.version",
         "swooletw/hyperf-router": "self.version",
         "swooletw/hyperf-support": "self.version"
@@ -171,6 +173,7 @@
                 "SwooleTW\\Hyperf\\JWT\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Log\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Mail\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Notifications\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Router\\ConfigProvider"
             ]
         },

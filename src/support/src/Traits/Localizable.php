@@ -12,7 +12,7 @@ trait Localizable
     /**
      * Run the callback with the given locale.
      */
-    public function withLocale(string $locale, Closure $callback): mixed
+    public function withLocale(?string $locale, Closure $callback): mixed
     {
         if (! $locale) {
             return $callback();

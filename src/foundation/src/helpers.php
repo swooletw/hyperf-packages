@@ -471,7 +471,6 @@ if (! function_exists('to_route')) {
         $response = redirect(route($route, $parameters), $status);
         if ($headers) {
             foreach ($headers as $key => $value) {
-                /* @var \Psr\Http\Message\ResponseInterface $response */
                 $response = $response->withHeader($key, $value);
             }
         }

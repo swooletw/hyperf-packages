@@ -119,7 +119,7 @@ class EventDispatcher implements EventDispatcherContract
             $this->dump($listener, $event);
 
             if ($halt || $response === false || ($event instanceof StoppableEventInterface && $event->isPropagationStopped())) {
-                return $event;
+                break;
             }
         }
 
@@ -152,8 +152,6 @@ class EventDispatcher implements EventDispatcherContract
 
     /**
      * Create a callable for a class based listener.
-     *
-     * @param array|string $listener
      */
     protected function makeListener(array|Closure|string $listener): Closure
     {
