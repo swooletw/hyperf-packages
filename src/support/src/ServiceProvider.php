@@ -115,11 +115,11 @@ abstract class ServiceProvider
     /**
      * Register a view file namespace.
      */
-    protected function loadViewsFrom(string|array $path, string $namespace): void
+    protected function loadViewsFrom(array|string $path, string $namespace): void
     {
         $this->callAfterResolving(ViewFactoryContract::class, function ($view) use ($path, $namespace) {
-            if (isset($this->app->config['view']['paths']) &&
-                is_array($this->app->config['view']['paths'])
+            if (isset($this->app->config['view']['paths'])
+                && is_array($this->app->config['view']['paths'])
             ) {
                 foreach ($this->app->config['view']['paths'] as $viewPath) {
                     if (is_dir($appPath = $viewPath . '/vendor/' . $namespace)) {
