@@ -12,6 +12,7 @@ use SwooleTW\Hyperf\Devtool\Generator\EventCommand;
 use SwooleTW\Hyperf\Devtool\Generator\FactoryCommand;
 use SwooleTW\Hyperf\Devtool\Generator\ListenerCommand;
 use SwooleTW\Hyperf\Devtool\Generator\ModelCommand;
+use SwooleTW\Hyperf\Devtool\Generator\NotificationTableCommand;
 use SwooleTW\Hyperf\Devtool\Generator\ProviderCommand;
 use SwooleTW\Hyperf\Devtool\Generator\RequestCommand;
 use SwooleTW\Hyperf\Devtool\Generator\RuleCommand;
@@ -42,6 +43,7 @@ class ConfigProvider
                 SeederCommand::class,
                 EventListCommand::class,
                 RequestCommand::class,
+                NotificationTableCommand::class,
             ],
         ];
     }
