@@ -175,6 +175,9 @@
                 "SwooleTW\\Hyperf\\Mail\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Notifications\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Router\\ConfigProvider"
+            ],
+            "providers": [
+                "SwooleTW\\Hyperf\\Notifications\\NotificationServiceProvider"
             ]
         },
         "branch-alias": {
