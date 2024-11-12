@@ -14,7 +14,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use ReflectionFunction;
 use SwooleTW\Hyperf\Support\Traits\ReflectsClosures;
 
-class EventFake implements EventDispatcherInterface
+class EventFake implements Fake, EventDispatcherInterface
 {
     use ForwardsCalls;
     use ReflectsClosures;

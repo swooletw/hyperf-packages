@@ -510,8 +510,14 @@ class Application extends Container implements ApplicationContract
             \Hyperf\ViewEngine\Compiler\CompilerInterface::class => ['blade.compiler'],
             \Hyperf\Contract\SessionInterface::class => ['session'],
             \SwooleTW\Hyperf\Foundation\Console\Contracts\Schedule::class => ['schedule'],
-            \SwooleTW\Hyperf\Mail\Contracts\Factory::class => ['mail.manager'],
+            \SwooleTW\Hyperf\Mail\Contracts\Factory::class => [
+                'mail.manager',
+                \SwooleTW\Hyperf\Mail\MailManager::class,
+            ],
             \SwooleTW\Hyperf\Mail\Contracts\Mailer::class => ['mailer'],
+            \SwooleTW\Hyperf\Notifications\Contracts\Dispatcher::class => [
+                \SwooleTW\Hyperf\Notifications\Contracts\Factory::class,
+            ],
         ] as $key => $aliases) {
             foreach ($aliases as $alias) {
                 $this->alias($key, $alias);
