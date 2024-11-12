@@ -8,6 +8,8 @@ use Closure;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\TranslatorLoaderInterface;
 use Hyperf\Database\Migrations\Migrator;
+use Hyperf\ViewEngine\Compiler\BladeCompiler;
+use Hyperf\ViewEngine\Contract\FactoryInterface as ViewFactoryContract;
 use SwooleTW\Hyperf\Foundation\Contracts\Application as ApplicationContract;
 use SwooleTW\Hyperf\Router\RouteFileCollector;
 use SwooleTW\Hyperf\Support\Facades\Artisan;
@@ -108,6 +110,38 @@ abstract class ServiceProvider
     {
         $this->app->get(RouteFileCollector::class)
             ->addRouteFile($path);
+    }
+
+    /**
+     * Register a view file namespace.
+     */
+    protected function loadViewsFrom(string|array $path, string $namespace): void
+    {
+        $this->callAfterResolving(ViewFactoryContract::class, function ($view) use ($path, $namespace) {
+            if (isset($this->app->config['view']['paths']) &&
+                is_array($this->app->config['view']['paths'])
+            ) {
+                foreach ($this->app->config['view']['paths'] as $viewPath) {
+                    if (is_dir($appPath = $viewPath . '/vendor/' . $namespace)) {
+                        $view->addNamespace($namespace, $appPath);
+                    }
+                }
+            }
+
+            $view->addNamespace($namespace, $path);
+        });
+    }
+
+    /**
+     * Register the given view components with a custom prefix.
+     */
+    protected function loadViewComponentsAs(string $prefix, array $components): void
+    {
+        $this->callAfterResolving(BladeCompiler::class, function ($blade) use ($prefix, $components) {
+            foreach ($components as $alias => $component) {
+                $blade->component($component, is_string($alias) ? $alias : null, $prefix);
+            }
+        });
     }
 
     /**

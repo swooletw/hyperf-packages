@@ -156,6 +156,6 @@ class VendorPublishCommand extends Command
     protected function replaceDestination(string $destination): string
     {
         $result = Str::replace('/config/autoload/', '/config/', $destination);
-        return Str::replace('/storage/view/', '/resources/views/', $result);
+        return Str::replace('/storage/view/', '/resources/views/vendor/', $result);
     }
 }

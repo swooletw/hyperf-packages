@@ -44,7 +44,10 @@
     },
     "extra": {
         "hyperf": {
-            "config": "SwooleTW\\Hyperf\\Notifications\\ConfigProvider"
+            "config": "SwooleTW\\Hyperf\\Notifications\\ConfigProvider",
+            "providers": [
+                "SwooleTW\\Hyperf\\Notifications\\NotificationServiceProvider"
+            ]
         },
         "branch-alias": {
             "dev-main": "3.1-dev"

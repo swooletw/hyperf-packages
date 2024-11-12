@@ -38,9 +38,8 @@ class Markdown
 
     /**
      * Render the Markdown template into HTML.
-     * @param null|mixed $inliner
      */
-    public function render(string $view, array $data = [], $inliner = null): HtmlString
+    public function render(string $view, array $data = [], mixed $inliner = null): HtmlString
     {
         if (method_exists($this->view, 'flushFinderCache')) {
             $this->view->flushFinderCache();
