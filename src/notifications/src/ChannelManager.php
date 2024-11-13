@@ -11,6 +11,7 @@ use Illuminate\Notifications\Channels\MailChannel;
 use InvalidArgumentException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use SwooleTW\Hyperf\Notifications\Channels\DatabaseChannel;
+use SwooleTW\Hyperf\Notifications\Channels\SlackNotificationRouterChannel;
 use SwooleTW\Hyperf\Notifications\Contracts\Dispatcher as DispatcherContract;
 use SwooleTW\Hyperf\Notifications\Contracts\Factory as FactoryContract;
 use SwooleTW\Hyperf\ObjectPool\Traits\HasPoolProxy;
@@ -38,7 +39,7 @@ class ChannelManager extends Manager implements DispatcherContract, FactoryContr
     /**
      * The array of drivers which will be wrapped as pool proxies.
      */
-    protected array $poolables = [];
+    protected array $poolables = ['slack'];
 
     /**
      * The array of pool config for drivers.
@@ -87,6 +88,14 @@ class ChannelManager extends Manager implements DispatcherContract, FactoryContr
     protected function createMailDriver(): MailChannel
     {
         return $this->container->get(MailChannel::class);
+    }
+
+    /**
+     * Create an instance of the slack driver.
+     */
+    protected function createSlackDriver(): SlackNotificationRouterChannel
+    {
+        return $this->container->get(SlackNotificationRouterChannel::class);
     }
 
     /**
