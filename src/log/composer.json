@@ -33,7 +33,7 @@
         "hyperf/stringable": "~3.1.0",
         "hyperf/contract": "~3.1.0",
         "hyperf/collection": "~3.1.0",
-        "swooletw/hyperf-support": "~3.1.0"
+        "swooletw/hyperf-support": "dev-master"
     },
     "config": {
         "sort-packages": true
