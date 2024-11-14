@@ -129,8 +129,6 @@ abstract class Broadcaster implements BroadcasterContract
      * Extracts the parameters out of what the user passed to handle the channel authentication.
      *
      * @return ReflectionParameter[]
-     *
-     * @throws Exception
      */
     protected function extractParameters(callable|string $callback): array
     {
@@ -139,8 +137,6 @@ abstract class Broadcaster implements BroadcasterContract
         } elseif (is_string($callback)) {
             return $this->extractParametersFromClass($callback);
         }
-
-        throw new Exception('Given channel handler is an unknown type.');
     }
 
     /**

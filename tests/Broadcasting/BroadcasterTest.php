@@ -6,6 +6,7 @@ namespace SwooleTW\Hyperf\Tests\Broadcasting;
 
 use Exception;
 use Hyperf\Context\ApplicationContext;
+use Hyperf\Database\Model\Booted;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Mockery as m;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -35,8 +36,7 @@ class BroadcasterTest extends TestCase
 
     public function testExtractingParametersWhileCheckingForUserAccess()
     {
-        $container = m::mock(ContainerInterface::class);
-        ApplicationContext::setContainer($container);
+        Booted::$container[BroadcasterTestEloquentModelStub::class] = true;
 
         $callback = function ($user, BroadcasterTestEloquentModelStub $model, $nonModel) {
             //
@@ -44,27 +44,28 @@ class BroadcasterTest extends TestCase
         $parameters = $this->broadcaster->extractAuthParameters('asd.{model}.{nonModel}', 'asd.1.something', $callback);
         $this->assertEquals(['model.1.instance', 'something'], $parameters);
 
-        // $callback = function ($user, BroadcasterTestEloquentModelStub $model, BroadcasterTestEloquentModelStub $model2, $something) {
-        //     //
-        // };
-        // $parameters = $this->broadcaster->extractAuthParameters('asd.{model}.{model2}.{nonModel}', 'asd.1.uid.something', $callback);
-        // $this->assertEquals(['model.1.instance', 'model.uid.instance', 'something'], $parameters);
-        //
-        // $callback = function ($user) {
-        //     //
-        // };
-        // $parameters = $this->broadcaster->extractAuthParameters('asd', 'asd', $callback);
-        // $this->assertEquals([], $parameters);
-        //
-        // $callback = function ($user, $something) {
-        //     //
-        // };
-        // $parameters = $this->broadcaster->extractAuthParameters('asd', 'asd', $callback);
-        // $this->assertEquals([], $parameters);
-        //
-        // /*
-        //  * Test Explicit Binding...
-        //  */
+        $callback = function ($user, BroadcasterTestEloquentModelStub $model, BroadcasterTestEloquentModelStub $model2, $something) {
+            //
+        };
+        $parameters = $this->broadcaster->extractAuthParameters('asd.{model}.{model2}.{nonModel}', 'asd.1.uid.something', $callback);
+        $this->assertEquals(['model.1.instance', 'model.uid.instance', 'something'], $parameters);
+
+        $callback = function ($user) {
+            //
+        };
+        $parameters = $this->broadcaster->extractAuthParameters('asd', 'asd', $callback);
+        $this->assertEquals([], $parameters);
+
+        $callback = function ($user, $something) {
+            //
+        };
+        $parameters = $this->broadcaster->extractAuthParameters('asd', 'asd', $callback);
+        $this->assertEquals([], $parameters);
+
+        /*
+         * Test Explicit Binding...
+         */
+        // DOTO: 要等 binder 實作
         // $container = new Container;
         // Container::setInstance($container);
         // $binder = m::mock(BindingRegistrar::class);
@@ -80,12 +81,13 @@ class BroadcasterTest extends TestCase
         // Container::setInstance(new Container);
     }
 
-    // public function testCanUseChannelClasses()
-    // {
-    //     $parameters = $this->broadcaster->extractAuthParameters('asd.{model}.{nonModel}', 'asd.1.something', DummyBroadcastingChannel::class);
-    //     $this->assertEquals(['model.1.instance', 'something'], $parameters);
-    // }
-    //
+    public function testCanUseChannelClasses()
+    {
+        $parameters = $this->broadcaster->extractAuthParameters('asd.{model}.{nonModel}', 'asd.1.something', DummyBroadcastingChannel::class);
+        $this->assertEquals(['model.1.instance', 'something'], $parameters);
+    }
+
+    // DOTO: 要等 binder 實作
     // public function testModelRouteBinding()
     // {
     //     $container = new Container;
@@ -102,33 +104,33 @@ class BroadcasterTest extends TestCase
     //     $this->assertEquals(['model.1.instance'], $parameters);
     //     Container::setInstance(new Container);
     // }
-    //
-    // public function testUnknownChannelAuthHandlerTypeThrowsException()
-    // {
-    //     $this->expectException(Exception::class);
-    //
-    //     $this->broadcaster->extractAuthParameters('asd.{model}.{nonModel}', 'asd.1.something', 123);
-    // }
-    //
-    // public function testCanRegisterChannelsAsClasses()
-    // {
-    //     $this->broadcaster->channel('something', function () {
-    //         //
-    //     });
-    //
-    //     $this->broadcaster->channel('somethingelse', DummyBroadcastingChannel::class);
-    // }
-    //
-    // public function testNotFoundThrowsHttpException()
-    // {
-    //     $this->expectException(HttpException::class);
-    //
-    //     $callback = function ($user, BroadcasterTestEloquentModelNotFoundStub $model) {
-    //         //
-    //     };
-    //     $this->broadcaster->extractAuthParameters('asd.{model}', 'asd.1', $callback);
-    // }
-    //
+
+    public function testUnknownChannelAuthHandlerTypeThrowsException()
+    {
+        $this->expectException(Exception::class);
+
+        $this->broadcaster->extractAuthParameters('asd.{model}.{nonModel}', 'asd.1.something', 'notClassString');
+    }
+
+    public function testCanRegisterChannelsAsClasses()
+    {
+        $this->broadcaster->channel('something', function () {
+            //
+        });
+
+        $this->broadcaster->channel('somethingelse', DummyBroadcastingChannel::class);
+    }
+
+    public function testNotFoundThrowsHttpException()
+    {
+        $this->expectException(HttpException::class);
+
+        $callback = function ($user, BroadcasterTestEloquentModelNotFoundStub $model) {
+            //
+        };
+        $this->broadcaster->extractAuthParameters('asd.{model}', 'asd.1', $callback);
+    }
+
     // public function testCanRegisterChannelsWithoutOptions()
     // {
     //     $this->broadcaster->channel('somechannel', function () {
