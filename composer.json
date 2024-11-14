@@ -26,6 +26,7 @@
         "psr-4": {
             "SwooleTW\\Hyperf\\": "src/framework/src/",
             "SwooleTW\\Hyperf\\Auth\\": "src/auth/src/",
+            "SwooleTW\\Hyperf\\Broadcasting\\": "src/broadcasting/src/",
             "SwooleTW\\Hyperf\\Cache\\": "src/cache/src/",
             "SwooleTW\\Hyperf\\Config\\": "src/config/src/",
             "SwooleTW\\Hyperf\\Container\\": "src/container/src/",
@@ -102,6 +103,7 @@
     },
     "replace": {
         "swooletw/hyperf-auth": "self.version",
+        "swooletw/hyperf-broadcasting": "self.version",
         "swooletw/hyperf-cache": "self.version",
         "swooletw/hyperf-config": "self.version",
         "swooletw/hyperf-container": "self.version",
@@ -159,6 +161,7 @@
             "config": [
                 "SwooleTW\\Hyperf\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Auth\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Broadcasting\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Cache\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Cookie\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Config\\ConfigProvider",
