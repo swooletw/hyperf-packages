@@ -70,12 +70,12 @@ abstract class Broadcaster implements BroadcasterContract
     /**
      * Register a channel authenticator.
      */
-    public function channel(string|HasBroadcastChannel $channel, string|callable $callback, array $options = []): static
+    public function channel(HasBroadcastChannel|string $channel, callable|string $callback, array $options = []): static
     {
         if ($channel instanceof HasBroadcastChannel) {
             $channel = $channel->broadcastChannelRoute();
         } elseif (is_string($channel) && class_exists($channel) && is_a($channel, HasBroadcastChannel::class, true)) {
-            $channel = (new $channel)->broadcastChannelRoute();
+            $channel = (new $channel())->broadcastChannelRoute();
         }
 
         $this->channels[$channel] = $callback;
@@ -105,12 +105,13 @@ abstract class Broadcaster implements BroadcasterContract
 
             if ($result === false) {
                 throw new AccessDeniedHttpException();
-            } elseif ($result) {
+            }
+            if ($result) {
                 return $this->validAuthenticationResponse($request, $result);
             }
         }
 
-        throw new AccessDeniedHttpException;
+        throw new AccessDeniedHttpException();
     }
 
     /**
@@ -136,7 +137,8 @@ abstract class Broadcaster implements BroadcasterContract
     {
         if (is_callable($callback)) {
             return (new ReflectionFunction($callback))->getParameters();
-        } elseif (is_string($callback)) {
+        }
+        if (is_string($callback)) {
             return $this->extractParametersFromClass($callback);
         }
     }
@@ -144,7 +146,6 @@ abstract class Broadcaster implements BroadcasterContract
     /**
      * Extracts the parameters out of a class channel's "join" method.
      *
-     * @param  string  $callback
      * @return ReflectionParameter[]
      *
      * @throws Exception
@@ -165,7 +166,7 @@ abstract class Broadcaster implements BroadcasterContract
      */
     protected function extractChannelKeys(string $pattern, string $channel): array
     {
-        preg_match('/^'.preg_replace('/\{(.*?)\}/', '(?<$1>[^\.]+)', $pattern).'/', $channel, $keys);
+        preg_match('/^' . preg_replace('/\{(.*?)\}/', '(?<$1>[^\.]+)', $pattern) . '/', $channel, $keys);
 
         return $keys;
     }
@@ -178,7 +179,9 @@ abstract class Broadcaster implements BroadcasterContract
         $newValue = $this->resolveExplicitBindingIfPossible($key, $value);
 
         return $newValue === $value ? $this->resolveImplicitBindingIfPossible(
-            $key, $value, $callbackParameters
+            $key,
+            $value,
+            $callbackParameters
         ) : $newValue;
     }
 
@@ -210,8 +213,8 @@ abstract class Broadcaster implements BroadcasterContract
 
             $className = Reflector::getParameterClassName($parameter);
 
-            if (is_null($model = (new $className)->resolveRouteBinding($value))) {
-                throw new AccessDeniedHttpException;
+            if (is_null($model = (new $className())->resolveRouteBinding($value))) {
+                throw new AccessDeniedHttpException();
             }
 
             return $model;
@@ -249,7 +252,7 @@ abstract class Broadcaster implements BroadcasterContract
         // DOTO: 實作 \Illuminate\Contracts\Routing\BindingRegistrar
         // if (! $this->bindingRegistrar) {
         //     $this->bindingRegistrar = ApplicationContext::getContainer()->has(BindingRegistrar::class)
-        //             ? ApplicationContext::getContainer()->get(BindingRegistrar::class) 
+        //             ? ApplicationContext::getContainer()->get(BindingRegistrar::class)
         //             : null;
         // }
         //
@@ -260,7 +263,7 @@ abstract class Broadcaster implements BroadcasterContract
     /**
      * Normalize the given callback into a callable.
      *
-     * @param  mixed  $callback
+     * @param mixed $callback
      * @return callable
      */
     protected function normalizeChannelHandlerToCallable($callback)
@@ -291,7 +294,7 @@ abstract class Broadcaster implements BroadcasterContract
                 return $user;
             }
         }
-        
+
         return null;
     }
 
@@ -316,7 +319,7 @@ abstract class Broadcaster implements BroadcasterContract
      */
     protected function channelNameMatchesPattern(string $channel, string $pattern): bool
     {
-        return (bool) preg_match('/^'.preg_replace('/\{(.*?)\}/', '([^\.]+)', $pattern).'$/', $channel);
+        return (bool) preg_match('/^' . preg_replace('/\{(.*?)\}/', '([^\.]+)', $pattern) . '$/', $channel);
     }
 
     /**
