@@ -247,6 +247,7 @@ abstract class Broadcaster implements BroadcasterContract
     /**
      * Get the model binding registrar instance.
      *
+     * @param mixed $callback
      * @return \Illuminate\Contracts\Routing\BindingRegistrar
      */
     // protected function binder()
@@ -256,7 +257,7 @@ abstract class Broadcaster implements BroadcasterContract
     //                 ? ApplicationContext::getContainer()->get(BindingRegistrar::class)
     //                 : null;
     //     }
-    //     
+    //
     //     return $this->bindingRegistrar;
     //     return null;
     // }

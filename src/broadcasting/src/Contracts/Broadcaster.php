@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Broadcasting\Contracts;
 
 use Hyperf\HttpServer\Contract\RequestInterface;
-use SwooleTW\Hyperf\Broadcasting\BroadcastException;
 
 interface Broadcaster
 {
