@@ -53,6 +53,8 @@ abstract class Broadcaster implements BroadcasterContract
         if ($this->authenticatedUserCallback) {
             return $this->authenticatedUserCallback->__invoke($request);
         }
+
+        return null;
     }
 
     /**
@@ -247,7 +249,8 @@ abstract class Broadcaster implements BroadcasterContract
         // DOTO: 實作 \Illuminate\Contracts\Routing\BindingRegistrar
         // if (! $this->bindingRegistrar) {
         //     $this->bindingRegistrar = ApplicationContext::getContainer()->has(BindingRegistrar::class)
-        //             ? ApplicationContext::getContainer()->get(BindingRegistrar::class) : null;
+        //             ? ApplicationContext::getContainer()->get(BindingRegistrar::class) 
+        //             : null;
         // }
         //
         // return $this->bindingRegistrar;
@@ -283,10 +286,13 @@ abstract class Broadcaster implements BroadcasterContract
         }
 
         foreach (Arr::wrap($guards) as $guard) {
-            if ($user = Auth::guard($guard)->user()) {
+            $user = Auth::guard($guard)->user();
+            if ($user) {
                 return $user;
             }
         }
+        
+        return null;
     }
 
     /**
@@ -310,7 +316,7 @@ abstract class Broadcaster implements BroadcasterContract
      */
     protected function channelNameMatchesPattern(string $channel, string $pattern): bool
     {
-        return preg_match('/^'.preg_replace('/\{(.*?)\}/', '([^\.]+)', $pattern).'$/', $channel);
+        return (bool) preg_match('/^'.preg_replace('/\{(.*?)\}/', '([^\.]+)', $pattern).'$/', $channel);
     }
 
     /**
