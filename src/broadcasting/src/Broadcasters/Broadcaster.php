@@ -190,11 +190,12 @@ abstract class Broadcaster implements BroadcasterContract
      */
     protected function resolveExplicitBindingIfPossible(string $key, string $value): mixed
     {
-        $binder = $this->binder();
+        // DOTO: 實作 \Illuminate\Contracts\Routing\BindingRegistrar
+        // $binder = $this->binder();
 
-        if ($binder && $binder->getBindingCallback($key)) {
-            return call_user_func($binder->getBindingCallback($key), $value);
-        }
+        // if ($binder && $binder->getBindingCallback($key)) {
+        //     return call_user_func($binder->getBindingCallback($key), $value);
+        // }
 
         return $value;
     }
@@ -242,23 +243,23 @@ abstract class Broadcaster implements BroadcasterContract
         }, $channels);
     }
 
+    // DOTO: 實作 \Illuminate\Contracts\Routing\BindingRegistrar
     /**
      * Get the model binding registrar instance.
      *
      * @return \Illuminate\Contracts\Routing\BindingRegistrar
      */
-    protected function binder()
-    {
-        // DOTO: 實作 \Illuminate\Contracts\Routing\BindingRegistrar
-        // if (! $this->bindingRegistrar) {
-        //     $this->bindingRegistrar = ApplicationContext::getContainer()->has(BindingRegistrar::class)
-        //             ? ApplicationContext::getContainer()->get(BindingRegistrar::class)
-        //             : null;
-        // }
-        //
-        // return $this->bindingRegistrar;
-        return null;
-    }
+    // protected function binder()
+    // {
+    //     if (! $this->bindingRegistrar) {
+    //         $this->bindingRegistrar = ApplicationContext::getContainer()->has(BindingRegistrar::class)
+    //                 ? ApplicationContext::getContainer()->get(BindingRegistrar::class)
+    //                 : null;
+    //     }
+    //     
+    //     return $this->bindingRegistrar;
+    //     return null;
+    // }
 
     /**
      * Normalize the given callback into a callable.

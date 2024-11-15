@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Broadcasting\Contracts;
 
 use Hyperf\HttpServer\Contract\RequestInterface;
+use SwooleTW\Hyperf\Broadcasting\BroadcastException;
 
 interface Broadcaster
 {
@@ -20,8 +21,6 @@ interface Broadcaster
 
     /**
      * Broadcast the given event.
-     *
-     * @throws \Illuminate\Broadcasting\BroadcastException
      */
     public function broadcast(array $channels, string $event, array $payload = []): void;
 }
