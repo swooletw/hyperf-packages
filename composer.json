@@ -133,9 +133,12 @@
         "aws/aws-sdk-php": "Required to use the SES mail driver (^3.235.5).",
         "symfony/http-client": "Required to use the Symfony API mail transports (^6.2).",
         "symfony/mailgun-mailer": "Required to enable support for the Mailgun mail transport (^6.2).",
-        "symfony/postmark-mailer": "Required to enable support for the Postmark mail transport (^6.2)."
+        "symfony/postmark-mailer": "Required to enable support for the Postmark mail transport (^6.2).",
+        "ably/ably-php": "Required to use the Ably broadcast driver (^1.0).",
+        "pusher/pusher-php-server": "Required to use the Pusher broadcast driver (^6.0|^7.0)."
     },
     "require-dev": {
+        "ably/ably-php": "^1.0",
         "fakerphp/faker": "^2.0",
         "friendsofphp/php-cs-fixer": "^3.57.2",
         "hyperf/devtool": "~3.1.0",

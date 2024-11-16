@@ -40,17 +40,10 @@ class BroadcasterTest extends TestCase
 
         $this->broadcaster = new FakeBroadcaster();
 
-        $this->container = $this->getApplication([
+        $container = $this->getApplication([
             FactoryContract::class => fn () => new stdClass(),
         ]);
-        ApplicationContext::setContainer($this->container);
-    }
-
-    protected function tearDown(): void
-    {
-        m::close();
-        //
-        // Container::setInstance(null);
+        ApplicationContext::setContainer($container);
     }
 
     public function testExtractingParametersWhileCheckingForUserAccess()
