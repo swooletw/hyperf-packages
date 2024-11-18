@@ -16,6 +16,10 @@ use SwooleTW\Hyperf\Support\Facades\Auth;
 use SwooleTW\Hyperf\Support\Facades\Facade;
 use SwooleTW\Hyperf\Tests\Foundation\Concerns\HasMockedApplication;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class RedisBroadcasterTest extends TestCase
 {
     use HasMockedApplication;
@@ -90,7 +94,7 @@ class RedisBroadcasterTest extends TestCase
         });
 
         $this->broadcaster->shouldReceive('validAuthenticationResponse')
-                          ->once();
+            ->once();
 
         $this->broadcaster->auth(
             $this->getMockRequestWithUserForChannel('presence-test')
@@ -102,7 +106,6 @@ class RedisBroadcasterTest extends TestCase
         $this->expectException(AccessDeniedHttpException::class);
 
         $this->broadcaster->channel('test', function () {
-            //
         });
 
         $this->broadcaster->auth(

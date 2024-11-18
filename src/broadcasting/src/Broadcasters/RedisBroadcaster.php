@@ -6,8 +6,8 @@ namespace SwooleTW\Hyperf\Broadcasting\Broadcasters;
 
 use Hyperf\Collection\Arr;
 use Hyperf\HttpServer\Contract\RequestInterface;
-use Hyperf\Redis\RedisFactory;
 use Hyperf\Pool\Exception\ConnectionException;
+use Hyperf\Redis\RedisFactory;
 use RedisException;
 use SwooleTW\Hyperf\Broadcasting\BroadcastException;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\AccessDeniedHttpException;
@@ -51,13 +51,14 @@ class RedisBroadcaster extends Broadcaster
         );
 
         if (empty($channelName)
-            || ($this->isGuardedChannel($channelName) && ! $this->retrieveUser($normalizeChannelName)
-        )) {
+            || ($this->isGuardedChannel($channelName) && ! $this->retrieveUser($normalizeChannelName))
+        ) {
             throw new AccessDeniedHttpException();
         }
 
         return parent::verifyUserCanAccessChannel(
-            $request, $normalizeChannelName
+            $request,
+            $normalizeChannelName
         );
     }
 
@@ -95,7 +96,7 @@ class RedisBroadcaster extends Broadcaster
             return;
         }
 
-        $connection =  $this->factory->get($this->connection);
+        $connection = $this->factory->get($this->connection);
 
         $payload = json_encode([
             'event' => $event,
@@ -137,7 +138,7 @@ class RedisBroadcaster extends Broadcaster
     protected function formatChannels(array $channels): array
     {
         return array_map(function ($channel) {
-            return $this->prefix.$channel;
+            return $this->prefix . $channel;
         }, parent::formatChannels($channels));
     }
 }
