@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Illuminate\Tests\Broadcasting;
 
 use Hyperf\HttpServer\Request;
@@ -15,11 +17,16 @@ use SwooleTW\Hyperf\Support\Facades\Auth;
 use SwooleTW\Hyperf\Support\Facades\Facade;
 use SwooleTW\Hyperf\Tests\Foundation\Concerns\HasMockedApplication;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class PusherBroadcasterTest extends TestCase
 {
     use HasMockedApplication;
 
     public PusherBroadcaster $broadcaster;
+
     public Pusher $pusher;
 
     protected function setUp(): void
@@ -130,9 +137,9 @@ class PusherBroadcasterTest extends TestCase
             'auth' => 'abcd:efgh',
         ];
 
-        $this->pusher->shouldReceive('socket_auth')
-                     ->once()
-                     ->andReturn(json_encode($data));
+        $this->pusher->shouldReceive('authorizeChannel')
+            ->once()
+            ->andReturn(json_encode($data));
 
         $this->assertEquals(
             $data,
@@ -152,9 +159,9 @@ class PusherBroadcasterTest extends TestCase
             ],
         ];
 
-        $this->pusher->shouldReceive('presence_auth')
-                     ->once()
-                     ->andReturn(json_encode($data));
+        $this->pusher->shouldReceive('authorizePresenceChannel')
+            ->once()
+            ->andReturn(json_encode($data));
 
         $this->assertEquals(
             $data,
@@ -164,12 +171,14 @@ class PusherBroadcasterTest extends TestCase
 
     public function testUserAuthenticationForPusher()
     {
+        $authenticateUser = [
+            'auth' => '278d425bdf160c739803:4708d583dada6a56435fb8bc611c77c359a31eebde13337c16ab43aa6de336ba',
+            'user_data' => json_encode(['id' => '12345']),
+        ];
+
         $this->pusher
-            ->shouldReceive('getSettings')
-            ->andReturn([
-                'auth_key' => '278d425bdf160c739803',
-                'secret' => '7ad3773142a6692b25b8',
-            ]);
+            ->shouldReceive('authenticateUser')
+            ->andReturn(json_encode($authenticateUser));
 
         $this->broadcaster = new PusherBroadcaster($this->pusher);
 
@@ -181,12 +190,7 @@ class PusherBroadcasterTest extends TestCase
             $this->getMockRequestWithUserForChannel('presence-test')
         );
 
-        // The result is hard-coded from the Pusher docs
-        // See: https://pusher.com/docs/channels/library_auth_reference/auth-signatures/#user-authentication
-        $this->assertSame([
-            'auth' => '278d425bdf160c739803:4708d583dada6a56435fb8bc611c77c359a31eebde13337c16ab43aa6de336ba',
-            'user_data' => json_encode(['id' => '12345']),
-        ], $response);
+        $this->assertSame($authenticateUser, $response);
     }
 
     protected function getMockRequestWithUserForChannel(string $channel): Request
@@ -194,7 +198,6 @@ class PusherBroadcasterTest extends TestCase
         $request = m::mock(Request::class);
         $request->shouldReceive('input')->with('channel_name')->andReturn($channel);
         $request->shouldReceive('input')->with('socket_id')->andReturn('1234.1234');
-        $request->shouldReceive('input')->with('callback', false)->andReturn(false);
 
         $user = m::mock('User');
         $user->shouldReceive('getAuthIdentifier')->andReturn(42);
