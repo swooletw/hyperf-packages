@@ -40,11 +40,12 @@ class AblyBroadcaster extends Broadcaster
         if (empty($originalChannelName)
             || ($this->isGuardedChannel($originalChannelName) && ! $this->retrieveUser($channelName))
         ) {
-            throw new AccessDeniedHttpException;
+            throw new AccessDeniedHttpException();
         }
 
         return parent::verifyUserCanAccessChannel(
-            $request, $channelName
+            $request,
+            $channelName
         );
     }
 
@@ -59,7 +60,7 @@ class AblyBroadcaster extends Broadcaster
         if (str_starts_with($originalChannelName, 'private')) {
             $signature = $this->generateAblySignature($originalChannelName, $socketId);
 
-            return ['auth' => $this->getPublicToken().':'.$signature];
+            return ['auth' => $this->getPublicToken() . ':' . $signature];
         }
 
         $channelName = $this->normalizeChannelName($originalChannelName);
@@ -80,7 +81,7 @@ class AblyBroadcaster extends Broadcaster
         );
 
         return [
-            'auth' => $this->getPublicToken().':'.$signature,
+            'auth' => $this->getPublicToken() . ':' . $signature,
             'channel_data' => json_encode($userData),
         ];
     }
@@ -88,11 +89,11 @@ class AblyBroadcaster extends Broadcaster
     /**
      * Generate the signature needed for Ably authentication headers.
      */
-    public function generateAblySignature(string $channelName, string $socketId, array|null $userData = null): string
+    public function generateAblySignature(string $channelName, string $socketId, ?array $userData = null): string
     {
         return hash_hmac(
             'sha256',
-            sprintf('%s:%s%s', $socketId, $channelName, $userData ? ':'.json_encode($userData) : ''),
+            sprintf('%s:%s%s', $socketId, $channelName, $userData ? ':' . json_encode($userData) : ''),
             $this->getPrivateToken(),
         );
     }
@@ -122,7 +123,7 @@ class AblyBroadcaster extends Broadcaster
      */
     protected function buildAblyMessage(string $event, array $payload = []): AblyMessage
     {
-        return tap(new AblyMessage, function ($message) use ($event, $payload) {
+        return tap(new AblyMessage(), function ($message) use ($event, $payload) {
             $message->name = $event;
             $message->data = $payload;
             $message->connectionKey = data_get($payload, 'socket');
@@ -165,7 +166,7 @@ class AblyBroadcaster extends Broadcaster
                     : Str::replaceFirst('presence-', 'presence:', $channel);
             }
 
-            return 'public:'.$channel;
+            return 'public:' . $channel;
         }, $channels);
     }
 

@@ -17,11 +17,16 @@ use SwooleTW\Hyperf\Support\Facades\Auth;
 use SwooleTW\Hyperf\Support\Facades\Facade;
 use SwooleTW\Hyperf\Tests\Foundation\Concerns\HasMockedApplication;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class AblyBroadcasterTest extends TestCase
 {
     use HasMockedApplication;
 
     public AblyBroadcaster $broadcaster;
+
     public AblyRest $ably;
 
     protected function setUp(): void
@@ -132,9 +137,9 @@ class AblyBroadcasterTest extends TestCase
 
         $user = m::mock('User');
         $user->shouldReceive('getAuthIdentifierForBroadcasting')
-             ->andReturn(42);
+            ->andReturn(42);
         $user->shouldReceive('getAuthIdentifier')
-             ->andReturn(42);
+            ->andReturn(42);
 
         Auth::shouldReceive('user')->andReturn($user);
 
