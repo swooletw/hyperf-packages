@@ -157,20 +157,6 @@ class RedisBroadcasterTest extends TestCase
         );
     }
 
-    /**
-     * Create a new config repository instance.
-     *
-     * @return \Illuminate\Config\Repository
-     */
-    protected function createConfig()
-    {
-        return new Config([
-            'redis' => [
-                'options' => ['prefix' => 'laravel_database_'],
-            ],
-        ]);
-    }
-
     protected function getMockRequestWithUserForChannel(string $channel): Request
     {
         $request = m::mock(Request::class);
