@@ -34,18 +34,18 @@ class AblyBroadcaster extends Broadcaster
      */
     public function auth(RequestInterface $request): mixed
     {
-        $originalChannelName = $request->input('channel_name');
-        $channelName = $this->normalizeChannelName($originalChannelName);
+        $channelName = $request->input('channel_name');
+        $normalizeChannelName = $this->normalizeChannelName($channelName);
 
-        if (empty($originalChannelName)
-            || ($this->isGuardedChannel($originalChannelName) && ! $this->retrieveUser($channelName))
+        if (empty($channelName)
+            || ($this->isGuardedChannel($channelName) && ! $this->retrieveUser($normalizeChannelName))
         ) {
             throw new AccessDeniedHttpException();
         }
 
         return parent::verifyUserCanAccessChannel(
             $request,
-            $channelName
+            $normalizeChannelName
         );
     }
 
@@ -54,25 +54,25 @@ class AblyBroadcaster extends Broadcaster
      */
     public function validAuthenticationResponse(RequestInterface $request, mixed $result): mixed
     {
-        $originalChannelName = $request->input('channel_name');
+        $channelName = $request->input('channel_name');
         $socketId = $request->input('socket_id');
 
-        if (str_starts_with($originalChannelName, 'private')) {
-            $signature = $this->generateAblySignature($originalChannelName, $socketId);
+        if (str_starts_with($channelName, 'private')) {
+            $signature = $this->generateAblySignature($channelName, $socketId);
 
             return ['auth' => $this->getPublicToken() . ':' . $signature];
         }
 
-        $channelName = $this->normalizeChannelName($originalChannelName);
-
-        $user = $this->retrieveUser($channelName);
+        $user = $this->retrieveUser(
+            $this->normalizeChannelName($channelName)
+        );
 
         $broadcastIdentifier = method_exists($user, 'getAuthIdentifierForBroadcasting')
             ? $user->getAuthIdentifierForBroadcasting()
             : $user->getAuthIdentifier();
 
         $signature = $this->generateAblySignature(
-            $originalChannelName,
+            $channelName,
             $socketId,
             $userData = array_filter([
                 'user_id' => (string) $broadcastIdentifier,

@@ -1,41 +1,33 @@
 <?php
 
-declare(strict_types=1);
+namespace Illuminate\Tests\Broadcasting;
 
-namespace SwooleTW\Hyperf\Tests\Broadcasting;
-
-use Ably\AblyRest;
 use Hyperf\HttpServer\Request;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
+use Pusher\Pusher;
 use stdClass;
 use SwooleTW\Hyperf\Auth\Contracts\FactoryContract;
-use SwooleTW\Hyperf\Broadcasting\Broadcasters\AblyBroadcaster;
+use SwooleTW\Hyperf\Broadcasting\Broadcasters\PusherBroadcaster;
 use SwooleTW\Hyperf\Foundation\ApplicationContext;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\AccessDeniedHttpException;
 use SwooleTW\Hyperf\Support\Facades\Auth;
 use SwooleTW\Hyperf\Support\Facades\Facade;
 use SwooleTW\Hyperf\Tests\Foundation\Concerns\HasMockedApplication;
 
-/**
- * @internal
- * @coversNothing
- */
-class AblyBroadcasterTest extends TestCase
+class PusherBroadcasterTest extends TestCase
 {
     use HasMockedApplication;
 
-    public AblyBroadcaster $broadcaster;
-
-    public AblyRest $ably;
+    public PusherBroadcaster $broadcaster;
+    public Pusher $pusher;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->ably = m::mock(AblyRest::class, ['abcd:efgh']);
-
-        $this->broadcaster = m::mock(AblyBroadcaster::class, [$this->ably])->makePartial();
+        $this->pusher = m::mock(Pusher::class);
+        $this->broadcaster = m::mock(PusherBroadcaster::class, [$this->pusher])->makePartial();
 
         $container = $this->getApplication([
             FactoryContract::class => fn () => new stdClass(),
@@ -130,10 +122,79 @@ class AblyBroadcasterTest extends TestCase
         );
     }
 
+    public function testValidAuthenticationResponseCallPusherSocketAuthMethodWithPrivateChannel()
+    {
+        $request = $this->getMockRequestWithUserForChannel('private-test');
+
+        $data = [
+            'auth' => 'abcd:efgh',
+        ];
+
+        $this->pusher->shouldReceive('socket_auth')
+                     ->once()
+                     ->andReturn(json_encode($data));
+
+        $this->assertEquals(
+            $data,
+            $this->broadcaster->validAuthenticationResponse($request, true)
+        );
+    }
+
+    public function testValidAuthenticationResponseCallPusherPresenceAuthMethodWithPresenceChannel()
+    {
+        $request = $this->getMockRequestWithUserForChannel('presence-test');
+
+        $data = [
+            'auth' => 'abcd:efgh',
+            'channel_data' => [
+                'user_id' => 42,
+                'user_info' => [1, 2, 3, 4],
+            ],
+        ];
+
+        $this->pusher->shouldReceive('presence_auth')
+                     ->once()
+                     ->andReturn(json_encode($data));
+
+        $this->assertEquals(
+            $data,
+            $this->broadcaster->validAuthenticationResponse($request, true)
+        );
+    }
+
+    public function testUserAuthenticationForPusher()
+    {
+        $this->pusher
+            ->shouldReceive('getSettings')
+            ->andReturn([
+                'auth_key' => '278d425bdf160c739803',
+                'secret' => '7ad3773142a6692b25b8',
+            ]);
+
+        $this->broadcaster = new PusherBroadcaster($this->pusher);
+
+        $this->broadcaster->resolveAuthenticatedUserUsing(function () {
+            return ['id' => '12345'];
+        });
+
+        $response = $this->broadcaster->resolveAuthenticatedUser(
+            $this->getMockRequestWithUserForChannel('presence-test')
+        );
+
+        // The result is hard-coded from the Pusher docs
+        // See: https://pusher.com/docs/channels/library_auth_reference/auth-signatures/#user-authentication
+        $this->assertSame([
+            'auth' => '278d425bdf160c739803:4708d583dada6a56435fb8bc611c77c359a31eebde13337c16ab43aa6de336ba',
+            'user_data' => json_encode(['id' => '12345']),
+        ], $response);
+    }
+
     protected function getMockRequestWithUserForChannel(string $channel): Request
     {
         $request = m::mock(Request::class);
         $request->shouldReceive('input')->with('channel_name')->andReturn($channel);
+        $request->shouldReceive('input')->with('socket_id')->andReturn('1234.1234');
+        $request->shouldReceive('input')->with('callback', false)->andReturn(false);
 
         $user = m::mock('User');
         $user->shouldReceive('getAuthIdentifier')->andReturn(42);
