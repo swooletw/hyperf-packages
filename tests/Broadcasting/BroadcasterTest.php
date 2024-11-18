@@ -20,6 +20,7 @@ use SwooleTW\Hyperf\Broadcasting\Broadcasters\Broadcaster;
 use SwooleTW\Hyperf\Database\Eloquent\Model;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\HttpException;
 use SwooleTW\Hyperf\Support\Facades\Auth;
+use SwooleTW\Hyperf\Support\Facades\Facade;
 use SwooleTW\Hyperf\Tests\Foundation\Concerns\HasMockedApplication;
 
 /**
@@ -44,6 +45,15 @@ class BroadcasterTest extends TestCase
             FactoryContract::class => fn () => new stdClass(),
         ]);
         ApplicationContext::setContainer($container);
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        m::close();
+
+        Facade::clearResolvedInstances();
     }
 
     public function testExtractingParametersWhileCheckingForUserAccess()
@@ -341,7 +351,8 @@ class BroadcasterTest extends TestCase
             return null;
         });
 
-        $user = $this->broadcaster->resolveAuthenticatedUser(new Request(['socket_id' => '1234.1234']));
+        $this->mockRequest('http://exa.com/foo?socket_id=1234.1234#boom');
+        $user = $this->broadcaster->resolveAuthenticatedUser(new Request());
 
         $this->assertNull($user);
     }
@@ -349,8 +360,6 @@ class BroadcasterTest extends TestCase
     public function testUserAuthenticationWithoutResolve()
     {
         $this->mockRequest('http://exa.com/foo?socket_id=1234.1234#boom');
-        $user = $this->broadcaster->resolveAuthenticatedUser(new Request());
-
         $this->assertNull($this->broadcaster->resolveAuthenticatedUser(new Request()));
     }
 

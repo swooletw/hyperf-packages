@@ -12,10 +12,6 @@ use Hyperf\Stringable\Str;
 use SwooleTW\Hyperf\Broadcasting\BroadcastException;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\AccessDeniedHttpException;
 
-/**
- * @author Matthew Hall (matthall28@gmail.com)
- * @author Taylor Otwell (taylor@laravel.com)
- */
 class AblyBroadcaster extends Broadcaster
 {
     /**
@@ -26,7 +22,7 @@ class AblyBroadcaster extends Broadcaster
     /**
      * Create a new broadcaster instance.
      */
-    public function __construct(AblyRest $ably): void
+    public function __construct(AblyRest $ably)
     {
         $this->ably = $ably;
     }
@@ -41,7 +37,7 @@ class AblyBroadcaster extends Broadcaster
         $originalChannelName = $request->input('channel_name');
         $channelName = $this->normalizeChannelName($originalChannelName);
 
-        if (empty($originalChannelName) 
+        if (empty($originalChannelName)
             || ($this->isGuardedChannel($originalChannelName) && ! $this->retrieveUser($channelName))
         ) {
             throw new AccessDeniedHttpException;
@@ -71,8 +67,8 @@ class AblyBroadcaster extends Broadcaster
         $user = $this->retrieveUser($channelName);
 
         $broadcastIdentifier = method_exists($user, 'getAuthIdentifierForBroadcasting')
-                    ? $user->getAuthIdentifierForBroadcasting()
-                    : $user->getAuthIdentifier();
+            ? $user->getAuthIdentifierForBroadcasting()
+            : $user->getAuthIdentifier();
 
         $signature = $this->generateAblySignature(
             $originalChannelName,

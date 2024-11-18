@@ -5,20 +5,24 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Tests\Broadcasting;
 
 use Ably\AblyRest;
-use Illuminate\Broadcasting\Broadcasters\AblyBroadcaster;
-use Illuminate\Http\Request;
+use Hyperf\HttpServer\Request;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use stdClass;
+use SwooleTW\Hyperf\Auth\Contracts\FactoryContract;
+use SwooleTW\Hyperf\Broadcasting\Broadcasters\AblyBroadcaster;
+use SwooleTW\Hyperf\Foundation\ApplicationContext;
+use SwooleTW\Hyperf\HttpMessage\Exceptions\AccessDeniedHttpException;
+use SwooleTW\Hyperf\Support\Facades\Auth;
+use SwooleTW\Hyperf\Support\Facades\Facade;
+use SwooleTW\Hyperf\Tests\Foundation\Concerns\HasMockedApplication;
 
 class AblyBroadcasterTest extends TestCase
 {
-    /**
-     * @var \Illuminate\Broadcasting\Broadcasters\AblyBroadcaster
-     */
-    public $broadcaster;
+    use HasMockedApplication;
 
-    public $ably;
+    public AblyBroadcaster $broadcaster;
+    public AblyRest $ably;
 
     protected function setUp(): void
     {
@@ -27,6 +31,11 @@ class AblyBroadcasterTest extends TestCase
         $this->ably = m::mock(AblyRest::class, ['abcd:efgh']);
 
         $this->broadcaster = m::mock(AblyBroadcaster::class, [$this->ably])->makePartial();
+
+        $container = $this->getApplication([
+            FactoryContract::class => fn () => new stdClass(),
+        ]);
+        ApplicationContext::setContainer($container);
     }
 
     protected function tearDown(): void
@@ -34,6 +43,8 @@ class AblyBroadcasterTest extends TestCase
         parent::tearDown();
 
         m::close();
+
+        Facade::clearResolvedInstances();
     }
 
     public function testAuthCallValidAuthenticationResponseWithPrivateChannelWhenCallbackReturnTrue()
@@ -42,8 +53,7 @@ class AblyBroadcasterTest extends TestCase
             return true;
         });
 
-        $this->broadcaster->shouldReceive('validAuthenticationResponse')
-                          ->once();
+        $this->broadcaster->shouldReceive('validAuthenticationResponse')->once();
 
         $this->broadcaster->auth(
             $this->getMockRequestWithUserForChannel('private-test')
@@ -83,8 +93,7 @@ class AblyBroadcasterTest extends TestCase
             return $returnData;
         });
 
-        $this->broadcaster->shouldReceive('validAuthenticationResponse')
-                          ->once();
+        $this->broadcaster->shouldReceive('validAuthenticationResponse')->once();
 
         $this->broadcaster->auth(
             $this->getMockRequestWithUserForChannel('presence-test')
@@ -96,7 +105,6 @@ class AblyBroadcasterTest extends TestCase
         $this->expectException(AccessDeniedHttpException::class);
 
         $this->broadcaster->channel('test', function () {
-            //
         });
 
         $this->broadcaster->auth(
@@ -117,18 +125,10 @@ class AblyBroadcasterTest extends TestCase
         );
     }
 
-    /**
-     * @param  string  $channel
-     * @return \Illuminate\Http\Request
-     */
-    protected function getMockRequestWithUserForChannel($channel)
+    protected function getMockRequestWithUserForChannel(string $channel): Request
     {
         $request = m::mock(Request::class);
-        $request->shouldReceive('all')->andReturn(['channel_name' => $channel, 'socket_id' => 'abcd.1234']);
-
-        $request->shouldReceive('input')
-                ->with('callback', false)
-                ->andReturn(false);
+        $request->shouldReceive('input')->with('channel_name')->andReturn($channel);
 
         $user = m::mock('User');
         $user->shouldReceive('getAuthIdentifierForBroadcasting')
@@ -136,23 +136,17 @@ class AblyBroadcasterTest extends TestCase
         $user->shouldReceive('getAuthIdentifier')
              ->andReturn(42);
 
-        $request->shouldReceive('user')
-                ->andReturn($user);
+        Auth::shouldReceive('user')->andReturn($user);
 
         return $request;
     }
 
-    /**
-     * @param  string  $channel
-     * @return \Illuminate\Http\Request
-     */
-    protected function getMockRequestWithoutUserForChannel($channel)
+    protected function getMockRequestWithoutUserForChannel(string $channel): Request
     {
         $request = m::mock(Request::class);
-        $request->shouldReceive('all')->andReturn(['channel_name' => $channel]);
+        $request->shouldReceive('input')->with('channel_name')->andReturn($channel);
 
-        $request->shouldReceive('user')
-                ->andReturn(null);
+        Auth::shouldReceive('user')->andReturn(null);
 
         return $request;
     }
