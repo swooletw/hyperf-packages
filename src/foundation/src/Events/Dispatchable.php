@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Events;
 
+use SwooleTW\Hyperf\Broadcasting\PendingBroadcast;
+
 trait Dispatchable
 {
     /**
@@ -32,5 +34,13 @@ trait Dispatchable
         if (! $boolean) {
             return event(new static(...$arguments));
         }
+    }
+
+    /**
+     * Broadcast the event with the given arguments.
+     */
+    public static function broadcast(): PendingBroadcast
+    {
+        return broadcast(new static(...func_get_args()));
     }
 }
