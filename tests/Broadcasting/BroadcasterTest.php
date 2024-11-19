@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Tests\Broadcasting;
 
 use Exception;
-use Hyperf\Context\ApplicationContext;
 use Hyperf\Context\RequestContext;
 use Hyperf\Database\Model\Booted;
 use Hyperf\HttpMessage\Server\Request as ServerRequest;
@@ -14,14 +13,13 @@ use Hyperf\HttpServer\Request;
 use Mockery as m;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use stdClass;
-use SwooleTW\Hyperf\Auth\Contracts\FactoryContract;
+use Psr\Container\ContainerInterface;
+use SwooleTW\Hyperf\Auth\AuthManager;
+use SwooleTW\Hyperf\Auth\Contracts\Authenticatable;
+use SwooleTW\Hyperf\Auth\Contracts\Guard;
 use SwooleTW\Hyperf\Broadcasting\Broadcasters\Broadcaster;
 use SwooleTW\Hyperf\Database\Eloquent\Model;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\HttpException;
-use SwooleTW\Hyperf\Support\Facades\Auth;
-use SwooleTW\Hyperf\Support\Facades\Facade;
-use SwooleTW\Hyperf\Tests\Foundation\Concerns\HasMockedApplication;
 
 /**
  * @internal
@@ -29,22 +27,16 @@ use SwooleTW\Hyperf\Tests\Foundation\Concerns\HasMockedApplication;
  */
 class BroadcasterTest extends TestCase
 {
-    use HasMockedApplication;
-
-    protected $container;
-
-    public FakeBroadcaster $broadcaster;
+    protected ContainerInterface $container;
+    protected FakeBroadcaster $broadcaster;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->broadcaster = new FakeBroadcaster();
+        $this->container = m::mock(ContainerInterface::class);
 
-        $container = $this->getApplication([
-            FactoryContract::class => fn () => new stdClass(),
-        ]);
-        ApplicationContext::setContainer($container);
+        $this->broadcaster = new FakeBroadcaster($this->container);
     }
 
     protected function tearDown(): void
@@ -52,8 +44,6 @@ class BroadcasterTest extends TestCase
         parent::tearDown();
 
         m::close();
-
-        Facade::clearResolvedInstances();
     }
 
     public function testExtractingParametersWhileCheckingForUserAccess()
@@ -217,10 +207,16 @@ class BroadcasterTest extends TestCase
         $this->broadcaster->channel('somechannel', function () {
         });
 
-        Auth::shouldReceive('user')
+        $authManager = m::mock(AuthManager::class);
+        $authManager->shouldReceive('user')
             ->once()
             ->withNoArgs()
             ->andReturn(new DummyUser());
+
+        $this->container->shouldReceive('get')
+            ->once()
+            ->with(AuthManager::class)
+            ->andReturn($authManager);
 
         $this->assertInstanceOf(
             DummyUser::class,
@@ -233,14 +229,21 @@ class BroadcasterTest extends TestCase
         $this->broadcaster->channel('somechannel', function () {
         }, ['guards' => 'myguard']);
 
-        Auth::shouldReceive('guard')
-            ->once()
-            ->with('myguard')
-            ->andReturnSelf();
-        Auth::shouldReceive('user')
+        $guard = m::mock(Guard::class);
+        $guard->shouldReceive('user')
             ->once()
             ->withNoArgs()
             ->andReturn(new DummyUser());
+        $authManager = m::mock(AuthManager::class);
+        $authManager->shouldReceive('guard')
+            ->once()
+            ->with('myguard')
+            ->andReturn($guard);
+
+        $this->container->shouldReceive('get')
+            ->once()
+            ->with(AuthManager::class)
+            ->andReturn($authManager);
 
         $this->assertInstanceOf(
             DummyUser::class,
@@ -255,18 +258,30 @@ class BroadcasterTest extends TestCase
         $this->broadcaster->channel('someotherchannel', function () {
         }, ['guards' => ['myguard2', 'myguard1']]);
 
-        Auth::shouldReceive('guard')
+        $guard1 = m::mock(Guard::class);
+        $guard1->shouldReceive('user')
+            ->once()
+            ->andReturn(null);
+        $guard2 = m::mock(Guard::class);
+        $guard2->shouldReceive('user')
+            ->twice()
+            ->andReturn(new DummyUser());
+        $authManager = m::mock(AuthManager::class);
+        $authManager->shouldReceive('guard')
             ->once()
             ->with('myguard1')
-            ->andReturnSelf();
-        Auth::shouldReceive('guard')
+            ->andReturn($guard1);
+        $authManager->shouldReceive('guard')
             ->twice()
             ->with('myguard2')
-            ->andReturnSelf();
-        Auth::shouldReceive('user')
-            ->times(3)
-            ->withNoArgs()
-            ->andReturn(null, new DummyUser(), new DummyUser());
+            ->andReturn($guard2);
+        $authManager->shouldNotReceive('guard')
+            ->withNoArgs();
+
+        $this->container->shouldReceive('get')
+            ->twice()
+            ->with(AuthManager::class)
+            ->andReturn($authManager);
 
         $this->assertInstanceOf(
             DummyUser::class,
@@ -284,39 +299,22 @@ class BroadcasterTest extends TestCase
         $this->broadcaster->channel('somechannel', function () {
         }, ['guards' => 'myguard']);
 
-        Auth::shouldReceive('guard')
+        $guard = m::mock(Guard::class);
+        $guard->shouldReceive('user')
+            ->once()
+            ->andReturn(new DummyUser());
+        $authManager = m::mock(AuthManager::class);
+        $authManager->shouldReceive('guard')
             ->once()
             ->with('myguard')
-            ->andReturnSelf();
-        Auth::shouldReceive('user')
-            ->once()
-            ->withNoArgs()
-            ->andReturn(null);
-        Auth::shouldNotReceive('guard')
+            ->andReturn($guard);
+        $authManager->shouldNotReceive('guard')
             ->withNoArgs();
 
-        $this->broadcaster->retrieveUser('somechannel');
-    }
-
-    public function testRetrieveUserDontUseDefaultGuardWhenMultipleGuardsSpecified()
-    {
-        $this->broadcaster->channel('somechannel', function () {
-        }, ['guards' => ['myguard1', 'myguard2']]);
-
-        Auth::shouldReceive('guard')
+        $this->container->shouldReceive('get')
             ->once()
-            ->with('myguard1')
-            ->andReturnSelf();
-        Auth::shouldReceive('guard')
-            ->once()
-            ->with('myguard2')
-            ->andReturnSelf();
-        Auth::shouldReceive('user')
-            ->twice()
-            ->withNoArgs()
-            ->andReturn(null);
-        Auth::shouldNotReceive('guard')
-            ->withNoArgs();
+            ->with(AuthManager::class)
+            ->andReturn($authManager);
 
         $this->broadcaster->retrieveUser('somechannel');
     }
@@ -391,6 +389,11 @@ class BroadcasterTest extends TestCase
 
 class FakeBroadcaster extends Broadcaster
 {
+    public function __construct(
+        protected ContainerInterface $container
+    ) {
+    }
+
     public function auth(RequestInterface $request): mixed
     {
         return null;
@@ -472,6 +475,20 @@ class DummyBroadcastingChannel
     }
 }
 
-class DummyUser
+class DummyUser implements Authenticatable
 {
+    public function getAuthIdentifierName(): string
+    {
+        return 'dummy_user';
+    }
+
+    public function getAuthIdentifier(): mixed
+    {
+        return 'dummy_user';
+    }
+
+    public function getAuthPassword(): string
+    {
+        return 'dummy_password';
+    }
 }

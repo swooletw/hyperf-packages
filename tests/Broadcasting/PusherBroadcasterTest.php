@@ -7,15 +7,11 @@ namespace Illuminate\Tests\Broadcasting;
 use Hyperf\HttpServer\Request;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use Pusher\Pusher;
-use stdClass;
-use SwooleTW\Hyperf\Auth\Contracts\FactoryContract;
+use SwooleTW\Hyperf\Auth\AuthManager;
 use SwooleTW\Hyperf\Broadcasting\Broadcasters\PusherBroadcaster;
-use SwooleTW\Hyperf\Foundation\ApplicationContext;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\AccessDeniedHttpException;
-use SwooleTW\Hyperf\Support\Facades\Auth;
-use SwooleTW\Hyperf\Support\Facades\Facade;
-use SwooleTW\Hyperf\Tests\Foundation\Concerns\HasMockedApplication;
 
 /**
  * @internal
@@ -23,23 +19,17 @@ use SwooleTW\Hyperf\Tests\Foundation\Concerns\HasMockedApplication;
  */
 class PusherBroadcasterTest extends TestCase
 {
-    use HasMockedApplication;
-
-    public PusherBroadcaster $broadcaster;
-
-    public Pusher $pusher;
+    protected ContainerInterface $container;
+    protected PusherBroadcaster $broadcaster;
+    protected Pusher $pusher;
 
     protected function setUp(): void
     {
         parent::setUp();
 
+        $this->container = m::mock(ContainerInterface::class);
         $this->pusher = m::mock(Pusher::class);
-        $this->broadcaster = m::mock(PusherBroadcaster::class, [$this->pusher])->makePartial();
-
-        $container = $this->getApplication([
-            FactoryContract::class => fn () => new stdClass(),
-        ]);
-        ApplicationContext::setContainer($container);
+        $this->broadcaster = m::mock(PusherBroadcaster::class, [$this->container, $this->pusher])->makePartial();
     }
 
     protected function tearDown(): void
@@ -47,8 +37,6 @@ class PusherBroadcasterTest extends TestCase
         parent::tearDown();
 
         m::close();
-
-        Facade::clearResolvedInstances();
     }
 
     public function testAuthCallValidAuthenticationResponseWithPrivateChannelWhenCallbackReturnTrue()
@@ -180,8 +168,6 @@ class PusherBroadcasterTest extends TestCase
             ->shouldReceive('authenticateUser')
             ->andReturn(json_encode($authenticateUser));
 
-        $this->broadcaster = new PusherBroadcaster($this->pusher);
-
         $this->broadcaster->resolveAuthenticatedUserUsing(function () {
             return ['id' => '12345'];
         });
@@ -202,7 +188,12 @@ class PusherBroadcasterTest extends TestCase
         $user = m::mock('User');
         $user->shouldReceive('getAuthIdentifier')->andReturn(42);
 
-        Auth::shouldReceive('user')->andReturn($user);
+        $authManager = m::mock(AuthManager::class);
+        $authManager->shouldReceive('user')->andReturn($user);
+
+        $this->container->shouldReceive('get')
+            ->with(AuthManager::class)
+            ->andReturn($authManager);
 
         return $request;
     }
@@ -212,7 +203,12 @@ class PusherBroadcasterTest extends TestCase
         $request = m::mock(Request::class);
         $request->shouldReceive('input')->with('channel_name')->andReturn($channel);
 
-        Auth::shouldReceive('user')->andReturn(null);
+        $authManager = m::mock(AuthManager::class);
+        $authManager->shouldReceive('user')->andReturn(null);
+
+        $this->container->shouldReceive('get')
+            ->with(AuthManager::class)
+            ->andReturn($authManager);
 
         return $request;
     }

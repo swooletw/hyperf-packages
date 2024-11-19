@@ -8,17 +8,16 @@ use Closure;
 use Exception;
 use Hyperf\Collection\Arr;
 use Hyperf\Collection\Collection;
-use Hyperf\Context\ApplicationContext;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use ReflectionClass;
 use ReflectionFunction;
 use ReflectionParameter;
+use SwooleTW\Hyperf\Auth\AuthManager;
 use SwooleTW\Hyperf\Broadcasting\Contracts\Broadcaster as BroadcasterContract;
 use SwooleTW\Hyperf\Broadcasting\Contracts\HasBroadcastChannel;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\AccessDeniedHttpException;
 use SwooleTW\Hyperf\Router\Contracts\UrlRoutable;
 use SwooleTW\Hyperf\Router\Router;
-use SwooleTW\Hyperf\Support\Facades\Auth;
 use SwooleTW\Hyperf\Support\Reflector;
 
 abstract class Broadcaster implements BroadcasterContract
@@ -253,8 +252,8 @@ abstract class Broadcaster implements BroadcasterContract
     // protected function binder()
     // {
     //     if (! $this->bindingRegistrar) {
-    //         $this->bindingRegistrar = ApplicationContext::getContainer()->has(BindingRegistrar::class)
-    //                 ? ApplicationContext::getContainer()->get(BindingRegistrar::class)
+    //         $this->bindingRegistrar = $this->container->has(BindingRegistrar::class)
+    //                 ? $this->container->get(BindingRegistrar::class)
     //                 : null;
     //     }
     //
@@ -271,9 +270,7 @@ abstract class Broadcaster implements BroadcasterContract
     protected function normalizeChannelHandlerToCallable($callback)
     {
         return is_callable($callback) ? $callback : function (...$args) use ($callback) {
-            return ApplicationContext::getContainer()
-                ->get($callback)
-                ->join(...$args);
+            return $this->container->get($callback)->join(...$args);
         };
     }
 
@@ -283,15 +280,16 @@ abstract class Broadcaster implements BroadcasterContract
     protected function retrieveUser(string $channel): mixed
     {
         $options = $this->retrieveChannelOptions($channel);
-
         $guards = $options['guards'] ?? null;
 
+        $auth = $this->container->get(AuthManager::class);
+
         if (is_null($guards)) {
-            return Auth::user();
+            return $auth->user();
         }
 
         foreach (Arr::wrap($guards) as $guard) {
-            $user = Auth::guard($guard)->user();
+            $user = $auth->guard($guard)->user();
             if ($user) {
                 return $user;
             }

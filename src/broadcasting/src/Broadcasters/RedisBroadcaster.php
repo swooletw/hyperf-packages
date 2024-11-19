@@ -8,6 +8,7 @@ use Hyperf\Collection\Arr;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\Pool\Exception\ConnectionException;
 use Hyperf\Redis\RedisFactory;
+use Psr\Container\ContainerInterface;
 use RedisException;
 use SwooleTW\Hyperf\Broadcasting\BroadcastException;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\AccessDeniedHttpException;
@@ -16,26 +17,15 @@ class RedisBroadcaster extends Broadcaster
 {
     use UsePusherChannelConventions;
 
-    protected RedisFactory $factory;
-
-    /**
-     * The Redis connection to use for broadcasting.
-     */
-    protected ?string $connection = null;
-
-    /**
-     * The Redis key prefix.
-     */
-    protected string $prefix = '';
-
     /**
      * Create a new broadcaster instance.
      */
-    public function __construct(RedisFactory $factory, ?string $connection = null, string $prefix = '')
-    {
-        $this->factory = $factory;
-        $this->prefix = $prefix;
-        $this->connection = $connection;
+    public function __construct(
+        protected ContainerInterface $container,
+        protected RedisFactory $factory,
+        protected ?string $connection = null,
+        protected string $prefix = ''
+    ) {
     }
 
     /**

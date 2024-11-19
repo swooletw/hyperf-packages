@@ -5,21 +5,18 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Broadcasting\Broadcasters;
 
 use Hyperf\HttpServer\Contract\RequestInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
 class LogBroadcaster extends Broadcaster
 {
     /**
-     * The logger implementation.
-     */
-    protected LoggerInterface $logger;
-
-    /**
      * Create a new broadcaster instance.
      */
-    public function __construct(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
+    public function __construct(
+        protected ContainerInterface $container,
+        protected LoggerInterface $logger
+    ) {
     }
 
     /**

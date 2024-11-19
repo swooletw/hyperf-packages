@@ -9,22 +9,19 @@ use Ably\Exceptions\AblyException;
 use Ably\Models\Message as AblyMessage;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\Stringable\Str;
+use Psr\Container\ContainerInterface;
 use SwooleTW\Hyperf\Broadcasting\BroadcastException;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\AccessDeniedHttpException;
 
 class AblyBroadcaster extends Broadcaster
 {
     /**
-     * The AblyRest SDK instance.
-     */
-    protected AblyRest $ably;
-
-    /**
      * Create a new broadcaster instance.
      */
-    public function __construct(AblyRest $ably)
-    {
-        $this->ably = $ably;
+    public function __construct(
+        protected ContainerInterface $container,
+        protected AblyRest $ably,
+    ) {
     }
 
     /**

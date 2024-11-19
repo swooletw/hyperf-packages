@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Tests\Broadcasting;
 
 use Hyperf\HttpServer\Request;
+use Hyperf\Redis\RedisFactory;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use stdClass;
+use SwooleTW\Hyperf\Auth\AuthManager;
 use SwooleTW\Hyperf\Auth\Contracts\FactoryContract;
 use SwooleTW\Hyperf\Broadcasting\Broadcasters\RedisBroadcaster;
 use SwooleTW\Hyperf\Foundation\ApplicationContext;
@@ -24,18 +27,16 @@ class RedisBroadcasterTest extends TestCase
 {
     use HasMockedApplication;
 
-    public RedisBroadcaster $broadcaster;
+    protected RedisBroadcaster $broadcaster;
+    protected ContainerInterface $container;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->broadcaster = m::mock(RedisBroadcaster::class)->makePartial();
-
-        $container = $this->getApplication([
-            FactoryContract::class => fn () => new stdClass(),
-        ]);
-        ApplicationContext::setContainer($container);
+        $this->container = m::mock(ContainerInterface::class);
+        $factory = m::mock(RedisFactory::class);
+        $this->broadcaster = m::mock(RedisBroadcaster::class, [$this->container, $factory])->makePartial();
     }
 
     protected function tearDown(): void
@@ -165,7 +166,12 @@ class RedisBroadcasterTest extends TestCase
         $user = m::mock('User');
         $user->shouldReceive('getAuthIdentifier')->andReturn(42);
 
-        Auth::shouldReceive('user')->andReturn($user);
+        $authManager = m::mock(AuthManager::class);
+        $authManager->shouldReceive('user')->andReturn($user);
+
+        $this->container->shouldReceive('get')
+            ->with(AuthManager::class)
+            ->andReturn($authManager);
 
         return $request;
     }
@@ -175,7 +181,12 @@ class RedisBroadcasterTest extends TestCase
         $request = m::mock(Request::class);
         $request->shouldReceive('input')->with('channel_name')->andReturn($channel);
 
-        Auth::shouldReceive('user')->andReturn(null);
+        $authManager = m::mock(AuthManager::class);
+        $authManager->shouldReceive('user')->andReturn(null);
+
+        $this->container->shouldReceive('get')
+            ->with(AuthManager::class)
+            ->andReturn($authManager);
 
         return $request;
     }

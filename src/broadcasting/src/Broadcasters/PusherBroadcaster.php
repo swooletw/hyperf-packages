@@ -7,6 +7,7 @@ namespace SwooleTW\Hyperf\Broadcasting\Broadcasters;
 use Hyperf\Collection\Arr;
 use Hyperf\Collection\Collection;
 use Hyperf\HttpServer\Contract\RequestInterface;
+use Psr\Container\ContainerInterface;
 use Pusher\ApiErrorException;
 use Pusher\Pusher;
 use SwooleTW\Hyperf\Broadcasting\BroadcastException;
@@ -15,18 +16,13 @@ use SwooleTW\Hyperf\HttpMessage\Exceptions\AccessDeniedHttpException;
 class PusherBroadcaster extends Broadcaster
 {
     use UsePusherChannelConventions;
-
-    /**
-     * The Pusher SDK instance.
-     */
-    protected Pusher $pusher;
-
     /**
      * Create a new broadcaster instance.
      */
-    public function __construct(Pusher $pusher)
-    {
-        $this->pusher = $pusher;
+    public function __construct(
+        protected ContainerInterface $container,
+        protected Pusher $pusher
+    ) {
     }
 
     /**
