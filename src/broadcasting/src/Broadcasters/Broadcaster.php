@@ -190,7 +190,7 @@ abstract class Broadcaster implements BroadcasterContract
      */
     protected function resolveExplicitBindingIfPossible(string $key, string $value): mixed
     {
-        // DOTO: 實作 \Illuminate\Contracts\Routing\BindingRegistrar
+        // TODO: 實作 \Illuminate\Contracts\Routing\BindingRegistrar
         // $binder = $this->binder();
 
         // if ($binder && $binder->getBindingCallback($key)) {
@@ -243,7 +243,7 @@ abstract class Broadcaster implements BroadcasterContract
         }, $channels);
     }
 
-    // DOTO: 實作 \Illuminate\Contracts\Routing\BindingRegistrar
+    // TODO: 實作 \Illuminate\Contracts\Routing\BindingRegistrar
     /**
      * Get the model binding registrar instance.
      *

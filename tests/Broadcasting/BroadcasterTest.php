@@ -83,7 +83,7 @@ class BroadcasterTest extends TestCase
         /*
          * Test Explicit Binding...
          */
-        // DOTO: 要等 binder 實作
+        // TODO: 要等 binder 實作
         // $container = new Container;
         // Container::setInstance($container);
         // $binder = m::mock(BindingRegistrar::class);
@@ -105,7 +105,7 @@ class BroadcasterTest extends TestCase
         $this->assertEquals(['model.1.instance', 'something'], $parameters);
     }
 
-    // DOTO: 要等 binder 實作
+    // TODO: 要等 binder 實作
     // public function testModelRouteBinding()
     // {
     //     $container = new Container;
