@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Broadcasting;
 
+use Hyperf\Collection\Arr;
+use Hyperf\Contract\Arrayable;
 use SwooleTW\Hyperf\Broadcasting\Contracts\ShouldBroadcast;
 use SwooleTW\Hyperf\Broadcasting\InteractsWithBroadcasting;
 use SwooleTW\Hyperf\Foundation\Events\Dispatchable;
@@ -39,8 +41,6 @@ class AnonymousEvent implements ShouldBroadcast
 
     /**
      * Create a new anonymous broadcastable event instance.
-     *
-     * @return void
      */
     public function __construct(protected Channel|array|string $channels)
     {

@@ -9,6 +9,7 @@ use Exception;
 use Hyperf\Collection\Arr;
 use Hyperf\Collection\Collection;
 use Hyperf\HttpServer\Contract\RequestInterface;
+use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionFunction;
 use ReflectionParameter;
@@ -22,6 +23,11 @@ use SwooleTW\Hyperf\Support\Reflector;
 
 abstract class Broadcaster implements BroadcasterContract
 {
+    /**
+     * The container instance.
+     */
+    protected ContainerInterface $container;
+
     /**
      * The callback to resolve the authenticated user information.
      */

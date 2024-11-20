@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Broadcasting;
 
+use Psr\Container\ContainerInterface;
+use SwooleTW\Hyperf\Cache\Contracts\Factory as Cache;
 use SwooleTW\Hyperf\Cache\Contracts\Repository;
-use SwooleTW\Hyperf\Foundation\ApplicationContext;
 
 // TODO: wait queue
 // use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -14,6 +15,11 @@ use SwooleTW\Hyperf\Foundation\ApplicationContext;
 // class UniqueBroadcastEvent extends BroadcastEvent implements ShouldBeUnique
 class UniqueBroadcastEvent extends BroadcastEvent
 {
+    /**
+     * The container instance.
+     */
+    public ContainerInterface $container;
+
     /**
      * The unique lock identifier.
      */
@@ -27,8 +33,10 @@ class UniqueBroadcastEvent extends BroadcastEvent
     /**
      * Create a new event instance.
      */
-    public function __construct(mixed $event)
+    public function __construct(ContainerInterface $container, mixed $event)
     {
+        $this->container = $container;
+
         $this->uniqueId = get_class($event);
 
         if (method_exists($event, 'uniqueId')) {
@@ -54,6 +62,6 @@ class UniqueBroadcastEvent extends BroadcastEvent
         // TODO: Repository 好像沒有註冊在 SwooleTW\Hyperf\Foundation\Application@registerCoreContainerAliases
         return method_exists($this->event, 'uniqueVia')
             ? $this->event->uniqueVia()
-            : ApplicationContext::getContainer()->get(Repository::class);
+            : $this->container->get(Cache::class);
     }
 }
