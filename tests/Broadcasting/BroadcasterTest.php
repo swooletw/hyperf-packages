@@ -70,24 +70,6 @@ class BroadcasterTest extends TestCase
         };
         $parameters = $this->broadcaster->extractAuthParameters('asd', 'asd', $callback);
         $this->assertEquals([], $parameters);
-
-        /*
-         * Test Explicit Binding...
-         */
-        // TODO: 要等 binder 實作
-        // $container = new Container;
-        // Container::setInstance($container);
-        // $binder = m::mock(BindingRegistrar::class);
-        // $binder->shouldReceive('getBindingCallback')->times(2)->with('model')->andReturn(function () {
-        //     return 'bound';
-        // });
-        // $container->instance(BindingRegistrar::class, $binder);
-        // $callback = function ($user, $model) {
-        //     //
-        // };
-        // $parameters = $this->broadcaster->extractAuthParameters('something.{model}', 'something.1', $callback);
-        // $this->assertEquals(['bound'], $parameters);
-        // Container::setInstance(new Container);
     }
 
     public function testCanUseChannelClasses()
@@ -95,24 +77,6 @@ class BroadcasterTest extends TestCase
         $parameters = $this->broadcaster->extractAuthParameters('asd.{model}.{nonModel}', 'asd.1.something', DummyBroadcastingChannel::class);
         $this->assertEquals(['model.1.instance', 'something'], $parameters);
     }
-
-    // TODO: 要等 binder 實作
-    // public function testModelRouteBinding()
-    // {
-    //     $container = new Container;
-    //     Container::setInstance($container);
-    //     $binder = m::mock(BindingRegistrar::class);
-    //     $callback = RouteBinding::forModel($container, BroadcasterTestEloquentModelStub::class);
-    //
-    //     $binder->shouldReceive('getBindingCallback')->times(2)->with('model')->andReturn($callback);
-    //     $container->instance(BindingRegistrar::class, $binder);
-    //     $callback = function ($user, $model) {
-    //         //
-    //     };
-    //     $parameters = $this->broadcaster->extractAuthParameters('something.{model}', 'something.1', $callback);
-    //     $this->assertEquals(['model.1.instance'], $parameters);
-    //     Container::setInstance(new Container);
-    // }
 
     public function testUnknownChannelAuthHandlerTypeThrowsException()
     {
