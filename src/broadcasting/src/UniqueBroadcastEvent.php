@@ -6,7 +6,6 @@ namespace SwooleTW\Hyperf\Broadcasting;
 
 use Psr\Container\ContainerInterface;
 use SwooleTW\Hyperf\Cache\Contracts\Factory as Cache;
-use SwooleTW\Hyperf\Cache\Contracts\Repository;
 
 // TODO: wait queue
 // use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -57,9 +56,8 @@ class UniqueBroadcastEvent extends BroadcastEvent
     /**
      * Resolve the cache implementation that should manage the event's uniqueness.
      */
-    public function uniqueVia(): Repository
+    public function uniqueVia(): Cache
     {
-        // TODO: Repository 好像沒有註冊在 SwooleTW\Hyperf\Foundation\Application@registerCoreContainerAliases
         return method_exists($this->event, 'uniqueVia')
             ? $this->event->uniqueVia()
             : $this->container->get(Cache::class);

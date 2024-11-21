@@ -181,28 +181,11 @@ abstract class Broadcaster implements BroadcasterContract
      */
     protected function resolveBinding(string $key, string $value, array $callbackParameters): mixed
     {
-        $newValue = $this->resolveExplicitBindingIfPossible($key, $value);
-
-        return $newValue === $value ? $this->resolveImplicitBindingIfPossible(
+        return $this->resolveImplicitBindingIfPossible(
             $key,
             $value,
             $callbackParameters
-        ) : $newValue;
-    }
-
-    /**
-     * Resolve an explicit parameter binding if applicable.
-     */
-    protected function resolveExplicitBindingIfPossible(string $key, string $value): mixed
-    {
-        // TODO: 實作 \Illuminate\Contracts\Routing\BindingRegistrar
-        // $binder = $this->binder();
-
-        // if ($binder && $binder->getBindingCallback($key)) {
-        //     return call_user_func($binder->getBindingCallback($key), $value);
-        // }
-
-        return $value;
+        );
     }
 
     /**
@@ -247,25 +230,6 @@ abstract class Broadcaster implements BroadcasterContract
             return (string) $channel;
         }, $channels);
     }
-
-    // TODO: 實作 \Illuminate\Contracts\Routing\BindingRegistrar
-    /**
-     * Get the model binding registrar instance.
-     *
-     * @param mixed $callback
-     * @return \Illuminate\Contracts\Routing\BindingRegistrar
-     */
-    // protected function binder()
-    // {
-    //     if (! $this->bindingRegistrar) {
-    //         $this->bindingRegistrar = $this->container->has(BindingRegistrar::class)
-    //                 ? $this->container->get(BindingRegistrar::class)
-    //                 : null;
-    //     }
-    //
-    //     return $this->bindingRegistrar;
-    //     return null;
-    // }
 
     /**
      * Normalize the given callback into a callable.
