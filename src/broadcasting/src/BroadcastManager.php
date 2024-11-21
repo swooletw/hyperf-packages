@@ -339,7 +339,7 @@ class BroadcastManager implements FactoryContract
             $this->app,
             $this->app->get(RedisFactory::class),
             $config['connection'] ?? null,
-            $this->app->get(ConfigInterface::class)->set('database.redis.options.prefix', ''),
+            $this->app->get(ConfigInterface::class)->get('database.redis.options.prefix', ''),
         );
     }
 
@@ -368,7 +368,7 @@ class BroadcastManager implements FactoryContract
      * @param  string  $name
      * @return array
      */
-    protected function getConfig(string $name): array
+    protected function getConfig(string $name): ?array
     {
         if (! is_null($name) && $name !== 'null') {
             return $this->app->get(ConfigInterface::class)->get("broadcasting.connections.{$name}");
