@@ -87,7 +87,6 @@ class UsePusherChannelsNamesTest extends TestCase
         $tests[] = ['presence-private-test', 'private-test', true];
         $tests[] = ['presence-presence-test', 'presence-test', true];
         $tests[] = ['public-test', 'public-test', false];
-        dd($tests);
 
         return $tests;
     }
