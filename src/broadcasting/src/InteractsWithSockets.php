@@ -11,7 +11,7 @@ trait InteractsWithSockets
     /**
      * The socket ID for the user that raised the event.
      */
-    public ?string $socket;
+    public ?string $socket = null;
 
     /**
      * Exclude the current user from receiving the broadcast.

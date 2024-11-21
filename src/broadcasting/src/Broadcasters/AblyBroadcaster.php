@@ -104,10 +104,9 @@ class AblyBroadcaster extends Broadcaster
     {
         try {
             foreach ($this->formatChannels($channels) as $channel) {
-                // @phpstan-ignore-line
-                $this->ably->channels->get($channel)->publish(
-                    $this->buildAblyMessage($event, $payload)
-                );
+                $this->ably->channels->get($channel)->publish(  // @phpstan-ignore-line
+                    $this->buildAblyMessage($event, $payload)   // @phpstan-ignore-line
+                );                                              // @phpstan-ignore-line
             }
         } catch (AblyException $e) {
             throw new BroadcastException(

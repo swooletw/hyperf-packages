@@ -23,7 +23,7 @@ class BroadcastController
      *
      * See: https://pusher.com/docs/channels/server_api/authenticating-users/#user-authentication.
      *
-     * @throws \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException
+     * @throws AccessDeniedHttpException
      */
     public function authenticateUser(RequestInterface $request): array
     {

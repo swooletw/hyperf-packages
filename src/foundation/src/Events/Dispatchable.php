@@ -21,9 +21,7 @@ trait Dispatchable
      */
     public static function dispatchIf(bool $boolean, mixed ...$arguments): mixed
     {
-        if ($boolean) {
-            return event(new static(...$arguments));
-        }
+        return $boolean ? event(new static(...$arguments)) : null;
     }
 
     /**
@@ -31,9 +29,7 @@ trait Dispatchable
      */
     public static function dispatchUnless(bool $boolean, mixed ...$arguments): mixed
     {
-        if (! $boolean) {
-            return event(new static(...$arguments));
-        }
+        return $boolean ? null : event(new static(...$arguments));
     }
 
     /**

@@ -80,9 +80,9 @@ class TestEvent implements ShouldBroadcast
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return Channel|Channel[]|string|string[]
+     * @return Channel[]|string[]
      */
-    public function broadcastOn(): array|Channel|string
+    public function broadcastOn(): array
     {
         return [];
     }
@@ -93,9 +93,9 @@ class TestEventNow implements ShouldBroadcastNow
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return Channel|Channel[]|string|string[]
+     * @return Channel[]|string[]
      */
-    public function broadcastOn(): array|Channel|string
+    public function broadcastOn(): array
     {
         return [];
     }
@@ -106,9 +106,9 @@ class TestEventUnique implements ShouldBroadcast, ShouldBeUnique
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return Channel|Channel[]|string|string[]
+     * @return Channel[]|string[]
      */
-    public function broadcastOn(): array|Channel|string
+    public function broadcastOn(): array
     {
         return [];
     }
