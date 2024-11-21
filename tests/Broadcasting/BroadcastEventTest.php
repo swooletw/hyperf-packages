@@ -11,6 +11,10 @@ use SwooleTW\Hyperf\Broadcasting\Contracts\Broadcaster;
 use SwooleTW\Hyperf\Broadcasting\Contracts\Factory as BroadcastingFactory;
 use SwooleTW\Hyperf\Broadcasting\InteractsWithBroadcasting;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class BroadcastEventTest extends TestCase
 {
     protected function tearDown(): void
@@ -23,14 +27,16 @@ class BroadcastEventTest extends TestCase
         $broadcaster = m::mock(Broadcaster::class);
 
         $broadcaster->shouldReceive('broadcast')->once()->with(
-            ['test-channel'], TestBroadcastEvent::class, ['firstName' => 'Taylor', 'lastName' => 'Otwell', 'collection' => ['foo' => 'bar']]
+            ['test-channel'],
+            TestBroadcastEvent::class,
+            ['firstName' => 'Taylor', 'lastName' => 'Otwell', 'collection' => ['foo' => 'bar']]
         );
 
         $manager = m::mock(BroadcastingFactory::class);
 
         $manager->shouldReceive('connection')->once()->with(null)->andReturn($broadcaster);
 
-        $event = new TestBroadcastEvent;
+        $event = new TestBroadcastEvent();
 
         (new BroadcastEvent($event))->handle($manager);
     }
@@ -40,14 +46,16 @@ class BroadcastEventTest extends TestCase
         $broadcaster = m::mock(Broadcaster::class);
 
         $broadcaster->shouldReceive('broadcast')->once()->with(
-            ['test-channel'], TestBroadcastEventWithManualData::class, ['name' => 'Taylor', 'socket' => null]
+            ['test-channel'],
+            TestBroadcastEventWithManualData::class,
+            ['name' => 'Taylor', 'socket' => null]
         );
 
         $manager = m::mock(BroadcastingFactory::class);
 
         $manager->shouldReceive('connection')->once()->with(null)->andReturn($broadcaster);
 
-        $event = new TestBroadcastEventWithManualData;
+        $event = new TestBroadcastEventWithManualData();
 
         (new BroadcastEvent($event))->handle($manager);
     }
@@ -62,7 +70,7 @@ class BroadcastEventTest extends TestCase
 
         $manager->shouldReceive('connection')->once()->with('log')->andReturn($broadcaster);
 
-        $event = new TestBroadcastEventWithSpecificBroadcaster;
+        $event = new TestBroadcastEventWithSpecificBroadcaster();
 
         (new BroadcastEvent($event))->handle($manager);
     }
@@ -71,8 +79,11 @@ class BroadcastEventTest extends TestCase
 class TestBroadcastEvent
 {
     public $firstName = 'Taylor';
+
     public $lastName = 'Otwell';
+
     public $collection;
+
     private $title = 'Developer';
 
     public function __construct()

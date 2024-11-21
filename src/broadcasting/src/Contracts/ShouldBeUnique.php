@@ -6,5 +6,4 @@ namespace SwooleTW\Hyperf\Broadcasting\Contracts;
 
 interface ShouldBeUnique
 {
-    //
 }

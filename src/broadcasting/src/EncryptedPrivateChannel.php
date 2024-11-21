@@ -11,6 +11,6 @@ class EncryptedPrivateChannel extends Channel
      */
     public function __construct(string $name)
     {
-        parent::__construct('private-encrypted-'.$name);
+        parent::__construct('private-encrypted-' . $name);
     }
 }

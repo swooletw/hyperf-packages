@@ -28,6 +28,7 @@ use SwooleTW\Hyperf\HttpMessage\Exceptions\HttpException;
 class BroadcasterTest extends TestCase
 {
     protected ContainerInterface $container;
+
     protected FakeBroadcaster $broadcaster;
 
     protected function setUp(): void

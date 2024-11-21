@@ -7,12 +7,13 @@ namespace SwooleTW\Hyperf\Broadcasting;
 use Hyperf\Collection\Arr;
 use Hyperf\Contract\Arrayable;
 use SwooleTW\Hyperf\Broadcasting\Contracts\ShouldBroadcast;
-use SwooleTW\Hyperf\Broadcasting\InteractsWithBroadcasting;
 use SwooleTW\Hyperf\Foundation\Events\Dispatchable;
 
 class AnonymousEvent implements ShouldBroadcast
 {
-    use Dispatchable, InteractsWithBroadcasting, InteractsWithSockets;
+    use Dispatchable;
+    use InteractsWithBroadcasting;
+    use InteractsWithSockets;
 
     /**
      * The connection the event should be broadcast on.
@@ -42,7 +43,7 @@ class AnonymousEvent implements ShouldBroadcast
     /**
      * Create a new anonymous broadcastable event instance.
      */
-    public function __construct(protected Channel|array|string $channels)
+    public function __construct(protected array|Channel|string $channels)
     {
         $this->channels = Arr::wrap($channels);
     }
@@ -70,7 +71,7 @@ class AnonymousEvent implements ShouldBroadcast
     /**
      * Set the payload the event should be broadcast with.
      */
-    public function with(Arrayable|array $payload): static
+    public function with(array|Arrayable $payload): static
     {
         $this->payload = $payload instanceof Arrayable
             ? $payload->toArray()
@@ -134,9 +135,9 @@ class AnonymousEvent implements ShouldBroadcast
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return Channel|Channel[]|string[]|string
+     * @return Channel|Channel[]|string|string[]
      */
-    public function broadcastOn(): Channel|array
+    public function broadcastOn(): array|Channel
     {
         return $this->channels;
     }

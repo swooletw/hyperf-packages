@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Broadcasting\Contracts;
 
-use SwooleTW\Hyperf\Broadcasting\Contracts\Broadcaster;
-
 interface Factory
 {
     /**

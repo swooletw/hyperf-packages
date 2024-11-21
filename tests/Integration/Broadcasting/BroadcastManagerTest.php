@@ -15,6 +15,10 @@ use SwooleTW\Hyperf\Broadcasting\Contracts\ShouldBeUnique;
 use SwooleTW\Hyperf\Broadcasting\Contracts\ShouldBroadcast;
 use SwooleTW\Hyperf\Broadcasting\Contracts\ShouldBroadcastNow;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class BroadcastManagerTest extends TestCase
 {
     // TODO: waiting for queue implementation
@@ -76,9 +80,9 @@ class TestEvent implements ShouldBroadcast
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return Channel|Channel[]|string[]|string
+     * @return Channel|Channel[]|string|string[]
      */
-    public function broadcastOn(): Channel|string|array
+    public function broadcastOn(): array|Channel|string
     {
         return [];
     }
@@ -89,9 +93,9 @@ class TestEventNow implements ShouldBroadcastNow
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return Channel|Channel[]|string[]|string
+     * @return Channel|Channel[]|string|string[]
      */
-    public function broadcastOn(): Channel|string|array
+    public function broadcastOn(): array|Channel|string
     {
         return [];
     }
@@ -102,9 +106,9 @@ class TestEventUnique implements ShouldBroadcast, ShouldBeUnique
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return Channel|Channel[]|string[]|string
+     * @return Channel|Channel[]|string|string[]
      */
-    public function broadcastOn(): Channel|string|array
+    public function broadcastOn(): array|Channel|string
     {
         return [];
     }

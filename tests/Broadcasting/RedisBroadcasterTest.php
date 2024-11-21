@@ -9,13 +9,9 @@ use Hyperf\Redis\RedisFactory;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
-use stdClass;
 use SwooleTW\Hyperf\Auth\AuthManager;
-use SwooleTW\Hyperf\Auth\Contracts\FactoryContract;
 use SwooleTW\Hyperf\Broadcasting\Broadcasters\RedisBroadcaster;
-use SwooleTW\Hyperf\Foundation\ApplicationContext;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\AccessDeniedHttpException;
-use SwooleTW\Hyperf\Support\Facades\Auth;
 use SwooleTW\Hyperf\Support\Facades\Facade;
 use SwooleTW\Hyperf\Tests\Foundation\Concerns\HasMockedApplication;
 
@@ -28,6 +24,7 @@ class RedisBroadcasterTest extends TestCase
     use HasMockedApplication;
 
     protected RedisBroadcaster $broadcaster;
+
     protected ContainerInterface $container;
 
     protected function setUp(): void

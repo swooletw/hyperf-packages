@@ -38,7 +38,7 @@ class BroadcastEvent
     public ?int $backoff;
 
     /**
-     * Indicate that the event should be dispatched after all open database transactions have been committed
+     * Indicate that the event should be dispatched after all open database transactions have been committed.
      */
     public ?bool $afterCommit;
 
@@ -83,7 +83,9 @@ class BroadcastEvent
 
         foreach ($connections as $connection) {
             $manager->connection($connection)->broadcast(
-                $channels, $name, $payload
+                $channels,
+                $name,
+                $payload
             );
         }
     }

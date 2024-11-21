@@ -71,8 +71,8 @@ class BroadcastManager implements FactoryContract
 
         $this->app->get(DispatcherFactory::class)->getRouter()
             ->group($attributes, function ($router) {
-                $router->get('/broadcasting/auth', '\\'.BroadcastController::class.'@authenticate');
-                $router->post('/broadcasting/auth', '\\'.BroadcastController::class.'@authenticate');
+                $router->get('/broadcasting/auth', '\\' . BroadcastController::class . '@authenticate');
+                $router->post('/broadcasting/auth', '\\' . BroadcastController::class . '@authenticate');
             });
     }
 
@@ -85,8 +85,8 @@ class BroadcastManager implements FactoryContract
 
         $this->app->get(DispatcherFactory::class)->getRouter()
             ->group($attributes, function ($router) {
-                $router->get('/broadcasting/user-auth', '\\'.BroadcastController::class.'@authenticateUser');
-                $router->post('/broadcasting/user-auth', '\\'.BroadcastController::class.'@authenticateUser');
+                $router->get('/broadcasting/user-auth', '\\' . BroadcastController::class . '@authenticateUser');
+                $router->post('/broadcasting/user-auth', '\\' . BroadcastController::class . '@authenticateUser');
             });
     }
 
@@ -113,7 +113,7 @@ class BroadcastManager implements FactoryContract
     /**
      * Begin sending an anonymous broadcast to the given channels.
      */
-    public function on(Channel|string|array $channels): AnonymousEvent
+    public function on(array|Channel|string $channels): AnonymousEvent
     {
         return new AnonymousEvent($channels);
     }
@@ -236,11 +236,10 @@ class BroadcastManager implements FactoryContract
                 $config['pool'] ?? []
             )
             : $this->doResolve($config);
-
     }
 
     /**
-     * Resolve the given broadcaster
+     * Resolve the given broadcaster.
      *
      * @throws InvalidArgumentException
      */
@@ -250,7 +249,7 @@ class BroadcastManager implements FactoryContract
             return $this->callCustomCreator($config);
         }
 
-        $driverMethod = 'create'.ucfirst($config['driver']).'Driver';
+        $driverMethod = 'create' . ucfirst($config['driver']) . 'Driver';
 
         if (! method_exists($this, $driverMethod)) {
             throw new InvalidArgumentException("Driver [{$config['driver']}] is not supported.");
@@ -359,14 +358,11 @@ class BroadcastManager implements FactoryContract
      */
     protected function createNullDriver(array $config): Broadcaster
     {
-        return new NullBroadcaster;
+        return new NullBroadcaster();
     }
 
     /**
      * Get the connection configuration.
-     *
-     * @param  string  $name
-     * @return array
      */
     protected function getConfig(string $name): ?array
     {
@@ -446,6 +442,6 @@ class BroadcastManager implements FactoryContract
      */
     public function __call(string $method, array $parameters): mixed
     {
-        return $this->driver()->$method(...$parameters);
+        return $this->driver()->{$method}(...$parameters);
     }
 }

@@ -20,7 +20,9 @@ use SwooleTW\Hyperf\HttpMessage\Exceptions\AccessDeniedHttpException;
 class AblyBroadcasterTest extends TestCase
 {
     protected AblyBroadcaster $broadcaster;
+
     protected AblyRest $ably;
+
     protected ContainerInterface $container;
 
     protected function setUp(): void

@@ -16,6 +16,7 @@ use SwooleTW\Hyperf\HttpMessage\Exceptions\AccessDeniedHttpException;
 class PusherBroadcaster extends Broadcaster
 {
     use UsePusherChannelConventions;
+
     /**
      * Create a new broadcaster instance.
      */

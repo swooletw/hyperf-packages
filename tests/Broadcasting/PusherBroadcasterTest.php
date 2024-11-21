@@ -20,7 +20,9 @@ use SwooleTW\Hyperf\HttpMessage\Exceptions\AccessDeniedHttpException;
 class PusherBroadcasterTest extends TestCase
 {
     protected ContainerInterface $container;
+
     protected PusherBroadcaster $broadcaster;
+
     protected Pusher $pusher;
 
     protected function setUp(): void

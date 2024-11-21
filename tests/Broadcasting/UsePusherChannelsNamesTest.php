@@ -10,12 +10,16 @@ use PHPUnit\Framework\TestCase;
 use SwooleTW\Hyperf\Broadcasting\Broadcasters\Broadcaster;
 use SwooleTW\Hyperf\Broadcasting\Broadcasters\UsePusherChannelConventions;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class UsePusherChannelsNamesTest extends TestCase
 {
     #[DataProvider('channelsProvider')]
     public function testChannelNameNormalization($requestChannelName, $normalizedName)
     {
-        $broadcaster = new FakeBroadcasterUsingPusherChannelsNames;
+        $broadcaster = new FakeBroadcasterUsingPusherChannelsNames();
 
         $this->assertSame(
             $normalizedName,
@@ -25,7 +29,7 @@ class UsePusherChannelsNamesTest extends TestCase
 
     public function testChannelNameNormalizationSpecialCase()
     {
-        $broadcaster = new FakeBroadcasterUsingPusherChannelsNames;
+        $broadcaster = new FakeBroadcasterUsingPusherChannelsNames();
 
         $this->assertSame(
             'private-123',
@@ -36,7 +40,7 @@ class UsePusherChannelsNamesTest extends TestCase
     #[DataProvider('channelsProvider')]
     public function testIsGuardedChannel($requestChannelName, $_, $guarded)
     {
-        $broadcaster = new FakeBroadcasterUsingPusherChannelsNames;
+        $broadcaster = new FakeBroadcasterUsingPusherChannelsNames();
 
         $this->assertSame(
             $guarded,
@@ -71,7 +75,7 @@ class UsePusherChannelsNamesTest extends TestCase
         foreach ($prefixesInfos as $prefixInfos) {
             foreach ($channels as $channel) {
                 $tests[] = [
-                    $prefixInfos['prefix'].$channel,
+                    $prefixInfos['prefix'] . $channel,
                     $channel,
                     $prefixInfos['guarded'],
                 ];
