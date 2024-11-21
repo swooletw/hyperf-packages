@@ -18,7 +18,6 @@ use SwooleTW\Hyperf\Broadcasting\Contracts\Broadcaster as BroadcasterContract;
 use SwooleTW\Hyperf\Broadcasting\Contracts\HasBroadcastChannel;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\AccessDeniedHttpException;
 use SwooleTW\Hyperf\Router\Contracts\UrlRoutable;
-use SwooleTW\Hyperf\Router\Router;
 use SwooleTW\Hyperf\Support\Reflector;
 
 abstract class Broadcaster implements BroadcasterContract
@@ -42,11 +41,6 @@ abstract class Broadcaster implements BroadcasterContract
      * The registered channel options.
      */
     protected array $channelOptions = [];
-
-    /**
-     * The binding registrar instance.
-     */
-    protected Router $bindingRegistrar;
 
     /**
      * Resolve the authenticated user payload for the incoming connection request.
