@@ -134,12 +134,11 @@ abstract class Broadcaster implements BroadcasterContract
      */
     protected function extractParameters(callable|string $callback): array
     {
-        if (is_callable($callback)) {
-            return (new ReflectionFunction($callback))->getParameters();
-        }
-        if (is_string($callback)) {
-            return $this->extractParametersFromClass($callback);
-        }
+        return match (true) {
+            is_callable($callback) => (new ReflectionFunction($callback))->getParameters(),
+            is_string($callback) => $this->extractParametersFromClass($callback),
+            default => [],
+        };
     }
 
     /**

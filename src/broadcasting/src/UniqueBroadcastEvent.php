@@ -22,7 +22,7 @@ class UniqueBroadcastEvent extends BroadcastEvent
     /**
      * The unique lock identifier.
      */
-    public mixed $uniqueId;
+    public string $uniqueId;
 
     /**
      * The number of seconds the unique lock should be maintained.

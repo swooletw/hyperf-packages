@@ -53,11 +53,11 @@ class BroadcastEvent
     public function __construct(mixed $event)
     {
         $this->event = $event;
-        $this->tries = property_exists($event, 'tries') ? $event->tries : null;
-        $this->timeout = property_exists($event, 'timeout') ? $event->timeout : null;
-        $this->backoff = property_exists($event, 'backoff') ? $event->backoff : null;
-        $this->afterCommit = property_exists($event, 'afterCommit') ? $event->afterCommit : null;
-        $this->maxExceptions = property_exists($event, 'maxExceptions') ? $event->maxExceptions : null;
+        $this->tries = $event->tries ?? null;
+        $this->timeout = $event->timeout ?? null;
+        $this->backoff = $event->backoff ?? null;
+        $this->afterCommit = $event->afterCommit ?? null;
+        $this->maxExceptions = $event->maxExceptions ?? null;
     }
 
     /**

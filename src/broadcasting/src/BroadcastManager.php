@@ -9,7 +9,7 @@ use Closure;
 use GuzzleHttp\Client as GuzzleClient;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\HttpServer\Contract\RequestInterface;
-use Hyperf\HttpServer\Router\DispatcherFactory;
+use Hyperf\HttpServer\Router\DispatcherFactory as RouterDispatcherFactory;
 use Hyperf\Redis\RedisFactory;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
@@ -22,7 +22,7 @@ use SwooleTW\Hyperf\Broadcasting\Broadcasters\NullBroadcaster;
 use SwooleTW\Hyperf\Broadcasting\Broadcasters\PusherBroadcaster;
 use SwooleTW\Hyperf\Broadcasting\Broadcasters\RedisBroadcaster;
 use SwooleTW\Hyperf\Broadcasting\Contracts\Broadcaster;
-use SwooleTW\Hyperf\Broadcasting\Contracts\Factory as FactoryContract;
+use SwooleTW\Hyperf\Broadcasting\Contracts\Factory as BroadcastingFactoryContract;
 use SwooleTW\Hyperf\Broadcasting\Contracts\ShouldBeUnique;
 // use SwooleTW\Hyperf\Broadcasting\Contracts\ShouldBroadcastNow;
 use SwooleTW\Hyperf\ObjectPool\Traits\HasPoolProxy;
@@ -30,7 +30,7 @@ use SwooleTW\Hyperf\ObjectPool\Traits\HasPoolProxy;
 /**
  * @mixin Broadcaster
  */
-class BroadcastManager implements FactoryContract
+class BroadcastManager implements BroadcastingFactoryContract
 {
     use HasPoolProxy;
 
@@ -69,11 +69,13 @@ class BroadcastManager implements FactoryContract
     {
         $attributes = $attributes ?: ['middleware' => ['web']];
 
-        $this->app->get(DispatcherFactory::class)->getRouter()
-            ->group($attributes, function ($router) {
-                $router->get('/broadcasting/auth', '\\' . BroadcastController::class . '@authenticate');
-                $router->post('/broadcasting/auth', '\\' . BroadcastController::class . '@authenticate');
-            });
+        $this->app->get(RouterDispatcherFactory::class)->getRouter()
+            ->addRoute(
+                ['GET', 'POST'],
+                '/broadcasting/auth',
+                [BroadcastController::class, 'authenticate'],
+                $attributes,
+            );
     }
 
     /**
@@ -83,11 +85,13 @@ class BroadcastManager implements FactoryContract
     {
         $attributes = $attributes ?: ['middleware' => ['web']];
 
-        $this->app->get(DispatcherFactory::class)->getRouter()
-            ->group($attributes, function ($router) {
-                $router->get('/broadcasting/user-auth', '\\' . BroadcastController::class . '@authenticateUser');
-                $router->post('/broadcasting/user-auth', '\\' . BroadcastController::class . '@authenticateUser');
-            });
+        $this->app->get(RouterDispatcherFactory::class)->getRouter()
+            ->addRoute(
+                ['GET', 'POST'],
+                '/broadcasting/user-auth',
+                [BroadcastController::class, 'authenticateUser'],
+                $attributes,
+            );
     }
 
     /**
@@ -115,7 +119,7 @@ class BroadcastManager implements FactoryContract
      */
     public function on(array|Channel|string $channels): AnonymousEvent
     {
-        return new AnonymousEvent($channels);
+        return new AnonymousEvent($this, $channels);
     }
 
     /**
@@ -347,10 +351,7 @@ class BroadcastManager implements FactoryContract
      */
     protected function createLogDriver(array $config): Broadcaster
     {
-        return new LogBroadcaster(
-            $this->app,
-            $this->app->get(LoggerInterface::class)
-        );
+        return new LogBroadcaster($this->app->get(LoggerInterface::class));
     }
 
     /**

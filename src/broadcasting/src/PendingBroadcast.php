@@ -9,22 +9,12 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 class PendingBroadcast
 {
     /**
-     * The event dispatcher implementation.
-     */
-    protected EventDispatcherInterface $events;
-
-    /**
-     * The event instance.
-     */
-    protected mixed $event;
-
-    /**
      * Create a new pending broadcast instance.
      */
-    public function __construct(EventDispatcherInterface $events, mixed $event)
-    {
-        $this->event = $event;
-        $this->events = $events;
+    public function __construct(
+        protected EventDispatcherInterface $eventDispatcher,
+        protected mixed $event
+    ) {
     }
 
     /**
@@ -56,6 +46,6 @@ class PendingBroadcast
      */
     public function __destruct()
     {
-        $this->events->dispatch($this->event);
+        $this->eventDispatcher->dispatch($this->event);
     }
 }
