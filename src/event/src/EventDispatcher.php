@@ -14,6 +14,8 @@ use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\StoppableEventInterface;
 use Psr\Log\LoggerInterface;
 use ReflectionClass;
+use SwooleTW\Hyperf\Broadcasting\Contracts\Factory as BroadcastFactory;
+use SwooleTW\Hyperf\Broadcasting\Contracts\ShouldBroadcast;
 use SwooleTW\Hyperf\Event\Contracts\EventDispatcherContract;
 use SwooleTW\Hyperf\Event\Contracts\ListenerProviderContract;
 use SwooleTW\Hyperf\Foundation\Contracts\Queue\ShouldQueue;
@@ -109,10 +111,14 @@ class EventDispatcher implements EventDispatcherContract
     }
 
     /**
-     * Fire an event and call the listeners.
+     * Broadcast an event and call the listeners.
      */
     protected function invokeListeners(object|string $event, mixed $payload, bool $halt = false): object|string
     {
+        if ($this->shouldBroadcast($event)) {
+            $this->broadcastEvent($event);
+        }
+
         foreach ($this->getListeners($event) as $listener) {
             $response = $listener($event, $payload);
 
@@ -124,6 +130,32 @@ class EventDispatcher implements EventDispatcherContract
         }
 
         return $event;
+    }
+
+    /**
+     * Determine if the payload has a broadcastable event.
+     */
+    protected function shouldBroadcast(object|string $event): bool
+    {
+        return is_object($event)
+            && $event instanceof ShouldBroadcast
+            && $this->broadcastWhen($event);
+    }
+
+    /**
+     * Check if the event should be broadcasted by the condition.
+     */
+    protected function broadcastWhen(mixed $event): bool
+    {
+        return method_exists($event, 'broadcastWhen') ? $event->broadcastWhen() : true;
+    }
+
+    /**
+     * Broadcast the given event class.
+     */
+    protected function broadcastEvent(ShouldBroadcast $event): void
+    {
+        $this->container->get(BroadcastFactory::class)->queue($event);
     }
 
     /**

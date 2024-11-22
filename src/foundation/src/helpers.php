@@ -22,6 +22,8 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use SwooleTW\Hyperf\Auth\Contracts\Gate;
+use SwooleTW\Hyperf\Broadcasting\Contracts\Factory as BroadcastFactory;
+use SwooleTW\Hyperf\Broadcasting\PendingBroadcast;
 use SwooleTW\Hyperf\Cookie\Contracts\Cookie as CookieContract;
 use SwooleTW\Hyperf\Foundation\Exceptions\Contracts\ExceptionHandler as ExceptionHandlerContract;
 use SwooleTW\Hyperf\Http\Contracts\RequestContract;
@@ -109,6 +111,16 @@ if (! function_exists('app_path')) {
     function app_path(string $path = ''): string
     {
         return join_paths(app()->basePath('app'), $path);
+    }
+}
+
+if (! function_exists('broadcast')) {
+    /**
+     * Begin broadcasting an event.
+     */
+    function broadcast(mixed $event = null): PendingBroadcast
+    {
+        return app(BroadcastFactory::class)->event($event);
     }
 }
 
