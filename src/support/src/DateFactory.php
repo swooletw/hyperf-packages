@@ -101,9 +101,9 @@ class DateFactory
     /**
      * This callable may be used to intercept date creation.
      *
-     * @var callable|null
+     * @var null|callable
      */
-    protected static $callable = null;
+    protected static $callable;
 
     /**
      * The Carbon factory that should be used when creating dates.
