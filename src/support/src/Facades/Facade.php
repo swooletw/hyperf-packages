@@ -9,6 +9,7 @@ use Mockery;
 use Mockery\LegacyMockInterface;
 use RuntimeException;
 use SwooleTW\Hyperf\Foundation\ApplicationContext;
+use SwooleTW\Hyperf\Support\Testing\Fakes\Fake;
 
 abstract class Facade
 {
@@ -148,6 +149,17 @@ abstract class Facade
         }
 
         return $instance->{$method}(...$args);
+    }
+
+    /**
+     * Determines whether a "fake" has been set as the facade instance.
+     */
+    public static function isFake(): bool
+    {
+        $name = static::getFacadeAccessor();
+
+        return isset(static::$resolvedInstance[$name])
+            && static::$resolvedInstance[$name] instanceof Fake;
     }
 
     /**

@@ -26,6 +26,7 @@
         "psr-4": {
             "SwooleTW\\Hyperf\\": "src/framework/src/",
             "SwooleTW\\Hyperf\\Auth\\": "src/auth/src/",
+            "SwooleTW\\Hyperf\\Bus\\": "src/bus/src/",
             "SwooleTW\\Hyperf\\Cache\\": "src/cache/src/",
             "SwooleTW\\Hyperf\\Config\\": "src/config/src/",
             "SwooleTW\\Hyperf\\Container\\": "src/container/src/",
@@ -43,6 +44,7 @@
             "SwooleTW\\Hyperf\\Mail\\": "src/mail/src/",
             "SwooleTW\\Hyperf\\Notifications\\": "src/notifications/src/",
             "SwooleTW\\Hyperf\\ObjectPool\\": "src/object-pool/src/",
+            "SwooleTW\\Hyperf\\Queue\\": "src/queue/src/",
             "SwooleTW\\Hyperf\\Router\\": "src/router/src/",
             "SwooleTW\\Hyperf\\Support\\": "src/support/src/"
         },
@@ -54,6 +56,7 @@
             "src/filesystem/src/Functions.php",
             "src/foundation/src/helpers.php",
             "src/router/src/Functions.php",
+            "src/support/src/Functions.php",
             "src/support/src/helpers.php"
         ]
     },
@@ -102,6 +105,7 @@
     },
     "replace": {
         "swooletw/hyperf-auth": "self.version",
+        "swooletw/hyperf-bus": "self.version",
         "swooletw/hyperf-cache": "self.version",
         "swooletw/hyperf-config": "self.version",
         "swooletw/hyperf-container": "self.version",
@@ -120,6 +124,7 @@
         "swooletw/hyperf-mail": "self.version",
         "swooletw/hyperf-notifications": "self.version",
         "swooletw/hyperf-object-pool": "self.version",
+        "swooletw/hyperf-queue": "self.version",
         "swooletw/hyperf-router": "self.version",
         "swooletw/hyperf-support": "self.version"
     },
@@ -135,18 +140,19 @@
     },
     "require-dev": {
         "fakerphp/faker": "^2.0",
+        "filp/whoops": "^2.15",
         "friendsofphp/php-cs-fixer": "^3.57.2",
         "hyperf/devtool": "~3.1.0",
         "hyperf/redis": "~3.1.0",
         "hyperf/testing": "~3.1.0",
         "hyperf/view-engine": "~3.1.0",
         "league/flysystem": "^3.0",
-        "league/flysystem-path-prefixing": "^3.3",
-        "league/flysystem-read-only": "^3.3",
         "league/flysystem-aws-s3-v3": "^3.0",
         "league/flysystem-google-cloud-storage": "^3.0",
-        "filp/whoops": "^2.15",
+        "league/flysystem-path-prefixing": "^3.3",
+        "league/flysystem-read-only": "^3.3",
         "mockery/mockery": "^1.5.1",
+        "pda/pheanstalk": "v5.x-dev",
         "phpstan/phpstan": "^1.11.5",
         "phpunit/phpunit": "^10.0.7",
         "swoole/ide-helper": "~5.1.0"
@@ -159,6 +165,7 @@
             "config": [
                 "SwooleTW\\Hyperf\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Auth\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Bus\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Cache\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Cookie\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Config\\ConfigProvider",
@@ -174,6 +181,7 @@
                 "SwooleTW\\Hyperf\\Log\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Mail\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Notifications\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Queue\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Router\\ConfigProvider"
             ],
             "providers": [

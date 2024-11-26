@@ -1,0 +1,51 @@
+{
+    "name": "swooletw/hyperf-queue",
+    "description": "The queue pool package for Hyperf.",
+    "license": "MIT",
+    "keywords": [
+        "php",
+        "hyperf",
+        "queue",
+        "swoole",
+        "laravel-hyperf"
+    ],
+    "support": {
+        "issues": "https://github.com/swooletw/hyperf-packages/issues",
+        "source": "https://github.com/swooletw/hyperf-packages"
+    },
+    "authors": [
+        {
+            "name": "Albert Chen",
+            "email": "albert@laravel-hyperf.com",
+            "homepage": "https://albert-chen.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "hyperf/coroutine": "~3.1.0",
+        "hyperf/engine": "^2.1",
+        "hyperf/coordinator": "~3.1.0",
+        "hyperf/contract": "~3.1.0",
+        "hyperf/support": "~3.1.0",
+        "hyperf/collection": "~3.1.0",
+        "hyperf/tapable": "~3.1.0",
+        "swooletw/hyperf-support": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "SwooleTW\\Hyperf\\Queue\\": "src/"
+        }
+    },
+    "extra": {
+        "hyperf": {
+            "config": "SwooleTW\\Hyperf\\Queue\\ConfigProvider"
+        },
+        "branch-alias": {
+            "dev-master": "3.1-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev"
+}

@@ -14,12 +14,13 @@ class NotificationTableCommand extends GeneratorCommand
 {
     public function __construct()
     {
-        parent::__construct('notification:table');
+        parent::__construct('make:notifications-table');
     }
 
     public function configure()
     {
         $this->setDescription('Create a migration for the notifications table');
+        $this->setAliases(['notifications:table']);
 
         parent::configure();
     }

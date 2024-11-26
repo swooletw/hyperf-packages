@@ -3,11 +3,6 @@
 declare(strict_types=1);
 
 use Carbon\Carbon;
-use FriendsOfHyperf\AsyncTask\Task as AsyncTask;
-use FriendsOfHyperf\AsyncTask\TaskInterface as AsyncTaskInterface;
-use FriendsOfHyperf\Support\AsyncQueue\ClosureJob;
-use Hyperf\AsyncQueue\Driver\DriverFactory;
-use Hyperf\AsyncQueue\JobInterface;
 use Hyperf\Context\ApplicationContext;
 use Hyperf\Contract\Arrayable;
 use Hyperf\Contract\SessionInterface;
@@ -22,6 +17,8 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use SwooleTW\Hyperf\Auth\Contracts\Gate;
+use SwooleTW\Hyperf\Bus\PendingClosureDispatch;
+use SwooleTW\Hyperf\Bus\PendingDispatch;
 use SwooleTW\Hyperf\Cookie\Contracts\Cookie as CookieContract;
 use SwooleTW\Hyperf\Foundation\Exceptions\Contracts\ExceptionHandler as ExceptionHandlerContract;
 use SwooleTW\Hyperf\Http\Contracts\RequestContract;
@@ -29,6 +26,7 @@ use SwooleTW\Hyperf\Http\Contracts\ResponseContract;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\HttpException;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\HttpResponseException;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\NotFoundHttpException;
+use SwooleTW\Hyperf\Queue\CallQueuedClosure;
 use SwooleTW\Hyperf\Router\UrlGenerator;
 use SwooleTW\Hyperf\Support\Contracts\Responsable;
 
@@ -303,24 +301,29 @@ if (! function_exists('app')) {
 
 if (! function_exists('dispatch')) {
     /**
-     * @param AsyncTaskInterface|Closure|JobInterface|ProduceMessage|ProducerMessageInterface $job
-     * @throws TypeError
-     * @throws InvalidDriverException
-     * @throws InvalidArgumentException
+     * Dispatch a job to its appropriate handler.
+     *
+     * @param mixed $job
+     * @return ($job is Closure ? PendingClosureDispatch : PendingDispatch)
      */
-    function dispatch($job, ...$arguments): bool
+    function dispatch($job): PendingClosureDispatch|PendingDispatch
     {
-        if ($job instanceof \Closure) {
-            $job = new ClosureJob($job, (int) ($arguments[2] ?? 0));
-        }
+        return $job instanceof Closure
+            ? new PendingClosureDispatch(CallQueuedClosure::create($job))
+            : new PendingDispatch($job);
+    }
+}
 
-        return match (true) {
-            $job instanceof JobInterface => app(DriverFactory::class)
-                ->get((string) ($arguments[0] ?? $job->queue ?? 'default'))
-                ->push($job, (int) ($arguments[1] ?? $job->delay ?? 0)),
-            $job instanceof AsyncTaskInterface => AsyncTask::deliver($job, ...$arguments),
-            default => throw new \InvalidArgumentException('Not Support job type.')
-        };
+if (! function_exists('dispatch_sync')) {
+    /**
+     * Dispatch a command to its appropriate handler in the current process.
+     *
+     * Queueable jobs will be dispatched to the "sync" queue.
+     */
+    function dispatch_sync(mixed $job, mixed $handler = null): mixed
+    {
+        return app(Dispatcher::class)
+            ->dispatchSync($job, $handler);
     }
 }
 

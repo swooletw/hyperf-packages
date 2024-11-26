@@ -33,6 +33,7 @@
             "SwooleTW\\Hyperf\\Support\\": "src/"
         },
         "files": [
+            "src/Functions.php",
             "src/helpers.php"
         ]
     },

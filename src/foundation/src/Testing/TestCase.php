@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Testing;
 
-use Hyperf\Testing\Concerns\RunTestsInCoroutine;
 use Mockery as m;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithConsole;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithContainer;
@@ -12,6 +11,7 @@ use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithDatabase;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithTime;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\MakesHttpRequests;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\MocksApplicationServices;
+use SwooleTW\Hyperf\Foundation\Testing\Concerns\RunTestsInCoroutine;
 use SwooleTW\Hyperf\Support\Facades\Facade;
 use Throwable;
 

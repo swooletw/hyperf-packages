@@ -101,9 +101,9 @@ class DateFactory
     /**
      * This callable may be used to intercept date creation.
      *
-     * @var callable
+     * @var callable|null
      */
-    protected static $callable;
+    protected static $callable = null;
 
     /**
      * The Carbon factory that should be used when creating dates.
@@ -113,20 +113,21 @@ class DateFactory
     /**
      * Use the given handler when generating dates (class name, callable, or factory).
      *
-     * @return mixed
-     *
      * @throws InvalidArgumentException
      */
-    public static function use(mixed $handler)
+    public static function use(mixed $handler): void
     {
         if (is_callable($handler) && is_object($handler)) {
-            return static::useCallable($handler);
+            static::useCallable($handler);
+            return;
         }
         if (is_string($handler)) {
-            return static::useClass($handler);
+            static::useClass($handler);
+            return;
         }
         if ($handler instanceof Factory) {
-            return static::useFactory($handler);
+            static::useFactory($handler);
+            return;
         }
 
         throw new InvalidArgumentException('Invalid date creation handler. Please provide a class name, callable, or Carbon factory.');
