@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Exceptions;
 
+use Hyperf\Collection\Collection;
 use SwooleTW\Hyperf\Support\Facades\View;
 
 class RegisterErrorViewPaths
@@ -13,7 +14,11 @@ class RegisterErrorViewPaths
      */
     public function __invoke()
     {
-        View::replaceNamespace('errors', collect(config('view.config.view_path'))->map(function ($path) {
+        if (! View::getFacadeRoot()) {
+            return;
+        }
+
+        View::replaceNamespace('errors', Collection::make(config('view.config.view_path'))->map(function ($path) {
             return "{$path}/errors";
         })->push(__DIR__ . '/views')->all());
     }

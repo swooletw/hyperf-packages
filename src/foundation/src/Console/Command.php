@@ -12,6 +12,7 @@ use Hyperf\Command\Event\BeforeHandle;
 use Hyperf\Command\Event\FailToHandle;
 use Hyperf\Coroutine\Coroutine;
 use Swoole\ExitException;
+use SwooleTW\Hyperf\Container\Contracts\Container as ContainerContract;
 use SwooleTW\Hyperf\Foundation\ApplicationContext;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\NullOutput;
@@ -23,6 +24,15 @@ use function Hyperf\Coroutine\run;
 abstract class Command extends HyperfCommand
 {
     use InteractsWithSignals;
+
+    protected ContainerContract $app;
+
+    public function __construct(?string $name = null)
+    {
+        parent::__construct($name);
+
+        $this->app = ApplicationContext::getContainer();
+    }
 
     /**
      * Determine if the given argument is present.
@@ -99,7 +109,7 @@ abstract class Command extends HyperfCommand
     /**
      * Call another console command without output.
      */
-    public function callSilently(string $command, array $arguments = []): int
+    public function callSilent(string $command, array $arguments = []): int
     {
         $arguments['command'] = $command;
 
