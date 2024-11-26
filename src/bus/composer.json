@@ -1,0 +1,59 @@
+{
+    "name": "swooletw/hyperf-bus",
+    "description": "The bus package for Hyperf.",
+    "license": "MIT",
+    "keywords": [
+        "php",
+        "hyperf",
+        "bus",
+        "queue",
+        "swoole",
+        "laravel-hyperf"
+    ],
+    "support": {
+        "issues": "https://github.com/swooletw/hyperf-packages/issues",
+        "source": "https://github.com/swooletw/hyperf-packages"
+    },
+    "authors": [
+        {
+            "name": "Albert Chen",
+            "email": "albert@laravel-hyperf.com",
+            "homepage": "https://albert-chen.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "hyperf/context": "~3.1.0",
+        "hyperf/contract": "~3.1.0",
+        "hyperf/collection": "~3.1.0",
+        "hyperf/conditionable": "~3.1.0",
+        "hyperf/coroutine": "~3.1.0",
+        "hyperf/arrayable": "~3.1.0",
+        "hyperf/support": "~3.1.0",
+        "nesbot/carbon": "^3.0",
+        "laravel/serializable-closure": "^1.3",
+        "swooletw/hyperf-support": "dev-master",
+        "swooletw/hyperf-cache": "dev-master"
+
+    },
+    "autoload": {
+        "psr-4": {
+            "SwooleTW\\Hyperf\\Bus\\": "src/"
+        }
+    },
+    "extra": {
+        "hyperf": {
+            "config": "SwooleTW\\Hyperf\\Bus\\ConfigProvider"
+        },
+        "branch-alias": {
+            "dev-master": "3.1-dev"
+        }
+    },
+    "suggest": {
+        "swooletw/hyperf-queue": "Required to use closures when chaining jobs."
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev"
+}
