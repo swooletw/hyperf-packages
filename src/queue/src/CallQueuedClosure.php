@@ -8,7 +8,6 @@ use Closure;
 use Laravel\SerializableClosure\SerializableClosure;
 use Psr\Container\ContainerInterface;
 use ReflectionFunction;
-use RuntimeException;
 use SwooleTW\Hyperf\Bus\Batchable;
 use SwooleTW\Hyperf\Bus\Dispatchable;
 use SwooleTW\Hyperf\Bus\Queueable;
@@ -54,8 +53,9 @@ class CallQueuedClosure implements ShouldQueue
      */
     public function handle(ContainerInterface $container): void
     {
-        if (method_exists($container, 'call')) {
-            throw new RuntimeException('The container must implement the `call` method.');
+        if (! method_exists($container, 'call')) {
+            ($this->closure->getClosure())($this);
+            return;
         }
 
         /** @var \SwooleTW\Hyperf\Container\Contracts\Container $container */
