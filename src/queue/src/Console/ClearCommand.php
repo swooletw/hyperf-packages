@@ -4,19 +4,21 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Queue\Console;
 
+use Hyperf\Command\Command;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Stringable\Str;
 use ReflectionClass;
-use SwooleTW\Hyperf\Foundation\Console\Command;
 use SwooleTW\Hyperf\Foundation\Console\ConfirmableTrait;
 use SwooleTW\Hyperf\Queue\Contracts\ClearableQueue;
 use SwooleTW\Hyperf\Queue\Contracts\Factory as FactoryContract;
+use SwooleTW\Hyperf\Support\Traits\HasLaravelStyleCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 class ClearCommand extends Command
 {
     use ConfirmableTrait;
+    use HasLaravelStyleCommand;
 
     /**
      * The console command name.

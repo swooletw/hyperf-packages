@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Queue\Console;
 
+use Hyperf\Command\Command;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Stringable\Str;
-use SwooleTW\Hyperf\Foundation\Console\Command;
 use SwooleTW\Hyperf\Queue\Listener;
 use SwooleTW\Hyperf\Queue\ListenerOptions;
+use SwooleTW\Hyperf\Support\Traits\HasLaravelStyleCommand;
 
 class ListenCommand extends Command
 {
+    use HasLaravelStyleCommand;
+
     /**
      * The console command name.
      */

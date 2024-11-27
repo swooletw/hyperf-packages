@@ -7,7 +7,7 @@ namespace SwooleTW\Hyperf\Queue\Failed;
 use DateTimeInterface;
 use Hyperf\Database\ConnectionResolverInterface;
 use Hyperf\Database\Query\Builder;
-use SwooleTW\Hyperf\Support\Facades\Date;
+use SwooleTW\Hyperf\Support\Carbon;
 use Throwable;
 
 class DatabaseUuidFailedJobProvider implements CountableFailedJobProvider, FailedJobProviderInterface, PrunableFailedJobProvider
@@ -33,7 +33,7 @@ class DatabaseUuidFailedJobProvider implements CountableFailedJobProvider, Faile
             'queue' => $queue,
             'payload' => $payload,
             'exception' => (string) mb_convert_encoding((string) $exception, 'UTF-8'),
-            'failed_at' => Date::now(),
+            'failed_at' => Carbon::now(),
         ]);
 
         return $uuid;
@@ -91,7 +91,7 @@ class DatabaseUuidFailedJobProvider implements CountableFailedJobProvider, Faile
     public function flush(?int $hours = null): void
     {
         $this->getTable()->when($hours, function ($query, $hours) {
-            $query->where('failed_at', '<=', Date::now()->subHours($hours));
+            $query->where('failed_at', '<=', Carbon::now()->subHours($hours));
         })->delete();
     }
 

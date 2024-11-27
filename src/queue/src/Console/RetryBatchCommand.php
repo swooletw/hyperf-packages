@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Queue\Console;
 
+use Hyperf\Command\Command;
 use SwooleTW\Hyperf\Bus\Contracts\BatchRepository;
-use SwooleTW\Hyperf\Foundation\Console\Command;
+use SwooleTW\Hyperf\Support\Traits\HasLaravelStyleCommand;
 
 class RetryBatchCommand extends Command
 {
+    use HasLaravelStyleCommand;
+
     /**
      * The console command signature.
      */

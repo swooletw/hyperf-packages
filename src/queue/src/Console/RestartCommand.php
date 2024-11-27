@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Queue\Console;
 
+use Hyperf\Command\Command;
 use SwooleTW\Hyperf\Cache\Contracts\Factory as CacheFactory;
-use SwooleTW\Hyperf\Foundation\Console\Command;
+use SwooleTW\Hyperf\Support\Traits\HasLaravelStyleCommand;
 use SwooleTW\Hyperf\Support\Traits\InteractsWithTime;
 
 class RestartCommand extends Command
 {
+    use HasLaravelStyleCommand;
     use InteractsWithTime;
 
     /**

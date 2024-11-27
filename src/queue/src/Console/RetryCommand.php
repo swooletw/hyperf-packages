@@ -8,17 +8,20 @@ use __PHP_Incomplete_Class;
 use DateTimeInterface;
 use Hyperf\Collection\Arr;
 use Hyperf\Collection\Collection;
+use Hyperf\Command\Command;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use RuntimeException;
 use stdClass;
 use SwooleTW\Hyperf\Encryption\Contracts\Encrypter;
-use SwooleTW\Hyperf\Foundation\Console\Command;
 use SwooleTW\Hyperf\Queue\Contracts\Factory as QueueFactory;
 use SwooleTW\Hyperf\Queue\Events\JobRetryRequested;
 use SwooleTW\Hyperf\Queue\Failed\FailedJobProviderInterface;
+use SwooleTW\Hyperf\Support\Traits\HasLaravelStyleCommand;
 
 class RetryCommand extends Command
 {
+    use HasLaravelStyleCommand;
+
     /**
      * The console command signature.
      */

@@ -5,14 +5,17 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Queue\Console;
 
 use Hyperf\Collection\Collection;
+use Hyperf\Command\Command;
 use Hyperf\Contract\ConfigInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use SwooleTW\Hyperf\Foundation\Console\Command;
 use SwooleTW\Hyperf\Queue\Contracts\Factory;
 use SwooleTW\Hyperf\Queue\Events\QueueBusy;
+use SwooleTW\Hyperf\Support\Traits\HasLaravelStyleCommand;
 
 class MonitorCommand extends Command
 {
+    use HasLaravelStyleCommand;
+
     /**
      * The console command name.
      */

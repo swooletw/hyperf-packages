@@ -7,7 +7,7 @@ namespace SwooleTW\Hyperf\Queue\Failed;
 use Closure;
 use DateTimeInterface;
 use Hyperf\Collection\Collection;
-use SwooleTW\Hyperf\Support\Facades\Date;
+use SwooleTW\Hyperf\Support\Carbon;
 use Throwable;
 
 class FileFailedJobProvider implements CountableFailedJobProvider, FailedJobProviderInterface, PrunableFailedJobProvider
@@ -32,7 +32,7 @@ class FileFailedJobProvider implements CountableFailedJobProvider, FailedJobProv
 
             $jobs = $this->read();
 
-            $failedAt = Date::now();
+            $failedAt = Carbon::now();
 
             array_unshift($jobs, [
                 'id' => $id,
@@ -98,7 +98,7 @@ class FileFailedJobProvider implements CountableFailedJobProvider, FailedJobProv
      */
     public function flush(?int $hours = null): void
     {
-        $this->prune(Date::now()->subHours($hours ?: 0));
+        $this->prune(Carbon::now()->subHours($hours ?: 0));
     }
 
     /**

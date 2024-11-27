@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Queue\Console;
 
-use SwooleTW\Hyperf\Foundation\Console\Command;
+use Hyperf\Command\Command;
 use SwooleTW\Hyperf\Queue\Failed\FailedJobProviderInterface;
+use SwooleTW\Hyperf\Support\Traits\HasLaravelStyleCommand;
 
 class FlushFailedCommand extends Command
 {
+    use HasLaravelStyleCommand;
+
     /**
      * The console command name.
      */
