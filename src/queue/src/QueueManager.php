@@ -165,7 +165,7 @@ class QueueManager implements FactoryContract, MonitorContract
             ->connect($config)
             ->setConnectionName($name);
 
-        if (in_array($name, $this->poolables)) {
+        if (in_array($config['driver'], $this->poolables)) {
             return $this->createPoolProxy(
                 $name,
                 $resolver,

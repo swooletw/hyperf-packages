@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Tests\Queue;
 
 use Hyperf\Config\Config;
+use Hyperf\Context\ApplicationContext;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Di\Container;
 use Hyperf\Di\Definition\DefinitionSource;
@@ -14,6 +15,7 @@ use SwooleTW\Hyperf\Encryption\Contracts\Encrypter;
 use SwooleTW\Hyperf\Queue\Connectors\ConnectorInterface;
 use SwooleTW\Hyperf\Queue\Contracts\Queue;
 use SwooleTW\Hyperf\Queue\QueueManager;
+use SwooleTW\Hyperf\Queue\QueuePoolProxy;
 
 /**
  * @internal
@@ -85,13 +87,38 @@ class QueueManagerTest extends TestCase
         $this->assertSame($queue, $manager->connection('null'));
     }
 
+    public function testAddPoolableConnector()
+    {
+        $container = $this->getContainer();
+        $config = $container->get(ConfigInterface::class);
+        $config->set('queue.default', 'sync');
+        $config->set('queue.connections.foo', ['driver' => 'bar']);
+
+        $manager = new QueueManager($container);
+        $connector = m::mock(ConnectorInterface::class);
+        $queue = m::mock(Queue::class);
+        $queue->shouldReceive('setConnectionName')->once()->with('foo')->andReturnSelf();
+        $connector->shouldReceive('connect')->once()->with(['driver' => 'bar'])->andReturn($queue);
+        $manager->addConnector('bar', function () use ($connector) {
+            return $connector;
+        });
+        $manager->addPoolable('bar');
+        $queue->shouldReceive('setContainer')->once()->with($container);
+
+        $this->assertInstanceOf(QueuePoolProxy::class, $manager->connection('foo'));
+    }
+
     protected function getContainer(): Container
     {
-        return new Container(
+        $container = new Container(
             new DefinitionSource([
                 ConfigInterface::class => fn () => new Config([]),
                 Encrypter::class => fn () => m::mock(Encrypter::class),
             ])
         );
+
+        ApplicationContext::setContainer($container);
+
+        return $container;
     }
 }

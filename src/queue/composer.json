@@ -33,7 +33,8 @@
         "laravel/serializable-closure": "^1.2.2",
         "ramsey/uuid": "^4.7",
         "symfony/process": "^7.0",
-        "swooletw/hyperf-support": "dev-master"
+        "swooletw/hyperf-support": "dev-master",
+        "swooletw/hyperf-encryption": "dev-master"
     },
     "autoload": {
         "psr-4": {
