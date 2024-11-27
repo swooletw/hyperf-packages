@@ -19,8 +19,6 @@ use SwooleTW\Hyperf\Auth\Providers\DatabaseUserProvider;
 use SwooleTW\Hyperf\Hashing\Contracts\Hasher as HashContract;
 use SwooleTW\Hyperf\Tests\TestCase;
 
-use function Hyperf\Coroutine\run;
-
 /**
  * @internal
  * @coversNothing
@@ -42,11 +40,13 @@ class AuthMangerTest extends TestCase
 
         Context::set('__auth.defaults.guard', 'foo');
 
-        run(function () use ($manager) {
+        $assertDefaultGuard = function () use ($manager) {
             Context::set('__auth.defaults.guard', 'bar');
 
             $this->assertSame('bar', $manager->getDefaultDriver());
-        });
+        };
+
+        $this->runInCoroutine($assertDefaultGuard);
 
         $this->assertSame('foo', $manager->getDefaultDriver());
     }
@@ -128,11 +128,13 @@ class AuthMangerTest extends TestCase
 
         $manager->resolveUsersUsing(fn () => 'foo');
 
-        run(function () use ($manager) {
+        $assertUserResolver = (function () use ($manager) {
             $manager->resolveUsersUsing(fn () => 'bar');
 
             $this->assertSame('bar', $manager->userResolver()());
         });
+
+        $this->runInCoroutine($assertUserResolver);
 
         $this->assertSame('foo', $manager->userResolver()());
     }

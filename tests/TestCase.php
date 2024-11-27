@@ -6,8 +6,11 @@ namespace SwooleTW\Hyperf\Tests;
 
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
+use Hyperf\Coroutine\Coroutine;
 use Mockery;
 use PHPUnit\Framework\TestCase as BaseTestCase;
+
+use function Hyperf\Coroutine\run;
 
 /**
  * @internal
@@ -25,5 +28,12 @@ class TestCase extends BaseTestCase
 
         Carbon::setTestNow();
         CarbonImmutable::setTestNow();
+    }
+
+    protected function runInCoroutine(callable $callback): void
+    {
+        Coroutine::inCoroutine()
+            ? Coroutine::create($callback)
+            : run($callback);
     }
 }

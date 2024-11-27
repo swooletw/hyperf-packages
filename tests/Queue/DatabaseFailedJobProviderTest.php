@@ -11,7 +11,6 @@ use RuntimeException;
 use SwooleTW\Hyperf\Foundation\Testing\RefreshDatabase;
 use SwooleTW\Hyperf\Queue\Failed\DatabaseFailedJobProvider;
 use SwooleTW\Hyperf\Support\Carbon;
-use SwooleTW\Hyperf\Support\Facades\Date;
 use SwooleTW\Hyperf\Tests\Foundation\Testing\ApplicationTestCase;
 
 /**
@@ -105,17 +104,17 @@ class DatabaseFailedJobProviderTest extends ApplicationTestCase
 
     public function testCanFlushFailedJobs()
     {
-        Date::setTestNow(Date::now());
+        Carbon::setTestNow(Carbon::now());
 
-        $this->createFailedJobsRecord(['failed_at' => Date::now()->subDays(10)]);
+        $this->createFailedJobsRecord(['failed_at' => Carbon::now()->subDays(10)]);
         $this->provider->flush();
         $this->assertSame(0, $this->failedJobsTable()->count());
 
-        $this->createFailedJobsRecord(['failed_at' => Date::now()->subDays(10)]);
+        $this->createFailedJobsRecord(['failed_at' => Carbon::now()->subDays(10)]);
         $this->provider->flush(15 * 24);
         $this->assertSame(1, $this->failedJobsTable()->count());
 
-        $this->createFailedJobsRecord(['failed_at' => Date::now()->subDays(10)]);
+        $this->createFailedJobsRecord(['failed_at' => Carbon::now()->subDays(10)]);
         $this->provider->flush(10 * 24);
         $this->assertSame(0, $this->failedJobsTable()->count());
     }
@@ -197,7 +196,7 @@ class DatabaseFailedJobProviderTest extends ApplicationTestCase
                 'queue' => 'default',
                 'payload' => json_encode(['uuid' => (string) Str::uuid()]),
                 'exception' => new Exception('Whoops!'),
-                'failed_at' => Date::now()->subDays(10),
+                'failed_at' => Carbon::now()->subDays(10),
             ], $overrides));
     }
 }

@@ -57,14 +57,14 @@ trait RunTestsInCoroutine
         return parent::runTest();
     }
 
-    private function invokeBeforeHookMethods(): void
+    protected function invokeBeforeHookMethods(): void
     {
         if (method_exists($this, 'beforeTestInCoroutine')) {
             call_user_func([$this, 'beforeTestInCoroutine']);
         }
     }
 
-    private function invokeAfterHookMethods(): void
+    protected function invokeAfterHookMethods(): void
     {
         if (method_exists($this, 'afterTestInCoroutine')) {
             call_user_func([$this, 'afterTestInCoroutine']);

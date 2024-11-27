@@ -8,6 +8,7 @@ use Hyperf\Context\ApplicationContext;
 use Hyperf\Coordinator\Constants;
 use Hyperf\Coordinator\CoordinatorManager;
 use Hyperf\Di\ClassLoader;
+use Hyperf\Engine\Coroutine;
 use Hyperf\Support\Filesystem\Filesystem;
 use Swoole\Runtime;
 use Swoole\Timer;
@@ -40,9 +41,12 @@ class ApplicationTestCase extends TestCase
             CoordinatorManager::until(Constants::WORKER_EXIT)->resume();
         });
 
-        run(function () {
-            parent::setUp();
-        });
+        if (! Coroutine::id()) {
+            run(fn () => parent::setUp());
+            return;
+        }
+
+        parent::setUp();
     }
 
     protected function bootstrapApplication(): void

@@ -12,8 +12,6 @@ use stdClass;
 use SwooleTW\Hyperf\Tests\ObjectPool\Stub\FooPool;
 use SwooleTW\Hyperf\Tests\TestCase;
 
-use function Hyperf\Coroutine\run;
-
 /**
  * @internal
  * @coversNothing
@@ -82,7 +80,7 @@ class ObjectPoolTest extends TestCase
             'wait_timeout' => 0.0001,
         ]);
 
-        run(function () use ($pool) {
+        $assertTimeout = (function () use ($pool) {
             $pool->get();
 
             $exception = new stdClass();
@@ -95,6 +93,8 @@ class ObjectPoolTest extends TestCase
             $this->assertInstanceOf(RuntimeException::class, $exception);
             $this->assertSame('Object pool exhausted. Cannot create new object before wait_timeout.', $exception->getMessage());
         });
+
+        $this->runInCoroutine($assertTimeout);
     }
 
     public function testGetStats()
