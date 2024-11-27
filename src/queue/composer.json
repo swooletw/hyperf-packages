@@ -29,6 +29,10 @@
         "hyperf/support": "~3.1.0",
         "hyperf/collection": "~3.1.0",
         "hyperf/tapable": "~3.1.0",
+        "hyperf/db-connection": "~3.1.0",
+        "laravel/serializable-closure": "^1.2.2",
+        "ramsey/uuid": "^4.7",
+        "symfony/process": "^7.0",
         "swooletw/hyperf-support": "dev-master"
     },
     "autoload": {
@@ -43,6 +47,15 @@
         "branch-alias": {
             "dev-master": "3.1-dev"
         }
+    },
+    "suggest": {
+        "ext-pdo": "Required to use the database queue worker.",
+        "ext-filter": "Required to use the SQS queue worker.",
+        "ext-mbstring": "Required to use the database failed job providers.",
+        "ext-pcntl": "Required to use all features of the queue worker.",
+        "ext-posix": "Required to use all features of the queue worker.",
+        "aws/aws-sdk-php": "Required to use the SQS queue driver and DynamoDb failed job storage (^3.235.5).",
+        "pda/pheanstalk": "Required to use the Beanstalk queue driver (^5.0)."
     },
     "config": {
         "sort-packages": true
