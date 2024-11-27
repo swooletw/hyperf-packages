@@ -37,6 +37,7 @@ class WorkCommand extends Command
                             {--queue= : The names of the queues to work}
                             {--daemon : Run the worker in daemon mode (Deprecated)}
                             {--once : Only process the next job on the queue}
+                            {--concurrency=1 : The number of jobs to process at once}
                             {--stop-when-empty : Stop when the queue is empty}
                             {--delay=0 : The number of seconds to delay failed jobs (Deprecated)}
                             {--backoff=0 : The number of seconds to wait before retrying a job that encountered an uncaught exception}
@@ -131,6 +132,12 @@ class WorkCommand extends Command
      */
     protected function gatherWorkerOptions(): WorkerOptions
     {
+        $concurrencyConfig = (int) $this->config->get('queue.concurrency_number', 1);
+        $concurrencyOption = (int) $this->option('concurrency');
+        $concurrency = $concurrencyOption > 1
+            ? $concurrencyOption
+            : min(1, $concurrencyConfig);
+
         return new WorkerOptions(
             $this->option('name'),
             (int) max($this->option('backoff'), $this->option('delay')),
@@ -142,7 +149,8 @@ class WorkCommand extends Command
             (bool) $this->option('stop-when-empty'),
             (int) $this->option('max-jobs'),
             (int) $this->option('max-time'),
-            (int) $this->option('rest')
+            (int) $this->option('rest'),
+            $concurrency
         );
     }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Queue;
 
+use Hyperf\Coroutine\Concurrent;
 use Hyperf\Database\DetectsLostConnections;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use SwooleTW\Hyperf\Cache\Contracts\Factory as CacheFactory;
@@ -110,6 +111,8 @@ class Worker
 
         [$startTime, $jobsProcessed] = [hrtime(true) / 1e9, 0];
 
+        $concurrent = new Concurrent($options->concurrency);
+
         while (true) {
             // Before reserving any jobs, we will make sure this queue is not paused and
             // if it is we will just pause this worker for a given amount of time and
@@ -146,7 +149,9 @@ class Worker
             if ($job) {
                 ++$jobsProcessed;
 
-                $this->runJob($job, $connectionName, $options);
+                $concurrent->create(
+                    fn () => $this->runJob($job, $connectionName, $options)
+                );
 
                 if ($options->rest > 0) {
                     $this->sleep($options->rest);
