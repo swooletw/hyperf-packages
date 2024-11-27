@@ -11,6 +11,7 @@ use SwooleTW\Hyperf\Devtool\Generator\ComponentCommand;
 use SwooleTW\Hyperf\Devtool\Generator\ConsoleCommand;
 use SwooleTW\Hyperf\Devtool\Generator\EventCommand;
 use SwooleTW\Hyperf\Devtool\Generator\FactoryCommand;
+use SwooleTW\Hyperf\Devtool\Generator\JobCommand;
 use SwooleTW\Hyperf\Devtool\Generator\ListenerCommand;
 use SwooleTW\Hyperf\Devtool\Generator\ModelCommand;
 use SwooleTW\Hyperf\Devtool\Generator\NotificationTableCommand;
@@ -50,6 +51,7 @@ class ConfigProvider
                 BatchesTableCommand::class,
                 QueueTableCommand::class,
                 QueueFailedTableCommand::class,
+                JobCommand::class,
             ],
         ];
     }

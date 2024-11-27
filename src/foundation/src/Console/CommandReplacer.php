@@ -18,7 +18,7 @@ class CommandReplacer
         'gen:command' => 'make:command',
         'gen:constant' => 'make:constant',
         'gen:controller' => 'make:controller',
-        'gen:job' => 'make:job',
+        'gen:job' => null,
         'gen:kafka-consumer' => 'make:kafka-consumer',
         'gen:listener' => 'make:listener',
         'gen:middleware' => 'make:middleware',
