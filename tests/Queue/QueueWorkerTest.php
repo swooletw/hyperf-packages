@@ -5,25 +5,9 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Tests\Queue;
 
 use DateInterval;
-// use Illuminate\Container\Container;
-// use Illuminate\Contracts\Debug\ExceptionHandler;
-// use Illuminate\Contracts\Events\Dispatcher;
-// use Illuminate\Contracts\Queue\Job as QueueJobContract;
-// use Illuminate\Queue\Events\JobExceptionOccurred;
-// use Illuminate\Queue\Events\JobPopped;
-// use Illuminate\Queue\Events\JobPopping;
-// use Illuminate\Queue\Events\JobProcessed;
-// use Illuminate\Queue\Events\JobProcessing;
-// use Illuminate\Queue\MaxAttemptsExceededException;
-// use Illuminate\Queue\QueueManager;
-// use Illuminate\Queue\Worker;
-// use Illuminate\Queue\WorkerOptions;
-// use Illuminate\Support\Carbon;
 use DateTimeInterface;
 use Exception;
-use Hyperf\Config\Config;
 use Hyperf\Context\ApplicationContext;
-use Hyperf\Contract\ConfigInterface;
 use Hyperf\Di\Container;
 use Hyperf\Di\Definition\DefinitionSource;
 use Mockery as m;
@@ -32,6 +16,7 @@ use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use RuntimeException;
 use SwooleTW\Hyperf\Foundation\Exceptions\Contracts\ExceptionHandler as ExceptionHandlerContract;
+use SwooleTW\Hyperf\Foundation\Testing\Concerns\RunTestsInCoroutine;
 use SwooleTW\Hyperf\Queue\Contracts\Job;
 use SwooleTW\Hyperf\Queue\Contracts\Job as QueueJobContract;
 use SwooleTW\Hyperf\Queue\Contracts\Queue;
@@ -45,7 +30,6 @@ use SwooleTW\Hyperf\Queue\QueueManager;
 use SwooleTW\Hyperf\Queue\Worker;
 use SwooleTW\Hyperf\Queue\WorkerOptions;
 use SwooleTW\Hyperf\Support\Carbon;
-use SwooleTW\Hyperf\Support\Testing\Fakes\QueueFake;
 use Throwable;
 
 /**
@@ -54,33 +38,22 @@ use Throwable;
  */
 class QueueWorkerTest extends TestCase
 {
+    use RunTestsInCoroutine;
+
     protected EventDispatcherInterface $events;
 
     protected ExceptionHandlerContract $exceptionHandler;
 
     protected ContainerInterface $container;
-    // protected ConfigInterface $config;
 
     protected function setUp(): void
     {
         $this->events = m::spy(EventDispatcherInterface::class);
         $this->exceptionHandler = m::spy(ExceptionHandlerContract::class);
-        // $this->config = new Config([
-        //     'queue' => [
-        //         'default' => 'fake',
-        //         'connections' => [
-        //             'fake' => [
-        //                 'driver' => 'sync',
-        //             ],
-        //         ],
-        //     ],
-        // ]);
-
         $this->container = new Container(
             new DefinitionSource([
                 EventDispatcherInterface::class => fn () => $this->events,
                 ExceptionHandlerContract::class => fn () => $this->exceptionHandler,
-                // ConfigInterface::class => fn () => $this->config,
             ])
         );
 
@@ -92,8 +65,6 @@ class QueueWorkerTest extends TestCase
         parent::tearDown();
 
         Carbon::setTestNow();
-
-        // Container::setInstance();
     }
 
     public function testJobCanBeFired()

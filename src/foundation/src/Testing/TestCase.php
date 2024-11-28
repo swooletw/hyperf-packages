@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Testing;
 
-use Hyperf\Coroutine\Coroutine;
 use Mockery as m;
-use RuntimeException;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithConsole;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithContainer;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithDatabase;
@@ -49,17 +47,6 @@ class TestCase extends \PHPUnit\Framework\TestCase
      * Indicates if we have made it through the base setUp function.
      */
     protected bool $setUpHasRun = false;
-
-    public static function setUpBeforeClass(): void
-    {
-        if (! Coroutine::inCoroutine()) {
-            throw new RuntimeException(
-                'Feature tests must be run with `co-phpunit`'
-            );
-
-            static::markTestSkipped();
-        }
-    }
 
     protected function setUp(): void
     {

@@ -8,7 +8,10 @@ use Hyperf\Coordinator\Constants;
 use Hyperf\Coordinator\CoordinatorManager;
 use Swoole\Coroutine;
 use Swoole\Timer;
+use SwooleTW\Hyperf\Support\Context;
 use Throwable;
+
+use function Hyperf\Coroutine\run;
 
 /**
  * @method string name()
@@ -16,6 +19,8 @@ use Throwable;
 trait RunTestsInCoroutine
 {
     protected bool $enableCoroutine = true;
+
+    protected bool $copyNonCoroutineContext = false;
 
     protected string $realTestName = '';
 
@@ -27,14 +32,18 @@ trait RunTestsInCoroutine
         $exception = null;
 
         /* @phpstan-ignore-next-line */
-        \Swoole\Coroutine\run(function () use (&$testResult, &$exception, $arguments) {
+        run(function () use (&$testResult, &$exception, $arguments) {
+            if ($this->copyNonCoroutineContext) {
+                Context::copyFromNonCoroutine();
+            }
+
             try {
-                $this->invokeBeforeHookMethods();
+                $this->invokeSetupInCoroutine();
                 $testResult = $this->{$this->realTestName}(...$arguments);
             } catch (Throwable $e) {
                 $exception = $e;
             } finally {
-                $this->invokeAfterHookMethods();
+                $this->invokeTearDownInCoroutine();
                 Timer::clearAll();
                 CoordinatorManager::until(Constants::WORKER_EXIT)->resume();
             }
@@ -57,17 +66,17 @@ trait RunTestsInCoroutine
         return parent::runTest();
     }
 
-    protected function invokeBeforeHookMethods(): void
+    protected function invokeSetupInCoroutine(): void
     {
-        if (method_exists($this, 'beforeTestInCoroutine')) {
-            call_user_func([$this, 'beforeTestInCoroutine']);
+        if (method_exists($this, 'setUpInCoroutine')) {
+            call_user_func([$this, 'setUpInCoroutine']);
         }
     }
 
-    protected function invokeAfterHookMethods(): void
+    protected function invokeTearDownInCoroutine(): void
     {
-        if (method_exists($this, 'afterTestInCoroutine')) {
-            call_user_func([$this, 'afterTestInCoroutine']);
+        if (method_exists($this, 'tearDownInCoroutine')) {
+            call_user_func([$this, 'tearDownInCoroutine']);
         }
     }
 }

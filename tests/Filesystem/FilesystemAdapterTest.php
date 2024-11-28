@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use GuzzleHttp\Psr7\Stream;
 use Hyperf\Context\ApplicationContext;
 use Hyperf\Context\Context;
+use Hyperf\Coroutine\Coroutine;
 use Hyperf\HttpMessage\Upload\UploadedFile;
 use InvalidArgumentException;
 use League\Flysystem\Filesystem;
@@ -21,6 +22,7 @@ use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
+use Swoole\Runtime;
 use SwooleTW\Hyperf\Filesystem\FilesystemAdapter;
 use SwooleTW\Hyperf\Filesystem\FilesystemManager;
 use SwooleTW\Hyperf\Http\Contracts\ResponseContract;
@@ -48,6 +50,10 @@ class FilesystemAdapterTest extends TestCase
 
     protected function tearDown(): void
     {
+        if (Coroutine::inCoroutine()) {
+            Runtime::enableCoroutine(false);
+        }
+
         $filesystem = new Filesystem(
             $this->adapter = new LocalFilesystemAdapter(dirname($this->tempDir))
         );

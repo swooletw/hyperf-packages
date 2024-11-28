@@ -7,6 +7,7 @@ namespace SwooleTW\Hyperf\Tests\Auth;
 use Hyperf\Config\Config;
 use Hyperf\Context\Context;
 use Hyperf\Contract\ConfigInterface;
+use Hyperf\Coroutine\Coroutine;
 use Hyperf\Database\ConnectionInterface;
 use Hyperf\Database\ConnectionResolverInterface;
 use Hyperf\Di\Container;
@@ -16,6 +17,7 @@ use SwooleTW\Hyperf\Auth\AuthManager;
 use SwooleTW\Hyperf\Auth\Contracts\Guard;
 use SwooleTW\Hyperf\Auth\Contracts\UserProvider;
 use SwooleTW\Hyperf\Auth\Providers\DatabaseUserProvider;
+use SwooleTW\Hyperf\Foundation\Testing\Concerns\RunTestsInCoroutine;
 use SwooleTW\Hyperf\Hashing\Contracts\Hasher as HashContract;
 use SwooleTW\Hyperf\Tests\TestCase;
 
@@ -25,6 +27,8 @@ use SwooleTW\Hyperf\Tests\TestCase;
  */
 class AuthMangerTest extends TestCase
 {
+    use RunTestsInCoroutine;
+
     public function testGetDefaultDriverFromConfig()
     {
         $manager = new AuthManager($container = $this->getContainer());
@@ -40,13 +44,11 @@ class AuthMangerTest extends TestCase
 
         Context::set('__auth.defaults.guard', 'foo');
 
-        $assertDefaultGuard = function () use ($manager) {
+        Coroutine::create(function () use ($manager) {
             Context::set('__auth.defaults.guard', 'bar');
 
             $this->assertSame('bar', $manager->getDefaultDriver());
-        };
-
-        $this->runInCoroutine($assertDefaultGuard);
+        });
 
         $this->assertSame('foo', $manager->getDefaultDriver());
     }
@@ -128,13 +130,11 @@ class AuthMangerTest extends TestCase
 
         $manager->resolveUsersUsing(fn () => 'foo');
 
-        $assertUserResolver = (function () use ($manager) {
+        Coroutine::create(function () use ($manager) {
             $manager->resolveUsersUsing(fn () => 'bar');
 
             $this->assertSame('bar', $manager->userResolver()());
         });
-
-        $this->runInCoroutine($assertUserResolver);
 
         $this->assertSame('foo', $manager->userResolver()());
     }
