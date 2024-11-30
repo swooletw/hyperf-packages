@@ -20,7 +20,7 @@ trait RunTestsInCoroutine
 {
     protected bool $enableCoroutine = true;
 
-    protected bool $copyNonCoroutineContext = false;
+    protected bool $copyNonCoroutineContext = true;
 
     protected string $realTestName = '';
 
