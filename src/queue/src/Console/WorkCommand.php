@@ -48,6 +48,7 @@ class WorkCommand extends Command
                             {--sleep=3 : Number of seconds to sleep when no job is available}
                             {--rest=0 : Number of seconds to rest between jobs}
                             {--timeout=60 : The number of seconds a child process can run}
+                            {--monitor-interval=1 : The time interval of seconds for monitoring timeout jobs}
                             {--tries=1 : Number of times to attempt a job before logging it failed}
                             {--json : Output the queue worker information as JSON}';
 
@@ -150,7 +151,8 @@ class WorkCommand extends Command
             (int) $this->option('max-jobs'),
             (int) $this->option('max-time'),
             (int) $this->option('rest'),
-            $concurrency
+            $concurrency,
+            (int) $this->option('monitor-interval'),
         );
     }
 

@@ -35,6 +35,7 @@ class WorkerOptions
         public int $maxTime = 0,
         public int $rest = 0,
         public int $concurrency = 1,
+        public int $monitorInterval = 1,
     ) {
     }
 }

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Queue;
 
+use Hyperf\Coordinator\Timer;
 use Hyperf\Coroutine\Concurrent;
 use Hyperf\Database\DetectsLostConnections;
+use Hyperf\Stringable\Str;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use SwooleTW\Hyperf\Cache\Contracts\Factory as CacheFactory;
 use SwooleTW\Hyperf\Foundation\Exceptions\Contracts\ExceptionHandler as ExceptionHandlerContract;
@@ -62,6 +64,33 @@ class Worker
     protected $resetScope;
 
     /**
+     * The callback used to monitor timeout jobs.
+     *
+     * @var callable
+     */
+    protected $monitorTimeoutJobs;
+
+    /**
+     * The running jobs.
+     */
+    protected array $runningJobs = [];
+
+    /**
+     * The timeout job IDs.
+     */
+    protected array $timeoutJobIds = [];
+
+    /**
+     * The job monitor's ID.
+     */
+    protected int $monitorId = 0;
+
+    /**
+     * Indicates if the job monitor is checking for timeout jobs.
+     */
+    protected bool $monitorLocked = false;
+
+    /**
      * Indicates if the worker should exit.
      */
     public bool $shouldQuit = false;
@@ -85,25 +114,26 @@ class Worker
      * @param EventDispatcherInterface $events the event dispatcher instance
      * @param ExceptionHandlerContract $exceptions the exception handler instance
      * @param callable $isDownForMaintenance the callback used to determine if the application is in maintenance mode
-     * @param null|callable $resetScope the callback used to reset the application's scope
+     * @param int $monitorInterval the monitor interval
      */
     public function __construct(
         protected QueueManager $manager,
         protected EventDispatcherInterface $events,
         protected ExceptionHandlerContract $exceptions,
         callable $isDownForMaintenance,
-        ?callable $resetScope = null
+        ?callable $monitorTimeoutJobs = null,
+        protected int $monitorInterval = 1,
     ) {
         $this->isDownForMaintenance = $isDownForMaintenance;
-        $this->resetScope = $resetScope;
+        $this->monitorTimeoutJobs = $monitorTimeoutJobs;
     }
 
     /**
      * Listen to the given queue in a loop.
      */
-    public function daemon(string $connectionName, string $queue, WorkerOptions $options): int
+    public function daemon(string $connectionName, string $queue, WorkerOptions $options, ?callable $monitorTimeoutJobs = null): int
     {
-        if ($supportsAsyncSignals = $this->supportsAsyncSignals()) {
+        if ($this->supportsAsyncSignals()) {
             $this->listenForSignals();
         }
 
@@ -112,6 +142,11 @@ class Worker
         [$startTime, $jobsProcessed] = [hrtime(true) / 1e9, 0];
 
         $concurrent = new Concurrent($options->concurrency);
+
+        // Before we begin processing, we will setup the monitor to check for timeout jobs
+        $monitorTimeoutJobs
+            ? $monitorTimeoutJobs($options)
+            : $this->monitorTimeoutJobs($options);
 
         while (true) {
             // Before reserving any jobs, we will make sure this queue is not paused and
@@ -127,41 +162,32 @@ class Worker
                 continue;
             }
 
-            if (isset($this->resetScope)) {
-                ($this->resetScope)();
-            }
-
-            // First, we will attempt to get the next job off of the queue. We will also
-            // register the timeout handler and reset the alarm for this job so it is
-            // not stuck in a frozen state forever. Then, we can fire off this job.
-            $job = $this->getNextJob(
-                $this->manager->connection($connectionName),
-                $queue
-            );
-
-            if ($supportsAsyncSignals) {
-                $this->registerTimeoutHandler($job, $options);
-            }
-
-            // If the daemon should run, then we can run
-            // fire off this job for processing. Otherwise, we will need to sleep the
-            // worker so no more jobs are processed until they should be processed.
-            if ($job) {
-                ++$jobsProcessed;
-
-                $concurrent->create(
-                    fn () => $this->runJob($job, $connectionName, $options)
-                );
-
-                if ($options->rest > 0) {
-                    $this->sleep($options->rest);
-                }
-            } else {
+            // If there are timeout jobs, we should not accept new jobs
+            if ($this->hasTimeoutJobs()) {
                 $this->sleep($options->sleep);
+                continue;
             }
 
-            if ($supportsAsyncSignals) {
-                $this->resetTimeoutHandler();
+            // First, we will attempt to get the next job off of the queue.
+            // Then, we can fire off this job. If there are no jobs,
+            // we will need to sleep the worker so no more jobs are processed
+            // until they should be processed.
+            $job = null;
+            $concurrent->create(function () use ($connectionName, $queue, $options, &$job, &$jobsProcessed) {
+                $job = $this->getNextJob(
+                    $this->manager->connection($connectionName),
+                    $queue
+                );
+                if ($job) {
+                    ++$jobsProcessed;
+                    $this->runJob($job, $connectionName, $options);
+                }
+            });
+
+            if ($job && $options->rest > 0) {
+                $this->sleep($options->rest);
+            } elseif (! $job && $jobsProcessed) {
+                $this->sleep($options->sleep);
             }
 
             // Finally, we will check to see if we have exceeded our memory limits or if
@@ -182,54 +208,93 @@ class Worker
     }
 
     /**
-     * Register the worker timeout handler.
+     * Monitor the jobs for timeout.
      */
-    protected function registerTimeoutHandler(?JobContract $job, WorkerOptions $options): void
+    protected function monitorTimeoutJobs(WorkerOptions $options): void
     {
-        // We will register a signal handler for the alarm signal so that we can kill this
-        // process if it is running too long because it has frozen. This uses the async
-        // signals supported in recent versions of PHP to accomplish it conveniently.
-        pcntl_signal(SIGALRM, function () use ($job, $options) {
-            if ($job) {
-                $this->markJobAsFailedIfWillExceedMaxAttempts(
-                    $job->getConnectionName(),
-                    $job,
-                    (int) $options->maxTries,
-                    $e = $this->timeoutExceededException($job)
-                );
+        if ($this->monitorId) {
+            return;
+        }
 
-                $this->markJobAsFailedIfWillExceedMaxExceptions(
-                    $job->getConnectionName(),
-                    $job,
-                    $e
-                );
+        if ($this->monitorTimeoutJobs) {
+            ($this->monitorTimeoutJobs)($options);
+            return;
+        }
 
-                $this->markJobAsFailedIfItShouldFailOnTimeout(
-                    $job->getConnectionName(),
-                    $job,
-                    $e
-                );
-
-                $this->events->dispatch(new JobTimedOut(
-                    $job->getConnectionName(),
-                    $job
-                ));
+        $this->monitorId = (new Timer())->tick($this->monitorInterval, function () use ($options) {
+            if ($this->monitorLocked) {
+                return;
             }
 
-            $this->kill(static::EXIT_ERROR, $options);
-        }, true);
+            $this->monitorLocked = true;
 
-        pcntl_alarm(
-            max($this->timeoutForJob($job, $options), 0)
-        );
+            $this->terminateTimeoutJobs($options);
+
+            if ($this->hasTimeoutJobs()) {
+                $this->shouldQuit = true;
+                $this->kill(static::EXIT_SUCCESS, $options);
+            }
+
+            $this->monitorLocked = false;
+        });
     }
 
     /**
-     * Reset the worker timeout handler.
+     * Scanning the running jobs and terminate the timeout jobs.
      */
-    protected function resetTimeoutHandler()
+    protected function terminateTimeoutJobs(WorkerOptions $options): void
     {
-        pcntl_alarm(0);
+        $currentTime = microtime(true);
+        foreach ($this->runningJobs as $jobId => $job) {
+            if ($job['expires_at'] <= $currentTime) {
+                $this->timeoutJobIds[] = $jobId;
+                unset($this->runningJobs[$jobId]);
+                $this->handleTimeoutJob($job['job'], $options);
+            }
+        }
+    }
+
+    /**
+     * Determine if there are any active coroutines.
+     */
+    protected function hasActiveCoroutines(): bool
+    {
+        return (bool) count($this->runningJobs);
+    }
+
+    /**
+     * Determine if there are any timeout jobs.
+     */
+    protected function hasTimeoutJobs(): bool
+    {
+        return (bool) count($this->timeoutJobIds);
+    }
+
+    protected function handleTimeoutJob(JobContract $job, WorkerOptions $options): void
+    {
+        $this->markJobAsFailedIfWillExceedMaxAttempts(
+            $job->getConnectionName(),
+            $job,
+            (int) $options->maxTries,
+            $e = $this->timeoutExceededException($job)
+        );
+
+        $this->markJobAsFailedIfWillExceedMaxExceptions(
+            $job->getConnectionName(),
+            $job,
+            $e
+        );
+
+        $this->markJobAsFailedIfItShouldFailOnTimeout(
+            $job->getConnectionName(),
+            $job,
+            $e
+        );
+
+        $this->events->dispatch(new JobTimedOut(
+            $job->getConnectionName(),
+            $job
+        ));
     }
 
     /**
@@ -248,8 +313,6 @@ class Worker
         return ! ((($this->isDownForMaintenance)() && ! $options->force)
             || $this->paused
             || ! tap($this->events->dispatch(new Looping($connectionName, $queue)), fn ($event) => $event->shouldRun()));
-        // return ! ($this->paused
-        //     || ! tap($this->events->dispatch(new Looping($connectionName, $queue)), fn ($event) => $event->shouldRun()));
     }
 
     /**
@@ -368,6 +431,8 @@ class Worker
      */
     public function process(string $connectionName, JobContract $job, WorkerOptions $options): void
     {
+        $runningJobId = null;
+
         try {
             // First we will raise the before job event and determine if the job has already run
             // over its maximum attempt limits, which could primarily happen when this job is
@@ -385,10 +450,18 @@ class Worker
                 return;
             }
 
+            // Next we will register this job to running jobs for timeout monitoring.
+            $runningJobId = $this->registerCoroutineJob($job, $options);
+
             // Here we will fire off the job and let it process. We will catch any exceptions, so
             // they can be reported to the developer's logs, etc. Once the job is finished the
             // proper events will be fired to let any listeners know this job has completed.
             $job->fire();
+
+            // If the job has timed out, we will raise the timeout event and mark the job as failed.
+            if (in_array($runningJobId, $this->timeoutJobIds)) {
+                return;
+            }
 
             $this->raiseAfterJobEvent($connectionName, $job);
         } catch (Throwable $e) {
@@ -396,12 +469,30 @@ class Worker
 
             $this->handleJobException($connectionName, $job, $options, $e);
         } finally {
+            if ($runningJobId) {
+                unset($this->runningJobs[$runningJobId]);
+            }
+
             $this->events->dispatch(new JobAttempted(
                 $connectionName,
                 $job,
                 $exceptionOccurred ?? false
             ));
         }
+    }
+
+    /**
+     * Register a coroutine job to running jobs.
+     */
+    protected function registerCoroutineJob(JobContract $job, WorkerOptions $options): string
+    {
+        $this->runningJobs[$jobId = Str::uuid()->toString()] = [
+            'job' => $job,
+            'start_at' => $startAt = microtime(true),
+            'expires_at' => $startAt + $this->timeoutForJob($job, $options),
+        ];
+
+        return $jobId;
     }
 
     /**
@@ -673,6 +764,12 @@ class Worker
     public function kill(int $status = 0, ?WorkerOptions $options = null): void
     {
         $this->events->dispatch(new WorkerStopping($status, $options));
+
+        // If there are any active coroutines, we will need to wait for
+        // them to finish before we can exit.
+        while ($this->hasActiveCoroutines()) {
+            $this->sleep(1);
+        }
 
         if (extension_loaded('posix')) {
             posix_kill(getmypid(), SIGKILL);

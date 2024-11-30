@@ -78,6 +78,29 @@ class QueueWorkerTest extends TestCase
         $this->events->shouldHaveReceived('dispatch')->with(m::type(JobProcessed::class))->once();
     }
 
+    public function testWorkerCanMonitorTimeoutJobs()
+    {
+        $workerOptions = new WorkerOptions();
+        $workerOptions->stopWhenEmpty = true;
+
+        $monitored = false;
+        $worker = $this->getWorker('default', ['queue' => [
+            $firstJob = new WorkerFakeJob(),
+        ]]);
+
+        $status = $worker->daemon('default', 'queue', $workerOptions, function () use (&$monitored) {
+            $monitored = true;
+        });
+
+        $this->assertTrue($monitored);
+
+        $this->assertTrue($firstJob->fired);
+
+        $this->assertSame(0, $status);
+
+        $this->events->shouldHaveReceived('dispatch')->with(m::type(JobProcessing::class))->once();
+    }
+
     public function testWorkerCanWorkUntilQueueIsEmpty()
     {
         $workerOptions = new WorkerOptions();
@@ -398,18 +421,17 @@ class QueueWorkerTest extends TestCase
      * @param mixed $connectionName
      * @param mixed $jobs
      */
-    private function getWorker($connectionName = 'default', $jobs = [], ?callable $isInMaintenanceMode = null)
+    private function getWorker($connectionName = 'default', $jobs = [], ?callable $isInMaintenanceMode = null): InsomniacWorker
     {
         return new InsomniacWorker(
             ...$this->workerDependencies($connectionName, $jobs, $isInMaintenanceMode)
         );
     }
 
-    private function workerDependencies($connectionName = 'default', $jobs = [], ?callable $isInMaintenanceMode = null)
+    private function workerDependencies($connectionName = 'default', $jobs = [], ?callable $isInMaintenanceMode = null): array
     {
         return [
             new WorkerFakeManager($connectionName, new WorkerFakeConnection($connectionName, $jobs)),
-            // new QueueFake($this->container, $jobs),
             $this->events,
             $this->exceptionHandler,
             $isInMaintenanceMode ?? function () {
