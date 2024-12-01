@@ -454,7 +454,6 @@ class EventDispatcher implements EventDispatcherContract
     protected function propagateListenerOptions(mixed $listener, CallQueuedListener $job): CallQueuedListener
     {
         return tap($job, function ($job) use ($listener) {
-            unset($job->data[0]);
             $data = array_values($job->data);
 
             if ($listener instanceof ShouldQueueAfterCommit) {
@@ -471,6 +470,7 @@ class EventDispatcher implements EventDispatcherContract
             $job->failOnTimeout = $listener->failOnTimeout ?? false;
             $job->tries = $listener->tries ?? null;
 
+            unset($data[0]);
             $job->through(array_merge(
                 method_exists($listener, 'middleware') ? $listener->middleware(...$data) : [],
                 $listener->middleware ?? []
