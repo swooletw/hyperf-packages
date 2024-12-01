@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Foundation;
 
 use Hyperf\Contract\ApplicationInterface;
+use Hyperf\Coordinator\Listener\ResumeExitCoordinatorListener;
+use Hyperf\ExceptionHandler\Listener\ErrorExceptionHandler;
 use SwooleTW\Hyperf\Foundation\Console\ApplicationFactory;
 use SwooleTW\Hyperf\Foundation\Console\Commands\ServerReloadCommand;
 use SwooleTW\Hyperf\Foundation\Console\Commands\VendorPublishCommand;
@@ -25,6 +27,8 @@ class ConfigProvider
                 ExceptionHandlerContract::class => ExceptionHandler::class,
             ],
             'listeners' => [
+                ErrorExceptionHandler::class,
+                ResumeExitCoordinatorListener::class,
                 ReloadDotenvAndConfig::class,
             ],
             'commands' => [
