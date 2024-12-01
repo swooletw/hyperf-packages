@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\Hyperf\Event;
+namespace Illuminate\Events;
 
 use DateInterval;
 use DateTimeInterface;

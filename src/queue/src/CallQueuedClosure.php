@@ -11,7 +11,7 @@ use ReflectionFunction;
 use SwooleTW\Hyperf\Bus\Batchable;
 use SwooleTW\Hyperf\Bus\Dispatchable;
 use SwooleTW\Hyperf\Bus\Queueable;
-use SwooleTW\Hyperf\Foundation\Contracts\Queue\ShouldQueue;
+use SwooleTW\Hyperf\Queue\Contracts\ShouldQueue;
 use Throwable;
 
 class CallQueuedClosure implements ShouldQueue

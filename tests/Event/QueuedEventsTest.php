@@ -4,16 +4,23 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Tests\Event;
 
-use Hyperf\AsyncQueue\Driver\DriverFactory as QueueFactory;
-use Hyperf\AsyncQueue\Driver\DriverInterface as QueueDriver;
+use Hyperf\Config\Config;
+use Hyperf\Context\ApplicationContext;
+use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\StdoutLoggerInterface;
+use Hyperf\Di\Definition\DefinitionSource;
+use Illuminate\Events\CallQueuedListener;
 use Mockery as m;
 use Mockery\MockInterface;
 use Psr\Container\ContainerInterface;
-use SwooleTW\Hyperf\Event\CallQueuedListener;
+use SwooleTW\Hyperf\Bus\Contracts\Dispatcher;
+use SwooleTW\Hyperf\Container\Container;
 use SwooleTW\Hyperf\Event\EventDispatcher;
 use SwooleTW\Hyperf\Event\ListenerProvider;
-use SwooleTW\Hyperf\Foundation\Contracts\Queue\ShouldQueue;
+use SwooleTW\Hyperf\Queue\Contracts\Factory as QueueFactoryContract;
+use SwooleTW\Hyperf\Queue\Contracts\Queue as QueueContract;
+use SwooleTW\Hyperf\Queue\Contracts\ShouldQueue;
+use SwooleTW\Hyperf\Support\Testing\Fakes\QueueFake;
 use SwooleTW\Hyperf\Tests\TestCase;
 
 use function SwooleTW\Hyperf\Event\queueable;
@@ -46,10 +53,10 @@ class QueuedEventsTest extends TestCase
 
         $d = $this->getEventDispatcher();
 
-        $queue = m::mock(QueueFactory::class);
-        $driver = m::mock(QueueDriver::class);
-        $queue->shouldReceive('get')->once()->with('default')->andReturn($driver);
-        $driver->shouldReceive('push')->once()->with(m::type(CallQueuedListener::class), 0);
+        $queue = m::mock(QueueFactoryContract::class);
+        $connection = m::mock(QueueContract::class);
+        $connection->shouldReceive('pushOn')->with(null, m::type(CallQueuedListener::class))->once();
+        $queue->shouldReceive('connection')->with(null)->once()->andReturn($connection);
 
         $d->setQueueResolver(fn () => $queue);
 
@@ -67,10 +74,10 @@ class QueuedEventsTest extends TestCase
 
         $d = $this->getEventDispatcher();
 
-        $queue = m::mock(QueueFactory::class);
-        $driver = m::mock(QueueDriver::class);
-        $queue->shouldReceive('get')->twice()->with('default')->andReturn($driver);
-        $driver->shouldReceive('push')->twice()->with(m::type(CallQueuedListener::class), 0);
+        $queue = m::mock(QueueFactoryContract::class);
+        $connection = m::mock(QueueContract::class);
+        $connection->shouldReceive('pushOn')->with(null, m::type(CallQueuedListener::class))->twice();
+        $queue->shouldReceive('connection')->with(null)->twice()->andReturn($connection);
 
         $d->setQueueResolver(fn () => $queue);
 
@@ -89,10 +96,10 @@ class QueuedEventsTest extends TestCase
 
         $d = $this->getEventDispatcher();
 
-        $queue = m::mock(QueueFactory::class);
-        $driver = m::mock(QueueDriver::class);
-        $queue->shouldReceive('get')->once()->with('some_other_connection')->andReturn($driver);
-        $driver->shouldReceive('push')->once()->with(m::type(CallQueuedListener::class), 0);
+        $queue = m::mock(QueueFactoryContract::class);
+        $connection = m::mock(QueueContract::class);
+        $connection->shouldReceive('pushOn')->with(null, m::type(CallQueuedListener::class))->once();
+        $queue->shouldReceive('connection')->with('some_other_connection')->once()->andReturn($connection);
 
         $d->setQueueResolver(fn () => $queue);
 
@@ -110,10 +117,10 @@ class QueuedEventsTest extends TestCase
 
         $d = $this->getEventDispatcher();
 
-        $queue = m::mock(QueueFactory::class);
-        $driver = m::mock(QueueDriver::class);
-        $queue->shouldReceive('get')->once()->with('default')->andReturn($driver);
-        $driver->shouldReceive('push')->once()->with(m::type(CallQueuedListener::class), 20);
+        $queue = m::mock(QueueFactoryContract::class);
+        $connection = m::mock(QueueContract::class);
+        $connection->shouldReceive('laterOn')->with(null, 20, m::type(CallQueuedListener::class))->once();
+        $queue->shouldReceive('connection')->with(null)->once()->andReturn($connection);
 
         $d->setQueueResolver(fn () => $queue);
 
@@ -131,10 +138,10 @@ class QueuedEventsTest extends TestCase
 
         $d = $this->getEventDispatcher();
 
-        $queue = m::mock(QueueFactory::class);
-        $driver = m::mock(QueueDriver::class);
-        $queue->shouldReceive('get')->once()->with('redis')->andReturn($driver);
-        $driver->shouldReceive('push')->once()->with(m::type(CallQueuedListener::class), 0);
+        $queue = m::mock(QueueFactoryContract::class);
+        $connection = m::mock(QueueContract::class);
+        $connection->shouldReceive('pushOn')->with(null, m::type(CallQueuedListener::class))->once();
+        $queue->shouldReceive('connection')->with('redis')->once()->andReturn($connection);
 
         $d->setQueueResolver(fn () => $queue);
 
@@ -155,10 +162,10 @@ class QueuedEventsTest extends TestCase
 
         $d = $this->getEventDispatcher();
 
-        $queue = m::mock(QueueFactory::class);
-        $driver = m::mock(QueueDriver::class);
-        $queue->shouldReceive('get')->once()->with('default')->andReturn($driver);
-        $driver->shouldReceive('push')->once()->with(m::type(CallQueuedListener::class), 60);
+        $queue = m::mock(QueueFactoryContract::class);
+        $connection = m::mock(QueueContract::class);
+        $connection->shouldReceive('laterOn')->with(null, 60, m::type(CallQueuedListener::class))->once();
+        $queue->shouldReceive('connection')->with(null)->once()->andReturn($connection);
 
         $d->setQueueResolver(fn () => $queue);
 
@@ -166,37 +173,37 @@ class QueuedEventsTest extends TestCase
         $d->dispatch('some.event', [['useHighDelay' => true], 'bar']);
     }
 
-    public function testQueueMaxAttempts()
+    public function testQueuePropagateRetryUntilAndMaxExceptions()
     {
-        $this->container
-            ->shouldReceive('get')
-            ->once()
-            ->with(TestDispatcherOptions::class)
-            ->andReturn(new TestDispatcherOptions());
+        $this->container = $this->getContainer();
 
         $d = $this->getEventDispatcher();
 
-        $queue = m::mock(QueueFactory::class);
-        $driver = m::mock(QueueDriver::class);
-        $queue->shouldReceive('get')->once()->with('default')->andReturn($driver);
-        $driver->shouldReceive('push')->once()->withArgs(function ($job, $delay) {
-            return $job->getMaxAttempts() === 1 && $delay === 0;
-        });
+        $fakeQueue = new QueueFake($this->container);
 
-        $d->setQueueResolver(fn () => $queue);
+        $d->setQueueResolver(function () use ($fakeQueue) {
+            return $fakeQueue;
+        });
 
         $d->listen('some.event', TestDispatcherOptions::class . '@handle');
         $d->dispatch('some.event', ['foo', 'bar']);
+
+        $fakeQueue->assertPushed(CallQueuedListener::class, function ($job) {
+            return $job->maxExceptions === 1 && $job->retryUntil !== null;
+        });
     }
 
     public function testQueuedClosureEventHandlersAreQueued()
     {
+        $dispatcher = m::mock(Dispatcher::class);
+        $dispatcher->shouldReceive('dispatch');
+
+        $this->container = $this->getContainer();
+        $this->container->set(Dispatcher::class, $dispatcher);
+
         $d = $this->getEventDispatcher();
 
-        $queue = m::mock(QueueFactory::class);
-        $driver = m::mock(QueueDriver::class);
-        $queue->shouldReceive('get')->once()->with('default')->andReturn($driver);
-        $driver->shouldReceive('push')->once()->with(m::type(CallQueuedListener::class), 0);
+        $queue = m::mock(QueueFactoryContract::class);
 
         $d->setQueueResolver(fn () => $queue);
 
@@ -204,49 +211,40 @@ class QueuedEventsTest extends TestCase
         $d->dispatch('some.event', ['foo', 'bar']);
     }
 
-    public function testQueuedClosureQueueIsSetByOnConnection()
+    public function testQueuePropagateMiddleware()
     {
+        $this->container = $this->getContainer();
+
         $d = $this->getEventDispatcher();
 
-        $queue = m::mock(QueueFactory::class);
-        $driver = m::mock(QueueDriver::class);
-        $queue->shouldReceive('get')->once()->with('some_other_connection')->andReturn($driver);
-        $driver->shouldReceive('push')->once()->with(m::type(CallQueuedListener::class), 0);
+        $fakeQueue = new QueueFake($this->container);
 
-        $d->setQueueResolver(fn () => $queue);
+        $d->setQueueResolver(function () use ($fakeQueue) {
+            return $fakeQueue;
+        });
 
-        $d->listen('some.event', queueable(function () {})->onConnection('some_other_connection'));
+        $d->listen('some.event', TestDispatcherMiddleware::class . '@handle');
         $d->dispatch('some.event', ['foo', 'bar']);
+
+        $fakeQueue->assertPushed(CallQueuedListener::class, function ($job) {
+            return count($job->middleware) === 1
+                && $job->middleware[0] instanceof TestMiddleware
+                && $job->middleware[0]->a === 'foo'
+                && $job->middleware[0]->b === 'bar';
+        });
     }
 
-    public function testQueuedClosureDelayIsSetByDelay()
+    private function getContainer(): Container
     {
-        $d = $this->getEventDispatcher();
+        $container = new Container(
+            new DefinitionSource([
+                ConfigInterface::class => fn () => new Config([]),
+            ])
+        );
 
-        $queue = m::mock(QueueFactory::class);
-        $driver = m::mock(QueueDriver::class);
-        $queue->shouldReceive('get')->once()->with('default')->andReturn($driver);
-        $driver->shouldReceive('push')->once()->with(m::type(CallQueuedListener::class), 20);
+        ApplicationContext::setContainer($container);
 
-        $d->setQueueResolver(fn () => $queue);
-
-        $d->listen('some.event', queueable(function () {})->delay(20));
-        $d->dispatch('some.event', ['foo', 'bar']);
-    }
-
-    public function testAnonymousQueuedClosureListeners()
-    {
-        $d = $this->getEventDispatcher();
-
-        $queue = m::mock(QueueFactory::class);
-        $driver = m::mock(QueueDriver::class);
-        $queue->shouldReceive('get')->once()->with('default')->andReturn($driver);
-        $driver->shouldReceive('push')->once()->with(m::type(CallQueuedListener::class), 0);
-
-        $d->setQueueResolver(fn () => $queue);
-
-        $d->listen(queueable(function (TestDispatcherAnonymousQueuedClosureEvent $event) {}));
-        $d->dispatch(new TestDispatcherAnonymousQueuedClosureEvent());
+        return $container;
     }
 
     private function getEventDispatcher(?StdoutLoggerInterface $logger = null): EventDispatcher
@@ -296,10 +294,45 @@ class TestDispatcherGetDelay implements ShouldQueue
 
 class TestDispatcherOptions implements ShouldQueue
 {
-    public $maxAttempts = 1;
+    public $maxExceptions = 1;
+
+    public function retryUntil()
+    {
+        return now()->addHour(1);
+    }
 
     public function handle()
     {
+    }
+}
+
+class TestDispatcherMiddleware implements ShouldQueue
+{
+    public function middleware($a, $b)
+    {
+        return [new TestMiddleware($a, $b)];
+    }
+
+    public function handle($a, $b)
+    {
+    }
+}
+
+class TestMiddleware
+{
+    public $a;
+
+    public $b;
+
+    public function __construct($a, $b)
+    {
+        $this->a = $a;
+        $this->b = $b;
+    }
+
+    public function handle($job, $next)
+    {
+        $next($job);
     }
 }
 
@@ -309,7 +342,7 @@ class TestDispatcherGetConnectionDynamically implements ShouldQueue
     {
     }
 
-    public function viaConnection($_, $event)
+    public function viaConnection($event)
     {
         if ($event['shouldUseRedisConnection']) {
             return 'redis';
@@ -327,7 +360,7 @@ class TestDispatcherGetDelayDynamically implements ShouldQueue
     {
     }
 
-    public function withDelay($_, $event)
+    public function withDelay($event)
     {
         if ($event['useHighDelay']) {
             return 60;

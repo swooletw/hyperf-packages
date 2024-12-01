@@ -22,7 +22,7 @@ trait InteractsWithQueue
     /**
      * The underlying queue job instance.
      */
-    public ?JobContract $job;
+    public ?JobContract $job = null;
 
     /**
      * Get the number of times the job has been attempted.

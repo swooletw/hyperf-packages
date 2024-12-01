@@ -13,7 +13,6 @@ use SwooleTW\Hyperf\Foundation\Console\Scheduling\Schedule;
 use SwooleTW\Hyperf\Foundation\Exceptions\Contracts\ExceptionHandler as ExceptionHandlerContract;
 use SwooleTW\Hyperf\Foundation\Exceptions\Handler as ExceptionHandler;
 use SwooleTW\Hyperf\Foundation\Listeners\ReloadDotenvAndConfig;
-use SwooleTW\Hyperf\Foundation\Queue\Console\QueueWorkCommand;
 
 class ConfigProvider
 {
@@ -29,7 +28,6 @@ class ConfigProvider
                 ReloadDotenvAndConfig::class,
             ],
             'commands' => [
-                QueueWorkCommand::class,
                 ServerReloadCommand::class,
                 VendorPublishCommand::class,
             ],

@@ -22,7 +22,7 @@ interface Queue
     /**
      * Push a new job onto the queue.
      */
-    public function pushOn(string $queue, object|string $job, mixed $data = ''): mixed;
+    public function pushOn(?string $queue, object|string $job, mixed $data = ''): mixed;
 
     /**
      * Push a raw payload onto the queue.
@@ -37,7 +37,7 @@ interface Queue
     /**
      * Push a new job onto a specific queue after (n) seconds.
      */
-    public function laterOn(string $queue, DateInterval|DateTimeInterface|int $delay, object|string $job, mixed $data = ''): mixed;
+    public function laterOn(?string $queue, DateInterval|DateTimeInterface|int $delay, object|string $job, mixed $data = ''): mixed;
 
     /**
      * Push an array of jobs onto the queue.

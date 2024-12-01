@@ -9,6 +9,8 @@ use Exception;
 use Mockery;
 use Mockery\MockInterface;
 use Psr\Container\ContainerInterface;
+use SwooleTW\Hyperf\Database\TransactionManager;
+use SwooleTW\Hyperf\Event\Contracts\ShouldDispatchAfterCommit;
 use SwooleTW\Hyperf\Event\EventDispatcher;
 use SwooleTW\Hyperf\Event\ListenerProvider;
 use SwooleTW\Hyperf\Tests\TestCase;
@@ -247,6 +249,36 @@ class EventsDispatcherTest extends TestCase
         $this->assertSame(['regular', 'wildcard'], $_SERVER['__event.test']);
     }
 
+    public function testWildcardListenersWithEventResponse()
+    {
+        unset($_SERVER['__event.test']);
+        $d = $this->getEventDispatcher();
+        $d->listen('foo.bar', function () {
+            return 'regular';
+        });
+
+        $response = $d->dispatch('foo.bar');
+
+        $this->assertEquals('foo.bar', $response);
+    }
+
+    public function testWildcardListenersCacheFlushing()
+    {
+        unset($_SERVER['__event.test']);
+        $d = $this->getEventDispatcher();
+        $d->listen('foo.*', function () {
+            $_SERVER['__event.test'] = 'cached_wildcard';
+        });
+        $d->dispatch('foo.bar');
+        $this->assertSame('cached_wildcard', $_SERVER['__event.test']);
+
+        $d->listen('foo.*', function () {
+            $_SERVER['__event.test'] = 'new_wildcard';
+        });
+        $d->dispatch('foo.bar');
+        $this->assertSame('new_wildcard', $_SERVER['__event.test']);
+    }
+
     public function testListenersCanBeRemoved()
     {
         unset($_SERVER['__event.test']);
@@ -271,6 +303,26 @@ class EventsDispatcherTest extends TestCase
         });
         $d->forget('foo.*');
         $d->dispatch('foo.bar');
+
+        $this->assertFalse(isset($_SERVER['__event.test']));
+    }
+
+    public function testWildcardCacheIsClearedWhenListenersAreRemoved()
+    {
+        unset($_SERVER['__event.test']);
+
+        $d = $this->getEventDispatcher();
+        $d->listen('foo*', function () {
+            $_SERVER['__event.test'] = 'foo';
+        });
+        $d->dispatch('foo');
+
+        $this->assertSame('foo', $_SERVER['__event.test']);
+
+        unset($_SERVER['__event.test']);
+
+        $d->forget('foo*');
+        $d->dispatch('foo');
 
         $this->assertFalse(isset($_SERVER['__event.test']));
     }
@@ -621,6 +673,26 @@ class EventsDispatcherTest extends TestCase
         $this->assertSame('Listener3', $rawListeners['event3'][0]->listener);
     }
 
+    public function testDispatchWithAfterCommit()
+    {
+        $transactionResolver = Mockery::mock(TransactionManager::class);
+        $transactionResolver
+            ->shouldReceive('addCallback')
+            ->once();
+
+        $d = $this->getEventDispatcher();
+        $d->setTransactionManagerResolver(fn () => $transactionResolver);
+
+        $listenerTriggered = false;
+        $d->listen(AfterCommitEvent::class, function ($event, $foo) use (&$listenerTriggered) {
+            $listenerTriggered = true;
+        });
+
+        $d->dispatch(new AfterCommitEvent());
+
+        $this->assertFalse($listenerTriggered);
+    }
+
     private function getEventDispatcher(): EventDispatcher
     {
         return new EventDispatcher(new ListenerProvider(), null, $this->container);
@@ -673,6 +745,10 @@ interface SomeEventInterface
 }
 
 class AnotherEvent implements SomeEventInterface
+{
+}
+
+class AfterCommitEvent implements ShouldDispatchAfterCommit
 {
 }
 

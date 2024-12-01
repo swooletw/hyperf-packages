@@ -23,7 +23,8 @@
     },
     "autoload": {
         "psr-4": {
-            "SwooleTW\\Hyperf\\Event\\": "src/"
+            "SwooleTW\\Hyperf\\Event\\": "src/",
+            "Illuminate\\Events\\": "illuminate/"
         },
         "files": [
             "src/Functions.php"

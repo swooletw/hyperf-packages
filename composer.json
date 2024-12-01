@@ -24,6 +24,7 @@
     },
     "autoload": {
         "psr-4": {
+            "Illuminate\\Events\\": "src/event/illuminate/",
             "SwooleTW\\Hyperf\\": "src/framework/src/",
             "SwooleTW\\Hyperf\\Auth\\": "src/auth/src/",
             "SwooleTW\\Hyperf\\Bus\\": "src/bus/src/",
@@ -75,7 +76,6 @@
         "ext-openssl": "*",
         "ext-json": "*",
         "ext-pdo": "*",
-        "hyperf/async-queue": "~3.1.0",
         "hyperf/cache": "~3.1.0",
         "hyperf/command": "~3.1.0",
         "hyperf/config": "~3.1.0",

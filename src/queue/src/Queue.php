@@ -54,7 +54,7 @@ abstract class Queue
     /**
      * Push a new job onto the queue.
      */
-    public function pushOn(string $queue, object|string $job, mixed $data = ''): mixed
+    public function pushOn(?string $queue, object|string $job, mixed $data = ''): mixed
     {
         /* @phpstan-ignore-next-line */
         return $this->push($job, $data, $queue);
@@ -63,7 +63,7 @@ abstract class Queue
     /**
      * Push a new job onto a specific queue after (n) seconds.
      */
-    public function laterOn(string $queue, DateInterval|DateTimeInterface|int $delay, object|string $job, mixed $data = ''): mixed
+    public function laterOn(?string $queue, DateInterval|DateTimeInterface|int $delay, object|string $job, mixed $data = ''): mixed
     {
         /* @phpstan-ignore-next-line */
         return $this->later($delay, $job, $data, $queue);

@@ -31,7 +31,7 @@ class QueuePoolProxy extends PoolProxy implements Queue
     /**
      * Push a new job onto the queue.
      */
-    public function pushOn(string $queue, object|string $job, mixed $data = ''): mixed
+    public function pushOn(?string $queue, object|string $job, mixed $data = ''): mixed
     {
         return $this->__call(__FUNCTION__, func_get_args());
     }
@@ -55,7 +55,7 @@ class QueuePoolProxy extends PoolProxy implements Queue
     /**
      * Push a new job onto a specific queue after (n) seconds.
      */
-    public function laterOn(string $queue, DateInterval|DateTimeInterface|int $delay, object|string $job, mixed $data = ''): mixed
+    public function laterOn(?string $queue, DateInterval|DateTimeInterface|int $delay, object|string $job, mixed $data = ''): mixed
     {
         return $this->__call(__FUNCTION__, func_get_args());
     }

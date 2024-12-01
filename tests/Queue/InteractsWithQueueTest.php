@@ -29,7 +29,7 @@ class InteractsWithQueueTest extends TestCase
         $job = new class {
             use InteractsWithQueue;
 
-            public ?Job $job;
+            public ?Job $job = null;
         };
 
         $job->job = $queueJob;

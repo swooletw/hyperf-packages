@@ -511,7 +511,7 @@ trait HasQueue
         return null;
     }
 
-    public function pushOn(string $queue, object|string $job, mixed $data = ''): mixed
+    public function pushOn(?string $queue, object|string $job, mixed $data = ''): mixed
     {
         return $this->push($job, $data, $queue);
     }
@@ -526,7 +526,7 @@ trait HasQueue
         return null;
     }
 
-    public function laterOn(string $queue, DateInterval|DateTimeInterface|int $delay, object|string $job, mixed $data = ''): mixed
+    public function laterOn(?string $queue, DateInterval|DateTimeInterface|int $delay, object|string $job, mixed $data = ''): mixed
     {
         return null;
     }

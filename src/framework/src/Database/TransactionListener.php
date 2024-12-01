@@ -35,7 +35,7 @@ class TransactionListener implements ListenerInterface
         $transactionLevel = $this->container->get(ConnectionResolverInterface::class)
             ->connection($event->connectionName)
             ->transactionLevel();
-        if (! $transactionLevel !== 0) {
+        if ($transactionLevel !== 0) {
             return;
         }
 

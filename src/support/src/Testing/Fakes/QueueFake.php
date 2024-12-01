@@ -106,7 +106,7 @@ class QueueFake extends QueueManager implements Fake, Queue
     /**
      * Assert if a job was pushed based on a truth-test callback.
      */
-    public function assertPushedOn(string $queue, Closure|string $job, ?callable $callback = null): void
+    public function assertPushedOn(?string $queue, Closure|string $job, ?callable $callback = null): void
     {
         if ($job instanceof Closure) {
             [$job, $callback] = [$this->firstClosureParameterType($job), $job];
@@ -367,7 +367,7 @@ class QueueFake extends QueueManager implements Fake, Queue
     /**
      * Push a new job onto the queue.
      */
-    public function pushOn(string $queue, object|string $job, mixed $data = ''): mixed
+    public function pushOn(?string $queue, object|string $job, mixed $data = ''): mixed
     {
         return $this->push($job, $data, $queue);
     }
@@ -375,7 +375,7 @@ class QueueFake extends QueueManager implements Fake, Queue
     /**
      * Push a new job onto a specific queue after (n) seconds.
      */
-    public function laterOn(string $queue, DateInterval|DateTimeInterface|int $delay, object|string $job, mixed $data = ''): mixed
+    public function laterOn(?string $queue, DateInterval|DateTimeInterface|int $delay, object|string $job, mixed $data = ''): mixed
     {
         return $this->push($job, $data, $queue);
     }
