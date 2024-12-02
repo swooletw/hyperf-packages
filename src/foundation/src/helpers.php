@@ -13,7 +13,6 @@ use Hyperf\Validation\Contract\ValidatorFactoryInterface;
 use Hyperf\ViewEngine\Contract\FactoryInterface;
 use Hyperf\ViewEngine\Contract\ViewInterface;
 use Psr\Container\ContainerInterface;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use SwooleTW\Hyperf\Auth\Contracts\Gate;
@@ -26,7 +25,6 @@ use SwooleTW\Hyperf\Http\Contracts\ResponseContract;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\HttpException;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\HttpResponseException;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\NotFoundHttpException;
-use SwooleTW\Hyperf\Queue\CallQueuedClosure;
 use SwooleTW\Hyperf\Router\UrlGenerator;
 use SwooleTW\Hyperf\Support\Contracts\Responsable;
 
@@ -308,9 +306,7 @@ if (! function_exists('dispatch')) {
      */
     function dispatch($job): PendingClosureDispatch|PendingDispatch
     {
-        return $job instanceof Closure
-            ? new PendingClosureDispatch(CallQueuedClosure::create($job))
-            : new PendingDispatch($job);
+        return \SwooleTW\Hyperf\Bus\dispatch($job);
     }
 }
 
@@ -322,8 +318,7 @@ if (! function_exists('dispatch_sync')) {
      */
     function dispatch_sync(mixed $job, mixed $handler = null): mixed
     {
-        return app(Dispatcher::class)
-            ->dispatchSync($job, $handler);
+        return \SwooleTW\Hyperf\Bus\dispatch_sync($job, $handler);
     }
 }
 
@@ -339,7 +334,7 @@ if (! function_exists('event')) {
      */
     function event(object $event)
     {
-        return app(EventDispatcherInterface::class)->dispatch($event);
+        return \SwooleTW\Hyperf\Event\event($event);
     }
 }
 

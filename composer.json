@@ -51,6 +51,7 @@
         },
         "files": [
             "src/auth/src/Functions.php",
+            "src/bus/src/Functions.php",
             "src/cache/src/Functions.php",
             "src/config/src/Functions.php",
             "src/event/src/Functions.php",

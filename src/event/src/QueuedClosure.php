@@ -10,6 +10,8 @@ use DateTimeInterface;
 use Illuminate\Events\CallQueuedListener;
 use Laravel\SerializableClosure\SerializableClosure;
 
+use function SwooleTW\Hyperf\Bus\dispatch;
+
 class QueuedClosure
 {
     /**

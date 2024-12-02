@@ -39,7 +39,10 @@
     "autoload": {
         "psr-4": {
             "SwooleTW\\Hyperf\\Bus\\": "src/"
-        }
+        },
+        "files": [
+            "src/Functions.php"
+        ]
     },
     "extra": {
         "hyperf": {

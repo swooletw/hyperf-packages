@@ -370,7 +370,6 @@ class EventDispatcher implements EventDispatcherContract
     {
         return function () use ($class, $method) {
             $arguments = array_map(function ($a) {
-                // dd(debug_backtrace(2));
                 return is_object($a) ? clone $a : $a;
             }, func_get_args());
 
