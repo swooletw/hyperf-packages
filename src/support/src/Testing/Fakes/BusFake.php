@@ -10,7 +10,7 @@ use Closure;
 // use Illuminate\Bus\PendingBatch;
 // use Illuminate\Contracts\Bus\QueueingDispatcher;
 // use Illuminate\Support\Arr;
-// use Illuminate\Support\Collection;
+// use Hyperf\Collection\Collection;
 // use Illuminate\Support\Traits\ReflectsClosures;
 use Hyperf\Collection\Arr;
 use Hyperf\Collection\Collection;
@@ -537,9 +537,8 @@ class BusFake implements Fake, QueueingDispatcher
     {
         if ($this->shouldFakeJob($command)) {
             return $this->commands[get_class($command)][] = $this->getCommandRepresentation($command);
-        } else {
-            return $this->dispatcher->dispatch($command);
         }
+        return $this->dispatcher->dispatch($command);
     }
 
     /**
@@ -551,9 +550,8 @@ class BusFake implements Fake, QueueingDispatcher
     {
         if ($this->shouldFakeJob($command)) {
             return $this->commandsSync[get_class($command)][] = $this->getCommandRepresentation($command);
-        } else {
-            return $this->dispatcher->dispatchSync($command, $handler);
         }
+        return $this->dispatcher->dispatchSync($command, $handler);
     }
 
     /**
@@ -563,9 +561,8 @@ class BusFake implements Fake, QueueingDispatcher
     {
         if ($this->shouldFakeJob($command)) {
             return $this->commands[get_class($command)][] = $this->getCommandRepresentation($command);
-        } else {
-            return $this->dispatcher->dispatchNow($command, $handler);
         }
+        return $this->dispatcher->dispatchNow($command, $handler);
     }
 
     /**
@@ -575,9 +572,8 @@ class BusFake implements Fake, QueueingDispatcher
     {
         if ($this->shouldFakeJob($command)) {
             return $this->commands[get_class($command)][] = $this->getCommandRepresentation($command);
-        } else {
-            return $this->dispatcher->dispatchToQueue($command);
         }
+        return $this->dispatcher->dispatchToQueue($command);
     }
 
     /**
@@ -587,9 +583,8 @@ class BusFake implements Fake, QueueingDispatcher
     {
         if ($this->shouldFakeJob($command)) {
             return $this->commandsAfterResponse[get_class($command)][] = $this->getCommandRepresentation($command);
-        } else {
-            return $this->dispatcher->dispatch($command);
         }
+        return $this->dispatcher->dispatch($command);
     }
 
     /**
