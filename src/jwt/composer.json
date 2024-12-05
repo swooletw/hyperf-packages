@@ -21,7 +21,7 @@
         }
     ],
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
         "nesbot/carbon": "^2.16",
         "hyperf/collection": "~3.1.0",
         "lcobucci/jwt": "^5.0",
