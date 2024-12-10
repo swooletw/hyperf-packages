@@ -6,6 +6,8 @@ namespace SwooleTW\Hyperf\Http;
 
 use Hyperf\Codec\Json;
 use Hyperf\Context\ApplicationContext;
+use Hyperf\Context\Context;
+use Hyperf\Context\RequestContext;
 use Hyperf\Contract\Arrayable;
 use Hyperf\Contract\Jsonable;
 use Hyperf\HttpMessage\Server\Chunk\Chunkable;
@@ -18,6 +20,11 @@ use SwooleTW\Hyperf\Http\Contracts\ResponseContract;
 
 class Response extends HyperfResponse implements ResponseContract
 {
+    /**
+     * The context key for range headers.
+     */
+    public const RANGE_HEADERS_CONTEXT = '_response.withRangeHeaders';
+
     /**
      * Create a new response instance.
      */
@@ -118,12 +125,23 @@ class Response extends HyperfResponse implements ResponseContract
             $response->setHeader('Content-Type', 'text/event-stream');
         }
 
+        if ($this->shouldAppendRangeHeaders()) {
+            $this->appendRangeHeaders();
+        }
+
+        if ($response->getStatusCode() === 416) {
+            return $response;
+        }
+
+        // Because response emitter sent response in the end of request lifecycle,
+        // we need to send headers and status manually before writing content.
         /* @phpstan-ignore-next-line */
         if ($responseConnection = $this->getConnection()) {
             $swooleResponse = $responseConnection->getSocket();
             foreach ($response->getHeaders() as $key => $value) {
                 $swooleResponse->header($key, $value);
             }
+            $swooleResponse->status($response->getStatusCode(), $response->getReasonPhrase());
         }
 
         $output = new StreamOutput($response);
@@ -158,5 +176,114 @@ class Response extends HyperfResponse implements ResponseContract
         }
 
         return $this->stream($callback, $downloadHeaders);
+    }
+
+    /**
+     * Enable range headers for the response.
+     */
+    public function withRangeHeaders(): static
+    {
+        Context::set(static::RANGE_HEADERS_CONTEXT, true);
+
+        return $this;
+    }
+
+    /**
+     * Disable range headers for the response.
+     */
+    public function withoutRangeHeaders(): static
+    {
+        Context::destroy(static::RANGE_HEADERS_CONTEXT);
+
+        return $this;
+    }
+
+    /**
+     * Determine if the response should append range headers.
+     */
+    public function shouldAppendRangeHeaders(): bool
+    {
+        return Context::get(static::RANGE_HEADERS_CONTEXT, false);
+    }
+
+    /**
+     * Append range headers to the response.
+     */
+    protected function appendRangeHeaders(): ResponseInterface
+    {
+        $request = RequestContext::get();
+        $response = $this->getResponse();
+
+        if (! $response->hasHeader('Accept-Ranges')) {
+            // Only accept ranges on safe HTTP methods
+            $isMethodSafe = in_array($request->getMethod(), ['GET', 'HEAD', 'OPTIONS', 'TRACE']);
+            $response->addHeader('Accept-Ranges', $isMethodSafe ? 'bytes' : 'none');
+        }
+
+        if (! $request->hasHeader('Range') || $request->getMethod() !== 'GET') {
+            return $response;
+        }
+
+        $range = $request->getHeader('Range')[0] ?? null;
+        if (! str_starts_with($range, 'bytes=')) {
+            return $response;
+        }
+
+        // Process the range headers.
+        $fileSize = $response->getHeader('Content-Length')[0] ?? null;
+        if ($fileSize !== null) {
+            $fileSize = (int) $fileSize;
+        }
+        [$start, $end] = explode('-', substr($range, 6), 2) + [1 => ''];
+
+        // Convert start position
+        if ($start === '') {
+            if ($fileSize === null) {
+                $response->setStatus(416);
+                $response->setHeader('Content-Range', 'bytes */*');
+
+                return $response;
+            }
+            $start = $fileSize - (int) $end;
+            $end = $fileSize - 1;
+        } else {
+            $start = (int) $start;
+        }
+
+        // Convert end position
+        if ($end === '') {
+            $end = $fileSize !== null ? $fileSize - 1 : null;
+        } else {
+            $end = (int) $end;
+        }
+
+        // Validate the requested range
+        if ($start < 0 || ($end !== null && $start > $end) || ($fileSize !== null && $start >= $fileSize)) {
+            $response->setStatus(416);
+            $response->setHeader('Content-Range', sprintf('bytes */%s', $fileSize !== null ? $fileSize : '*'));
+            $response->unsetHeader('Content-Length');
+
+            return $response;
+        }
+
+        // Ensure the end position does not exceed the file size
+        if ($fileSize !== null) {
+            $end = min($end, $fileSize - 1);
+        }
+
+        $response->setStatus(206);
+
+        // Calculate and set Content-Length (if there is an explicit end position)
+        if ($end !== null) {
+            $length = $end - $start + 1;
+            $response->setHeader('Content-Length', $length);
+        }
+
+        // Set Content-Range
+        $rangeEnd = $end !== null ? $end : '*';
+        $totalSize = $fileSize !== null ? $fileSize : '*';
+        $response->setHeader('Content-Range', sprintf('bytes %d-%s/%s', $start, $rangeEnd, $totalSize));
+
+        return $response;
     }
 }
