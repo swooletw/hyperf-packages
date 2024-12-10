@@ -211,6 +211,9 @@ class Response extends HyperfResponse implements ResponseContract
      */
     protected function appendRangeHeaders(): ResponseInterface
     {
+        // Reset the range headers context once range headers are applied
+        $this->withoutRangeHeaders();
+
         $request = RequestContext::get();
         $response = $this->getResponse();
 
