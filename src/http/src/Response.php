@@ -17,6 +17,7 @@ use Hyperf\View\RenderInterface;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 use SwooleTW\Hyperf\Http\Contracts\ResponseContract;
+use SwooleTW\Hyperf\HttpMessage\Exceptions\RangeNotSatisfiableHttpException;
 
 class Response extends HyperfResponse implements ResponseContract
 {
@@ -181,9 +182,11 @@ class Response extends HyperfResponse implements ResponseContract
     /**
      * Enable range headers for the response.
      */
-    public function withRangeHeaders(): static
+    public function withRangeHeaders(?int $fileSize = null): static
     {
-        Context::set(static::RANGE_HEADERS_CONTEXT, true);
+        Context::set(static::RANGE_HEADERS_CONTEXT, [
+            'fileSize' => $fileSize,
+        ]);
 
         return $this;
     }
@@ -203,7 +206,19 @@ class Response extends HyperfResponse implements ResponseContract
      */
     public function shouldAppendRangeHeaders(): bool
     {
-        return Context::get(static::RANGE_HEADERS_CONTEXT, false);
+        return Context::has(static::RANGE_HEADERS_CONTEXT);
+    }
+
+    /**
+     * Pull range headers from the context.
+     */
+    protected function pullRangeHeaders(): ?array
+    {
+        $context = Context::get(static::RANGE_HEADERS_CONTEXT, null);
+
+        $this->withoutRangeHeaders();
+
+        return $context;
     }
 
     /**
@@ -211,9 +226,7 @@ class Response extends HyperfResponse implements ResponseContract
      */
     protected function appendRangeHeaders(): ResponseInterface
     {
-        // Reset the range headers context once range headers are applied
-        $this->withoutRangeHeaders();
-
+        $rangeHeaders = $this->pullRangeHeaders();
         $request = RequestContext::get();
         $response = $this->getResponse();
 
@@ -233,19 +246,18 @@ class Response extends HyperfResponse implements ResponseContract
         }
 
         // Process the range headers.
-        $fileSize = $response->getHeader('Content-Length')[0] ?? null;
-        if ($fileSize !== null) {
-            $fileSize = (int) $fileSize;
-        }
+        $fileSize = $rangeHeaders['fileSize'] ?? null;
         [$start, $end] = explode('-', substr($range, 6), 2) + [1 => ''];
 
         // Convert start position
         if ($start === '') {
             if ($fileSize === null) {
-                $response->setStatus(416);
-                $response->setHeader('Content-Range', 'bytes */*');
-
-                return $response;
+                throw new RangeNotSatisfiableHttpException(
+                    'The requested range is not satisfiable.',
+                    0,
+                    null,
+                    ['Content-Range' => 'bytes */*']
+                );
             }
             $start = $fileSize - (int) $end;
             $end = $fileSize - 1;
@@ -262,11 +274,12 @@ class Response extends HyperfResponse implements ResponseContract
 
         // Validate the requested range
         if ($start < 0 || ($end !== null && $start > $end) || ($fileSize !== null && $start >= $fileSize)) {
-            $response->setStatus(416);
-            $response->setHeader('Content-Range', sprintf('bytes */%s', $fileSize !== null ? $fileSize : '*'));
-            $response->unsetHeader('Content-Length');
-
-            return $response;
+            throw new RangeNotSatisfiableHttpException(
+                'The requested range is not satisfiable.',
+                0,
+                null,
+                ['Content-Range' => sprintf('bytes */%s', $fileSize !== null ? $fileSize : '*')]
+            );
         }
 
         // Ensure the end position does not exceed the file size

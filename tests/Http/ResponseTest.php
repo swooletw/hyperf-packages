@@ -18,6 +18,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
 use SwooleTW\Hyperf\Http\Response;
+use SwooleTW\Hyperf\HttpMessage\Exceptions\RangeNotSatisfiableHttpException;
 use Swow\Psr7\Message\ResponsePlusInterface;
 use Swow\Psr7\Message\ServerRequestPlusInterface;
 
@@ -231,11 +232,11 @@ class ResponseTest extends TestCase
 
         $response = new \SwooleTW\Hyperf\Http\Response();
         $stream = new SwooleStream($content);
-        $result = $response->withRangeHeaders()
+        $result = $response->withRangeHeaders(8888)
             ->streamDownload(
                 fn () => $stream->eof() ? false : $stream->read(1024),
                 'test.txt',
-                ['X-Download' => 'Yes', 'Content-Length' => 8888],
+                ['X-Download' => 'Yes'],
                 'attachment',
             );
 
@@ -301,28 +302,17 @@ class ResponseTest extends TestCase
             'Range' => ['bytes=9000-10000'],
         ]);
 
+        $this->expectException(RangeNotSatisfiableHttpException::class);
+
         $response = new \SwooleTW\Hyperf\Http\Response();
         $stream = new SwooleStream('File content');
-        $result = $response->withRangeHeaders()
+        $response->withRangeHeaders(8888)
             ->streamDownload(
                 fn () => $stream->eof() ? false : $stream->read(1024),
                 'test.txt',
-                ['X-Download' => 'Yes', 'Content-Length' => 8888],
+                ['X-Download' => 'Yes'],
                 'attachment',
             );
-
-        $this->assertInstanceOf(ResponseInterface::class, $result);
-        $this->assertSame($result->getStatusCode(), 416);
-        $this->assertEquals([
-            'Content-Type' => ['application/octet-stream'],
-            'Content-Description' => ['File Transfer'],
-            'Content-Transfer-Encoding' => ['binary'],
-            'Pragma' => ['no-cache'],
-            'Content-Disposition' => ['attachment; filename=test.txt'],
-            'X-Download' => ['Yes'],
-            'Accept-Ranges' => ['bytes'],
-            'Content-Range' => ['bytes */8888'],
-        ], $result->getHeaders());
     }
 
     protected function mockRequest(array $headers = [], string $method = 'GET'): ServerRequestPlusInterface
