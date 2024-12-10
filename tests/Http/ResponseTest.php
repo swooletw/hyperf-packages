@@ -210,7 +210,6 @@ class ResponseTest extends TestCase
         $this->assertEquals([
             'Content-Type' => ['application/octet-stream'],
             'Content-Description' => ['File Transfer'],
-            'Content-Transfer-Encoding' => ['binary'],
             'Pragma' => ['no-cache'],
             'Content-Disposition' => ['attachment; filename=test.txt'],
             'X-Download' => ['Yes'],
@@ -245,7 +244,6 @@ class ResponseTest extends TestCase
         $this->assertEquals([
             'Content-Type' => ['application/octet-stream'],
             'Content-Description' => ['File Transfer'],
-            'Content-Transfer-Encoding' => ['binary'],
             'Pragma' => ['no-cache'],
             'Content-Disposition' => ['attachment; filename=test.txt'],
             'X-Download' => ['Yes'],
@@ -282,7 +280,6 @@ class ResponseTest extends TestCase
         $this->assertEquals([
             'Content-Type' => ['application/octet-stream'],
             'Content-Description' => ['File Transfer'],
-            'Content-Transfer-Encoding' => ['binary'],
             'Pragma' => ['no-cache'],
             'Content-Disposition' => ['attachment; filename=test.txt'],
             'X-Download' => ['Yes'],
