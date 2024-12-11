@@ -39,6 +39,7 @@ use Psr\Http\Message\UriInterface;
 use RuntimeException;
 use SwooleTW\Hyperf\Filesystem\Contracts\Cloud as CloudFilesystemContract;
 use SwooleTW\Hyperf\Filesystem\Contracts\Filesystem as FilesystemContract;
+use SwooleTW\Hyperf\Http\Contracts\RequestContract;
 use SwooleTW\Hyperf\Http\Contracts\ResponseContract;
 use SwooleTW\Hyperf\Http\HeaderUtils;
 use SwooleTW\Hyperf\Http\StreamOutput;
@@ -240,11 +241,12 @@ class FilesystemAdapter implements CloudFilesystemContract
      */
     public function response(string $path, ?string $name = null, array $headers = [], ?string $disposition = 'inline'): ResponseInterface
     {
-        $response = ApplicationContext::getContainer()
-            ->get(ResponseContract::class);
+        $container = ApplicationContext::getContainer();
+        $request = $container->get(RequestContract::class);
+        $response = $container->get(ResponseContract::class);
 
         $headers['Content-Type'] ??= $this->mimeType($path);
-        $headers['Content-Length'] ??= $this->size($path);
+        $fileSize = $this->size($path);
 
         if (! array_key_exists('Content-Disposition', $headers)) {
             $disposition = HeaderUtils::makeDisposition(
@@ -256,12 +258,25 @@ class FilesystemAdapter implements CloudFilesystemContract
             $headers['Content-Disposition'] = $disposition;
         }
 
-        $chunkSize = 64 * 1024;
-        $stream = $this->readStream($path);
+        $stream = null;
+        if ($request->isRange()) {
+            [$start, $end] = HeaderUtils::validateRangeHeaders(
+                $request->header('Range'),
+                $fileSize
+            );
+            $response->withRangeHeaders($fileSize);
+            $stream = $this->readStreamRange($path, $start, $end);
+        } else {
+            $stream = $this->readStream($path);
+        }
 
+        $chunkSize = 64 * 1024;
         return $response->stream(function (StreamOutput $output) use ($stream, $chunkSize) {
             while (! feof($stream)) {
-                $output->write(fread($stream, $chunkSize));
+                if (! $content = fread($stream, $chunkSize)) {
+                    continue;
+                }
+                $output->write($content);
             }
 
             fclose($stream);
@@ -523,6 +538,11 @@ class FilesystemAdapter implements CloudFilesystemContract
         return $this->driver->lastModified($path);
     }
 
+    /**
+     * Get a resource to read the file.
+     *
+     * @return null|resource the path resource or null on failure
+     */
     public function readStream(string $path): mixed
     {
         try {
@@ -534,6 +554,22 @@ class FilesystemAdapter implements CloudFilesystemContract
         return null;
     }
 
+    /**
+     * Get a resource to read the partial file.
+     *
+     * @return null|resource the path resource or null on failure
+     * @throws RuntimeException
+     */
+    public function readStreamRange(string $path, ?int $start, ?int $end): mixed
+    {
+        throw new RuntimeException('This driver does not support reading stream with range.');
+    }
+
+    /**
+     * Write a new file using a stream.
+     *
+     * @param resource $resource
+     */
     public function writeStream(string $path, mixed $resource, array $options = []): bool
     {
         try {

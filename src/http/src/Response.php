@@ -256,8 +256,11 @@ class Response extends HyperfResponse implements ResponseContract
             $this->appendRangeHeaders();
         }
 
-        if ($response->hasHeader('Transfer-Encoding')) {
-            $response->unsetHeader('Content-Length');
+        $ignoreHeaders = ['Transfer-Encoding', 'Accept-Encoding', 'Content-Length'];
+        foreach ($ignoreHeaders as $header) {
+            if ($response->hasHeader($header)) {
+                $response->unsetHeader($header);
+            }
         }
 
         // Because response emitter sent response in the end of request lifecycle,
@@ -378,13 +381,7 @@ class Response extends HyperfResponse implements ResponseContract
         $fileSize = $rangeHeaders['fileSize'] ?? null;
         [$start, $end] = HeaderUtils::validateRangeHeaders($range, $fileSize);
 
-        $response->setStatus(206);
-
-        // Calculate and set Content-Length (if there is an explicit end position)
-        if ($end !== null) {
-            $length = $end - $start + 1;
-            $response->setHeader('Content-Length', $length);
-        }
+        $response->setStatus(static::HTTP_PARTIAL_CONTENT);
 
         // Set Content-Range
         $rangeEnd = $end !== null ? $end : '*';

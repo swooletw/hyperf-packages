@@ -68,12 +68,52 @@ class GoogleCloudStorageAdapter extends FilesystemAdapter
         return $this->getBucket()->object($this->prefixer->prefixPath($path))->beginSignedUploadSession($options);
     }
 
+    /**
+     * Get a resource to read the file.
+     *
+     * @return null|resource the path resource or null on failure
+     */
     public function readStream(string $path): mixed
+    {
+        return $this->readStreamWithOptions(
+            $path,
+            ($this->config['stream_reads'] ?? false) ? ['restOptions' => ['stream' => true]] : []
+        );
+    }
+
+    /**
+     * Get a resource to read the partial file.
+     *
+     * @return null|resource the path resource or null on failure
+     */
+    public function readStreamRange(string $path, ?int $start, ?int $end): mixed
+    {
+        return $this->readStreamWithOptions(
+            $path,
+            [
+                'restOptions' => [
+                    'headers' => [
+                        'Range' => "bytes={$start}-{$end}",
+                    ],
+                    ...(($this->config['stream_reads'] ?? false) ? ['stream' => true] : []),
+                ],
+            ]
+        );
+    }
+
+    /**
+     * Get the underlying GCS client.
+     */
+    public function getClient(): StorageClient
+    {
+        return $this->client;
+    }
+
+    private function readStreamWithOptions(string $path, array $options): mixed
     {
         $prefixedPath = $this->prefixer->prefixPath($path);
 
         try {
-            $options = ($this->config['stream_reads'] ?? false) ? ['restOptions' => ['stream' => true]] : [];
             $stream = $this->getBucket()->object($prefixedPath)->downloadAsStream($options)->detach();
         } catch (Throwable $exception) {
             throw UnableToReadFile::fromLocation($path, $exception->getMessage(), $exception);
@@ -84,14 +124,6 @@ class GoogleCloudStorageAdapter extends FilesystemAdapter
         }
 
         return $stream;
-    }
-
-    /**
-     * Get the underlying GCS client.
-     */
-    public function getClient(): StorageClient
-    {
-        return $this->client;
     }
 
     private function getBucket(): Bucket

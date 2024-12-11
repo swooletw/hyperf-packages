@@ -707,6 +707,22 @@ class Request extends HyperfRequest implements RequestContract
     }
 
     /**
+     * Determine if the it is a range request.
+     */
+    public function isRange(): bool
+    {
+        if (! $this->hasHeader('Range') || $this->getMethod() !== 'GET') {
+            return false;
+        }
+
+        if (! str_starts_with($this->header('Range'), 'bytes=')) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Get session for the current request.
      */
     public function session(): SessionInterface

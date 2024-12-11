@@ -339,6 +339,11 @@ interface RequestContract extends RequestInterface
     public function pjax(): bool;
 
     /**
+     * Determine if the it is a range request.
+     */
+    public function isRange(): bool;
+
+    /**
      * Get session for the current request.
      */
     public function session(): SessionInterface;

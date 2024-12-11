@@ -248,7 +248,6 @@ class ResponseTest extends TestCase
             'Content-Disposition' => ['attachment; filename=test.txt'],
             'X-Download' => ['Yes'],
             'Accept-Ranges' => ['bytes'],
-            'Content-Length' => ['1024'],
             'Content-Range' => ['bytes 0-1023/8888'],
         ], $result->getHeaders());
     }
@@ -284,7 +283,6 @@ class ResponseTest extends TestCase
             'Content-Disposition' => ['attachment; filename=test.txt'],
             'X-Download' => ['Yes'],
             'Accept-Ranges' => ['bytes'],
-            'Content-Length' => ['1024'],
             'Content-Range' => ['bytes 1024-2047/*'],
         ], $result->getHeaders());
     }
