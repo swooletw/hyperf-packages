@@ -697,6 +697,16 @@ class RequestTest extends TestCase
 
         $this->assertEquals(['name' => 'John Doe'], $result);
     }
+
+    public function testUserResolver()
+    {
+        $request = new Request();
+        $request->setUserResolver(function () {
+            return 'user';
+        });
+
+        $this->assertSame('user', $request->user());
+    }
 }
 
 enum StatusEnum: string

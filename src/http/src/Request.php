@@ -6,6 +6,7 @@ namespace SwooleTW\Hyperf\Http;
 
 use Carbon\Carbon;
 use Carbon\Exceptions\InvalidFormatException;
+use Closure;
 use Hyperf\Collection\Arr;
 use Hyperf\Collection\Collection;
 use Hyperf\Context\ApplicationContext;
@@ -26,6 +27,11 @@ use function Hyperf\Collection\data_get;
 
 class Request extends HyperfRequest implements RequestContract
 {
+    /**
+     * The user resolver callback.
+     */
+    protected ?Closure $userResolver = null;
+
     /**
      * Retrieve normalized file upload data.
      * This method returns upload metadata in a normalized tree, with each leaf
@@ -744,6 +750,33 @@ class Request extends HyperfRequest implements RequestContract
         return ApplicationContext::getContainer()
             ->get(ValidatorFactory::class)
             ->validate($data, $rules, $messages, $customAttributes);
+    }
+
+    /**
+     * Get the user resolver callback.
+     */
+    public function getUserResolver(): Closure
+    {
+        return $this->userResolver ?: function () {
+        };
+    }
+
+    /**
+     * Set the user resolver callback.
+     */
+    public function setUserResolver(Closure $callback): static
+    {
+        $this->userResolver = $callback;
+
+        return $this;
+    }
+
+    /**
+     * Get the user making the request.
+     */
+    public function user(?string $guard = null): mixed
+    {
+        return call_user_func($this->getUserResolver(), $guard);
     }
 
     /**
