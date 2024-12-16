@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Foundation\Testing;
 
 use Mockery as m;
+use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithAuthentication;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithConsole;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithContainer;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithDatabase;
@@ -23,10 +24,11 @@ class TestCase extends \PHPUnit\Framework\TestCase
 {
     use InteractsWithContainer;
     use MakesHttpRequests;
-    use MocksApplicationServices;
+    use InteractsWithAuthentication;
     use InteractsWithConsole;
     use InteractsWithDatabase;
     use InteractsWithTime;
+    use MocksApplicationServices;
 
     /**
      * The callbacks that should be run after the application is created.
