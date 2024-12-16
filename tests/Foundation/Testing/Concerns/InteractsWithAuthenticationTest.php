@@ -21,6 +21,13 @@ class InteractsWithAuthenticationTest extends ApplicationTestCase
 {
     use InteractsWithAuthentication;
 
+    public function tearDown(): void
+    {
+        parent::tearDown();
+
+        Context::destroy('__auth.defaults.guard');
+    }
+
     public function testAssertAsGuest()
     {
         $guard = Mockery::mock(Guard::class);
