@@ -24,4 +24,14 @@ interface Encrypter
      * Get the encryption key that the encrypter is currently using.
      */
     public function getKey(): string;
+
+    /**
+     * Get the current encryption key and all previous encryption keys.
+     */
+    public function getAllKeys(): array;
+
+    /**
+     * Get the previous encryption keys.
+     */
+    public function getPreviousKeys(): array;
 }
