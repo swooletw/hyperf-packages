@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Encryption;
 
+use SwooleTW\Hyperf\Encryption\Commands\KeyGenerateCommand;
 use SwooleTW\Hyperf\Encryption\Contracts\Encrypter;
 
 class ConfigProvider
@@ -13,6 +14,9 @@ class ConfigProvider
         return [
             'dependencies' => [
                 Encrypter::class => EncryptionFactory::class,
+            ],
+            'commands' => [
+                KeyGenerateCommand::class,
             ],
             'publish' => [
                 [
