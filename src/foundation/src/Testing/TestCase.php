@@ -12,7 +12,6 @@ use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithDatabase;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithTime;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\MakesHttpRequests;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\MocksApplicationServices;
-use SwooleTW\Hyperf\Support\Context;
 use SwooleTW\Hyperf\Support\Facades\Facade;
 use Throwable;
 
@@ -131,8 +130,6 @@ class TestCase extends \PHPUnit\Framework\TestCase
             m::close();
         } catch (Throwable) {
         }
-
-        Context::destroyAll();
 
         $this->setUpHasRun = false;
     }

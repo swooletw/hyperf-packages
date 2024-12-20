@@ -33,6 +33,7 @@ class ResponseTest extends TestCase
         Mockery::close();
         Context::destroy(ResponseInterface::class);
         Context::destroy(Response::RANGE_HEADERS_CONTEXT);
+        Context::destroy(ServerRequestInterface::class);
     }
 
     public function testMake()

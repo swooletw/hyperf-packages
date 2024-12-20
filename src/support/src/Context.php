@@ -28,8 +28,10 @@ class Context extends HyperfContext
 
     public static function destroyAll(?int $coroutineId = null): void
     {
+        $coroutineId = $coroutineId ?: Coroutine::id();
+
         // Clear non-coroutine context in non-coroutine environment.
-        if (! $coroutineId) {
+        if ($coroutineId < 0) {
             static::$nonCoContext = [];
             return;
         }
@@ -38,11 +40,16 @@ class Context extends HyperfContext
             return;
         }
 
+        $contextKeys = [];
         foreach ($context as $key => $_value) {
             if ($key === static::DEPTH_KEY) {
                 continue;
             }
-            unset($context[$key]);
+            $contextKeys[] = $key;
+        }
+
+        foreach ($contextKeys as $key) {
+            HyperfContext::destroy($key, $coroutineId);
         }
     }
 }
