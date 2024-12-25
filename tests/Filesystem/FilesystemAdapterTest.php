@@ -52,7 +52,7 @@ class FilesystemAdapterTest extends TestCase
     protected function tearDown(): void
     {
         if (Coroutine::inCoroutine()) {
-            Runtime::enableCoroutine(false);
+            Runtime::enableCoroutine(0);
         }
 
         $filesystem = new Filesystem(
