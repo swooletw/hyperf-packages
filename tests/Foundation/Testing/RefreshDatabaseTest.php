@@ -9,6 +9,7 @@ use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\ConnectionInterface;
 use Hyperf\DbConnection\Db;
 use Mockery as m;
+use PDO;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use SwooleTW\Hyperf\Foundation\Console\Contracts\Kernel as KernelContract;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithConsole;
@@ -30,6 +31,8 @@ class RefreshDatabaseTest extends ApplicationTestCase
     protected bool $seed = false;
 
     protected ?string $seeder = null;
+
+    protected bool $migrateRefresh = true;
 
     public function tearDown(): void
     {
@@ -162,6 +165,13 @@ class RefreshDatabaseTest extends ApplicationTestCase
         $connection->shouldReceive('setEventDispatcher')
             ->twice()
             ->with($eventDispatcher);
+
+        $pdo = m::mock(PDO::class);
+        $pdo->shouldReceive('inTransaction')
+            ->andReturn(true);
+        $connection->shouldReceive('getPdo')
+            ->once()
+            ->andReturn($pdo);
 
         $db = m::mock(Db::class);
         $db->shouldReceive('connection')

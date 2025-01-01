@@ -34,7 +34,9 @@ class BusBatchTest extends ApplicationTestCase
 {
     use RefreshDatabase;
 
-    protected function migrateUsing(): array
+    protected bool $migrateRefresh = true;
+
+    protected function migrateFreshUsing(): array
     {
         return [
             '--seed' => $this->shouldSeed(),
@@ -59,6 +61,8 @@ class BusBatchTest extends ApplicationTestCase
      */
     protected function tearDown(): void
     {
+        parent::tearDown();
+
         unset($_SERVER['__finally.batch'], $_SERVER['__progress.batch'], $_SERVER['__then.batch'], $_SERVER['__catch.batch'], $_SERVER['__catch.exception']);
 
         m::close();

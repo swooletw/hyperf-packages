@@ -29,6 +29,8 @@ class QueueDatabaseQueueIntegrationTest extends ApplicationTestCase
 
     protected ?DatabaseQueue $queue = null;
 
+    protected bool $migrateRefresh = true;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -44,12 +46,14 @@ class QueueDatabaseQueueIntegrationTest extends ApplicationTestCase
 
     protected function tearDown(): void
     {
+        parent::tearDown();
+
         m::close();
 
         Uuid::setFactory(new UuidFactory());
     }
 
-    protected function migrateUsing(): array
+    protected function migrateFreshUsing(): array
     {
         return [
             '--seed' => $this->shouldSeed(),

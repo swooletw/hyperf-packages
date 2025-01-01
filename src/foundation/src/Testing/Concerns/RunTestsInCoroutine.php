@@ -58,7 +58,7 @@ trait RunTestsInCoroutine
 
     final protected function runTest(): mixed
     {
-        if (extension_loaded('swoole') && Coroutine::getCid() === -1 && $this->enableCoroutine) {
+        if (Coroutine::getCid() === -1 && $this->enableCoroutine) {
             $this->realTestName = $this->name();
             parent::setName('runTestsInCoroutine');
         }

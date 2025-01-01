@@ -21,6 +21,8 @@ class PruneBatchesCommandTest extends ApplicationTestCase
     protected function tearDown(): void
     {
         m::close();
+
+        parent::tearDown();
     }
 
     public function testAllowPruningAllUnfinishedBatches()

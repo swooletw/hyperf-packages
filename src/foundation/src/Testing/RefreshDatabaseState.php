@@ -4,19 +4,24 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Testing;
 
+use PDO;
+
 class RefreshDatabaseState
 {
     /**
-     * Indicates if the test database has been migrated.
+     * The current SQLite in-memory database connections.
      *
-     * @var bool
+     * @var array<string, PDO>
      */
-    public static $migrated = false;
+    public static array $inMemoryConnections = [];
+
+    /**
+     * Indicates if the test database has been migrated.
+     */
+    public static bool $migrated = false;
 
     /**
      * Indicates if a lazy refresh hook has been invoked.
-     *
-     * @var bool
      */
-    public static $lazilyRefreshed = false;
+    public static bool $lazilyRefreshed = false;
 }
