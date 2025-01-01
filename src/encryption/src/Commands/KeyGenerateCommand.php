@@ -70,7 +70,7 @@ class KeyGenerateCommand extends HyperfCommand
         $currentKey = $this->config->get('app.key')
             ?: $this->config->get('encryption.key');
 
-        if (strlen($currentKey) !== 0 && (! $this->confirmToProceed())) {
+        if (strlen($currentKey ?: '') !== 0 && (! $this->confirmToProceed())) {
             return false;
         }
 
