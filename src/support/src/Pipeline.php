@@ -12,7 +12,7 @@ class Pipeline extends BasePipeline
 {
     use Conditionable;
 
-    public function make(): static
+    public static function make(): static
     {
         return new static(
             ApplicationContext::getContainer()
