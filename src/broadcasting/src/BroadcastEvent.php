@@ -9,13 +9,12 @@ use Hyperf\Contract\Arrayable;
 use ReflectionClass;
 use ReflectionProperty;
 use SwooleTW\Hyperf\Broadcasting\Contracts\Factory as BroadcastingFactory;
+use SwooleTW\Hyperf\Bus\Queueable;
+use SwooleTW\Hyperf\Queue\Contracts\ShouldQueue;
 
-// TODO: 當 queue 移植過來後補上
-// class BroadcastEvent implements ShouldQueue
-class BroadcastEvent
+class BroadcastEvent implements ShouldQueue
 {
-    // TODO: 當 queue 移植過來後補上
-    // use Queueable;
+    use Queueable;
 
     /**
      * The event instance.
@@ -36,11 +35,6 @@ class BroadcastEvent
      * The number of seconds to wait before retrying the job when encountering an uncaught exception.
      */
     public ?int $backoff;
-
-    /**
-     * Indicate that the event should be dispatched after all open database transactions have been committed.
-     */
-    public ?bool $afterCommit;
 
     /**
      * The maximum number of unhandled exceptions to allow before failing.

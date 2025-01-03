@@ -24,7 +24,10 @@ use SwooleTW\Hyperf\Broadcasting\Broadcasters\RedisBroadcaster;
 use SwooleTW\Hyperf\Broadcasting\Contracts\Broadcaster;
 use SwooleTW\Hyperf\Broadcasting\Contracts\Factory as BroadcastingFactoryContract;
 use SwooleTW\Hyperf\Broadcasting\Contracts\ShouldBeUnique;
-// use SwooleTW\Hyperf\Broadcasting\Contracts\ShouldBroadcastNow;
+use SwooleTW\Hyperf\Broadcasting\Contracts\ShouldBroadcastNow;
+use SwooleTW\Hyperf\Bus\Contracts\Dispatcher;
+use SwooleTW\Hyperf\Bus\UniqueLock;
+use SwooleTW\Hyperf\Cache\Contracts\Factory as Cache;
 use SwooleTW\Hyperf\ObjectPool\Traits\HasPoolProxy;
 
 /**
@@ -154,12 +157,12 @@ class BroadcastManager implements BroadcastingFactoryContract
      */
     public function queue(mixed $event): void
     {
-        // TODO: wait bus package
-        // if ($event instanceof ShouldBroadcastNow
-        //     || (is_object($event) && method_exists($event, 'shouldBroadcastNow') && $event->shouldBroadcastNow())
-        // ) {
-        //     return $this->app->get(BusDispatcherContract::class)->dispatchNow(new BroadcastEvent(clone $event));
-        // }
+        if ($event instanceof ShouldBroadcastNow
+            || (is_object($event) && method_exists($event, 'shouldBroadcastNow') && $event->shouldBroadcastNow())
+        ) {
+            $this->app->get(Dispatcher::class)->dispatchNow(new BroadcastEvent(clone $event));
+            return;
+        }
 
         $queue = match (true) {
             method_exists($event, 'broadcastQueue') => $event->broadcastQueue(),
@@ -178,10 +181,9 @@ class BroadcastManager implements BroadcastingFactoryContract
             }
         }
 
-        // TODO: wait queue package
-        // $this->app->get('queue')
-        //     ->connection($event->connection ?? null)
-        //     ->pushOn($queue, $broadcastEvent);
+        $this->app->get('queue')
+            ->connection($event->connection ?? null)
+            ->pushOn($queue, $broadcastEvent);
     }
 
     /**
@@ -189,9 +191,11 @@ class BroadcastManager implements BroadcastingFactoryContract
      */
     protected function mustBeUniqueAndCannotAcquireLock(UniqueBroadcastEvent $event): bool
     {
-        return false;
-        // TODO: wait bus package
-        // return ! (new UniqueLock($event->uniqueVia()))->acquire($event);
+        return ! (new UniqueLock(
+            method_exists($event, 'uniqueVia')
+                ? $event->uniqueVia()
+                : $this->app->get(Cache::class)
+        ))->acquire($event);
     }
 
     /**

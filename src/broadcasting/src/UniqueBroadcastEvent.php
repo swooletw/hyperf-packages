@@ -6,13 +6,9 @@ namespace SwooleTW\Hyperf\Broadcasting;
 
 use Psr\Container\ContainerInterface;
 use SwooleTW\Hyperf\Cache\Contracts\Factory as Cache;
+use SwooleTW\Hyperf\Queue\Contracts\ShouldBeUnique;
 
-// TODO: wait queue
-// use Illuminate\Contracts\Queue\ShouldBeUnique;
-
-// TODO: wait queue
-// class UniqueBroadcastEvent extends BroadcastEvent implements ShouldBeUnique
-class UniqueBroadcastEvent extends BroadcastEvent
+class UniqueBroadcastEvent extends BroadcastEvent implements ShouldBeUnique
 {
     /**
      * The container instance.

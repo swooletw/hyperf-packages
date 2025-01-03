@@ -284,6 +284,35 @@ class BroadcasterTest extends TestCase
         $this->broadcaster->retrieveUser('somechannel');
     }
 
+    public function testRetrieveUserDontUseDefaultGuardWhenMultipleGuardsSpecified()
+    {
+        $this->broadcaster->channel('somechannel', function () {
+        }, ['guards' => ['myguard1', 'myguard2']]);
+
+        $guard = m::mock(Guard::class);
+        $guard->shouldReceive('user')
+            ->twice()
+            ->andReturn(null);
+        $authManager = m::mock(AuthManager::class);
+        $authManager->shouldReceive('guard')
+            ->once()
+            ->with('myguard1')
+            ->andReturn($guard);
+        $authManager->shouldReceive('guard')
+            ->once()
+            ->with('myguard2')
+            ->andReturn($guard);
+        $authManager->shouldNotReceive('guard')
+            ->withNoArgs();
+
+        $this->container->shouldReceive('get')
+            ->once()
+            ->with(AuthManager::class)
+            ->andReturn($authManager);
+
+        $this->broadcaster->retrieveUser('somechannel');
+    }
+
     public function testUserAuthenticationWithValidUser()
     {
         $this->broadcaster->resolveAuthenticatedUserUsing(function ($request) {

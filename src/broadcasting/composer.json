@@ -35,9 +35,11 @@
         "hyperf/redis": "~3.1.0",
         "hyperf/stringable": "~3.1.0",
         "swooletw/hyperf-auth": "dev-master",
+        "swooletw/hyperf-bus": "dev-master",
         "swooletw/hyperf-cache": "dev-master",
         "swooletw/hyperf-foundation": "dev-master",
         "swooletw/hyperf-framework": "dev-master",
+        "swooletw/hyperf-queue": "dev-master",
         "swooletw/hyperf-router": "dev-master",
         "swooletw/hyperf-support": "dev-master",
         "swooletw/object-pool": "dev-master"
