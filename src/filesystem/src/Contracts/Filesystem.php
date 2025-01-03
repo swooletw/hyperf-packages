@@ -6,6 +6,7 @@ namespace SwooleTW\Hyperf\Filesystem\Contracts;
 
 use Hyperf\HttpMessage\Upload\UploadedFile;
 use Psr\Http\Message\StreamInterface;
+use RuntimeException;
 
 interface Filesystem
 {
@@ -44,6 +45,14 @@ interface Filesystem
      * @return null|resource the path resource or null on failure
      */
     public function readStream(string $path): mixed;
+
+    /**
+     * Get a resource to read the partial file.
+     *
+     * @return null|resource the path resource or null on failure
+     * @throws RuntimeException
+     */
+    public function readStreamRange(string $path, ?int $start, ?int $end): mixed;
 
     /**
      * Write the contents of a file.

@@ -17,6 +17,8 @@ class InteractsWithDatabaseTest extends ApplicationTestCase
 {
     use RefreshDatabase;
 
+    protected bool $migrateRefresh = true;
+
     public function testAssertDatabaseHas()
     {
         $user = $this->factory(User::class)->create();

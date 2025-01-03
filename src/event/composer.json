@@ -23,14 +23,15 @@
     },
     "autoload": {
         "psr-4": {
-            "SwooleTW\\Hyperf\\Event\\": "src/"
+            "SwooleTW\\Hyperf\\Event\\": "src/",
+            "Illuminate\\Events\\": "illuminate/"
         },
         "files": [
             "src/Functions.php"
         ]
     },
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
         "hyperf/event": "~3.1.0",
         "laravel/serializable-closure": "^1.3"
     },

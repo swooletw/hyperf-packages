@@ -4,14 +4,64 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Event;
 
-use Hyperf\AsyncQueue\Job;
+use DateInterval;
+use DateTimeInterface;
 use Hyperf\Context\ApplicationContext;
+use SwooleTW\Hyperf\Bus\Queueable;
+use SwooleTW\Hyperf\Queue\Contracts\Job;
+use SwooleTW\Hyperf\Queue\Contracts\ShouldQueue;
+use SwooleTW\Hyperf\Queue\InteractsWithQueue;
 use Throwable;
 
-class CallQueuedListener extends Job
+class CallQueuedListener implements ShouldQueue
 {
+    use InteractsWithQueue;
+    use Queueable;
+
+    /**
+     * The number of times the job may be attempted.
+     */
+    public ?int $tries = null;
+
+    /**
+     * The maximum number of exceptions allowed, regardless of attempts.
+     */
+    public ?int $maxExceptions = null;
+
+    /**
+     * The number of seconds to wait before retrying a job that encountered an uncaught exception.
+     */
+    public ?int $backoff = null;
+
+    /**
+     * The timestamp indicating when the job should timeout.
+     */
+    public null|DateInterval|DateTimeInterface|int $retryUntil = null;
+
+    /**
+     * The number of seconds the job can run before timing out.
+     */
+    public ?int $timeout = null;
+
+    /**
+     * Indicates if the job should fail if the timeout is exceeded.
+     */
+    public bool $failOnTimeout = false;
+
+    /**
+     * Indicates if the job should be encrypted.
+     */
+    public bool $shouldBeEncrypted = false;
+
+    /**
+     * Create a new job instance.
+     *
+     * @param class-string $class the listener class name
+     * @param string $method the listener method
+     * @param array $data the data to be passed to the listener
+     */
     public function __construct(
-        public object|string $class,
+        public string $class,
         public string $method,
         public array $data
     ) {
@@ -19,18 +69,71 @@ class CallQueuedListener extends Job
 
     public function handle(): void
     {
-        $this->getEventHandler()->{$this->method}(...array_values($this->data));
+        $this->prepareData();
+
+        $handler = $this->setJobInstanceIfNecessary(
+            $this->job,
+            ApplicationContext::getContainer()->get($this->class)
+        );
+
+        $handler->{$this->method}(...array_values($this->data));
     }
 
-    public function fail(Throwable $e): void
+    /**
+     * Set the job instance of the given class if necessary.
+     */
+    protected function setJobInstanceIfNecessary(Job $job, object $instance): object
     {
-        if (method_exists($this->class, 'failed')) {
-            $this->getEventHandler()->failed($e, ...array_values($this->data));
+        if (in_array(InteractsWithQueue::class, class_uses_recursive($instance))) {
+            $instance->setJob($job);
+        }
+
+        return $instance;
+    }
+
+    /**
+     * Call the failed method on the job instance.
+     *
+     * The event instance and the exception will be passed.
+     */
+    public function failed(Throwable $e): void
+    {
+        $this->prepareData();
+
+        $handler = ApplicationContext::getContainer()->get($this->class);
+
+        $parameters = array_merge(array_values($this->data), [$e]);
+
+        if (method_exists($handler, 'failed')) {
+            $handler->failed(...$parameters);
         }
     }
 
-    protected function getEventHandler(): object
+    /**
+     * Unserialize the data if needed.
+     */
+    protected function prepareData(): void
     {
-        return is_string($this->class) ? ApplicationContext::getContainer()->get($this->class) : $this->class;
+        if (is_string($this->data)) {
+            $this->data = unserialize($this->data);
+        }
+    }
+
+    /**
+     * Get the display name for the queued job.
+     */
+    public function displayName(): string
+    {
+        return $this->class;
+    }
+
+    /**
+     * Prepare the instance for cloning.
+     */
+    public function __clone()
+    {
+        $this->data = array_map(function ($data) {
+            return is_object($data) ? clone $data : $data;
+        }, $this->data);
     }
 }

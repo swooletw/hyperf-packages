@@ -3,11 +3,6 @@
 declare(strict_types=1);
 
 use Carbon\Carbon;
-use FriendsOfHyperf\AsyncTask\Task as AsyncTask;
-use FriendsOfHyperf\AsyncTask\TaskInterface as AsyncTaskInterface;
-use FriendsOfHyperf\Support\AsyncQueue\ClosureJob;
-use Hyperf\AsyncQueue\Driver\DriverFactory;
-use Hyperf\AsyncQueue\JobInterface;
 use Hyperf\Context\ApplicationContext;
 use Hyperf\Contract\Arrayable;
 use Hyperf\Contract\SessionInterface;
@@ -18,12 +13,13 @@ use Hyperf\Validation\Contract\ValidatorFactoryInterface;
 use Hyperf\ViewEngine\Contract\FactoryInterface;
 use Hyperf\ViewEngine\Contract\ViewInterface;
 use Psr\Container\ContainerInterface;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use SwooleTW\Hyperf\Auth\Contracts\Gate;
 use SwooleTW\Hyperf\Broadcasting\Contracts\Factory as BroadcastFactory;
 use SwooleTW\Hyperf\Broadcasting\PendingBroadcast;
+use SwooleTW\Hyperf\Bus\PendingClosureDispatch;
+use SwooleTW\Hyperf\Bus\PendingDispatch;
 use SwooleTW\Hyperf\Cookie\Contracts\Cookie as CookieContract;
 use SwooleTW\Hyperf\Foundation\Exceptions\Contracts\ExceptionHandler as ExceptionHandlerContract;
 use SwooleTW\Hyperf\Http\Contracts\RequestContract;
@@ -315,24 +311,26 @@ if (! function_exists('app')) {
 
 if (! function_exists('dispatch')) {
     /**
-     * @param AsyncTaskInterface|Closure|JobInterface|ProduceMessage|ProducerMessageInterface $job
-     * @throws TypeError
-     * @throws InvalidDriverException
-     * @throws InvalidArgumentException
+     * Dispatch a job to its appropriate handler.
+     *
+     * @param mixed $job
+     * @return ($job is Closure ? PendingClosureDispatch : PendingDispatch)
      */
-    function dispatch($job, ...$arguments): bool
+    function dispatch($job): PendingClosureDispatch|PendingDispatch
     {
-        if ($job instanceof \Closure) {
-            $job = new ClosureJob($job, (int) ($arguments[2] ?? 0));
-        }
+        return \SwooleTW\Hyperf\Bus\dispatch($job);
+    }
+}
 
-        return match (true) {
-            $job instanceof JobInterface => app(DriverFactory::class)
-                ->get((string) ($arguments[0] ?? $job->queue ?? 'default'))
-                ->push($job, (int) ($arguments[1] ?? $job->delay ?? 0)),
-            $job instanceof AsyncTaskInterface => AsyncTask::deliver($job, ...$arguments),
-            default => throw new \InvalidArgumentException('Not Support job type.')
-        };
+if (! function_exists('dispatch_sync')) {
+    /**
+     * Dispatch a command to its appropriate handler in the current process.
+     *
+     * Queueable jobs will be dispatched to the "sync" queue.
+     */
+    function dispatch_sync(mixed $job, mixed $handler = null): mixed
+    {
+        return \SwooleTW\Hyperf\Bus\dispatch_sync($job, $handler);
     }
 }
 
@@ -348,7 +346,7 @@ if (! function_exists('event')) {
      */
     function event(object $event)
     {
-        return app(EventDispatcherInterface::class)->dispatch($event);
+        return \SwooleTW\Hyperf\Event\event($event);
     }
 }
 

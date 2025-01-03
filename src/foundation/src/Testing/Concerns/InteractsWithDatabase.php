@@ -247,7 +247,7 @@ trait InteractsWithDatabase
      *
      * @param null|string $connection
      * @param null|string $table
-     * @return \Hyperf\Database\Connection
+     * @return \Hyperf\DbConnection\Connection
      */
     protected function getConnection($connection = null, $table = null)
     {

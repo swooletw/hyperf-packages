@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Illuminate\Notifications\Channels;
+namespace SwooleTW\Hyperf\Notifications\Channels;
 
 use Closure;
 use Hyperf\Collection\Arr;

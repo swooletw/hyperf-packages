@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Testing;
 
+use Hyperf\Database\Connection as DatabaseConnection;
 use Hyperf\DbConnection\Db;
 
 trait DatabaseTransactions
@@ -30,9 +31,15 @@ trait DatabaseTransactions
                 $dispatcher = $connection->getEventDispatcher();
 
                 $connection->unsetEventDispatcher();
+
+                if ($connection instanceof DatabaseConnection) {
+                    $connection->resetRecordsModified();
+                }
+
                 $connection->rollBack();
                 $connection->setEventDispatcher($dispatcher);
-                $connection->disconnect();
+                // this will trigger a database refresh warning
+                // $connection->disconnect();
             }
         });
     }

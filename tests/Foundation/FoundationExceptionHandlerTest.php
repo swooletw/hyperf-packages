@@ -82,6 +82,13 @@ class FoundationExceptionHandlerTest extends TestCase
         $this->handler = new Handler($this->container);
     }
 
+    public function tearDown(): void
+    {
+        parent::tearDown();
+
+        Context::destroy('__request.root.uri');
+    }
+
     public function testHandlerReportsExceptionAsContext()
     {
         $logger = m::mock(LoggerInterface::class);

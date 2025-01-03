@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use GuzzleHttp\Psr7\Stream;
 use Hyperf\Context\ApplicationContext;
 use Hyperf\Context\Context;
+use Hyperf\Coroutine\Coroutine;
 use Hyperf\HttpMessage\Upload\UploadedFile;
 use InvalidArgumentException;
 use League\Flysystem\Filesystem;
@@ -21,8 +22,10 @@ use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
+use Swoole\Runtime;
 use SwooleTW\Hyperf\Filesystem\FilesystemAdapter;
 use SwooleTW\Hyperf\Filesystem\FilesystemManager;
+use SwooleTW\Hyperf\Http\Contracts\RequestContract;
 use SwooleTW\Hyperf\Http\Contracts\ResponseContract;
 use SwooleTW\Hyperf\Http\Response;
 
@@ -48,6 +51,10 @@ class FilesystemAdapterTest extends TestCase
 
     protected function tearDown(): void
     {
+        if (Coroutine::inCoroutine()) {
+            Runtime::enableCoroutine(0);
+        }
+
         $filesystem = new Filesystem(
             $this->adapter = new LocalFilesystemAdapter(dirname($this->tempDir))
         );
@@ -68,7 +75,6 @@ class FilesystemAdapterTest extends TestCase
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertEquals([
             'Content-Type' => ['text/plain'],
-            'Content-Length' => [11],
             'Content-Disposition' => ['inline; filename=file.txt'],
         ], $response->getHeaders());
     }
@@ -84,20 +90,6 @@ class FilesystemAdapterTest extends TestCase
 
         $files->response('file.txt', null, [
             'Content-Type' => 'text/x-custom',
-        ]);
-    }
-
-    public function testSizeIsNotCalledAlreadyProvidedToResponse()
-    {
-        $this->mockResponse($content = 'Hello World');
-
-        $this->filesystem->write('file.txt', $content);
-
-        $files = m::mock(FilesystemAdapter::class, [$this->filesystem, $this->adapter])->makePartial();
-        $files->shouldReceive('size')->never();
-
-        $files->response('file.txt', null, [
-            'Content-Length' => 11,
         ]);
     }
 
@@ -655,7 +647,13 @@ class FilesystemAdapterTest extends TestCase
         $container = m::mock(ContainerInterface::class);
         $container->shouldReceive('get')
             ->with(ResponseContract::class)
-            ->andReturn($response = new Response());
+            ->andReturn(new Response());
+        $request = m::mock(RequestContract::class);
+        $request->shouldReceive('isRange')
+            ->andReturn(false);
+        $container->shouldReceive('get')
+            ->with(RequestContract::class)
+            ->andReturn($request);
         ApplicationContext::setContainer($container);
 
         $psrResponse = m::mock(\Hyperf\HttpMessage\Server\Response::class)->makePartial();

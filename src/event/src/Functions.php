@@ -5,10 +5,26 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Event;
 
 use Closure;
+use Hyperf\Context\ApplicationContext;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
-if (! function_exists('SwooleTW\Hyperf\Event\queueable')) {
-    function queueable(Closure $closure): QueuedClosure
-    {
-        return new QueuedClosure($closure);
-    }
+/**
+ * Dispatch an event and call the listeners.
+ *
+ * @template T of object
+ *
+ * @param T $event
+ *
+ * @return T
+ */
+function event(object $event)
+{
+    return ApplicationContext::getContainer()
+        ->get(EventDispatcherInterface::class)
+        ->dispatch($event);
+}
+
+function queueable(Closure $closure): QueuedClosure
+{
+    return new QueuedClosure($closure);
 }

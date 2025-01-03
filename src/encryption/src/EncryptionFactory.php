@@ -6,6 +6,7 @@ namespace SwooleTW\Hyperf\Encryption;
 
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Stringable\Str;
+use Laravel\SerializableClosure\SerializableClosure;
 use Psr\Container\ContainerInterface;
 use SwooleTW\Hyperf\Encryption\Exceptions\MissingAppKeyException;
 
@@ -15,13 +16,31 @@ class EncryptionFactory
 {
     public function __invoke(ContainerInterface $container): Encrypter
     {
-        $config = $container->get(ConfigInterface::class)
-            ->get('encryption', []);
+        $config = $container->get(ConfigInterface::class);
+        // Fallback to the encryption config if key is not set in app config.
+        $config = ($config->has('app.cipher') && $config->has('app.key'))
+            ? $config->get('app')
+            : $config->get('encryption', []);
 
-        return new Encrypter(
+        return (new Encrypter(
             $this->parseKey($config),
             $config['cipher']
-        );
+        ))->previousKeys(array_map(
+            fn ($key) => $this->parseKey(['key' => $key]),
+            $config['previous_keys'] ?? []
+        ));
+    }
+
+    /**
+     * Configure Serializable Closure signing for security.
+     */
+    protected function registerSerializableClosureSecurityKey(array $config): void
+    {
+        if (! class_exists(SerializableClosure::class) || empty($config['key'])) {
+            return;
+        }
+
+        SerializableClosure::setSecretKey($this->parseKey($config));
     }
 
     /**

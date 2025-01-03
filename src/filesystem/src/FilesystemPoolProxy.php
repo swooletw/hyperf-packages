@@ -6,6 +6,7 @@ namespace SwooleTW\Hyperf\Filesystem;
 
 use Hyperf\HttpMessage\Upload\UploadedFile;
 use Psr\Http\Message\StreamInterface;
+use RuntimeException;
 use SwooleTW\Hyperf\Filesystem\Contracts\Cloud;
 use SwooleTW\Hyperf\ObjectPool\PoolProxy;
 
@@ -41,6 +42,17 @@ class FilesystemPoolProxy extends PoolProxy implements Cloud
      * @return null|resource the path resource or null on failure
      */
     public function readStream(string $path): mixed
+    {
+        return $this->__call(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * Get a resource to read the partial file.
+     *
+     * @return null|resource the path resource or null on failure
+     * @throws RuntimeException
+     */
+    public function readStreamRange(string $path, ?int $start, ?int $end): mixed
     {
         return $this->__call(__FUNCTION__, func_get_args());
     }

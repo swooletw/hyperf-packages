@@ -5,19 +5,29 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Event;
 
 use Closure;
+use DateInterval;
+use DateTimeInterface;
+use Illuminate\Events\CallQueuedListener;
 use Laravel\SerializableClosure\SerializableClosure;
+
+use function SwooleTW\Hyperf\Bus\dispatch;
 
 class QueuedClosure
 {
     /**
      * The name of the connection the job should be sent to.
      */
-    public ?string $connection;
+    public ?string $connection = null;
+
+    /**
+     * The name of the queue the job should be sent to.
+     */
+    public ?string $queue = null;
 
     /**
      * The number of seconds before the job should be made available.
      */
-    public ?int $delay;
+    public null|DateInterval|DateTimeInterface|int $delay = null;
 
     /**
      * All of the "catch" callbacks for the queued closure.
@@ -66,21 +76,16 @@ class QueuedClosure
     /**
      * Resolve the actual event listener callback.
      */
-    public function resolve(callable $queueResolver): Closure
+    public function resolve(): Closure
     {
-        return function (...$arguments) use ($queueResolver) {
-            $job = new CallQueuedListener(InvokeQueuedClosure::class, 'handle', [
+        return function (...$arguments) {
+            dispatch(new CallQueuedListener(InvokeQueuedClosure::class, 'handle', [
                 'closure' => new SerializableClosure($this->closure),
                 'arguments' => $arguments,
                 'catch' => collect($this->catchCallbacks)->map(function ($callback) {
                     return new SerializableClosure($callback);
                 })->all(),
-            ]);
-
-            $connection = $queueResolver()->get($this->connection ?? 'default');
-            $delay = $this->delay ?? 0;
-
-            $connection->push($job, $delay);
+            ]))->onConnection($this->connection)->onQueue($this->queue)->delay($this->delay);
         };
     }
 }

@@ -8,8 +8,10 @@ use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Database\ConnectionResolverInterface;
 use Hyperf\HttpServer\MiddlewareManager;
+use SwooleTW\Hyperf\Auth\Contracts\FactoryContract as AuthFactoryContract;
 use SwooleTW\Hyperf\Foundation\Contracts\Application as ApplicationContract;
 use SwooleTW\Hyperf\Foundation\Http\Contracts\MiddlewareContract;
+use SwooleTW\Hyperf\Http\Contracts\RequestContract;
 use SwooleTW\Hyperf\Support\ServiceProvider;
 
 class FoundationServiceProvider extends ServiceProvider
@@ -37,6 +39,15 @@ class FoundationServiceProvider extends ServiceProvider
         $this->callAfterResolving(ConfigInterface::class, function (ConfigInterface $config) {
             $this->config = $config;
             $this->overrideHyperfConfigs();
+        });
+
+        $this->callAfterResolving(RequestContract::class, function (RequestContract $request) {
+            $request->setUserResolver(function (?string $guard = null) {
+                return $this->app
+                    ->get(AuthFactoryContract::class)
+                    ->guard($guard)
+                    ->user();
+            });
         });
     }
 

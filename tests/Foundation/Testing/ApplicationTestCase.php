@@ -9,7 +9,6 @@ use Hyperf\Coordinator\Constants;
 use Hyperf\Coordinator\CoordinatorManager;
 use Hyperf\Di\ClassLoader;
 use Hyperf\Support\Filesystem\Filesystem;
-use Swoole\Runtime;
 use Swoole\Timer;
 use SwooleTW\Hyperf\Foundation\Application;
 use SwooleTW\Hyperf\Foundation\Console\Contracts\Kernel as KernelContract;
@@ -17,8 +16,6 @@ use SwooleTW\Hyperf\Foundation\Console\Kernel as ConsoleKernel;
 use SwooleTW\Hyperf\Foundation\Contracts\Application as ApplicationContract;
 use SwooleTW\Hyperf\Foundation\Testing\TestCase;
 use SwooleTW\Hyperf\Foundation\Testing\TestScanHandler;
-
-use function Swoole\Coroutine\run;
 
 /**
  * @internal
@@ -40,9 +37,7 @@ class ApplicationTestCase extends TestCase
             CoordinatorManager::until(Constants::WORKER_EXIT)->resume();
         });
 
-        run(function () {
-            parent::setUp();
-        });
+        parent::setUp();
     }
 
     protected function bootstrapApplication(): void
@@ -52,7 +47,6 @@ class ApplicationTestCase extends TestCase
 
         $this->generateComposerLock();
 
-        Runtime::enableCoroutine(true);
         ClassLoader::init(null, null, new TestScanHandler());
     }
 

@@ -30,9 +30,9 @@ class RequestTest extends TestCase
     protected function tearDown(): void
     {
         Mockery::close();
-        Context::set(ServerRequestInterface::class, null);
+        Context::destroy(ServerRequestInterface::class);
         Context::set('http.request.parsedData', null);
-        Context::set(SessionInterface::class, null);
+        Context::destroy(SessionInterface::class);
     }
 
     public function testAllFiles()
@@ -696,6 +696,16 @@ class RequestTest extends TestCase
         );
 
         $this->assertEquals(['name' => 'John Doe'], $result);
+    }
+
+    public function testUserResolver()
+    {
+        $request = new Request();
+        $request->setUserResolver(function () {
+            return 'user';
+        });
+
+        $this->assertSame('user', $request->user());
     }
 }
 

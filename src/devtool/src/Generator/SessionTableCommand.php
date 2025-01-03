@@ -14,12 +14,13 @@ class SessionTableCommand extends GeneratorCommand
 {
     public function __construct()
     {
-        parent::__construct('session:table');
+        parent::__construct('make:session-table');
     }
 
     public function configure()
     {
         $this->setDescription('Create a migration for the session database table');
+        $this->setAliases(['session:table']);
 
         parent::configure();
     }

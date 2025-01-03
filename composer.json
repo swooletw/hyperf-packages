@@ -24,9 +24,11 @@
     },
     "autoload": {
         "psr-4": {
+            "Illuminate\\Events\\": "src/event/illuminate/",
             "SwooleTW\\Hyperf\\": "src/framework/src/",
             "SwooleTW\\Hyperf\\Auth\\": "src/auth/src/",
             "SwooleTW\\Hyperf\\Broadcasting\\": "src/broadcasting/src/",
+            "SwooleTW\\Hyperf\\Bus\\": "src/bus/src/",
             "SwooleTW\\Hyperf\\Cache\\": "src/cache/src/",
             "SwooleTW\\Hyperf\\Config\\": "src/config/src/",
             "SwooleTW\\Hyperf\\Container\\": "src/container/src/",
@@ -44,17 +46,22 @@
             "SwooleTW\\Hyperf\\Mail\\": "src/mail/src/",
             "SwooleTW\\Hyperf\\Notifications\\": "src/notifications/src/",
             "SwooleTW\\Hyperf\\ObjectPool\\": "src/object-pool/src/",
+            "SwooleTW\\Hyperf\\Prompts\\": "src/prompts/src/",
+            "SwooleTW\\Hyperf\\Queue\\": "src/queue/src/",
             "SwooleTW\\Hyperf\\Router\\": "src/router/src/",
             "SwooleTW\\Hyperf\\Support\\": "src/support/src/"
         },
         "files": [
             "src/auth/src/Functions.php",
+            "src/bus/src/Functions.php",
             "src/cache/src/Functions.php",
             "src/config/src/Functions.php",
             "src/event/src/Functions.php",
             "src/filesystem/src/Functions.php",
             "src/foundation/src/helpers.php",
+            "src/prompts/src/helpers.php",
             "src/router/src/Functions.php",
+            "src/support/src/Functions.php",
             "src/support/src/helpers.php"
         ]
     },
@@ -67,13 +74,13 @@
         ]
     },
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.2",
         "ext-hash": "*",
         "ext-mbstring": "*",
         "ext-openssl": "*",
         "ext-json": "*",
         "ext-pdo": "*",
-        "hyperf/async-queue": "~3.1.0",
+        "composer-runtime-api": "^2.2",
         "hyperf/cache": "~3.1.0",
         "hyperf/command": "~3.1.0",
         "hyperf/config": "~3.1.0",
@@ -89,6 +96,7 @@
         "hyperf/signal": "~3.1.0",
         "hyperf/translation": "~3.1.0",
         "hyperf/validation": "~3.1.0",
+        "nunomaduro/termwind": "^2.0",
         "friendsofhyperf/command-signals": "~3.1.0",
         "laravel/serializable-closure": "^1.3",
         "lcobucci/jwt": "^5.0",
@@ -104,6 +112,7 @@
     "replace": {
         "swooletw/hyperf-auth": "self.version",
         "swooletw/hyperf-broadcasting": "self.version",
+        "swooletw/hyperf-bus": "self.version",
         "swooletw/hyperf-cache": "self.version",
         "swooletw/hyperf-config": "self.version",
         "swooletw/hyperf-container": "self.version",
@@ -122,6 +131,8 @@
         "swooletw/hyperf-mail": "self.version",
         "swooletw/hyperf-notifications": "self.version",
         "swooletw/hyperf-object-pool": "self.version",
+        "swooletw/hyperf-prompts": "self.version",
+        "swooletw/hyperf-queue": "self.version",
         "swooletw/hyperf-router": "self.version",
         "swooletw/hyperf-support": "self.version"
     },
@@ -152,6 +163,7 @@
         "league/flysystem-path-prefixing": "^3.3",
         "league/flysystem-read-only": "^3.3",
         "mockery/mockery": "^1.5.1",
+        "pda/pheanstalk": "v5.x-dev",
         "phpstan/phpstan": "^1.11.5",
         "phpunit/phpunit": "^10.0.7",
         "pusher/pusher-php-server": "^7.2",
@@ -166,6 +178,7 @@
                 "SwooleTW\\Hyperf\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Auth\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Broadcasting\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Bus\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Cache\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Cookie\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Config\\ConfigProvider",
@@ -181,6 +194,7 @@
                 "SwooleTW\\Hyperf\\Log\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Mail\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Notifications\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Queue\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Router\\ConfigProvider"
             ],
             "providers": [

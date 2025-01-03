@@ -20,6 +20,7 @@ use Hyperf\Database\Migrations\MigrationCreator as HyperfMigrationCreator;
 use Hyperf\Database\Model\Factory as HyperfDatabaseFactory;
 use SwooleTW\Hyperf\Database\Eloquent\Factories\FactoryInvoker as DatabaseFactoryInvoker;
 use SwooleTW\Hyperf\Database\Migrations\MigrationCreator;
+use SwooleTW\Hyperf\Database\TransactionListener;
 
 class ConfigProvider
 {
@@ -29,6 +30,9 @@ class ConfigProvider
             'dependencies' => [
                 HyperfDatabaseFactory::class => DatabaseFactoryInvoker::class,
                 HyperfMigrationCreator::class => MigrationCreator::class,
+            ],
+            'listeners' => [
+                TransactionListener::class,
             ],
             'commands' => [
                 InstallCommand::class,

@@ -1,0 +1,96 @@
+<?php
+
+declare(strict_types=1);
+
+namespace SwooleTW\Hyperf\Tests\Queue;
+
+use Exception;
+use Mockery as m;
+use Pheanstalk\Contract\JobIdInterface;
+use Pheanstalk\Contract\PheanstalkManagerInterface;
+use Pheanstalk\Contract\PheanstalkPublisherInterface;
+use Pheanstalk\Contract\PheanstalkSubscriberInterface;
+use Pheanstalk\Pheanstalk;
+use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use stdClass;
+use SwooleTW\Hyperf\Queue\Events\JobFailed;
+use SwooleTW\Hyperf\Queue\Jobs\BeanstalkdJob;
+
+/**
+ * @internal
+ * @coversNothing
+ */
+class QueueBeanstalkdJobTest extends TestCase
+{
+    protected function tearDown(): void
+    {
+        m::close();
+    }
+
+    public function testFireProperlyCallsTheJobHandler()
+    {
+        $job = $this->getJob();
+        $job->getPheanstalkJob()->shouldReceive('getData')->once()->andReturn(json_encode(['job' => 'foo', 'data' => ['data']]));
+        $job->getContainer()->shouldReceive('get')->once()->with('foo')->andReturn($handler = m::mock(stdClass::class));
+        $handler->shouldReceive('fire')->once()->with($job, ['data']);
+
+        $job->fire();
+    }
+
+    public function testFailProperlyCallsTheJobHandler()
+    {
+        $job = $this->getJob();
+        $job->getPheanstalkJob()->shouldReceive('getData')->andReturn(json_encode(['job' => 'foo', 'uuid' => 'test-uuid', 'data' => ['data']]));
+        $job->getContainer()->shouldReceive('get')->once()->with('foo')->andReturn($handler = m::mock(BeanstalkdJobTestFailedTest::class));
+        $job->getPheanstalk()->shouldReceive('delete')->once()->with($job->getPheanstalkJob())->andReturnSelf();
+        $handler->shouldReceive('failed')->once()->with(['data'], m::type(Exception::class), 'test-uuid');
+        $job->getContainer()->shouldReceive('get')->once()->with(EventDispatcherInterface::class)->andReturn($events = m::mock(EventDispatcherInterface::class));
+        $events->shouldReceive('dispatch')->once()->with(m::type(JobFailed::class))->andReturnNull();
+
+        $job->fail(new Exception());
+    }
+
+    public function testDeleteRemovesTheJobFromBeanstalkd()
+    {
+        $job = $this->getJob();
+        $job->getPheanstalk()->shouldReceive('delete')->once()->with($job->getPheanstalkJob());
+
+        $job->delete();
+    }
+
+    public function testReleaseProperlyReleasesJobOntoBeanstalkd()
+    {
+        $job = $this->getJob();
+        $job->getPheanstalk()->shouldReceive('release')->once()->with($job->getPheanstalkJob(), Pheanstalk::DEFAULT_PRIORITY, 0);
+
+        $job->release();
+    }
+
+    public function testBuryProperlyBuryTheJobFromBeanstalkd()
+    {
+        $job = $this->getJob();
+        $job->getPheanstalk()->shouldReceive('bury')->once()->with($job->getPheanstalkJob());
+
+        $job->bury();
+    }
+
+    protected function getJob()
+    {
+        return new BeanstalkdJob(
+            m::mock(ContainerInterface::class),
+            m::mock(implode(',', [PheanstalkManagerInterface::class, PheanstalkPublisherInterface::class, PheanstalkSubscriberInterface::class])),
+            m::mock(JobIdInterface::class),
+            'connection-name',
+            'default'
+        );
+    }
+}
+
+class BeanstalkdJobTestFailedTest
+{
+    public function failed(array $data)
+    {
+    }
+}

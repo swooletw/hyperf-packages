@@ -61,8 +61,6 @@ class UrlGeneratorTest extends TestCase
 
         $this->mockRouter();
 
-        Context::destroy('__request.root.uri');
-
         $config = Mockery::mock(ConfigInterface::class);
         $config->shouldReceive('get')
             ->with('app.url')

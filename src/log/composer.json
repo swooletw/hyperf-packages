@@ -27,13 +27,13 @@
         }
     },
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
         "hyperf/config": "~3.1.0",
         "monolog/monolog": "^3.1",
         "hyperf/stringable": "~3.1.0",
         "hyperf/contract": "~3.1.0",
         "hyperf/collection": "~3.1.0",
-        "swooletw/hyperf-support": "~3.1.0"
+        "swooletw/hyperf-support": "dev-master"
     },
     "config": {
         "sort-packages": true

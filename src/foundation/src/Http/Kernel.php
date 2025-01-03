@@ -23,6 +23,8 @@ use SwooleTW\Hyperf\Foundation\Http\Traits\HasMiddleware;
 use SwooleTW\Hyperf\Http\UploadedFile;
 use Throwable;
 
+use function Hyperf\Coroutine\defer;
+
 class Kernel extends HyperfServer implements MiddlewareContract
 {
     use HasMiddleware;

@@ -518,6 +518,19 @@ class Application extends Container implements ApplicationContract
             \SwooleTW\Hyperf\Notifications\Contracts\Dispatcher::class => [
                 \SwooleTW\Hyperf\Notifications\Contracts\Factory::class,
             ],
+            \SwooleTW\Hyperf\Bus\Contracts\Dispatcher::class => [
+                \SwooleTW\Hyperf\Bus\Contracts\QueueingDispatcher::class,
+                \SwooleTW\Hyperf\Bus\Dispatcher::class,
+            ],
+            \SwooleTW\Hyperf\Queue\Contracts\Factory::class => [
+                'queue',
+                \SwooleTW\Hyperf\Queue\Contracts\Monitor::class,
+                \SwooleTW\Hyperf\Queue\QueueManager::class,
+            ],
+            \SwooleTW\Hyperf\Queue\Contracts\Queue::class => ['queue.connection'],
+            \SwooleTW\Hyperf\Queue\Worker::class => ['queue.worker'],
+            \SwooleTW\Hyperf\Queue\Listener::class => ['queue.listener'],
+            \SwooleTW\Hyperf\Queue\Failed\FailedJobProviderInterface::class => ['queue.failer'],
         ] as $key => $aliases) {
             foreach ($aliases as $alias) {
                 $this->alias($key, $alias);

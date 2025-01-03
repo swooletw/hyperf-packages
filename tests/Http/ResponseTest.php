@@ -15,9 +15,12 @@ use Mockery;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
 use SwooleTW\Hyperf\Http\Response;
+use SwooleTW\Hyperf\HttpMessage\Exceptions\RangeNotSatisfiableHttpException;
 use Swow\Psr7\Message\ResponsePlusInterface;
+use Swow\Psr7\Message\ServerRequestPlusInterface;
 
 /**
  * @internal
@@ -28,7 +31,9 @@ class ResponseTest extends TestCase
     protected function tearDown(): void
     {
         Mockery::close();
-        Context::set(ResponseInterface::class, null);
+        Context::destroy(ResponseInterface::class);
+        Context::destroy(Response::RANGE_HEADERS_CONTEXT);
+        Context::destroy(ServerRequestInterface::class);
     }
 
     public function testMake()
@@ -206,10 +211,120 @@ class ResponseTest extends TestCase
         $this->assertEquals([
             'Content-Type' => ['application/octet-stream'],
             'Content-Description' => ['File Transfer'],
-            'Content-Transfer-Encoding' => ['binary'],
             'Pragma' => ['no-cache'],
             'Content-Disposition' => ['attachment; filename=test.txt'],
             'X-Download' => ['Yes'],
         ], $result->getHeaders());
+    }
+
+    public function testStreamDownloadWithRangeHeader()
+    {
+        $psrResponse = Mockery::mock(\Hyperf\HttpMessage\Server\Response::class)->makePartial();
+        $psrResponse->shouldReceive('write')
+            ->with($content = 'File content')
+            ->once()
+            ->andReturnTrue();
+        Context::set(ResponseInterface::class, $psrResponse);
+
+        $this->mockRequest([
+            'Range' => ['bytes=0-1023'],
+        ]);
+
+        $response = new \SwooleTW\Hyperf\Http\Response();
+        $stream = new SwooleStream($content);
+        $result = $response->withRangeHeaders(8888)
+            ->streamDownload(
+                fn () => $stream->eof() ? false : $stream->read(1024),
+                'test.txt',
+                ['X-Download' => 'Yes'],
+                'attachment',
+            );
+
+        $this->assertInstanceOf(ResponseInterface::class, $result);
+        $this->assertSame($result->getStatusCode(), 206);
+        $this->assertEquals([
+            'Content-Type' => ['application/octet-stream'],
+            'Content-Description' => ['File Transfer'],
+            'Pragma' => ['no-cache'],
+            'Content-Disposition' => ['attachment; filename=test.txt'],
+            'X-Download' => ['Yes'],
+            'Accept-Ranges' => ['bytes'],
+            'Content-Range' => ['bytes 0-1023/8888'],
+        ], $result->getHeaders());
+    }
+
+    public function testStreamDownloadWithRangeHeaderAndWithoutContentLength()
+    {
+        $psrResponse = Mockery::mock(\Hyperf\HttpMessage\Server\Response::class)->makePartial();
+        $psrResponse->shouldReceive('write')
+            ->with($content = 'File content')
+            ->once()
+            ->andReturnTrue();
+        Context::set(ResponseInterface::class, $psrResponse);
+
+        $this->mockRequest([
+            'Range' => ['bytes=1024-2047'],
+        ]);
+
+        $response = new \SwooleTW\Hyperf\Http\Response();
+        $stream = new SwooleStream($content);
+        $result = $response->withRangeHeaders()
+            ->streamDownload(
+                fn () => $stream->eof() ? false : $stream->read(1024),
+                'test.txt',
+                ['X-Download' => 'Yes']
+            );
+
+        $this->assertInstanceOf(ResponseInterface::class, $result);
+        $this->assertSame($result->getStatusCode(), 206);
+        $this->assertEquals([
+            'Content-Type' => ['application/octet-stream'],
+            'Content-Description' => ['File Transfer'],
+            'Pragma' => ['no-cache'],
+            'Content-Disposition' => ['attachment; filename=test.txt'],
+            'X-Download' => ['Yes'],
+            'Accept-Ranges' => ['bytes'],
+            'Content-Range' => ['bytes 1024-2047/*'],
+        ], $result->getHeaders());
+    }
+
+    public function testStreamDownloadWithInvalidRangeHeader()
+    {
+        $psrResponse = Mockery::mock(\Hyperf\HttpMessage\Server\Response::class)->makePartial();
+        $psrResponse->shouldNotReceive('write');
+        Context::set(ResponseInterface::class, $psrResponse);
+
+        $this->mockRequest([
+            'Range' => ['bytes=9000-10000'],
+        ]);
+
+        $this->expectException(RangeNotSatisfiableHttpException::class);
+
+        $response = new \SwooleTW\Hyperf\Http\Response();
+        $stream = new SwooleStream('File content');
+        $response->withRangeHeaders(8888)
+            ->streamDownload(
+                fn () => $stream->eof() ? false : $stream->read(1024),
+                'test.txt',
+                ['X-Download' => 'Yes'],
+                'attachment',
+            );
+    }
+
+    protected function mockRequest(array $headers = [], string $method = 'GET'): ServerRequestPlusInterface
+    {
+        $request = Mockery::mock(ServerRequestPlusInterface::class);
+        $request->shouldReceive('getMethod')->andReturn($method);
+
+        foreach ($headers as $key => $value) {
+            $request->shouldReceive('getHeader')->with($key)->andReturn($value);
+            $request->shouldReceive('hasHeader')->with($key)->andReturn(true);
+        }
+
+        $request->shouldReceive('hasHeader')->andReturn(false);
+
+        Context::set(ServerRequestInterface::class, $request);
+
+        return $request;
     }
 }

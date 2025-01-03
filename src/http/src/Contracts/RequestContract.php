@@ -6,6 +6,7 @@ namespace SwooleTW\Hyperf\Http\Contracts;
 
 use Carbon\Carbon;
 use Carbon\Exceptions\InvalidFormatException;
+use Closure;
 use Hyperf\Collection\Collection;
 use Hyperf\Contract\SessionInterface;
 use Hyperf\HttpServer\Contract\RequestInterface;
@@ -339,6 +340,11 @@ interface RequestContract extends RequestInterface
     public function pjax(): bool;
 
     /**
+     * Determine if the it is a range request.
+     */
+    public function isRange(): bool;
+
+    /**
      * Get session for the current request.
      */
     public function session(): SessionInterface;
@@ -349,6 +355,21 @@ interface RequestContract extends RequestInterface
      * @throws \Hyperf\Validation\ValidationException
      */
     public function validate(array $data, array $rules, array $messages = [], array $customAttributes = []): array;
+
+    /**
+     * Get the user resolver callback.
+     */
+    public function getUserResolver(): Closure;
+
+    /**
+     * Set the user resolver callback.
+     */
+    public function setUserResolver(Closure $callback): static;
+
+    /**
+     * Get the user making the request.
+     */
+    public function user(?string $guard = null): mixed;
 
     /**
      * Get original psr7 request instance.

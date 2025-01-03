@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Foundation;
 
 use Hyperf\Contract\ApplicationInterface;
+use Hyperf\Coordinator\Listener\ResumeExitCoordinatorListener;
+use Hyperf\ExceptionHandler\Listener\ErrorExceptionHandler;
 use SwooleTW\Hyperf\Foundation\Console\ApplicationFactory;
 use SwooleTW\Hyperf\Foundation\Console\Commands\ServerReloadCommand;
 use SwooleTW\Hyperf\Foundation\Console\Commands\VendorPublishCommand;
@@ -13,7 +15,6 @@ use SwooleTW\Hyperf\Foundation\Console\Scheduling\Schedule;
 use SwooleTW\Hyperf\Foundation\Exceptions\Contracts\ExceptionHandler as ExceptionHandlerContract;
 use SwooleTW\Hyperf\Foundation\Exceptions\Handler as ExceptionHandler;
 use SwooleTW\Hyperf\Foundation\Listeners\ReloadDotenvAndConfig;
-use SwooleTW\Hyperf\Foundation\Queue\Console\QueueWorkCommand;
 
 class ConfigProvider
 {
@@ -26,10 +27,11 @@ class ConfigProvider
                 ExceptionHandlerContract::class => ExceptionHandler::class,
             ],
             'listeners' => [
+                ErrorExceptionHandler::class,
+                ResumeExitCoordinatorListener::class,
                 ReloadDotenvAndConfig::class,
             ],
             'commands' => [
-                QueueWorkCommand::class,
                 ServerReloadCommand::class,
                 VendorPublishCommand::class,
             ],

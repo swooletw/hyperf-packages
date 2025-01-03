@@ -27,17 +27,18 @@
         }
     },
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
         "hyperf/config": "~3.1.0",
         "hyperf/stringable": "~3.1.0",
         "hyperf/contract": "~3.1.0",
         "hyperf/collection": "~3.1.0",
         "hyperf/context": "~3.1.0",
+        "hyperf/contract": "~3.1.0",
         "hyperf/database": "~3.1.0",
         "hyperf/di": "~3.1.0",
-        "swooletw/hyperf-support": "~3.1.0",
-        "swooletw/hyperf-mail": "~3.1.0",
-        "swooletw/hyperf-object-pool": "~3.1.0"
+        "swooletw/hyperf-support": "dev-master",
+        "swooletw/hyperf-mail": "dev-master",
+        "swooletw/hyperf-object-pool": "dev-master"
     },
     "config": {
         "sort-packages": true

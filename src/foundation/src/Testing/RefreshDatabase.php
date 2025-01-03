@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Testing;
 
-use Hyperf\Context\Context;
 use Hyperf\Contract\ConfigInterface;
+use Hyperf\Database\Connection as DatabaseConnection;
 use Hyperf\DbConnection\Db;
 use SwooleTW\Hyperf\Foundation\Testing\Traits\CanConfigureMigrationCommands;
 
@@ -18,25 +18,29 @@ trait RefreshDatabase
      */
     public function refreshDatabase(): void
     {
-        $this->usingInMemoryDatabase()
-            ? $this->refreshInMemoryDatabase()
-            : $this->refreshTestDatabase();
+        $this->beforeRefreshingDatabase();
+
+        if ($this->usingInMemoryDatabase()) {
+            $this->restoreInMemoryDatabase();
+        }
+
+        $this->refreshTestDatabase();
 
         $this->afterRefreshingDatabase();
     }
 
     /**
-     * Refresh the in-memory database.
+     * Restore the in-memory database between tests.
      */
-    protected function refreshInMemoryDatabase(): void
+    protected function restoreInMemoryDatabase(): void
     {
-        // reset connection in connection pool in Hyperf\DbConnection\ConnectionResolver
-        // data will be cleared once in-memory connection closed
-        if ($connection = Context::get("database.connection.{$this->getRefreshConnection()}")) {
-            $connection->reconnect();
-        }
+        $database = $this->app->get(Db::class);
 
-        $this->command('migrate', $this->migrateUsing());
+        foreach ($this->connectionsToTransact() as $name) {
+            if (isset(RefreshDatabaseState::$inMemoryConnections[$name])) {
+                $database->connection($name)->setPdo(RefreshDatabaseState::$inMemoryConnections[$name]);
+            }
+        }
     }
 
     /**
@@ -50,25 +54,17 @@ trait RefreshDatabase
     }
 
     /**
-     * The parameters that should be used when running "migrate".
-     */
-    protected function migrateUsing(): array
-    {
-        return [
-            '--seed' => $this->shouldSeed(),
-            '--database' => $this->getRefreshConnection(),
-        ];
-    }
-
-    /**
      * Refresh a conventional test database.
      */
     protected function refreshTestDatabase(): void
     {
-        if (! RefreshDatabaseState::$migrated) {
+        $migrateRefresh = property_exists($this, 'migrateRefresh') && (bool) $this->migrateRefresh;
+        if ($migrateRefresh || ! RefreshDatabaseState::$migrated) {
             $this->command('migrate:fresh', $this->migrateFreshUsing());
-
             RefreshDatabaseState::$migrated = true;
+            if ($migrateRefresh) {
+                $this->migrateRefresh = false;
+            }
         }
 
         $this->beginDatabaseTransaction();
@@ -83,6 +79,11 @@ trait RefreshDatabase
 
         foreach ($this->connectionsToTransact() as $name) {
             $connection = $database->connection($name);
+
+            if ($this->usingInMemoryDatabase()) {
+                RefreshDatabaseState::$inMemoryConnections[$name] ??= $connection->getPdo();
+            }
+
             $dispatcher = $connection->getEventDispatcher();
 
             $connection->unsetEventDispatcher();
@@ -96,6 +97,15 @@ trait RefreshDatabase
                 $dispatcher = $connection->getEventDispatcher();
 
                 $connection->unsetEventDispatcher();
+
+                if (! $connection->getPdo()->inTransaction()) {
+                    RefreshDatabaseState::$migrated = false;
+                }
+
+                if ($connection instanceof DatabaseConnection) {
+                    $connection->resetRecordsModified();
+                }
+
                 $connection->rollBack();
                 $connection->setEventDispatcher($dispatcher);
                 // this will trigger a database refresh warning
@@ -111,6 +121,14 @@ trait RefreshDatabase
     {
         return property_exists($this, 'connectionsToTransact')
             ? $this->connectionsToTransact : [null];
+    }
+
+    /**
+     * Perform any work that should take place before the database has started refreshing.
+     */
+    protected function beforeRefreshingDatabase(): void
+    {
+        // ...
     }
 
     /**

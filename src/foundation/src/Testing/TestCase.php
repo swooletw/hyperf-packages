@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Testing;
 
-use Hyperf\Testing\Concerns\RunTestsInCoroutine;
+use Hyperf\Coroutine\Coroutine;
 use Mockery as m;
+use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithAuthentication;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithConsole;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithContainer;
 use SwooleTW\Hyperf\Foundation\Testing\Concerns\InteractsWithDatabase;
@@ -15,6 +16,8 @@ use SwooleTW\Hyperf\Foundation\Testing\Concerns\MocksApplicationServices;
 use SwooleTW\Hyperf\Support\Facades\Facade;
 use Throwable;
 
+use function Hyperf\Coroutine\run;
+
 /**
  * @internal
  * @coversNothing
@@ -23,11 +26,11 @@ class TestCase extends \PHPUnit\Framework\TestCase
 {
     use InteractsWithContainer;
     use MakesHttpRequests;
-    use MocksApplicationServices;
+    use InteractsWithAuthentication;
     use InteractsWithConsole;
     use InteractsWithDatabase;
-    use RunTestsInCoroutine;
     use InteractsWithTime;
+    use MocksApplicationServices;
 
     /**
      * The callbacks that should be run after the application is created.
@@ -58,7 +61,9 @@ class TestCase extends \PHPUnit\Framework\TestCase
             $this->refreshApplication();
         }
 
-        $this->setUpTraits();
+        $this->runInCoroutine(
+            fn () => $this->setUpTraits()
+        );
 
         foreach ($this->afterApplicationCreatedCallbacks as $callback) {
             $callback();
@@ -112,7 +117,9 @@ class TestCase extends \PHPUnit\Framework\TestCase
     protected function tearDown(): void
     {
         if ($this->app) {
-            $this->callBeforeApplicationDestroyedCallbacks();
+            $this->runInCoroutine(
+                fn () => $this->callBeforeApplicationDestroyedCallbacks()
+            );
             $this->flushApplication();
         }
 
@@ -168,5 +175,13 @@ class TestCase extends \PHPUnit\Framework\TestCase
                 }
             }
         }
+    }
+
+    /**
+     * Ensure callback is executed in coroutine.
+     */
+    protected function runInCoroutine(callable $callback): void
+    {
+        Coroutine::inCoroutine() ? $callback() : run($callback);
     }
 }

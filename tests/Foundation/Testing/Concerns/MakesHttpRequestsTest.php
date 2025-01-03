@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Tests\Foundation\Testing\Concerns;
 
 use Hyperf\HttpMessage\Server\Response;
+use SwooleTW\Hyperf\Foundation\Testing\Concerns\RunTestsInCoroutine;
 use SwooleTW\Hyperf\Foundation\Testing\Http\TestResponse;
 use SwooleTW\Hyperf\Foundation\Testing\Stubs\FakeMiddleware;
 use SwooleTW\Hyperf\Router\RouteFileCollector;
@@ -16,6 +17,8 @@ use SwooleTW\Hyperf\Tests\Foundation\Testing\ApplicationTestCase;
  */
 class MakesHttpRequestsTest extends ApplicationTestCase
 {
+    use RunTestsInCoroutine;
+
     public function testWithTokenSetsAuthorizationHeader()
     {
         $this->withToken('foobar');

@@ -51,6 +51,21 @@ interface ResponseContract extends HyperfResponseInterface
     public function streamDownload(callable $callback, ?string $filename = null, array $headers = [], string $disposition = 'attachment'): ResponseInterface;
 
     /**
+     * Enable range headers for the response.
+     */
+    public function withRangeHeaders(?int $fileSize = null): static;
+
+    /**
+     * Disable range headers for the response.
+     */
+    public function withoutRangeHeaders(): static;
+
+    /**
+     * Determine if the response should append range headers.
+     */
+    public function shouldAppendRangeHeaders(): bool;
+
+    /**
      * Get original psr7 response instance.
      */
     public function getPsr7Response(): ResponseInterface;

@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Tests\ObjectPool;
 
 use Hyperf\Context\ApplicationContext;
+use Hyperf\Coroutine\Coroutine;
 use Mockery;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
 use stdClass;
+use SwooleTW\Hyperf\Foundation\Testing\Concerns\RunTestsInCoroutine;
 use SwooleTW\Hyperf\Tests\ObjectPool\Stub\FooPool;
 use SwooleTW\Hyperf\Tests\TestCase;
-
-use function Hyperf\Coroutine\run;
 
 /**
  * @internal
@@ -20,6 +20,8 @@ use function Hyperf\Coroutine\run;
  */
 class ObjectPoolTest extends TestCase
 {
+    use RunTestsInCoroutine;
+
     public function testPoolFlush()
     {
         $container = $this->getContainer();
@@ -82,7 +84,7 @@ class ObjectPoolTest extends TestCase
             'wait_timeout' => 0.0001,
         ]);
 
-        run(function () use ($pool) {
+        Coroutine::create(function () use ($pool) {
             $pool->get();
 
             $exception = new stdClass();

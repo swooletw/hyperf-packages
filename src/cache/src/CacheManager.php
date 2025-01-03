@@ -15,6 +15,7 @@ use SwooleTW\Hyperf\Cache\Contracts\Repository as RepositoryContract;
 use SwooleTW\Hyperf\Cache\Contracts\Store;
 
 use function Hyperf\Support\make;
+use function Hyperf\Tappable\tap;
 
 /**
  * @mixin \SwooleTW\Hyperf\Cache\Contracts\Repository

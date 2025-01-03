@@ -18,6 +18,11 @@ class Encrypter implements EncrypterContract, StringEncrypter
     protected string $key;
 
     /**
+     * The previous / legacy encryption keys.
+     */
+    protected $previousKeys = [];
+
+    /**
      * The algorithm used for encryption.
      */
     protected string $cipher;
@@ -44,7 +49,7 @@ class Encrypter implements EncrypterContract, StringEncrypter
         $key = (string) $key;
 
         if (! static::supported($key, $cipher)) {
-            $ciphers = implode(', ', array_keys(self::$supportedCiphers));
+            $ciphers = implode(', ', array_keys(static::$supportedCiphers));
 
             throw new RuntimeException("Unsupported cipher or incorrect key length. Supported ciphers are: {$ciphers}.");
         }
@@ -58,11 +63,11 @@ class Encrypter implements EncrypterContract, StringEncrypter
      */
     public static function supported(string $key, string $cipher): bool
     {
-        if (! isset(self::$supportedCiphers[strtolower($cipher)])) {
+        if (! isset(static::$supportedCiphers[strtolower($cipher)])) {
             return false;
         }
 
-        return mb_strlen($key, '8bit') === self::$supportedCiphers[strtolower($cipher)]['size'];
+        return mb_strlen($key, '8bit') === static::$supportedCiphers[strtolower($cipher)]['size'];
     }
 
     /**
@@ -70,7 +75,7 @@ class Encrypter implements EncrypterContract, StringEncrypter
      */
     public static function generateKey(string $cipher): string
     {
-        return random_bytes(self::$supportedCiphers[strtolower($cipher)]['size'] ?? 32);
+        return random_bytes(static::$supportedCiphers[strtolower($cipher)]['size'] ?? 32);
     }
 
     /**
@@ -82,7 +87,7 @@ class Encrypter implements EncrypterContract, StringEncrypter
     {
         $iv = random_bytes(openssl_cipher_iv_length(strtolower($this->cipher)));
 
-        $value = \openssl_encrypt(
+        $value = openssl_encrypt(
             $serialize ? serialize($value) : $value,
             strtolower($this->cipher),
             $this->key,
@@ -98,9 +103,9 @@ class Encrypter implements EncrypterContract, StringEncrypter
         $iv = base64_encode($iv);
         $tag = base64_encode($tag ?? '');
 
-        $mac = self::$supportedCiphers[strtolower($this->cipher)]['aead']
+        $mac = static::$supportedCiphers[strtolower($this->cipher)]['aead']
             ? '' // For AEAD-algorithms, the tag / MAC is returned by openssl_encrypt...
-            : $this->hash($iv, $value);
+            : $this->hash($iv, $value, $this->key);
 
         $json = json_encode(compact('iv', 'value', 'mac', 'tag'), JSON_UNESCAPED_SLASHES);
 
@@ -136,19 +141,36 @@ class Encrypter implements EncrypterContract, StringEncrypter
             $tag = empty($payload['tag']) ? null : base64_decode($payload['tag'])
         );
 
+        $foundValidMac = false;
         // Here we will decrypt the value. If we are able to successfully decrypt it
         // we will then unserialize it and return it out to the caller. If we are
         // unable to decrypt this value we will throw out an exception message.
-        $decrypted = \openssl_decrypt(
-            $payload['value'],
-            strtolower($this->cipher),
-            $this->key,
-            0,
-            $iv,
-            $tag ?? ''
-        );
+        foreach ($this->getAllKeys() as $key) {
+            if ($this->shouldValidateMac()
+                && ! ($foundValidMac = $foundValidMac || $this->validMacForKey($payload, $key))
+            ) {
+                continue;
+            }
 
-        if ($decrypted === false) {
+            $decrypted = openssl_decrypt(
+                $payload['value'],
+                strtolower($this->cipher),
+                $key,
+                0,
+                $iv,
+                $tag ?? ''
+            );
+
+            if ($decrypted !== false) {
+                break;
+            }
+        }
+
+        if ($this->shouldValidateMac() && ! $foundValidMac) {
+            throw new DecryptException('The MAC is invalid.');
+        }
+
+        if (($decrypted ?? false) === false) {
             throw new DecryptException('Could not decrypt the data.');
         }
 
@@ -168,9 +190,9 @@ class Encrypter implements EncrypterContract, StringEncrypter
     /**
      * Create a MAC for the given value.
      */
-    protected function hash(string $iv, mixed $value): string
+    protected function hash(string $iv, mixed $value, string $key): string
     {
-        return hash_hmac('sha256', $iv . $value, $this->key);
+        return hash_hmac('sha256', $iv . $value, $key);
     }
 
     /**
@@ -180,6 +202,10 @@ class Encrypter implements EncrypterContract, StringEncrypter
      */
     protected function getJsonPayload(string $payload): array
     {
+        if (! is_string($payload)) {
+            throw new DecryptException('The payload is invalid.');
+        }
+
         $payload = json_decode(base64_decode($payload), true);
 
         // If the payload is not valid JSON or does not have the proper keys set we will
@@ -187,10 +213,6 @@ class Encrypter implements EncrypterContract, StringEncrypter
         // to decrypt the given value. We'll also check the MAC for this encryption.
         if (! $this->validPayload($payload)) {
             throw new DecryptException('The payload is invalid.');
-        }
-
-        if (! self::$supportedCiphers[strtolower($this->cipher)]['aead'] && ! $this->validMac($payload)) {
-            throw new DecryptException('The MAC is invalid.');
         }
 
         return $payload;
@@ -223,8 +245,16 @@ class Encrypter implements EncrypterContract, StringEncrypter
      */
     protected function validMac(array $payload): bool
     {
+        return $this->validMacForKey($payload, $this->key);
+    }
+
+    /**
+     * Determine if the MAC is valid for the given payload and key.
+     */
+    protected function validMacForKey(array $payload, string $key): bool
+    {
         return hash_equals(
-            $this->hash($payload['iv'], $payload['value']),
+            $this->hash($payload['iv'], $payload['value'], $key),
             $payload['mac']
         );
     }
@@ -234,13 +264,21 @@ class Encrypter implements EncrypterContract, StringEncrypter
      */
     protected function ensureTagIsValid(?string $tag): void
     {
-        if (self::$supportedCiphers[strtolower($this->cipher)]['aead'] && strlen($tag) !== 16) {
+        if (static::$supportedCiphers[strtolower($this->cipher)]['aead'] && strlen($tag) !== 16) {
             throw new DecryptException('Could not decrypt the data.');
         }
 
-        if (! self::$supportedCiphers[strtolower($this->cipher)]['aead'] && is_string($tag)) {
+        if (! static::$supportedCiphers[strtolower($this->cipher)]['aead'] && is_string($tag)) {
             throw new DecryptException('Unable to use tag because the cipher algorithm does not support AEAD.');
         }
+    }
+
+    /**
+     * Determine if we should validate the MAC while decrypting.
+     */
+    protected function shouldValidateMac(): bool
+    {
+        return ! static::$supportedCiphers[strtolower($this->cipher)]['aead'];
     }
 
     /**
@@ -249,5 +287,39 @@ class Encrypter implements EncrypterContract, StringEncrypter
     public function getKey(): string
     {
         return $this->key;
+    }
+
+    /**
+     * Get the current encryption key and all previous encryption keys.
+     */
+    public function getAllKeys(): array
+    {
+        return [$this->key, ...$this->previousKeys];
+    }
+
+    /**
+     * Get the previous encryption keys.
+     */
+    public function getPreviousKeys(): array
+    {
+        return $this->previousKeys;
+    }
+
+    /**
+     * Set the previous / legacy encryption keys that should be utilized if decryption fails.
+     */
+    public function previousKeys(array $keys): static
+    {
+        foreach ($keys as $key) {
+            if (! static::supported($key, $this->cipher)) {
+                $ciphers = implode(', ', array_keys(static::$supportedCiphers));
+
+                throw new RuntimeException("Unsupported cipher or incorrect key length. Supported ciphers are: {$ciphers}.");
+            }
+        }
+
+        $this->previousKeys = $keys;
+
+        return $this;
     }
 }

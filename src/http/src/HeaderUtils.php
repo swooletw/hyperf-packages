@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Http;
 
 use InvalidArgumentException;
+use SwooleTW\Hyperf\HttpMessage\Exceptions\RangeNotSatisfiableHttpException;
 
 use const PREG_SET_ORDER;
 
@@ -270,6 +271,60 @@ class HeaderUtils
         }
 
         return $query;
+    }
+
+    /**
+     * Validate a range header.
+     *
+     * @param string $rangeHeader The value of the HTTP header "Range"
+     * @param null|int $fileSize The size of the file in bytes
+     *
+     * @return array An array of two integers: the first byte position and the last byte position
+     *
+     * @throws RangeNotSatisfiableHttpException When the value is not syntactically valid
+     */
+    public static function validateRangeHeaders(string $rangeHeader, ?int $fileSize = null): array
+    {
+        [$start, $end] = explode('-', substr($rangeHeader, 6), 2) + [1 => ''];
+
+        if ($start === '') {
+            if ($fileSize === null) {
+                throw new RangeNotSatisfiableHttpException(
+                    '',
+                    0,
+                    null,
+                    ['Content-Range' => 'bytes */*']
+                );
+            }
+            $start = $fileSize - (int) $end;
+            $end = $fileSize - 1;
+        } else {
+            $start = (int) $start;
+        }
+
+        // Convert end position
+        if ($end === '') {
+            $end = $fileSize !== null ? $fileSize - 1 : null;
+        } else {
+            $end = (int) $end;
+        }
+
+        // Validate the requested range
+        if ($start < 0 || ($end !== null && $start > $end) || ($fileSize !== null && $start >= $fileSize)) {
+            throw new RangeNotSatisfiableHttpException(
+                '',
+                0,
+                null,
+                ['Content-Range' => sprintf('bytes */%s', $fileSize !== null ? $fileSize : '*')]
+            );
+        }
+
+        // Ensure the end position does not exceed the file size
+        if ($fileSize !== null) {
+            $end = min($end, $fileSize - 1);
+        }
+
+        return [$start, $end];
     }
 
     private static function groupParts(array $matches, string $separators, bool $first = true): array

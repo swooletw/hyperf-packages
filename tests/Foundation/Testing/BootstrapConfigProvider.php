@@ -34,6 +34,7 @@ class BootstrapConfigProvider
         \Hyperf\Validation\ConfigProvider::class,
         \SwooleTW\Hyperf\ConfigProvider::class,
         \SwooleTW\Hyperf\Auth\ConfigProvider::class,
+        \SwooleTW\Hyperf\Bus\ConfigProvider::class,
         \SwooleTW\Hyperf\Cache\ConfigProvider::class,
         \SwooleTW\Hyperf\Cookie\ConfigProvider::class,
         \SwooleTW\Hyperf\Config\ConfigProvider::class,
@@ -45,6 +46,7 @@ class BootstrapConfigProvider
         \SwooleTW\Hyperf\Http\ConfigProvider::class,
         \SwooleTW\Hyperf\JWT\ConfigProvider::class,
         \SwooleTW\Hyperf\Log\ConfigProvider::class,
+        \SwooleTW\Hyperf\Queue\ConfigProvider::class,
         \SwooleTW\Hyperf\Router\ConfigProvider::class,
     ];
 
