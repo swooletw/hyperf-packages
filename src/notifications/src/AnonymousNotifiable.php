@@ -36,7 +36,9 @@ class AnonymousNotifiable
      */
     public function notify(mixed $notification): void
     {
-        $this->notifyNow($notification);
+        ApplicationContext::getContainer()
+            ->get(Dispatcher::class)
+            ->send($this, $notification);
     }
 
     /**

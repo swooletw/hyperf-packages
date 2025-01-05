@@ -7,11 +7,14 @@ namespace SwooleTW\Hyperf\Tests\Notifications;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface as EventDispatcher;
+use SwooleTW\Hyperf\Bus\Contracts\Dispatcher as BusDispatcherContract;
+use SwooleTW\Hyperf\Bus\Queueable;
 use SwooleTW\Hyperf\Notifications\AnonymousNotifiable;
 use SwooleTW\Hyperf\Notifications\ChannelManager;
 use SwooleTW\Hyperf\Notifications\Notifiable;
 use SwooleTW\Hyperf\Notifications\Notification;
 use SwooleTW\Hyperf\Notifications\NotificationSender;
+use SwooleTW\Hyperf\Queue\Contracts\ShouldQueue;
 
 /**
  * @internal
@@ -33,10 +36,12 @@ class NotificationSenderTest extends TestCase
             ->andReturnSelf();
         $manager->shouldReceive('send')
             ->once();
+        $bus = m::mock(BusDispatcherContract::class);
+        $bus->shouldNotReceive('dispatch');
         $events = m::mock(EventDispatcher::class);
         $events->shouldReceive('dispatch');
 
-        $sender = new NotificationSender($manager, $events);
+        $sender = new NotificationSender($manager, $bus, $events);
 
         $sender->send($notifiable, new DummyNotificationWithStringVia());
     }
@@ -45,10 +50,12 @@ class NotificationSenderTest extends TestCase
     {
         $notifiable = new AnonymousNotifiable();
         $manager = m::mock(ChannelManager::class);
+        $bus = m::mock(BusDispatcherContract::class);
+        $bus->shouldNotReceive('dispatch');
         $events = m::mock(EventDispatcher::class);
         $events->shouldNotReceive('dispatch');
 
-        $sender = new NotificationSender($manager, $events);
+        $sender = new NotificationSender($manager, $bus, $events);
 
         $sender->sendNow($notifiable, new DummyNotificationWithEmptyStringVia());
     }
@@ -57,17 +64,87 @@ class NotificationSenderTest extends TestCase
     {
         $notifiable = new AnonymousNotifiable();
         $manager = m::mock(ChannelManager::class);
+        $bus = m::mock(BusDispatcherContract::class);
+        $bus->shouldNotReceive('dispatch');
         $events = m::mock(EventDispatcher::class);
         $events->shouldNotReceive('dispatch');
 
-        $sender = new NotificationSender($manager, $events);
+        $sender = new NotificationSender($manager, $bus, $events);
 
         $sender->sendNow($notifiable, new DummyNotificationWithDatabaseVia());
+    }
+
+    public function testItCanSendQueuedNotificationsThroughMiddleware()
+    {
+        $notifiable = m::mock(Notifiable::class);
+        $manager = m::mock(ChannelManager::class);
+        $bus = m::mock(BusDispatcherContract::class);
+        $bus->shouldReceive('dispatch')
+            ->withArgs(function ($job) {
+                return $job->middleware[0] instanceof TestNotificationMiddleware;
+            });
+        $events = m::mock(EventDispatcher::class);
+
+        $sender = new NotificationSender($manager, $bus, $events);
+
+        $sender->send($notifiable, new DummyNotificationWithMiddleware());
+    }
+
+    public function testItCanSendQueuedMultiChannelNotificationsThroughDifferentMiddleware()
+    {
+        $notifiable = m::mock(Notifiable::class);
+        $manager = m::mock(ChannelManager::class);
+        $bus = m::mock(BusDispatcherContract::class);
+        $bus->shouldReceive('dispatch')
+            ->once()
+            ->withArgs(function ($job) {
+                return $job->middleware[0] instanceof TestMailNotificationMiddleware;
+            });
+        $bus->shouldReceive('dispatch')
+            ->once()
+            ->withArgs(function ($job) {
+                return $job->middleware[0] instanceof TestDatabaseNotificationMiddleware;
+            });
+        $bus->shouldReceive('dispatch')
+            ->once()
+            ->withArgs(function ($job) {
+                return empty($job->middleware);
+            });
+        $events = m::mock(EventDispatcher::class);
+
+        $sender = new NotificationSender($manager, $bus, $events);
+
+        $sender->send($notifiable, new DummyMultiChannelNotificationWithConditionalMiddleware());
+    }
+
+    public function testItCanSendQueuedWithViaConnectionsNotifications()
+    {
+        $notifiable = new AnonymousNotifiable();
+        $manager = m::mock(ChannelManager::class);
+        $bus = m::mock(BusDispatcherContract::class);
+        $bus->shouldReceive('dispatch')
+            ->once()
+            ->withArgs(function ($job) {
+                return $job->connection === 'sync' && $job->channels === ['database'];
+            });
+        $bus->shouldReceive('dispatch')
+            ->once()
+            ->withArgs(function ($job) {
+                return $job->connection === null && $job->channels === ['mail'];
+            });
+
+        $events = m::mock(EventDispatcher::class);
+
+        $sender = new NotificationSender($manager, $bus, $events);
+
+        $sender->send($notifiable, new DummyNotificationWithViaConnections());
     }
 }
 
 class DummyNotificationWithStringVia extends Notification
 {
+    use Queueable;
+
     /**
      * Get the notification channels.
      *
@@ -82,6 +159,8 @@ class DummyNotificationWithStringVia extends Notification
 
 class DummyNotificationWithEmptyStringVia extends Notification
 {
+    use Queueable;
+
     /**
      * Get the notification channels.
      *
@@ -96,6 +175,8 @@ class DummyNotificationWithEmptyStringVia extends Notification
 
 class DummyNotificationWithDatabaseVia extends Notification
 {
+    use Queueable;
+
     /**
      * Get the notification channels.
      *
@@ -108,8 +189,10 @@ class DummyNotificationWithDatabaseVia extends Notification
     }
 }
 
-class DummyNotificationWithViaConnections extends Notification
+class DummyNotificationWithViaConnections extends Notification implements ShouldQueue
 {
+    use Queueable;
+
     public function via($notifiable)
     {
         return ['mail', 'database'];
@@ -120,5 +203,69 @@ class DummyNotificationWithViaConnections extends Notification
         return [
             'database' => 'sync',
         ];
+    }
+}
+
+class DummyNotificationWithMiddleware extends Notification implements ShouldQueue
+{
+    use Queueable;
+
+    public function via($notifiable)
+    {
+        return 'mail';
+    }
+
+    public function middleware()
+    {
+        return [
+            new TestNotificationMiddleware(),
+        ];
+    }
+}
+
+class DummyMultiChannelNotificationWithConditionalMiddleware extends Notification implements ShouldQueue
+{
+    use Queueable;
+
+    public function via($notifiable)
+    {
+        return [
+            'mail',
+            'database',
+            'broadcast',
+        ];
+    }
+
+    public function middleware($notifiable, $channel)
+    {
+        return match ($channel) {
+            'mail' => [new TestMailNotificationMiddleware()],
+            'database' => [new TestDatabaseNotificationMiddleware()],
+            default => []
+        };
+    }
+}
+
+class TestNotificationMiddleware
+{
+    public function handle($command, $next)
+    {
+        return $next($command);
+    }
+}
+
+class TestMailNotificationMiddleware
+{
+    public function handle($command, $next)
+    {
+        return $next($command);
+    }
+}
+
+class TestDatabaseNotificationMiddleware
+{
+    public function handle($command, $next)
+    {
+        return $next($command);
     }
 }

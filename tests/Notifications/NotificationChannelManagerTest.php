@@ -11,6 +11,8 @@ use Hyperf\Di\Definition\DefinitionSource;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use SwooleTW\Hyperf\Bus\Contracts\Dispatcher as BusDispatcherContract;
+use SwooleTW\Hyperf\Bus\Queueable;
 use SwooleTW\Hyperf\Foundation\ApplicationContext;
 use SwooleTW\Hyperf\Notifications\ChannelManager;
 use SwooleTW\Hyperf\Notifications\Channels\MailChannel;
@@ -19,6 +21,8 @@ use SwooleTW\Hyperf\Notifications\Events\NotificationSent;
 use SwooleTW\Hyperf\Notifications\Notifiable;
 use SwooleTW\Hyperf\Notifications\Notification;
 use SwooleTW\Hyperf\Notifications\NotificationPoolProxy;
+use SwooleTW\Hyperf\Notifications\SendQueuedNotifications;
+use SwooleTW\Hyperf\Queue\Contracts\ShouldQueue;
 
 /**
  * @internal
@@ -110,11 +114,24 @@ class NotificationChannelManagerTest extends TestCase
         $manager->send([new NotificationChannelManagerTestNotifiable()], new NotificationChannelManagerTestNotCancelledNotification());
     }
 
+    public function testNotificationCanBeQueued()
+    {
+        $container = $this->getContainer();
+        $container->get(BusDispatcherContract::class)
+            ->shouldReceive('dispatch')
+            ->with(m::type(SendQueuedNotifications::class));
+
+        $manager = m::mock(ChannelManager::class . '[driver]', [$container]);
+
+        $manager->send([new NotificationChannelManagerTestNotifiable()], new NotificationChannelManagerTestQueuedNotification());
+    }
+
     protected function getContainer(): Container
     {
         $container = new Container(
             new DefinitionSource([
                 ConfigInterface::class => fn () => new Config([]),
+                BusDispatcherContract::class => fn () => m::mock(BusDispatcherContract::class),
                 EventDispatcherInterface::class => fn () => m::mock(EventDispatcherInterface::class),
             ])
         );
@@ -201,5 +218,20 @@ class NotificationChannelManagerTestNotCancelledNotification extends Notificatio
     public function shouldSend($notifiable, $channel)
     {
         return true;
+    }
+}
+
+class NotificationChannelManagerTestQueuedNotification extends Notification implements ShouldQueue
+{
+    use Queueable;
+
+    public function via()
+    {
+        return ['test'];
+    }
+
+    public function message()
+    {
+        return $this->line('test')->action('Text', 'url');
     }
 }
