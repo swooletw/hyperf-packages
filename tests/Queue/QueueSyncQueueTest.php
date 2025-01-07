@@ -83,6 +83,8 @@ class QueueSyncQueueTest extends TestCase
         } catch (LogicException $e) {
             $this->assertSame('extraValue', $e->getMessage());
         }
+
+        SyncQueue::createPayloadUsing(null);
     }
 
     public function testItAddsATransactionCallbackForAfterCommitJobs()
