@@ -38,6 +38,7 @@
         "hyperf/di": "~3.1.0",
         "swooletw/hyperf-support": "dev-master",
         "swooletw/hyperf-mail": "dev-master",
+        "swooletw/hyperf-queue": "dev-master",
         "swooletw/hyperf-object-pool": "dev-master"
     },
     "config": {
