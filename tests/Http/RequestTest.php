@@ -194,7 +194,8 @@ class RequestTest extends TestCase
     public function testGetHost()
     {
         $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);
-        $psrRequest->shouldReceive('getHeader')->with('HOST')->andReturn(['example.com:8080']);
+        $psrRequest->shouldReceive('hasHeader')->with('HOST')->andReturn(true);
+        $psrRequest->shouldReceive('getHeaderLine')->with('HOST')->andReturn('example.com:8080');
         Context::set(ServerRequestInterface::class, $psrRequest);
         $request = new Request();
 
@@ -204,7 +205,8 @@ class RequestTest extends TestCase
     public function testGetHttpHost()
     {
         $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);
-        $psrRequest->shouldReceive('getHeader')->with('HOST')->andReturn(['example.com:8080']);
+        $psrRequest->shouldReceive('hasHeader')->with('HOST')->andReturn(true);
+        $psrRequest->shouldReceive('getHeaderLine')->with('HOST')->andReturn('example.com:8080');
         Context::set(ServerRequestInterface::class, $psrRequest);
         $request = new Request();
 
@@ -214,7 +216,8 @@ class RequestTest extends TestCase
     public function testGetPort()
     {
         $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);
-        $psrRequest->shouldReceive('getHeader')->with('HOST')->andReturn(['example.com:8080']);
+        $psrRequest->shouldReceive('hasHeader')->with('HOST')->andReturn(true);
+        $psrRequest->shouldReceive('getHeaderLine')->with('HOST')->andReturn('example.com:8080');
         Context::set(ServerRequestInterface::class, $psrRequest);
         $request = new Request();
 
@@ -225,8 +228,7 @@ class RequestTest extends TestCase
     {
         $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);
         $psrRequest->shouldReceive('getServerParams')
-            ->with('HTTPS')
-            ->andReturn(['on']);
+            ->andReturn(['HTTPS' => 'on']);
         Context::set(ServerRequestInterface::class, $psrRequest);
         $request = new Request();
 
@@ -237,8 +239,7 @@ class RequestTest extends TestCase
     {
         $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);
         $psrRequest->shouldReceive('getServerParams')
-            ->with('HTTPS')
-            ->andReturn(['on']);
+            ->andReturn(['HTTPS' => 'on']);
         Context::set(ServerRequestInterface::class, $psrRequest);
         $request = new Request();
 
@@ -361,8 +362,9 @@ class RequestTest extends TestCase
     public function testSchemeAndHttpHost()
     {
         $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);
-        $psrRequest->shouldReceive('getServerParams')->with('HTTPS')->andReturn(['on']);
-        $psrRequest->shouldReceive('getHeader')->with('HOST')->andReturn(['example.com:8080']);
+        $psrRequest->shouldReceive('getServerParams')->andReturn(['HTTPS' => 'on']);
+        $psrRequest->shouldReceive('hasHeader')->with('HOST')->andReturn(true);
+        $psrRequest->shouldReceive('getHeaderLine')->with('HOST')->andReturn('example.com:8080');
         Context::set(ServerRequestInterface::class, $psrRequest);
         $request = new Request();
 
@@ -543,8 +545,9 @@ class RequestTest extends TestCase
     public function testRoot()
     {
         $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);
-        $psrRequest->shouldReceive('getServerParams')->with('HTTPS')->andReturn(['on']);
-        $psrRequest->shouldReceive('getHeader')->with('HOST')->andReturn(['example.com:8080']);
+        $psrRequest->shouldReceive('getServerParams')->andReturn(['HTTPS' => 'on']);
+        $psrRequest->shouldReceive('hasHeader')->with('HOST')->andReturn(true);
+        $psrRequest->shouldReceive('getHeaderLine')->with('HOST')->andReturn('example.com:8080');
         Context::set(ServerRequestInterface::class, $psrRequest);
         $request = new Request();
 
@@ -621,6 +624,17 @@ class RequestTest extends TestCase
         $request = new Request();
 
         $this->assertTrue($request->ajax());
+    }
+
+    public function testPrefetch()
+    {
+        $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);
+        $psrRequest->shouldReceive('getServerParams')->andReturn(['HTTP_X_MOZ' => 'prefetch']);
+
+        Context::set(ServerRequestInterface::class, $psrRequest);
+        $request = new Request();
+
+        $this->assertTrue($request->prefetch());
     }
 
     public function testPjax()

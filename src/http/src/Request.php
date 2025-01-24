@@ -211,7 +211,7 @@ class Request extends HyperfRequest implements RequestContract
      */
     public function getHost(): string
     {
-        $host = $this->getHeader('HOST')[0] ?? $this->getServerParams('SERVER_NAME')[0] ?? $this->getServerParams('SERVER_ADDR')[0] ?? '';
+        $host = $this->header('HOST') ?? $this->server('SERVER_NAME') ?? $this->server('SERVER_ADDR') ?? '';
 
         return strtolower(preg_replace('/:\d+$/', '', trim($host)));
     }
@@ -236,8 +236,8 @@ class Request extends HyperfRequest implements RequestContract
      */
     public function getPort(): int|string
     {
-        if (! $host = $this->getHeader('HOST')[0] ?? '') {
-            return $this->getServerParams('SERVER_PORT')[0];
+        if (! $host = $this->header('HOST', '')) {
+            return $this->server('SERVER_PORT');
         }
 
         if ($host[0] === '[') {
@@ -268,7 +268,7 @@ class Request extends HyperfRequest implements RequestContract
      */
     public function isSecure(): bool
     {
-        $https = $this->getServerParams('HTTPS')[0] ?? '';
+        $https = $this->server('HTTPS', '');
 
         return ! empty($https) && strtolower($https) !== 'off';
     }
@@ -574,6 +574,7 @@ class Request extends HyperfRequest implements RequestContract
         if (! RequestContext::has()) {
             return '127.0.0.1';
         }
+
         return $this->getHeaderLine('x-real-ip')
             ?: $this->server('remote_addr');
     }
@@ -710,6 +711,16 @@ class Request extends HyperfRequest implements RequestContract
     public function pjax(): bool
     {
         return $this->header('X-PJAX') === 'true';
+    }
+
+    /**
+     * Determine if the request is the result of a prefetch call.
+     */
+    public function prefetch(): bool
+    {
+        return strcasecmp($this->server('HTTP_X_MOZ') ?? '', 'prefetch') === 0
+            || strcasecmp($this->header('Purpose') ?? '', 'prefetch') === 0
+            || strcasecmp($this->header('Sec-Purpose') ?? '', 'prefetch') === 0;
     }
 
     /**

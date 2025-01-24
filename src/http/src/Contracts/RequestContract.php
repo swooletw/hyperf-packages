@@ -340,6 +340,11 @@ interface RequestContract extends RequestInterface
     public function pjax(): bool;
 
     /**
+     * Determine if the request is the result of a prefetch call.
+     */
+    public function prefetch(): bool;
+
+    /**
      * Determine if the it is a range request.
      */
     public function isRange(): bool;
