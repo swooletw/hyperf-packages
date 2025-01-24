@@ -30,7 +30,6 @@
         "hyperf/support": "~3.1.0",
         "hyperf/command": "~3.1.0",
         "hyperf/crontab": "~3.1.0",
-        "hyperf/async-queue": "~3.1.0",
         "hyperf/collection": "~3.1.0",
         "hyperf/context": "~3.1.0",
         "hyperf/http-server": "~3.1.0",

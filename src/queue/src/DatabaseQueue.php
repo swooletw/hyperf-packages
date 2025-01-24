@@ -10,7 +10,6 @@ use Hyperf\Collection\Collection;
 use Hyperf\Database\ConnectionInterface;
 use Hyperf\Database\ConnectionResolverInterface;
 use Hyperf\Database\Query\Builder;
-use Hyperf\DbConnection\Connection;
 use Hyperf\Stringable\Str;
 use PDO;
 use SwooleTW\Hyperf\Queue\Contracts\ClearableQueue;
