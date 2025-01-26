@@ -38,7 +38,7 @@ class DatabaseJob extends Job
     {
         parent::delete();
 
-        $this->database->deleteReserved($this->queue, $this->job->id);
+        $this->database->deleteReserved($this->queue, (string) $this->job->id);
     }
 
     /**
@@ -54,7 +54,7 @@ class DatabaseJob extends Job
      */
     public function getJobId(): string
     {
-        return $this->job->id;
+        return (string) $this->job->id;
     }
 
     /**
