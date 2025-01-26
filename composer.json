@@ -158,7 +158,7 @@
         "league/flysystem-path-prefixing": "^3.3",
         "league/flysystem-read-only": "^3.3",
         "mockery/mockery": "^1.5.1",
-        "pda/pheanstalk": "v5.x-dev",
+        "pda/pheanstalk": "v5.0.9",
         "phpstan/phpstan": "^1.11.5",
         "phpunit/phpunit": "^10.0.7",
         "swoole/ide-helper": "~5.1.0"

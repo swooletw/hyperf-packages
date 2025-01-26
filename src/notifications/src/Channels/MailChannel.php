@@ -10,7 +10,6 @@ use Hyperf\Context\ApplicationContext;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Stringable\Str;
 use RuntimeException;
-use SwooleTW\Hyperf\Foundation\Contracts\Queue\ShouldQueue;
 use SwooleTW\Hyperf\Mail\Contracts\Factory as MailFactory;
 use SwooleTW\Hyperf\Mail\Contracts\Mailable;
 use SwooleTW\Hyperf\Mail\Markdown;
@@ -18,6 +17,7 @@ use SwooleTW\Hyperf\Mail\Message;
 use SwooleTW\Hyperf\Mail\SentMessage;
 use SwooleTW\Hyperf\Notifications\Messages\MailMessage;
 use SwooleTW\Hyperf\Notifications\Notification;
+use SwooleTW\Hyperf\Queue\Contracts\ShouldQueue;
 use Symfony\Component\Mailer\Header\MetadataHeader;
 use Symfony\Component\Mailer\Header\TagHeader;
 

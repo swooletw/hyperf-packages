@@ -6,10 +6,12 @@ namespace SwooleTW\Hyperf\Foundation\Testing\Concerns;
 
 use Closure;
 use Hyperf\Contract\ApplicationInterface;
+use Hyperf\Database\ConnectionResolverInterface;
 use Hyperf\Dispatcher\HttpDispatcher;
 use Mockery;
 use Mockery\MockInterface;
 use SwooleTW\Hyperf\Foundation\Contracts\Application as ApplicationContract;
+use SwooleTW\Hyperf\Foundation\Testing\DatabaseConnectionResolver;
 use SwooleTW\Hyperf\Foundation\Testing\Dispatcher\HttpDispatcher as TestingHttpDispatcher;
 
 trait InteractsWithContainer
@@ -87,6 +89,7 @@ trait InteractsWithContainer
         $this->app = $this->createApplication();
         /* @phpstan-ignore-next-line */
         $this->app->define(HttpDispatcher::class, TestingHttpDispatcher::class);
+        $this->app->define(ConnectionResolverInterface::class, DatabaseConnectionResolver::class);
         $this->app->get(ApplicationInterface::class);
     }
 

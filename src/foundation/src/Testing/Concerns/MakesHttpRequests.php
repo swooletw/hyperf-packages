@@ -100,7 +100,7 @@ trait MakesHttpRequests
 
         $response = $this->createTestResponse(
             $this->app->make(TestClient::class)->{$method}(
-                $uri,
+                $this->prepareUrlForRequest($uri),
                 $data,
                 array_merge($this->defaultHeaders, $headers),
                 $cookies
@@ -114,6 +114,18 @@ trait MakesHttpRequests
         $this->flushRequestStates();
 
         return $response;
+    }
+
+    /**
+     * Turn the given URI without trailing slash.
+     */
+    protected function prepareUrlForRequest(string $uri): string
+    {
+        if ($uri === '/') {
+            return $uri;
+        }
+
+        return rtrim($uri, '/');
     }
 
     /**

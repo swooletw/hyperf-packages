@@ -9,8 +9,10 @@ use Hyperf\Database\Model\Collection as ModelCollection;
 use Hyperf\Database\Model\Model;
 use Hyperf\Stringable\Str;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use SwooleTW\Hyperf\Bus\Contracts\Dispatcher as BusDispatcherContract;
 use SwooleTW\Hyperf\Notifications\Events\NotificationSending;
 use SwooleTW\Hyperf\Notifications\Events\NotificationSent;
+use SwooleTW\Hyperf\Queue\Contracts\ShouldQueue;
 use SwooleTW\Hyperf\Support\Traits\Localizable;
 use SwooleTW\Hyperf\Translation\Contracts\HasLocalePreference;
 
@@ -26,6 +28,7 @@ class NotificationSender
      */
     public function __construct(
         protected ChannelManager $manager,
+        protected BusDispatcherContract $bus,
         protected EventDispatcherInterface $events,
         protected ?string $locale = null
     ) {
@@ -38,7 +41,10 @@ class NotificationSender
     {
         $notifiables = $this->formatNotifiables($notifiables);
 
-        // TODO: Support sending notifications through the queue in the future
+        if ($notification instanceof ShouldQueue) {
+            $this->queueNotification($notifiables, $notification);
+            return;
+        }
 
         $this->sendNow($notifiables, $notification);
     }
@@ -115,6 +121,67 @@ class NotificationSender
         return tap(new NotificationSending($notifiable, $notification, $channel), function ($event) {
             $this->events?->dispatch($event);
         })->shouldSend();
+    }
+
+    /**
+     * Queue the given notification instances.
+     */
+    protected function queueNotification(mixed $notifiables, mixed $notification): void
+    {
+        $notifiables = $this->formatNotifiables($notifiables);
+
+        $original = clone $notification;
+
+        foreach ($notifiables as $notifiable) {
+            $notificationId = Str::uuid()->toString();
+
+            foreach ((array) $original->via($notifiable) as $channel) {
+                $notification = clone $original;
+
+                if (! $notification->id) {
+                    $notification->id = $notificationId;
+                }
+
+                if (! is_null($this->locale)) {
+                    $notification->locale = $this->locale;
+                }
+
+                $connection = $notification->connection;
+
+                if (method_exists($notification, 'viaConnections')) {
+                    $connection = $notification->viaConnections()[$channel] ?? null;
+                }
+
+                $queue = $notification->queue;
+
+                if (method_exists($notification, 'viaQueues')) {
+                    $queue = $notification->viaQueues()[$channel] ?? null;
+                }
+
+                $delay = $notification->delay;
+
+                if (method_exists($notification, 'withDelay')) {
+                    $delay = $notification->withDelay($notifiable, $channel) ?? null;
+                }
+
+                $middleware = $notification->middleware ?? [];
+
+                if (method_exists($notification, 'middleware')) {
+                    $middleware = array_merge(
+                        $notification->middleware($notifiable, $channel),
+                        $middleware
+                    );
+                }
+
+                $this->bus->dispatch(
+                    (new SendQueuedNotifications($notifiable, $notification, [$channel]))
+                        ->onConnection($connection)
+                        ->onQueue($queue)
+                        ->delay(is_array($delay) ? ($delay[$channel] ?? null) : $delay)
+                        ->through($middleware)
+                );
+            }
+        }
     }
 
     /**

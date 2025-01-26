@@ -24,6 +24,8 @@ class DatabaseUuidFailedJobProviderTest extends ApplicationTestCase
 
     protected ?ConnectionResolverInterface $resolver = null;
 
+    protected bool $migrateRefresh = true;
+
     public function setUp(): void
     {
         parent::setUp();
@@ -34,7 +36,7 @@ class DatabaseUuidFailedJobProviderTest extends ApplicationTestCase
         );
     }
 
-    protected function migrateUsing(): array
+    protected function migrateFreshUsing(): array
     {
         return [
             '--seed' => $this->shouldSeed(),
