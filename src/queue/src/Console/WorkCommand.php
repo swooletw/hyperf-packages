@@ -137,7 +137,7 @@ class WorkCommand extends Command
         $concurrencyOption = (int) $this->option('concurrency');
         $concurrency = $concurrencyOption > 1
             ? $concurrencyOption
-            : min(1, $concurrencyConfig);
+            : max(1, $concurrencyConfig);
 
         return new WorkerOptions(
             $this->option('name'),
