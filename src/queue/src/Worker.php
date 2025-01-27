@@ -169,20 +169,16 @@ class Worker
             }
 
             // First, we will attempt to get the next job off of the queue.
-            // Then, we can fire off this job. If there are no jobs,
+            // Then, we can fire off this job in coroutine. If there are no jobs,
             // we will need to sleep the worker so no more jobs are processed
             // until they should be processed.
-            $job = null;
-            $concurrent->create(function () use ($connectionName, $queue, $options, &$job, &$jobsProcessed) {
-                $job = $this->getNextJob(
-                    $this->manager->connection($connectionName),
-                    $queue
-                );
-                if ($job) {
-                    ++$jobsProcessed;
-                    $this->runJob($job, $connectionName, $options);
-                }
-            });
+            $job = $this->getNextJob(
+                $this->manager->connection($connectionName),
+                $queue
+            );
+            if ($job) {
+                $concurrent->create(fn () => ++$jobsProcessed && $this->runJob($job, $connectionName, $options));
+            }
 
             if ($job && $options->rest > 0) {
                 $this->sleep($options->rest);
