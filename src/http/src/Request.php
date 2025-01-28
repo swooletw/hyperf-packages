@@ -12,15 +12,14 @@ use Hyperf\Collection\Collection;
 use Hyperf\Context\ApplicationContext;
 use Hyperf\Context\Context;
 use Hyperf\Context\RequestContext;
-use Hyperf\Contract\SessionInterface;
 use Hyperf\HttpServer\Request as HyperfRequest;
 use Hyperf\Stringable\Str;
 use Hyperf\Validation\ValidatorFactory;
 use Psr\Http\Message\ServerRequestInterface;
-use RuntimeException;
 use stdClass;
 use Stringable;
 use SwooleTW\Hyperf\Http\Contracts\RequestContract;
+use SwooleTW\Hyperf\Session\Contracts\Session as SessionContract;
 
 use function Hyperf\Collection\collect;
 use function Hyperf\Collection\data_get;
@@ -31,6 +30,11 @@ class Request extends HyperfRequest implements RequestContract
      * The user resolver callback.
      */
     protected ?Closure $userResolver = null;
+
+    /**
+     * The session resolver callback.
+     */
+    protected ?Closure $sessionResolver = null;
 
     /**
      * Retrieve normalized file upload data.
@@ -742,13 +746,10 @@ class Request extends HyperfRequest implements RequestContract
     /**
      * Get session for the current request.
      */
-    public function session(): SessionInterface
+    public function session(): SessionContract
     {
-        if (! Context::has(SessionInterface::class)) {
-            throw new RuntimeException('Session not set on request.');
-        }
-
-        return Context::get(SessionInterface::class);
+        return ApplicationContext::getContainer()
+            ->get(SessionContract::class);
     }
 
     /**

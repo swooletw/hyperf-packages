@@ -48,6 +48,7 @@
             "SwooleTW\\Hyperf\\Prompts\\": "src/prompts/src/",
             "SwooleTW\\Hyperf\\Queue\\": "src/queue/src/",
             "SwooleTW\\Hyperf\\Router\\": "src/router/src/",
+            "SwooleTW\\Hyperf\\Session\\": "src/session/src/",
             "SwooleTW\\Hyperf\\Support\\": "src/support/src/"
         },
         "files": [
@@ -60,6 +61,7 @@
             "src/foundation/src/helpers.php",
             "src/prompts/src/helpers.php",
             "src/router/src/Functions.php",
+            "src/session/src/Functions.php",
             "src/support/src/Functions.php",
             "src/support/src/helpers.php"
         ]
@@ -132,6 +134,7 @@
         "swooletw/hyperf-prompts": "self.version",
         "swooletw/hyperf-queue": "self.version",
         "swooletw/hyperf-router": "self.version",
+        "swooletw/hyperf-session": "self.version",
         "swooletw/hyperf-support": "self.version"
     },
     "suggest": {
@@ -188,7 +191,8 @@
                 "SwooleTW\\Hyperf\\Mail\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Notifications\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Queue\\ConfigProvider",
-                "SwooleTW\\Hyperf\\Router\\ConfigProvider"
+                "SwooleTW\\Hyperf\\Router\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Session\\ConfigProvider"
             ],
             "providers": [
                 "SwooleTW\\Hyperf\\Notifications\\NotificationServiceProvider"

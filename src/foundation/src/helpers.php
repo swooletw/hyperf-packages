@@ -5,7 +5,6 @@ declare(strict_types=1);
 use Carbon\Carbon;
 use Hyperf\Context\ApplicationContext;
 use Hyperf\Contract\Arrayable;
-use Hyperf\Contract\SessionInterface;
 use Hyperf\Contract\ValidatorInterface;
 use Hyperf\HttpMessage\Cookie\Cookie;
 use Hyperf\Stringable\Stringable;
@@ -26,7 +25,9 @@ use SwooleTW\Hyperf\HttpMessage\Exceptions\HttpException;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\HttpResponseException;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\NotFoundHttpException;
 use SwooleTW\Hyperf\Router\UrlGenerator;
+use SwooleTW\Hyperf\Session\Contracts\Session as SessionContract;
 use SwooleTW\Hyperf\Support\Contracts\Responsable;
+use SwooleTW\Hyperf\Support\HtmlString;
 
 use function SwooleTW\Hyperf\Filesystem\join_paths;
 
@@ -259,6 +260,28 @@ if (! function_exists('cookie')) {
         }
 
         return $cookieManager->make($name, $value, $minutes, $path, $domain, $secure, $httpOnly, $raw, $sameSite);
+    }
+}
+
+if (! function_exists('csrf_token')) {
+    /**
+     * Get the CSRF token value.
+     *
+     * @throws \RuntimeException
+     */
+    function csrf_token(): string
+    {
+        return \SwooleTW\Hyperf\Session\csrf_token();
+    }
+}
+
+if (! function_exists('csrf_field')) {
+    /**
+     * Generate a CSRF token form field.
+     */
+    function csrf_field(): HtmlString
+    {
+        return \SwooleTW\Hyperf\Session\csrf_field();
     }
 }
 
@@ -523,21 +546,11 @@ if (! function_exists('session')) {
      *
      * If an array is passed as the key, we will assume you want to set an array of values.
      *
-     * @return mixed|SessionInterface
+     * @return mixed|SessionContract
      */
     function session(null|array|string $key = null, mixed $default = null): mixed
     {
-        $session = app(SessionInterface::class);
-
-        if (is_null($key)) {
-            return $session;
-        }
-
-        if (is_array($key)) {
-            return $session->put($key);
-        }
-
-        return $session->get($key, $default);
+        return \SwooleTW\Hyperf\Session\session($key, $default);
     }
 }
 

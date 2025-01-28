@@ -1,0 +1,55 @@
+{
+    "name": "swooletw/hyperf-session",
+    "type": "library",
+    "description": "The session package for Hyperf.",
+    "license": "MIT",
+    "keywords": [
+        "php",
+        "hyperf",
+        "session",
+        "swoole",
+        "laravel-hyperf"
+    ],
+    "authors": [
+        {
+            "name": "Albert Chen",
+            "email": "albert@laravel-hyperf.com",
+            "homepage": "https://albert-chen.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/swooletw/hyperf-packages/issues",
+        "source": "https://github.com/swooletw/hyperf-packages"
+    },
+    "autoload": {
+        "psr-4": {
+            "SwooleTW\\Hyperf\\Session\\": "src/"
+        },
+        "files": [
+            "src/Functions.php"
+        ]
+    },
+    "require": {
+        "php": "^8.2",
+        "hyperf/context": "~3.1.0",
+        "hyperf/collection": "~3.1.0",
+        "hyperf/support": "~3.1.0",
+        "hyperf/stringable": "~3.1.0",
+        "hyperf/macroable": "~3.1.0",
+        "hyperf/view-engine": "~3.1.0",
+        "swooletw/hyperf-cache": "dev",
+        "swooletw/hyperf-cookie": "dev",
+        "swooletw/hyperf-support": "dev"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "hyperf": {
+            "config": "SwooleTW\\Hyperf\\Session\\ConfigProvider"
+        },
+        "branch-alias": {
+            "dev-main": "3.1-dev"
+        }
+    }
+}
