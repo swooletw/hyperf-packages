@@ -4,21 +4,22 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Http\Middleware;
 
-use Closure;
 use Hyperf\Context\Context;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
-abstract class TransformsRequest
+abstract class TransformsRequest implements MiddlewareInterface
 {
     protected array $except = [];
 
     protected static $skipCallbacks = [];
 
-    public function handle(ServerRequestInterface $request, Closure $next): ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($this->shouldSkip($request)) {
-            return $next($request);
+            return $handler->handle($request);
         }
 
         Context::set(
@@ -26,7 +27,7 @@ abstract class TransformsRequest
             $request = $this->processInput($request)
         );
 
-        return $next($request);
+        return $handler->handle($request);
     }
 
     public static function skipWhen(callable $callback): void
