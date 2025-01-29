@@ -21,7 +21,8 @@ class SessionGuard implements StatefulGuard
         protected string $name,
         protected UserProvider $provider,
         protected SessionContract $session
-    ) {}
+    ) {
+    }
 
     /**
      * Attempt to authenticate a user using the given credentials.
