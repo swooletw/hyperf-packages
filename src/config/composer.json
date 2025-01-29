@@ -1,7 +1,7 @@
 {
     "name": "swooletw/hyperf-config",
     "type": "library",
-    "description": "The config package for Hyperf.",
+    "description": "The config package for Laravel Hyperf.",
     "license": "MIT",
     "keywords": [
         "php",
@@ -42,7 +42,7 @@
             "config": "SwooleTW\\Hyperf\\Config\\ConfigProvider"
         },
         "branch-alias": {
-            "dev-main": "3.1-dev"
+            "dev-main": "0.1-dev"
         }
     }
 }

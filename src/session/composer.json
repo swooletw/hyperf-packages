@@ -1,7 +1,7 @@
 {
     "name": "swooletw/hyperf-session",
     "type": "library",
-    "description": "The session package for Hyperf.",
+    "description": "The session package for Laravel Hyperf.",
     "license": "MIT",
     "keywords": [
         "php",
@@ -36,10 +36,11 @@
         "hyperf/support": "~3.1.0",
         "hyperf/stringable": "~3.1.0",
         "hyperf/macroable": "~3.1.0",
+        "hyperf/tappable": "~3.1.0",
         "hyperf/view-engine": "~3.1.0",
-        "swooletw/hyperf-cache": "dev",
-        "swooletw/hyperf-cookie": "dev",
-        "swooletw/hyperf-support": "dev"
+        "swooletw/hyperf-cache": "~0.1.0",
+        "swooletw/hyperf-cookie": "~0.1.0",
+        "swooletw/hyperf-support": "~0.1.0"
     },
     "config": {
         "sort-packages": true
@@ -49,7 +50,7 @@
             "config": "SwooleTW\\Hyperf\\Session\\ConfigProvider"
         },
         "branch-alias": {
-            "dev-main": "3.1-dev"
+            "dev-main": "0.1-dev"
         }
     }
 }

@@ -1,7 +1,7 @@
 {
     "name": "swooletw/hyperf-framework",
     "type": "library",
-    "description": "The framework package for Hyperf.",
+    "description": "The framework package for Laravel Hyperf.",
     "license": "MIT",
     "keywords": [
         "php",
@@ -40,7 +40,7 @@
             "config": "SwooleTW\\Hyperf\\ConfigProvider"
         },
         "branch-alias": {
-            "dev-main": "3.1-dev"
+            "dev-main": "0.1-dev"
         }
     }
 }

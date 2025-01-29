@@ -1,7 +1,7 @@
 {
     "name": "swooletw/hyperf-filesystem",
     "type": "library",
-    "description": "The filesystem package for Hyperf.",
+    "description": "The filesystem package for Laravel Hyperf.",
     "license": "MIT",
     "keywords": [
         "php",
@@ -34,6 +34,7 @@
         "hyperf/collection": "~3.1.0",
         "hyperf/macroable": "~3.1.0",
         "hyperf/support": "~3.1.0",
+        "hyperf/conditionable": "~3.1.0",
         "swooletw/object-pool": "dev-master"
     },
     "suggest": {
@@ -57,7 +58,7 @@
             "config": "SwooleTW\\Hyperf\\Filesystem\\ConfigProvider"
         },
         "branch-alias": {
-            "dev-main": "3.1-dev"
+            "dev-main": "0.1-dev"
         }
     }
 }

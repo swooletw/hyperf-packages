@@ -1,2 +1,2 @@
-Session Package for Hyperf
+Session for Laravel Hyperf
 ===
