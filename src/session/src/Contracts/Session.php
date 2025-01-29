@@ -26,7 +26,7 @@ interface Session
     /**
      * Set the session ID.
      */
-    public function setId(string $id): static;
+    public function setId(string $id): void;
 
     /**
      * Start the session, reading the data from a handler.

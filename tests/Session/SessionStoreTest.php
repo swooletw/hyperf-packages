@@ -668,11 +668,15 @@ class SessionStoreTest extends TestCase
 
     public function getSession(string $serialization = 'php'): Store
     {
-        return (new Store(
+        $store = new Store(
             $this->getSessionName(),
             m::mock(SessionHandlerInterface::class),
             $serialization
-        ))->setId($this->getSessionId());
+        );
+
+        $store->setId($this->getSessionId());
+
+        return $store;
     }
 
     protected function getSessionId(): string

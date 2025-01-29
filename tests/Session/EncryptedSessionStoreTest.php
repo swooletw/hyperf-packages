@@ -46,11 +46,15 @@ class EncryptedSessionStoreTest extends TestCase
 
     public function getSession(): EncryptedStore
     {
-        return (new EncryptedStore(
+        $store = new EncryptedStore(
             $this->getSessionName(),
             m::mock(SessionHandlerInterface::class),
             m::mock(Encrypter::class)
-        ))->setId($this->getSessionId());
+        );
+
+        $store->setId($this->getSessionId());
+
+        return $store;
     }
 
     protected function getSessionId(): string

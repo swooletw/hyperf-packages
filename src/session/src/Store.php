@@ -549,14 +549,12 @@ class Store implements Session
     /**
      * Set the session ID.
      */
-    public function setId(?string $id): static
+    public function setId(?string $id): void
     {
         Context::set(
             '_session.store.id',
             $this->isValidId($id) ? $id : $this->generateSessionId()
         );
-
-        return $this;
     }
 
     /**

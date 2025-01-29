@@ -16,7 +16,7 @@ class ConfigProvider
             'dependencies' => [
                 Factory::class => SessionManager::class,
                 SessionContract::class => StoreFactory::class,
-                SessionInterface::class => StoreFactory::class,
+                SessionInterface::class => AdapterFactory::class,
             ],
             'publish' => [
                 [
