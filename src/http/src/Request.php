@@ -32,11 +32,6 @@ class Request extends HyperfRequest implements RequestContract
     protected ?Closure $userResolver = null;
 
     /**
-     * The session resolver callback.
-     */
-    protected ?Closure $sessionResolver = null;
-
-    /**
      * Retrieve normalized file upload data.
      * This method returns upload metadata in a normalized tree, with each leaf
      * an instance of Psr\Http\Message\UploadedFileInterface.
