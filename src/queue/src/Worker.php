@@ -162,8 +162,9 @@ class Worker
                 continue;
             }
 
-            // If there are timeout jobs, we should not accept new jobs
-            if ($this->hasTimeoutJobs()) {
+            // If there are timeout jobs or the concurrency limit is hit,
+            // we should not accept new jobs
+            if ($this->hasTimeoutJobs() || $concurrent->isFull()) {
                 $this->sleep($options->sleep);
                 continue;
             }
@@ -177,7 +178,8 @@ class Worker
                 $queue
             );
             if ($job) {
-                $concurrent->create(fn () => ++$jobsProcessed && $this->runJob($job, $connectionName, $options));
+                ++$jobsProcessed;
+                $concurrent->create(fn () => $this->runJob($job, $connectionName, $options));
             }
 
             if ($job && $options->rest > 0) {
