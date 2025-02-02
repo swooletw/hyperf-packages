@@ -8,10 +8,10 @@ use Closure;
 use Hyperf\Collection\Arr;
 use Hyperf\HttpServer\MiddlewareManager;
 use Hyperf\HttpServer\Router\Handler;
-use Hyperf\HttpServer\Router\RouteCollector;
+use Hyperf\HttpServer\Router\RouteCollector as BaseRouteCollector;
 use InvalidArgumentException;
 
-class NamedRouteCollector extends RouteCollector
+class RouteCollector extends BaseRouteCollector
 {
     /**
      * All of the named routes and data pairs.

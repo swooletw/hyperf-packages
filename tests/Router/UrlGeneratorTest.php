@@ -21,7 +21,7 @@ use Mockery\MockInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use ReflectionMethod;
 use SwooleTW\Hyperf\Router\DispatcherFactory;
-use SwooleTW\Hyperf\Router\NamedRouteCollector;
+use SwooleTW\Hyperf\Router\RouteCollector;
 use SwooleTW\Hyperf\Router\UrlGenerator;
 use SwooleTW\Hyperf\Tests\Router\Stub\UrlRoutableStub;
 use SwooleTW\Hyperf\Tests\TestCase;
@@ -38,9 +38,9 @@ class UrlGeneratorTest extends TestCase
     private ContainerInterface $container;
 
     /**
-     * @var MockInterface|NamedRouteCollector
+     * @var MockInterface|RouteCollector
      */
-    private NamedRouteCollector $router;
+    private RouteCollector $router;
 
     protected function setUp(): void
     {
@@ -502,13 +502,13 @@ class UrlGeneratorTest extends TestCase
         $this->container = $container;
     }
 
-    private function mockRouter(?NamedRouteCollector $router = null)
+    private function mockRouter(?RouteCollector $router = null)
     {
         /** @var DispatcherFactory|MockInterface */
         $factory = Mockery::mock(DispatcherFactory::class);
 
-        /** @var MockInterface|NamedRouteCollector */
-        $router = $router ?: Mockery::mock(NamedRouteCollector::class);
+        /** @var MockInterface|RouteCollector */
+        $router = $router ?: Mockery::mock(RouteCollector::class);
 
         $this->container
             ->shouldReceive('get')
