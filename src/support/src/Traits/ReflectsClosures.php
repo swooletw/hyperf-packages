@@ -64,6 +64,7 @@ trait ReflectsClosures
             throw new RuntimeException('The first parameter of the given Closure is missing a type hint.');
         }
 
+        /* @phpstan-ignore-next-line */
         return $types[0];
     }
 
