@@ -23,6 +23,14 @@ trait Authenticatable
     }
 
     /**
+     * Get the unique broadcast identifier for the user.
+     */
+    public function getAuthIdentifierForBroadcasting(): mixed
+    {
+        return $this->getAuthIdentifier();
+    }
+
+    /**
      * Get the password for the user.
      */
     public function getAuthPassword(): string
