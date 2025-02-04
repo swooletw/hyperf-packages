@@ -68,12 +68,14 @@ class DurationLimiter
     {
         $results = $this->getConnection()->eval(
             $this->luaScript(),
-            1,
-            $this->name,
-            microtime(true),
-            time(),
-            $this->decay,
-            $this->maxLocks
+            [
+                $this->name,
+                microtime(true),
+                time(),
+                $this->decay,
+                $this->maxLocks,
+            ],
+            1
         );
 
         $this->decaysAt = $results[1];
@@ -90,12 +92,14 @@ class DurationLimiter
     {
         [$this->decaysAt, $this->remaining] = $this->getConnection()->eval(
             $this->tooManyAttemptsLuaScript(),
-            1,
-            $this->name,
-            microtime(true),
-            time(),
-            $this->decay,
-            $this->maxLocks
+            [
+                $this->name,
+                microtime(true),
+                time(),
+                $this->decay,
+                $this->maxLocks,
+            ],
+            1
         );
 
         return $this->remaining <= 0;
