@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Mail;
 
 use Closure;
+use DateInterval;
+use DateTimeInterface;
 use Hyperf\Macroable\Macroable;
 use Hyperf\ViewEngine\Contract\FactoryInterface;
 use InvalidArgumentException;
@@ -12,9 +14,12 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use SwooleTW\Hyperf\Mail\Contracts\Mailable;
 use SwooleTW\Hyperf\Mail\Contracts\Mailable as MailableContract;
 use SwooleTW\Hyperf\Mail\Contracts\Mailer as MailerContract;
+use SwooleTW\Hyperf\Mail\Contracts\MailQueue as MailQueueContract;
 use SwooleTW\Hyperf\Mail\Events\MessageSending;
 use SwooleTW\Hyperf\Mail\Events\MessageSent;
 use SwooleTW\Hyperf\Mail\Mailables\Address;
+use SwooleTW\Hyperf\Queue\Contracts\Factory as QueueFactory;
+use SwooleTW\Hyperf\Queue\Contracts\ShouldQueue;
 use SwooleTW\Hyperf\Support\Contracts\Htmlable;
 use SwooleTW\Hyperf\Support\HtmlString;
 use Symfony\Component\Mailer\Envelope;
@@ -25,7 +30,7 @@ use Symfony\Component\Mime\Email;
 use function Hyperf\Support\value;
 use function Hyperf\Tappable\tap;
 
-class Mailer implements MailerContract
+class Mailer implements MailerContract, MailQueueContract
 {
     use Macroable;
 
@@ -48,6 +53,11 @@ class Mailer implements MailerContract
      * The global to address and name.
      */
     protected array $to = [];
+
+    /**
+     * The queue factory implementation.
+     */
+    protected ?QueueFactory $queue = null;
 
     /**
      * Create a new Mailer instance.
@@ -258,7 +268,19 @@ class Mailer implements MailerContract
      */
     protected function sendMailable(MailableContract $mailable): ?SentMessage
     {
-        return $mailable->mailer($this->name)->send($this);
+        return $mailable instanceof ShouldQueue
+            ? $mailable->mailer($this->name)->queue($this->queue)
+            : $mailable->mailer($this->name)->send($this);
+    }
+
+    /**
+     * Send a new message synchronously using a view.
+     */
+    public function sendNow(array|MailableContract|string $mailable, array $data = [], null|Closure|string $callback = null): ?SentMessage
+    {
+        return $mailable instanceof MailableContract
+            ? $mailable->mailer($this->name)->send($this)
+            : $this->send($mailable, $data, $callback);
     }
 
     /**
@@ -334,6 +356,67 @@ class Mailer implements MailerContract
 
         $message->forgetCc();
         $message->forgetBcc();
+    }
+
+    /**
+     * Queue a new mail message for sending.
+     *
+     * @throws InvalidArgumentException
+     */
+    public function queue(array|MailableContract|string $view, ?string $queue = null): mixed
+    {
+        if (! $view instanceof MailableContract) {
+            throw new InvalidArgumentException('Only mailables may be queued.');
+        }
+
+        if (is_string($queue)) {
+            $view->onQueue($queue); // @phpstan-ignore-line
+        }
+
+        return $view->mailer($this->name)->queue($this->queue);
+    }
+
+    /**
+     * Queue a new mail message for sending on the given queue.
+     */
+    public function onQueue(?string $queue, MailableContract $view): mixed
+    {
+        return $this->queue($view, $queue);
+    }
+
+    /**
+     * Queue a new mail message for sending on the given queue.
+     *
+     * This method didn't match rest of framework's "onQueue" phrasing. Added "onQueue".
+     */
+    public function queueOn(string $queue, MailableContract $view): mixed
+    {
+        return $this->onQueue($queue, $view);
+    }
+
+    /**
+     * Queue a new mail message for sending after (n) seconds.
+     *
+     * @throws InvalidArgumentException
+     */
+    public function later(DateInterval|DateTimeInterface|int $delay, array|MailableContract|string $view, ?string $queue = null): mixed
+    {
+        if (! $view instanceof MailableContract) {
+            throw new InvalidArgumentException('Only mailables may be queued.');
+        }
+
+        return $view->mailer($this->name)->later(
+            $delay,
+            is_null($queue) ? $this->queue : $queue
+        );
+    }
+
+    /**
+     * Queue a new mail message for sending after (n) seconds on the given queue.
+     */
+    public function laterOn(string $queue, DateInterval|DateTimeInterface|int $delay, MailableContract $view): mixed
+    {
+        return $this->later($delay, $view, $queue);
     }
 
     /**
@@ -421,5 +504,15 @@ class Mailer implements MailerContract
     public function setSymfonyTransport(TransportInterface $transport): void
     {
         $this->transport = $transport;
+    }
+
+    /**
+     * Set the queue manager instance.
+     */
+    public function setQueue(QueueFactory $queue): static
+    {
+        $this->queue = $queue;
+
+        return $this;
     }
 }

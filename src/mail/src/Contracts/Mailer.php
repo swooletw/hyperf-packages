@@ -29,4 +29,9 @@ interface Mailer
      * Send a new message using a view.
      */
     public function send(array|Mailable|string $view, array $data = [], null|Closure|string $callback = null): ?SentMessage;
+
+    /**
+     * Send a new message synchronously using a view.
+     */
+    public function sendNow(array|Mailable|string $mailable, array $data = [], null|Closure|string $callback = null): ?SentMessage;
 }

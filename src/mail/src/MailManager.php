@@ -23,6 +23,7 @@ use SwooleTW\Hyperf\Mail\Transport\LogTransport;
 use SwooleTW\Hyperf\Mail\Transport\SesTransport;
 use SwooleTW\Hyperf\Mail\Transport\SesV2Transport;
 use SwooleTW\Hyperf\ObjectPool\Traits\HasPoolProxy;
+use SwooleTW\Hyperf\Queue\Contracts\Factory as QueueFactory;
 use SwooleTW\Hyperf\Support\ConfigurationUrlParser;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Mailer\Bridge\Mailgun\Transport\MailgunTransportFactory;
@@ -131,6 +132,10 @@ class MailManager implements FactoryContract
             $this->createSymfonyTransport($config, $hasPool ? $name : null),
             $this->app->get(EventDispatcherInterface::class)
         );
+
+        if ($this->app->has(QueueFactory::class)) {
+            $mailer->setQueue($this->app->get(QueueFactory::class));
+        }
 
         // Next we will set all of the global addresses on this mailer, which allows
         // for easy unification of all "from" addresses as well as easy debugging
