@@ -739,6 +739,15 @@ class Request extends HyperfRequest implements RequestContract
     }
 
     /**
+     * Determine if the request has a session.
+     */
+    public function hasSession(): bool
+    {
+        return ApplicationContext::getContainer()
+            ->has(SessionContract::class);
+    }
+
+    /**
      * Get session for the current request.
      */
     public function session(): SessionContract

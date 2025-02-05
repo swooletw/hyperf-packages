@@ -350,6 +350,11 @@ interface RequestContract extends RequestInterface
     public function isRange(): bool;
 
     /**
+     * Determine if the request has a session.
+     */
+    public function hasSession(): bool;
+
+    /**
      * Get session for the current request.
      */
     public function session(): SessionContract;

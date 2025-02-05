@@ -646,6 +646,21 @@ class RequestTest extends TestCase
         $this->assertTrue($request->pjax());
     }
 
+    public function testHasSession()
+    {
+        $container = Mockery::mock(ContainerInterface::class);
+        $container->shouldReceive('has')
+            ->with(SessionContract::class)
+            ->andReturn(true);
+
+        ApplicationContext::setContainer($container);
+        $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);
+        Context::set(ServerRequestInterface::class, $psrRequest);
+        $request = new Request();
+
+        $this->assertTrue($request->hasSession());
+    }
+
     public function testSession()
     {
         $container = Mockery::mock(ContainerInterface::class);
