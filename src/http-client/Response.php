@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\HttpClient;
+namespace SwooleTW\Hyperf\HttpClient;
 
 use ArrayAccess;
 use Closure;
@@ -18,13 +18,14 @@ use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
 use Stringable;
+use SwooleTW\Hyperf\HttpClient\Concerns\DeterminesStatusCode;
 
 /**
  * @mixin ResponseInterface
  */
 class Response implements ArrayAccess, Stringable
 {
-    use Concerns\DeterminesStatusCode, Macroable {
+    use DeterminesStatusCode, Macroable {
         __call as macroCall;
     }
 

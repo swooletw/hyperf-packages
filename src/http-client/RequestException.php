@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\HttpClient;
+namespace SwooleTW\Hyperf\HttpClient;
 
 use GuzzleHttp\Psr7\Message;
 

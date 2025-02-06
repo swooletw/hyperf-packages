@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\HttpClient\Events;
+namespace SwooleTW\Hyperf\HttpClient\Events;
 
-use SwooleTW\HttpClient\Request;
+
+use SwooleTW\Hyperf\HttpClient\Request;
 
 class RequestSending
 {

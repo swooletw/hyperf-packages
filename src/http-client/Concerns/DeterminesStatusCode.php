@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\HttpClient\Concerns;
+namespace SwooleTW\Hyperf\HttpClient\Concerns;
 
 trait DeterminesStatusCode
 {
