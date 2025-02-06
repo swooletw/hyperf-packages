@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SwooleTW\HttpClient;
+namespace SwooleTW\Hyperf\HttpClient;
 
 use ArrayAccess;
 use Hyperf\Collection\Arr;
