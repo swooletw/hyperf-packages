@@ -36,10 +36,7 @@ class FoundationServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->callAfterResolving(ConfigInterface::class, function (ConfigInterface $config) {
-            $this->config = $config;
-            $this->overrideHyperfConfigs();
-        });
+        $this->overrideHyperfConfigs();
 
         $this->callAfterResolving(RequestContract::class, function (RequestContract $request) {
             $request->setUserResolver(function (?string $guard = null) {
@@ -73,7 +70,6 @@ class FoundationServiceProvider extends ServiceProvider
             'databases.default' => $connections[$this->config->get('database.default')] ?? [],
             'databases.default.migrations' => $migration,
             'redis' => $this->getRedisConfig(),
-            'session' => $this->getSessionConfig(),
         ];
 
         foreach ($configs as $key => $value) {
@@ -117,19 +113,6 @@ class FoundationServiceProvider extends ServiceProvider
         }
 
         return $middleware;
-    }
-
-    protected function getSessionConfig(): array
-    {
-        $sessionConfig = $this->config->get('session', []);
-
-        $sessionHandler = $sessionConfig['handler'] ?? null;
-        if ($sessionHandler === \Hyperf\Session\Handler\DatabaseHandler::class) {
-            $sessionConfig['options']['connection'] = $this->config->get('database.default');
-            $sessionConfig['options']['table'] = $sessionConfig['options']['table'] ?? 'sessions';
-        }
-
-        return $sessionConfig;
     }
 
     protected function setDefaultTimezone(): void
