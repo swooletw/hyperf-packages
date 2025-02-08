@@ -66,9 +66,10 @@ class ReloadDotenvAndConfig implements ListenerInterface
     {
         $this->container->get(ConfigInterface::class)
             ->afterSettingCallback(function (array $values) {
-                foreach ($values as $key => $value) {
-                    Arr::set(static::$modifiedItems, $key, $value);
-                }
+                static::$modifiedItems = array_merge(
+                    static::$modifiedItems,
+                    $values
+                );
             });
     }
 }
