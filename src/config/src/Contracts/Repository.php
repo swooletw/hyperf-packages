@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Config\Contracts;
 
+use Closure;
 use Hyperf\Contract\ConfigInterface;
 
 interface Repository extends ConfigInterface
@@ -27,6 +28,11 @@ interface Repository extends ConfigInterface
      * Set a given configuration value.
      */
     public function set(array|string $key, mixed $value = null): void;
+
+    /**
+     * Set callback after calling `set` function.
+     */
+    public function afterSettingCallback(?Closure $callback): void;
 
     /**
      * Prepend a value onto an array configuration value.
