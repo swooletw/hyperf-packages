@@ -600,6 +600,19 @@ class Request extends HyperfRequest implements RequestContract
     }
 
     /**
+     * Get the full URL for the request.
+     */
+    public function fullUrl(): string
+    {
+        $url = $this->url();
+        if ($query = $this->getQueryString()) {
+            $url .= '?' . $query;
+        }
+
+        return $url;
+    }
+
+    /**
      * Get the full URL for the request with the added query string parameters.
      */
     public function fullUrlWithQuery(array $query): string
