@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Listeners;
 
-use Closure;
-use Hyperf\Collection\Arr;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Event\Contract\ListenerInterface;
 use Hyperf\Framework\Event\BeforeWorkerStart;
