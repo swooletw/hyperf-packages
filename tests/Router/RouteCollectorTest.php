@@ -202,8 +202,8 @@ class RouteCollectorTest extends TestCase
 
         $data = $collector->getData()[0]['GET'];
 
-        $this->assertSame('Foo\\Handler::Bar', $data['/foo/bar']->callback);
-        $this->assertSame('Foo\\Handler::Boom', $data['/foo/baz/boom']->callback);
+        $this->assertSame('Foo\Handler::Bar', $data['/foo/bar']->callback);
+        $this->assertSame('Foo\Handler::Boom', $data['/foo/baz/boom']->callback);
     }
 
     public function testHandlerInOptions()
