@@ -8,6 +8,7 @@ use Hyperf\Contract\ContainerInterface;
 use Hyperf\Di\Annotation\AnnotationCollector;
 use Hyperf\HttpServer\MiddlewareManager;
 use Hyperf\HttpServer\Router\DispatcherFactory as BaseDispatcherFactory;
+use Hyperf\HttpServer\Router\RouteCollector;
 
 class DispatcherFactory extends BaseDispatcherFactory
 {
