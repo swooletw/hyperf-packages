@@ -187,6 +187,25 @@ class RouteCollectorTest extends TestCase
         $this->assertSame(['/foo/baz/boom'], $namedRoutes['foo.baz.boom']);
     }
 
+    public function testNamespaceRouteWithGroup()
+    {
+        $parser = new Std();
+        $generator = new DataGenerator();
+        $collector = new RouteCollector($parser, $generator);
+
+        $collector->addGroup('/foo', function ($collector) {
+            $collector->get('/bar', 'Handler::Bar', ['as' => 'bar']);
+            $collector->addGroup('/baz', function ($collector) {
+                $collector->get('/boom', 'Handler::Boom', ['as' => 'boom']);
+            }, ['as' => 'baz']);
+        }, ['namespace' => 'Foo']);
+
+        $data = $collector->getData()[0]['GET'];
+
+        $this->assertSame('Foo\\Handler::Bar', $data['/foo/bar']->callback);
+        $this->assertSame('Foo\\Handler::Boom', $data['/foo/baz/boom']->callback);
+    }
+
     public function testHandlerInOptions()
     {
         $parser = new Std();

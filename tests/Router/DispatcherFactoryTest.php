@@ -7,7 +7,6 @@ namespace SwooleTW\Hyperf\Tests\Router;
 use Hyperf\Context\ApplicationContext;
 use Hyperf\Di\Container;
 use Hyperf\Di\Definition\DefinitionSource;
-use Hyperf\HttpServer\Router\RouteCollector as HyperfRouteCollector;
 use Mockery;
 use Mockery\MockInterface;
 use SwooleTW\Hyperf\Router\DispatcherFactory;
@@ -32,7 +31,7 @@ class DispatcherFactoryTest extends TestCase
         $routeCollector = Mockery::mock(RouteCollector::class);
 
         $getContainer = $this->getContainer([
-            HyperfRouteCollector::class => fn () => $routeCollector,
+            RouteCollector::class => fn () => $routeCollector,
             RouteFileCollector::class => fn () => new RouteFileCollector(['foo']),
         ]);
 
@@ -53,7 +52,7 @@ class DispatcherFactoryTest extends TestCase
         $routeCollector->shouldReceive('get')->with('/bar', 'Handler::Bar')->once();
 
         $container = $this->getContainer([
-            HyperfRouteCollector::class => fn () => $routeCollector,
+            RouteCollector::class => fn () => $routeCollector,
             RouteFileCollector::class => fn () => new RouteFileCollector([
                 __DIR__ . '/routes/foo.php',
                 __DIR__ . '/routes/bar.php',

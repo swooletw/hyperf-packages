@@ -97,7 +97,7 @@ class RouteCollector extends BaseRouteCollector
     private function parseHandlerAndOptions(mixed $handler, array $options): array
     {
         if (! is_array($handler) || ! empty($options)) {
-            return [$handler, $options];
+            return [$this->getDecoratedHandler($handler), $options];
         }
 
         $options = $handler;
@@ -107,14 +107,28 @@ class RouteCollector extends BaseRouteCollector
         return [$handler, $options];
     }
 
+    private function getDecoratedHandler(mixed $handler): mixed
+    {
+        if (! is_string($handler)) {
+            return $handler;
+        }
+
+        if ($namespace = $this->currentGroupOptions['namespace'] ?? null) {
+            return $namespace . '\\' . $handler;
+        }
+
+        return $handler;
+    }
+
     private function parseAction(array $options): mixed
     {
         if (count($options) === 2 && array_keys($options) === [0, 1]) {
+            $options[0] = $this->getDecoratedHandler($options[0]);
             return $options;
         }
 
         if (isset($options['uses'])) {
-            return $options['uses'];
+            return $this->getDecoratedHandler($options['uses']);
         }
 
         if (isset($options[0]) && $options[0] instanceof Closure) {
