@@ -38,6 +38,10 @@ class SubstituteBindings implements MiddlewareInterface
             return $handler->handle($request);
         }
 
+        if (strpos($dispatched->handler->route, '{') === false) {
+            return $handler->handle($request);
+        }
+
         $definitions = $this->getDefinitions($dispatched->handler->callback);
         $params = $dispatched->params;
 
