@@ -269,7 +269,7 @@ if (! function_exists('csrf_token')) {
      *
      * @throws \RuntimeException
      */
-    function csrf_token(): string
+    function csrf_token(): ?string
     {
         return \SwooleTW\Hyperf\Session\csrf_token();
     }

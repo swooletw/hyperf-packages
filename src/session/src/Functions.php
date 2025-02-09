@@ -35,7 +35,7 @@ function session(null|array|string $key = null, mixed $default = null): mixed
  *
  * @throws RuntimeException
  */
-function csrf_token(): string
+function csrf_token(): ?string
 {
     if (! app()->has(SessionContract::class)) {
         throw new RuntimeException('Application session store not set.');
