@@ -23,6 +23,10 @@ use SwooleTW\Hyperf\Queue\Contracts\ShouldQueue;
 use SwooleTW\Hyperf\Support\Testing\Fakes\QueueFake;
 use Symfony\Component\Mailer\Transport\TransportInterface;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class MailableQueuedTest extends TestCase
 {
     protected function tearDown(): void
@@ -38,7 +42,7 @@ class MailableQueuedTest extends TestCase
             ->onlyMethods(['createMessage', 'to'])
             ->getMock();
         $mailer->setQueue($queueFake);
-        $mailable = new MailableQueueableStub;
+        $mailable = new MailableQueueableStub();
         $queueFake->assertNothingPushed();
         $mailer->send($mailable);
         $queueFake->assertPushedOn(null, SendQueuedMailable::class);
@@ -52,7 +56,7 @@ class MailableQueuedTest extends TestCase
             ->onlyMethods(['createMessage'])
             ->getMock();
         $mailer->setQueue($queueFake);
-        $mailable = new MailableQueueableStub;
+        $mailable = new MailableQueueableStub();
         $attachmentOption = ['mime' => 'image/jpeg', 'as' => 'bar.jpg'];
         $mailable->attach('foo.jpg', $attachmentOption);
         $this->assertIsArray($mailable->attachments);
@@ -78,7 +82,7 @@ class MailableQueuedTest extends TestCase
             ->onlyMethods(['createMessage'])
             ->getMock();
         $mailer->setQueue($queueFake);
-        $mailable = new MailableQueueableStub;
+        $mailable = new MailableQueueableStub();
         $attachmentOption = ['mime' => 'image/jpeg', 'as' => 'bar.jpg'];
 
         $mailable->attachFromStorage('/', 'foo.jpg', $attachmentOption);
