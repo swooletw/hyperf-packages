@@ -6,8 +6,7 @@ use Hyperf\Database\Migrations\Migration;
 use Hyperf\Database\Schema\Blueprint;
 use SwooleTW\Hyperf\Support\Facades\Schema;
 
-class CreateJobsTable extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -32,4 +31,4 @@ class CreateJobsTable extends Migration
     {
         Schema::dropIfExists('jobs');
     }
-}
+};
