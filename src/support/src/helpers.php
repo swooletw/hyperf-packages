@@ -234,7 +234,7 @@ if (! function_exists('retry')) {
      *
      * @throws Throwable
      */
-    function retry(int|array $times, callable $callback, int|Closure $sleepMilliseconds = 0, ?callable $when = null)
+    function retry(array|int $times, callable $callback, Closure|int $sleepMilliseconds = 0, ?callable $when = null)
     {
         $attempts = 0;
 
@@ -248,7 +248,7 @@ if (! function_exists('retry')) {
 
         beginning:
         $attempts++;
-        $times--;
+        --$times;
 
         try {
             return $callback($attempts);
