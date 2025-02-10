@@ -7,6 +7,7 @@ namespace SwooleTW\Hyperf\Foundation\Bootstrap;
 use Hyperf\Collection\Arr;
 use Hyperf\Contract\ConfigInterface;
 use SwooleTW\Hyperf\Foundation\Contracts\Application as ApplicationContract;
+use SwooleTW\Hyperf\Foundation\Providers\FoundationServiceProvider;
 use SwooleTW\Hyperf\Foundation\Support\Composer;
 
 class RegisterProviders
@@ -32,12 +33,21 @@ class RegisterProviders
             $providers = Arr::flatten($providers);
         }
 
-        $providers = array_merge(
-            $providers,
-            $app->get(ConfigInterface::class)->get('app.providers', [])
+        $providers = array_unique(
+            array_merge(
+                $providers,
+                $app->get(ConfigInterface::class)->get('app.providers', [])
+            )
         );
 
-        foreach (array_unique($providers) as $providerClass) {
+        // Ensure that FoundationServiceProvider is registered first.
+        $foundationKey = array_search(FoundationServiceProvider::class, $providers);
+        if ($foundationKey !== false) {
+            unset($providers[$foundationKey]);
+            array_unshift($providers, FoundationServiceProvider::class);
+        }
+
+        foreach ($providers as $providerClass) {
             $app->register($providerClass);
         }
     }
