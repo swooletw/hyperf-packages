@@ -7,7 +7,6 @@ namespace SwooleTW\Hyperf\Tests\Foundation\Testing;
 class BootstrapConfigProvider
 {
     protected static $configProviders = [
-        \Hyperf\AsyncQueue\ConfigProvider::class,
         \Hyperf\Command\ConfigProvider::class,
         \Hyperf\Crontab\ConfigProvider::class,
         \Hyperf\Database\SQLite\ConfigProvider::class,
@@ -46,8 +45,11 @@ class BootstrapConfigProvider
         \SwooleTW\Hyperf\Http\ConfigProvider::class,
         \SwooleTW\Hyperf\JWT\ConfigProvider::class,
         \SwooleTW\Hyperf\Log\ConfigProvider::class,
+        \SwooleTW\Hyperf\Mail\ConfigProvider::class,
+        \SwooleTW\Hyperf\Notifications\ConfigProvider::class,
         \SwooleTW\Hyperf\Queue\ConfigProvider::class,
         \SwooleTW\Hyperf\Router\ConfigProvider::class,
+        \SwooleTW\Hyperf\Session\ConfigProvider::class,
     ];
 
     public static function get(): array
