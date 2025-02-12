@@ -7,7 +7,6 @@ namespace SwooleTW\Hyperf\Auth;
 use Closure;
 use Hyperf\Context\Context;
 use Hyperf\Contract\ConfigInterface;
-use Hyperf\Contract\SessionInterface;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
@@ -17,6 +16,7 @@ use SwooleTW\Hyperf\Auth\Contracts\StatefulGuard;
 use SwooleTW\Hyperf\Auth\Guards\JwtGuard;
 use SwooleTW\Hyperf\Auth\Guards\SessionGuard;
 use SwooleTW\Hyperf\JWT\JWTManager;
+use SwooleTW\Hyperf\Session\Contracts\Session as SessionContract;
 
 class AuthManager implements FactoryContract
 {
@@ -105,7 +105,7 @@ class AuthManager implements FactoryContract
         return new SessionGuard(
             $name,
             $this->createUserProvider($config['provider'] ?? null),
-            $this->app->get(SessionInterface::class)
+            $this->app->get(SessionContract::class)
         );
     }
 
