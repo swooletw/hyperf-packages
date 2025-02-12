@@ -5,13 +5,6 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Support\Testing\Fakes;
 
 use Closure;
-// use Illuminate\Bus\BatchRepository;
-// use Illuminate\Bus\ChainedBatch;
-// use Illuminate\Bus\PendingBatch;
-// use Illuminate\Contracts\Bus\QueueingDispatcher;
-// use Illuminate\Support\Arr;
-// use Hyperf\Collection\Collection;
-// use Illuminate\Support\Traits\ReflectsClosures;
 use Hyperf\Collection\Arr;
 use Hyperf\Collection\Collection;
 use PHPUnit\Framework\Assert as PHPUnit;
