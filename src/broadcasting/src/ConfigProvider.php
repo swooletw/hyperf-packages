@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Broadcasting;
 
-use Psr\Container\ContainerInterface;
 use SwooleTW\Hyperf\Broadcasting\Contracts\Factory;
 
 class ConfigProvider
@@ -13,7 +12,7 @@ class ConfigProvider
     {
         return [
             'dependencies' => [
-                Factory::class => fn (ContainerInterface $container) => new BroadcastManager($container),
+                Factory::class => BroadcastManager::class,
             ],
         ];
     }

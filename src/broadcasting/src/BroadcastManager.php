@@ -29,6 +29,7 @@ use SwooleTW\Hyperf\Bus\Contracts\Dispatcher;
 use SwooleTW\Hyperf\Bus\UniqueLock;
 use SwooleTW\Hyperf\Cache\Contracts\Factory as Cache;
 use SwooleTW\Hyperf\ObjectPool\Traits\HasPoolProxy;
+use SwooleTW\Hyperf\Queue\Contracts\Factory as Queue;
 
 /**
  * @mixin Broadcaster
@@ -68,9 +69,11 @@ class BroadcastManager implements BroadcastingFactoryContract
     /**
      * Register the routes for handling broadcast channel authentication and sockets.
      */
-    public function routes(?array $attributes = null): void
+    public function routes(array $attributes = []): void
     {
-        $attributes = $attributes ?: ['middleware' => ['web']];
+        if (class_exists('SwooleTW\Hyperf\Foundation\Http\Kernel')) {
+            $attributes = $attributes ?: ['middleware' => ['web']];
+        }
 
         $this->app->get(RouterDispatcherFactory::class)->getRouter()
             ->addRoute(
@@ -181,7 +184,7 @@ class BroadcastManager implements BroadcastingFactoryContract
             }
         }
 
-        $this->app->get('queue')
+        $this->app->get(Queue::class)
             ->connection($event->connection ?? null)
             ->pushOn($queue, $broadcastEvent);
     }

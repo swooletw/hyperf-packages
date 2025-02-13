@@ -13,6 +13,8 @@ use Psr\Container\ContainerInterface;
 use SwooleTW\Hyperf\Broadcasting\BroadcastException;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\AccessDeniedHttpException;
 
+use function Hyperf\Tappable\tap;
+
 class AblyBroadcaster extends Broadcaster
 {
     /**

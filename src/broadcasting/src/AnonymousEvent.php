@@ -9,6 +9,8 @@ use Hyperf\Contract\Arrayable;
 use SwooleTW\Hyperf\Broadcasting\Contracts\ShouldBroadcast;
 use SwooleTW\Hyperf\Foundation\Events\Dispatchable;
 
+use function Hyperf\Collection\collect;
+
 class AnonymousEvent implements ShouldBroadcast
 {
     use Dispatchable;
