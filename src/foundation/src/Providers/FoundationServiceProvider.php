@@ -4,24 +4,36 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Providers;
 
+use Hyperf\Command\Event\FailToHandle;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Database\ConnectionResolverInterface;
 use Hyperf\HttpServer\MiddlewareManager;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use SwooleTW\Hyperf\Auth\Contracts\FactoryContract as AuthFactoryContract;
+use SwooleTW\Hyperf\Foundation\Console\Kernel as ConsoleKernel;
 use SwooleTW\Hyperf\Foundation\Contracts\Application as ApplicationContract;
 use SwooleTW\Hyperf\Foundation\Http\Contracts\MiddlewareContract;
 use SwooleTW\Hyperf\Http\Contracts\RequestContract;
 use SwooleTW\Hyperf\Support\ServiceProvider;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
+use Throwable;
 
 class FoundationServiceProvider extends ServiceProvider
 {
     protected ConfigInterface $config;
 
-    public function __construct(
-        protected ApplicationContract $app
-    ) {
+    protected ConsoleOutputInterface $output;
+
+    public function __construct(protected ApplicationContract $app)
+    {
         $this->config = $app->get(ConfigInterface::class);
+        $this->output = new ConsoleOutput();
+
+        if ($app->hasDebugModeEnabled()) {
+            $this->output->setVerbosity(ConsoleOutputInterface::VERBOSITY_VERBOSE);
+        }
     }
 
     public function boot(): void
@@ -37,6 +49,7 @@ class FoundationServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->overrideHyperfConfigs();
+        $this->listenCommandException();
 
         $this->callAfterResolving(RequestContract::class, function (RequestContract $request) {
             $request->setUserResolver(function (?string $guard = null) {
@@ -46,6 +59,30 @@ class FoundationServiceProvider extends ServiceProvider
                     ->user();
             });
         });
+    }
+
+    protected function listenCommandException(): void
+    {
+        $this->app->get(EventDispatcherInterface::class)
+            ->listen(FailToHandle::class, function ($event) {
+                if ($this->isConsoleKernelCall($throwable = $event->getThrowable())) {
+                    $this->app->get(ConsoleKernel::class)
+                        ->getArtisan()
+                        ->renderThrowable($throwable, $this->output);
+                }
+            });
+    }
+
+    protected function isConsoleKernelCall(Throwable $exception): bool
+    {
+        foreach ($exception->getTrace() as $trace) {
+            if (($trace['class'] ?? null) === ConsoleKernel::class
+                && ($trace['function'] ?? null) === 'call') {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected function setDatabaseConnection(): void
