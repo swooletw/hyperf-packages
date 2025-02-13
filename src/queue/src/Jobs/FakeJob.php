@@ -23,7 +23,8 @@ class FakeJob extends Job
 
     public function __construct(
         public array $payload = []
-    ) {}
+    ) {
+    }
 
     /**
      * The exception the job failed with.
