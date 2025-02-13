@@ -2,16 +2,14 @@
 
 declare(strict_types=1);
 
-
-/**
- * @mixin Factory
- */
-
 namespace SwooleTW\Hyperf\HttpClient;
 
 use GuzzleHttp\Promise\Promise;
 use GuzzleHttp\Utils;
 
+/**
+ * @mixin Factory
+ */
 class Pool
 {
     /**

@@ -32,12 +32,12 @@ class Response implements ArrayAccess, Stringable
     /**
      * The underlying PSR response.
      */
-    protected ResponseInterface $response;
+    protected MessageInterface $response;
 
     /**
      * The decoded JSON response.
      */
-    protected array $decoded;
+    protected array $decoded = [];
 
     /**
      * The request cookies.
@@ -47,7 +47,7 @@ class Response implements ArrayAccess, Stringable
     /**
      * The transfer stats for the request.
      */
-    public ?TransferStats $transferStats;
+    public ?TransferStats $transferStats = null;
 
     /**
      * Create a new response instance.
@@ -83,8 +83,17 @@ class Response implements ArrayAccess, Stringable
 
     /**
      * Get the JSON decoded body of the response as an object.
+     *
+     *  Example:
+     *  If the response body is:
+     *  [
+     *      {"id": 1, "name": "John"},
+     *      {"id": 2, "name": "Jane"}
+     *  ]
+     *
+     *  This method will return an array of objects.
      */
-    public function object(): ?object
+    public function object(): null|array|object
     {
         return json_decode($this->body(), false);
     }
@@ -237,8 +246,6 @@ class Response implements ArrayAccess, Stringable
 
     /**
      * Get the underlying PSR response for the response.
-     *
-     * @return ResponseInterface
      */
     public function toPsrResponse(): ResponseInterface
     {

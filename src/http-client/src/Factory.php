@@ -17,12 +17,16 @@ use Hyperf\Stringable\Str;
 use PHPUnit\Framework\Assert as PHPUnit;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
+/**
+ * @mixin PendingRequest
+ */
 class Factory
 {
     use Macroable {
         __call as macroCall;
     }
 
+    protected int $testCnt = 0;
     /**
      * The event dispatcher implementation.
      */
@@ -36,7 +40,7 @@ class Factory
     /**
      * The options to apply to every request.
      */
-    protected array $globalOptions = [];
+    protected array|Closure $globalOptions = [];
 
     /**
      * The stub callables that will handle requests.
@@ -117,7 +121,7 @@ class Factory
      * Create a new response instance for use during stubbing.
      */
     public static function response(
-        null|array|string $body = null,
+        null|array|callable|int|PromiseInterface|Response|string $body = null,
         int $status = 200,
         array $headers = []
     ): PromiseInterface {
@@ -177,7 +181,6 @@ class Factory
 
             return $this;
         }
-
         $this->stubCallbacks = $this->stubCallbacks->merge(new Collection([
             function ($request, $options) use ($callback) {
                 $response = $callback;
@@ -379,20 +382,16 @@ class Factory
 
     /**
      * Create a new pending request instance for this factory.
-     *
-     * @return PendingRequest
      */
     public function createPendingRequest(): PendingRequest
     {
-        return tap($this->newPendingRequest(), function ($request) {
+        return tap($this->newPendingRequest(), function (PendingRequest $request) {
             $request->stub($this->stubCallbacks)->preventStrayRequests($this->preventStrayRequests);
         });
     }
 
     /**
      * Instantiate a new pending request instance for this factory.
-     *
-     * @return PendingRequest
      */
     protected function newPendingRequest(): PendingRequest
     {

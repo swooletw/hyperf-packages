@@ -15,6 +15,7 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\TransferStats;
+use GuzzleHttp\UriTemplate\UriTemplate;
 use Hyperf\Collection\Arr;
 use Hyperf\Collection\Collection;
 use Hyperf\Conditionable\Conditionable;
@@ -27,7 +28,6 @@ use OutOfBoundsException;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamInterface;
-use Rize\UriTemplate;
 use RuntimeException;
 use SwooleTW\Hyperf\HttpClient\Events\ConnectionFailed;
 use SwooleTW\Hyperf\HttpClient\Events\RequestSending;
@@ -70,7 +70,7 @@ class PendingRequest
     /**
      * The raw body for the request.
      */
-    protected null|StreamInterface|string $pendingBody;
+    protected null|StreamInterface|string $pendingBody = null;
 
     /**
      * The pending files for the request.
@@ -80,12 +80,12 @@ class PendingRequest
     /**
      * The request cookies.
      */
-    protected array $cookies;
+    protected CookieJar $cookies;
 
     /**
      * The transfer stats for the request.
      */
-    protected TransferStats $transferStats;
+    protected ?TransferStats $transferStats = null;
 
     /**
      * The request options.
@@ -95,17 +95,17 @@ class PendingRequest
     /**
      * A callback to run when throwing if a server or client error occurs.
      */
-    protected Closure $throwCallback;
+    protected ?Closure $throwCallback = null;
 
     /**
      * A callback to check if an exception should be thrown when a server or client error occurs.
      */
-    protected Closure $throwIfCallback;
+    protected ?Closure $throwIfCallback = null;
 
     /**
      * The number of times to try the request.
      */
-    protected int $tries = 1;
+    protected array|int $tries = 1;
 
     /**
      * The number of milliseconds to wait between retries.
@@ -132,7 +132,7 @@ class PendingRequest
     /**
      * The stub callables that will handle requests.
      */
-    protected ?Collection $stubCallbacks;
+    protected ?Collection $stubCallbacks = null;
 
     /**
      * Indicates that an exception should be thrown if any request is not faked.
@@ -152,7 +152,7 @@ class PendingRequest
     /**
      * The pending request promise.
      */
-    protected PromiseInterface $promise;
+    protected ?PromiseInterface $promise;
 
     /**
      * The sent request object, if a request has been made.
@@ -448,8 +448,10 @@ class PendingRequest
 
     /**
      * Specify the path where the body of the response should be stored.
+     *
+     * @param resource|string $to
      */
-    public function sink(string $to): static
+    public function sink($to): static
     {
         return tap($this, function () use ($to) {
             $this->options['sink'] = $to;
@@ -551,7 +553,7 @@ class PendingRequest
      */
     public function throw(?callable $callback = null): static
     {
-        $this->throwCallback = $callback ?: fn() => null;
+        $this->throwCallback = $callback ?: fn () => null;
 
         return $this;
     }
@@ -611,7 +613,7 @@ class PendingRequest
      *
      * @throws ConnectionException
      */
-    public function get(string $url, null|array|string $query = null): Response
+    public function get(string $url, null|array|JsonSerializable|string $query = null): PromiseInterface|Response
     {
         return $this->send(
             'GET',
@@ -627,7 +629,7 @@ class PendingRequest
      *
      * @throws ConnectionException
      */
-    public function head(string $url, null|array|string $query = null): Response
+    public function head(string $url, null|array|string $query = null): PromiseInterface|Response
     {
         return $this->send(
             'HEAD',
@@ -643,7 +645,7 @@ class PendingRequest
      *
      * @throws ConnectionException
      */
-    public function post(string $url, array $data = []): Response
+    public function post(string $url, array|JsonSerializable $data = []): PromiseInterface|Response
     {
         return $this->send('POST', $url, [
             $this->bodyFormat => $data,
@@ -655,7 +657,7 @@ class PendingRequest
      *
      * @throws ConnectionException
      */
-    public function patch(string $url, array $data = []): Response
+    public function patch(string $url, array $data = []): PromiseInterface|Response
     {
         return $this->send('PATCH', $url, [
             $this->bodyFormat => $data,
@@ -667,7 +669,7 @@ class PendingRequest
      *
      * @throws ConnectionException
      */
-    public function put(string $url, array $data = []): Response
+    public function put(string $url, array $data = []): PromiseInterface|Response
     {
         return $this->send('PUT', $url, [
             $this->bodyFormat => $data,
@@ -679,7 +681,7 @@ class PendingRequest
      *
      * @throws ConnectionException
      */
-    public function delete(string $url, array $data = []): Response
+    public function delete(string $url, array $data = []): PromiseInterface|Response
     {
         return $this->send(
             'DELETE',
@@ -736,7 +738,7 @@ class PendingRequest
             try {
                 return tap(
                     $this->newResponse($this->sendRequest($method, $url, $options)),
-                    function ($response) use ($attempt, &$shouldRetry) {
+                    function (Response $response) use ($attempt, &$shouldRetry) {
                         $this->populateResponse($response);
 
                         $this->dispatchResponseReceivedEvent($response);
@@ -846,7 +848,7 @@ class PendingRequest
     protected function parseMultipartBodyFormat(array $data): array
     {
         return (new Collection($data))
-            ->map(fn($value, $key) => is_array($value) ? $value : ['name' => $key, 'contents' => $value])
+            ->map(fn ($value, $key) => is_array($value) ? $value : ['name' => $key, 'contents' => $value])
             ->values()
             ->all();
     }
@@ -957,8 +959,7 @@ class PendingRequest
         $clientMethod = $this->async ? 'requestAsync' : 'request';
 
         $laravelData = $this->parseRequestData($method, $url, $options);
-
-        $onStats = function ($transferStats) {
+        $onStats = function (TransferStats $transferStats) {
             if (($callback = ($this->options['on_stats'] ?? false)) instanceof Closure) {
                 $transferStats = $callback($transferStats) ?: $transferStats;
             }
@@ -1024,7 +1025,6 @@ class PendingRequest
 
     /**
      * Populate the given response with additional data.
-     *
      */
     protected function populateResponse(Response $response): Response
     {
@@ -1165,8 +1165,10 @@ class PendingRequest
 
     /**
      * Get the sink stub handler callback.
+     *
+     * @param resource|string $sink
      */
-    protected function sinkStubHandler(string $sink): Closure
+    protected function sinkStubHandler($sink): Closure
     {
         return function ($response) use ($sink) {
             $body = $response->getBody()->getContents();
@@ -1219,7 +1221,7 @@ class PendingRequest
     /**
      * Create a new response instance using the given PSR response.
      */
-    protected function newResponse(MessageInterface $response): Response
+    protected function newResponse(MessageInterface|PromiseInterface $response): Response
     {
         return new Response($response);
     }
@@ -1227,9 +1229,11 @@ class PendingRequest
     /**
      * Register a stub callable that will intercept requests and be able to return stub responses.
      */
-    public function stub(callable $callback): static
+    public function stub(callable|Collection $callback): static
     {
-        $this->stubCallbacks = new Collection($callback);
+        $this->stubCallbacks = $callback instanceof Collection
+            ? $callback
+            : new Collection([$callback]);
 
         return $this;
     }
@@ -1286,9 +1290,6 @@ class PendingRequest
 
     /**
      * Dispatch the ConnectionFailed event if a dispatcher is available.
-     *
-     * @param Request $request
-     * @param ConnectionException $exception
      */
     protected function dispatchConnectionFailedEvent(Request $request, ConnectionException $exception): void
     {
