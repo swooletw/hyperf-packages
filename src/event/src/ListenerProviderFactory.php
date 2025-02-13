@@ -13,7 +13,7 @@ use Psr\Container\ContainerInterface;
 
 class ListenerProviderFactory
 {
-    public function __invoke(ContainerInterface $container)
+    public function __invoke(ContainerInterface $container): ListenerProvider
     {
         $listenerProvider = new ListenerProvider();
 

@@ -16,6 +16,11 @@ class Repository implements ArrayAccess, ConfigContract
     use Macroable;
 
     /**
+     * Callback for calling after `set` function.
+     */
+    protected static ?Closure $afterSettingCallback = null;
+
+    /**
      * Create a new configuration repository.
      */
     public function __construct(protected array $items)
@@ -161,6 +166,10 @@ class Repository implements ArrayAccess, ConfigContract
         foreach ($keys as $key => $value) {
             Arr::set($this->items, $key, $value);
         }
+
+        if (static::$afterSettingCallback) {
+            call_user_func(static::$afterSettingCallback, $keys);
+        }
     }
 
     /**
@@ -193,6 +202,14 @@ class Repository implements ArrayAccess, ConfigContract
     public function all(): array
     {
         return $this->items;
+    }
+
+    /**
+     * Set callback after calling `set` function.
+     */
+    public function afterSettingCallback(?Closure $callback): void
+    {
+        static::$afterSettingCallback = $callback;
     }
 
     /**

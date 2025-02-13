@@ -6,6 +6,8 @@ namespace SwooleTW\Hyperf\Mail;
 
 use BadMethodCallException;
 use Closure;
+use DateInterval;
+use DateTimeInterface;
 use Hyperf\Collection\Collection;
 use Hyperf\Conditionable\Conditionable;
 use Hyperf\Context\ApplicationContext;
@@ -24,6 +26,7 @@ use SwooleTW\Hyperf\Mail\Contracts\Factory;
 use SwooleTW\Hyperf\Mail\Contracts\Factory as MailFactory;
 use SwooleTW\Hyperf\Mail\Contracts\Mailable as MailableContract;
 use SwooleTW\Hyperf\Mail\Contracts\Mailer;
+use SwooleTW\Hyperf\Queue\Contracts\Factory as QueueFactory;
 use SwooleTW\Hyperf\Support\Contracts\Htmlable;
 use SwooleTW\Hyperf\Support\Contracts\Renderable;
 use SwooleTW\Hyperf\Support\HtmlString;
@@ -176,6 +179,54 @@ class Mailable implements MailableContract, Renderable
                     ->buildAttachments($message);
             });
         });
+    }
+
+    /**
+     * Queue the message for sending.
+     */
+    public function queue(QueueFactory $queue): mixed
+    {
+        if (isset($this->delay)) {
+            return $this->later($this->delay, $queue);
+        }
+
+        $connection = property_exists($this, 'connection') ? $this->connection : null;
+
+        $queueName = property_exists($this, 'queue') ? $this->queue : null;
+
+        return $queue->connection($connection)->pushOn(
+            $queueName ?: null,
+            $this->newQueuedJob()
+        );
+    }
+
+    /**
+     * Deliver the queued message after (n) seconds.
+     */
+    public function later(DateInterval|DateTimeInterface|int $delay, QueueFactory $queue): mixed
+    {
+        $connection = property_exists($this, 'connection') ? $this->connection : null;
+
+        $queueName = property_exists($this, 'queue') ? $this->queue : null;
+
+        return $queue->connection($connection)->laterOn(
+            $queueName ?: null,
+            $delay,
+            $this->newQueuedJob()
+        );
+    }
+
+    /**
+     * Make the queued mailable job instance.
+     */
+    protected function newQueuedJob(): mixed
+    {
+        return ApplicationContext::getContainer()
+            ->get(SendQueuedMailable::class)
+            ->through(array_merge(
+                method_exists($this, 'middleware') ? $this->middleware() : [],
+                $this->middleware ?? []
+            ));
     }
 
     /**

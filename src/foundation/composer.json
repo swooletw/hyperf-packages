@@ -1,6 +1,6 @@
 {
     "name": "swooletw/hyperf-foundation",
-    "description": "The Support package for Hyperf.",
+    "description": "The Support package for Laravel Hyperf.",
     "license": "MIT",
     "keywords": [
         "php",
@@ -30,7 +30,6 @@
         "hyperf/support": "~3.1.0",
         "hyperf/command": "~3.1.0",
         "hyperf/crontab": "~3.1.0",
-        "hyperf/async-queue": "~3.1.0",
         "hyperf/collection": "~3.1.0",
         "hyperf/context": "~3.1.0",
         "hyperf/http-server": "~3.1.0",
@@ -59,7 +58,7 @@
             ]
         },
         "branch-alias": {
-            "dev-master": "3.1-dev"
+            "dev-master": "0.1-dev"
         }
     },
     "config": {

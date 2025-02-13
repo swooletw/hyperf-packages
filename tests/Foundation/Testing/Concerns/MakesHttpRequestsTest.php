@@ -142,6 +142,16 @@ class MakesHttpRequestsTest extends ApplicationTestCase
             ->assertContent('foo');
     }
 
+    public function testGetFoundRouteWithTrailingSlash()
+    {
+        $this->app->get(RouteFileCollector::class)
+            ->addRouteFile(BASE_PATH . '/routes/test-api.php');
+
+        $this->get('/foo/')
+            ->assertSuccessFul()
+            ->assertContent('foo');
+    }
+
     public function testGetServerParams()
     {
         $this->app->get(RouteFileCollector::class)

@@ -242,11 +242,14 @@ class EventsDispatcherTest extends TestCase
         $d->listen('bar.*', function () {
             $_SERVER['__event.test'][] = 'nope';
         });
+        $d->listen('*', function () {
+            $_SERVER['__event.test'][] = 'global_wildcard';
+        });
 
         $response = $d->dispatch('foo.bar');
 
         $this->assertEquals('foo.bar', $response);
-        $this->assertSame(['regular', 'wildcard'], $_SERVER['__event.test']);
+        $this->assertSame(['regular', 'wildcard', 'global_wildcard'], $_SERVER['__event.test']);
     }
 
     public function testWildcardListenersWithEventResponse()

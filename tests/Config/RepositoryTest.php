@@ -178,6 +178,23 @@ class RepositoryTest extends TestCase
         $this->assertNull($this->repository->get('key5'));
     }
 
+    public function testAfterSettingCallback()
+    {
+        $result = null;
+        $this->repository->afterSettingCallback(function (array $values) use (&$result) {
+            $result = $values;
+        });
+
+        $this->repository->set($expected = [
+            'key1' => 'value1',
+            'key2' => 'value2',
+        ]);
+
+        $this->assertSame($expected, $result);
+
+        $this->repository->afterSettingCallback(null);
+    }
+
     public function testPrepend()
     {
         $this->assertSame('aaa', $this->repository->get('array.0'));

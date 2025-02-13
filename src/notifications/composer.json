@@ -1,7 +1,7 @@
 {
     "name": "swooletw/hyperf-notifications",
     "type": "library",
-    "description": "The notifications package for Hyperf.",
+    "description": "The notifications package for Laravel Hyperf.",
     "license": "MIT",
     "keywords": [
         "php",
@@ -36,9 +36,10 @@
         "hyperf/contract": "~3.1.0",
         "hyperf/database": "~3.1.0",
         "hyperf/di": "~3.1.0",
-        "swooletw/hyperf-support": "dev-master",
-        "swooletw/hyperf-mail": "dev-master",
-        "swooletw/hyperf-object-pool": "dev-master"
+        "swooletw/hyperf-support": "~0.1.0",
+        "swooletw/hyperf-mail": "~0.1.0",
+        "swooletw/hyperf-queue": "~0.1.0",
+        "swooletw/hyperf-object-pool": "~0.1.0"
     },
     "config": {
         "sort-packages": true
@@ -51,7 +52,7 @@
             ]
         },
         "branch-alias": {
-            "dev-main": "3.1-dev"
+            "dev-main": "0.1-dev"
         }
     }
 }

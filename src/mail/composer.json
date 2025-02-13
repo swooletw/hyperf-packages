@@ -1,7 +1,7 @@
 {
     "name": "swooletw/hyperf-mail",
     "type": "library",
-    "description": "The mail package for Hyperf.",
+    "description": "The mail package for Laravel Hyperf.",
     "license": "MIT",
     "keywords": [
         "php",
@@ -33,9 +33,9 @@
         "hyperf/stringable": "~3.1.0",
         "hyperf/macroable": "~3.1.0",
         "hyperf/di": "~3.1.0",
-        "swooletw/hyperf-support": "dev-master",
-        "swooletw/hyperf-filesystem": "dev-master",
-        "swooletw/hyperf-object-pool": "dev-master",
+        "swooletw/hyperf-support": "~0.1.0",
+        "swooletw/hyperf-filesystem": "~0.1.0",
+        "swooletw/hyperf-object-pool": "~0.1.0",
         "league/commonmark": "^2.2",
         "psr/log": "^1.0|^2.0|^3.0",
         "symfony/mailer": "^6.2",
@@ -49,7 +49,7 @@
             "config": "SwooleTW\\Hyperf\\Mail\\ConfigProvider"
         },
         "branch-alias": {
-            "dev-main": "3.1-dev"
+            "dev-main": "0.1-dev"
         }
     },
     "suggest": {

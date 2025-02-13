@@ -14,8 +14,8 @@ class MessageSent
      * Create a new event instance.
      */
     public function __construct(
-        protected SentMessage $sent,
-        protected array $data = []
+        public SentMessage $sent,
+        public array $data = []
     ) {
     }
 

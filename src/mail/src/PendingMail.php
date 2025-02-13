@@ -95,6 +95,14 @@ class PendingMail
     }
 
     /**
+     * Send a new mailable message instance synchronously.
+     */
+    public function sendNow(MailableContract $mailable): ?SentMessage
+    {
+        return $this->mailer->sendNow($this->fill($mailable));
+    }
+
+    /**
      * Populate the mailable with the addresses.
      */
     protected function fill(MailableContract $mailable): MailableContract

@@ -8,10 +8,10 @@ use Carbon\Carbon;
 use Carbon\Exceptions\InvalidFormatException;
 use Closure;
 use Hyperf\Collection\Collection;
-use Hyperf\Contract\SessionInterface;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Stringable;
+use SwooleTW\Hyperf\Session\Contracts\Session as SessionContract;
 
 interface RequestContract extends RequestInterface
 {
@@ -340,14 +340,24 @@ interface RequestContract extends RequestInterface
     public function pjax(): bool;
 
     /**
+     * Determine if the request is the result of a prefetch call.
+     */
+    public function prefetch(): bool;
+
+    /**
      * Determine if the it is a range request.
      */
     public function isRange(): bool;
 
     /**
+     * Determine if the request has a session.
+     */
+    public function hasSession(): bool;
+
+    /**
      * Get session for the current request.
      */
-    public function session(): SessionInterface;
+    public function session(): SessionContract;
 
     /**
      * Validate the given data against the provided rules.

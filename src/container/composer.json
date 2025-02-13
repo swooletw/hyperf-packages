@@ -1,6 +1,6 @@
 {
     "name": "swooletw/hyperf-container",
-    "description": "The Container package for Hyperf.",
+    "description": "The Container package for Laravel Hyperf.",
     "license": "MIT",
     "keywords": [
         "php",
@@ -32,7 +32,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "3.1-dev"
+            "dev-master": "0.1-dev"
         }
     },
     "config": {

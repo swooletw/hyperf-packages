@@ -1,7 +1,7 @@
 {
     "name": "swooletw/hyperf-cookie",
     "type": "library",
-    "description": "The cookie package for Hyperf.",
+    "description": "The cookie package for Laravel Hyperf.",
     "license": "MIT",
     "keywords": [
         "php",
@@ -39,7 +39,7 @@
             "config": "SwooleTW\\Hyperf\\Cookie\\ConfigProvider"
         },
         "branch-alias": {
-            "dev-main": "3.1-dev"
+            "dev-main": "0.1-dev"
         }
     }
 }

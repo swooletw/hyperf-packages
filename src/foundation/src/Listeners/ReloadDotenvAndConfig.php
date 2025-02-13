@@ -12,8 +12,26 @@ use Psr\Container\ContainerInterface;
 
 class ReloadDotenvAndConfig implements ListenerInterface
 {
+    protected static array $modifiedItems = [];
+
+    protected static bool $stopCallback = false;
+
     public function __construct(protected ContainerInterface $container)
     {
+        $this->setConfigCallback();
+
+        /** @var \SwooleTW\Hyperf\Container\Contracts\Container $container */
+        $container->afterResolving(ConfigInterface::class, function (ConfigInterface $config) {
+            if (static::$stopCallback) {
+                return;
+            }
+
+            static::$stopCallback = true;
+            foreach (static::$modifiedItems as $key => $value) {
+                $config->set($key, $value);
+            }
+            static::$stopCallback = false;
+        });
     }
 
     public function listen(): array
@@ -40,5 +58,16 @@ class ReloadDotenvAndConfig implements ListenerInterface
         if (file_exists(BASE_PATH . '/.env')) {
             DotenvManager::reload([BASE_PATH]);
         }
+    }
+
+    protected function setConfigCallback(): void
+    {
+        $this->container->get(ConfigInterface::class)
+            ->afterSettingCallback(function (array $values) {
+                static::$modifiedItems = array_merge(
+                    static::$modifiedItems,
+                    $values
+                );
+            });
     }
 }

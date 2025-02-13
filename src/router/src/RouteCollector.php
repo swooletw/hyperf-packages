@@ -8,10 +8,10 @@ use Closure;
 use Hyperf\Collection\Arr;
 use Hyperf\HttpServer\MiddlewareManager;
 use Hyperf\HttpServer\Router\Handler;
-use Hyperf\HttpServer\Router\RouteCollector;
+use Hyperf\HttpServer\Router\RouteCollector as BaseRouteCollector;
 use InvalidArgumentException;
 
-class NamedRouteCollector extends RouteCollector
+class RouteCollector extends BaseRouteCollector
 {
     /**
      * All of the named routes and data pairs.
@@ -97,7 +97,7 @@ class NamedRouteCollector extends RouteCollector
     private function parseHandlerAndOptions(mixed $handler, array $options): array
     {
         if (! is_array($handler) || ! empty($options)) {
-            return [$handler, $options];
+            return [$this->getDecoratedHandler($handler), $options];
         }
 
         $options = $handler;
@@ -107,14 +107,28 @@ class NamedRouteCollector extends RouteCollector
         return [$handler, $options];
     }
 
+    private function getDecoratedHandler(mixed $handler): mixed
+    {
+        if (! is_string($handler)) {
+            return $handler;
+        }
+
+        if ($namespace = $this->currentGroupOptions['namespace'] ?? null) {
+            return $namespace . '\\' . $handler;
+        }
+
+        return $handler;
+    }
+
     private function parseAction(array $options): mixed
     {
         if (count($options) === 2 && array_keys($options) === [0, 1]) {
+            $options[0] = $this->getDecoratedHandler($options[0]);
             return $options;
         }
 
         if (isset($options['uses'])) {
-            return $options['uses'];
+            return $this->getDecoratedHandler($options['uses']);
         }
 
         if (isset($options[0]) && $options[0] instanceof Closure) {

@@ -1,7 +1,7 @@
 {
     "name": "swooletw/hyperf-http",
     "type": "library",
-    "description": "The http package for Hyperf.",
+    "description": "The http package for Laravel Hyperf.",
     "license": "MIT",
     "keywords": [
         "php",
@@ -48,7 +48,7 @@
             "config": "SwooleTW\\Hyperf\\Http\\ConfigProvider"
         },
         "branch-alias": {
-            "dev-main": "3.1-dev"
+            "dev-main": "0.1-dev"
         }
     }
 }

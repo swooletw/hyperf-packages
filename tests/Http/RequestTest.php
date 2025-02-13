@@ -8,7 +8,6 @@ use Carbon\Carbon;
 use Hyperf\Collection\Collection;
 use Hyperf\Context\ApplicationContext;
 use Hyperf\Context\Context;
-use Hyperf\Contract\SessionInterface;
 use Hyperf\HttpMessage\Upload\UploadedFile;
 use Hyperf\HttpMessage\Uri\Uri;
 use Hyperf\Stringable\Stringable;
@@ -17,8 +16,8 @@ use Mockery;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use RuntimeException;
 use SwooleTW\Hyperf\Http\Request;
+use SwooleTW\Hyperf\Session\Contracts\Session as SessionContract;
 use Swow\Psr7\Message\ServerRequestPlusInterface;
 
 /**
@@ -32,7 +31,6 @@ class RequestTest extends TestCase
         Mockery::close();
         Context::destroy(ServerRequestInterface::class);
         Context::set('http.request.parsedData', null);
-        Context::destroy(SessionInterface::class);
     }
 
     public function testAllFiles()
@@ -194,7 +192,8 @@ class RequestTest extends TestCase
     public function testGetHost()
     {
         $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);
-        $psrRequest->shouldReceive('getHeader')->with('HOST')->andReturn(['example.com:8080']);
+        $psrRequest->shouldReceive('hasHeader')->with('HOST')->andReturn(true);
+        $psrRequest->shouldReceive('getHeaderLine')->with('HOST')->andReturn('example.com:8080');
         Context::set(ServerRequestInterface::class, $psrRequest);
         $request = new Request();
 
@@ -204,7 +203,8 @@ class RequestTest extends TestCase
     public function testGetHttpHost()
     {
         $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);
-        $psrRequest->shouldReceive('getHeader')->with('HOST')->andReturn(['example.com:8080']);
+        $psrRequest->shouldReceive('hasHeader')->with('HOST')->andReturn(true);
+        $psrRequest->shouldReceive('getHeaderLine')->with('HOST')->andReturn('example.com:8080');
         Context::set(ServerRequestInterface::class, $psrRequest);
         $request = new Request();
 
@@ -214,7 +214,8 @@ class RequestTest extends TestCase
     public function testGetPort()
     {
         $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);
-        $psrRequest->shouldReceive('getHeader')->with('HOST')->andReturn(['example.com:8080']);
+        $psrRequest->shouldReceive('hasHeader')->with('HOST')->andReturn(true);
+        $psrRequest->shouldReceive('getHeaderLine')->with('HOST')->andReturn('example.com:8080');
         Context::set(ServerRequestInterface::class, $psrRequest);
         $request = new Request();
 
@@ -225,8 +226,7 @@ class RequestTest extends TestCase
     {
         $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);
         $psrRequest->shouldReceive('getServerParams')
-            ->with('HTTPS')
-            ->andReturn(['on']);
+            ->andReturn(['HTTPS' => 'on']);
         Context::set(ServerRequestInterface::class, $psrRequest);
         $request = new Request();
 
@@ -237,8 +237,7 @@ class RequestTest extends TestCase
     {
         $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);
         $psrRequest->shouldReceive('getServerParams')
-            ->with('HTTPS')
-            ->andReturn(['on']);
+            ->andReturn(['HTTPS' => 'on']);
         Context::set(ServerRequestInterface::class, $psrRequest);
         $request = new Request();
 
@@ -361,8 +360,9 @@ class RequestTest extends TestCase
     public function testSchemeAndHttpHost()
     {
         $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);
-        $psrRequest->shouldReceive('getServerParams')->with('HTTPS')->andReturn(['on']);
-        $psrRequest->shouldReceive('getHeader')->with('HOST')->andReturn(['example.com:8080']);
+        $psrRequest->shouldReceive('getServerParams')->andReturn(['HTTPS' => 'on']);
+        $psrRequest->shouldReceive('hasHeader')->with('HOST')->andReturn(true);
+        $psrRequest->shouldReceive('getHeaderLine')->with('HOST')->andReturn('example.com:8080');
         Context::set(ServerRequestInterface::class, $psrRequest);
         $request = new Request();
 
@@ -543,8 +543,9 @@ class RequestTest extends TestCase
     public function testRoot()
     {
         $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);
-        $psrRequest->shouldReceive('getServerParams')->with('HTTPS')->andReturn(['on']);
-        $psrRequest->shouldReceive('getHeader')->with('HOST')->andReturn(['example.com:8080']);
+        $psrRequest->shouldReceive('getServerParams')->andReturn(['HTTPS' => 'on']);
+        $psrRequest->shouldReceive('hasHeader')->with('HOST')->andReturn(true);
+        $psrRequest->shouldReceive('getHeaderLine')->with('HOST')->andReturn('example.com:8080');
         Context::set(ServerRequestInterface::class, $psrRequest);
         $request = new Request();
 
@@ -623,6 +624,17 @@ class RequestTest extends TestCase
         $this->assertTrue($request->ajax());
     }
 
+    public function testPrefetch()
+    {
+        $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);
+        $psrRequest->shouldReceive('getServerParams')->andReturn(['HTTP_X_MOZ' => 'prefetch']);
+
+        Context::set(ServerRequestInterface::class, $psrRequest);
+        $request = new Request();
+
+        $this->assertTrue($request->prefetch());
+    }
+
     public function testPjax()
     {
         $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);
@@ -634,28 +646,34 @@ class RequestTest extends TestCase
         $this->assertTrue($request->pjax());
     }
 
-    public function testSession()
+    public function testHasSession()
     {
+        $container = Mockery::mock(ContainerInterface::class);
+        $container->shouldReceive('has')
+            ->with(SessionContract::class)
+            ->andReturn(true);
+
+        ApplicationContext::setContainer($container);
         $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);
         Context::set(ServerRequestInterface::class, $psrRequest);
         $request = new Request();
 
-        $mockSession = Mockery::mock(SessionInterface::class);
-        Context::set(SessionInterface::class, $mockSession);
-
-        $this->assertSame($mockSession, $request->session());
+        $this->assertTrue($request->hasSession());
     }
 
-    public function testSessionThrowsExceptionWhenNotSet()
+    public function testSession()
     {
+        $container = Mockery::mock(ContainerInterface::class);
+        $container->shouldReceive('get')
+            ->with(SessionContract::class)
+            ->andReturn($session = Mockery::mock(SessionContract::class));
+
+        ApplicationContext::setContainer($container);
         $psrRequest = Mockery::mock(ServerRequestPlusInterface::class);
         Context::set(ServerRequestInterface::class, $psrRequest);
         $request = new Request();
 
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Session not set on request.');
-
-        $request->session();
+        $this->assertSame($session, $request->session());
     }
 
     public function testGetPsr7Request()

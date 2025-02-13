@@ -7,11 +7,11 @@ namespace SwooleTW\Hyperf\Tests\Router;
 use Hyperf\Context\ApplicationContext;
 use Hyperf\Di\Container;
 use Hyperf\Di\Definition\DefinitionSource;
-use Hyperf\HttpServer\Router\RouteCollector;
+use Hyperf\HttpServer\Router\RouteCollector as HyperfRouteCollector;
 use Mockery;
 use Mockery\MockInterface;
 use SwooleTW\Hyperf\Router\DispatcherFactory;
-use SwooleTW\Hyperf\Router\NamedRouteCollector;
+use SwooleTW\Hyperf\Router\RouteCollector;
 use SwooleTW\Hyperf\Router\RouteFileCollector;
 use SwooleTW\Hyperf\Router\Router;
 use SwooleTW\Hyperf\Tests\TestCase;
@@ -28,11 +28,11 @@ class DispatcherFactoryTest extends TestCase
             $this->markTestSkipped('skip it because DispatcherFactory in hyperf is dirty.');
         }
 
-        /** @var MockInterface|NamedRouteCollector */
-        $routeCollector = Mockery::mock(NamedRouteCollector::class);
+        /** @var MockInterface|RouteCollector */
+        $routeCollector = Mockery::mock(RouteCollector::class);
 
         $getContainer = $this->getContainer([
-            RouteCollector::class => fn () => $routeCollector,
+            HyperfRouteCollector::class => fn () => $routeCollector,
             RouteFileCollector::class => fn () => new RouteFileCollector(['foo']),
         ]);
 
@@ -47,13 +47,13 @@ class DispatcherFactoryTest extends TestCase
             $this->markTestSkipped('skip it because DispatcherFactory in hyperf is dirty.');
         }
 
-        /** @var MockInterface|NamedRouteCollector */
-        $routeCollector = Mockery::mock(NamedRouteCollector::class);
+        /** @var MockInterface|RouteCollector */
+        $routeCollector = Mockery::mock(RouteCollector::class);
         $routeCollector->shouldReceive('get')->with('/foo', 'Handler::Foo')->once();
         $routeCollector->shouldReceive('get')->with('/bar', 'Handler::Bar')->once();
 
         $container = $this->getContainer([
-            RouteCollector::class => fn () => $routeCollector,
+            HyperfRouteCollector::class => fn () => $routeCollector,
             RouteFileCollector::class => fn () => new RouteFileCollector([
                 __DIR__ . '/routes/foo.php',
                 __DIR__ . '/routes/bar.php',

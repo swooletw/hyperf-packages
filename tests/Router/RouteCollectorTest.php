@@ -7,7 +7,7 @@ namespace SwooleTW\Hyperf\Tests\Router;
 use FastRoute\DataGenerator\GroupCountBased as DataGenerator;
 use FastRoute\RouteParser\Std;
 use Hyperf\HttpServer\MiddlewareManager;
-use SwooleTW\Hyperf\Router\NamedRouteCollector;
+use SwooleTW\Hyperf\Router\RouteCollector;
 use SwooleTW\Hyperf\Tests\Router\Stub\RouteCollectorStub;
 use SwooleTW\Hyperf\Tests\TestCase;
 
@@ -15,7 +15,7 @@ use SwooleTW\Hyperf\Tests\TestCase;
  * @internal
  * @coversNothing
  */
-class NamedRouteCollectorTest extends TestCase
+class RouteCollectorTest extends TestCase
 {
     protected function tearDown(): void
     {
@@ -28,7 +28,7 @@ class NamedRouteCollectorTest extends TestCase
     {
         $parser = new Std();
         $generator = new DataGenerator();
-        $collector = new NamedRouteCollector($parser, $generator);
+        $collector = new RouteCollector($parser, $generator);
 
         $collector->get('/', 'Handler::Get');
         $collector->post('/', 'Handler::Post');
@@ -48,7 +48,7 @@ class NamedRouteCollectorTest extends TestCase
     {
         $parser = new Std();
         $generator = new DataGenerator();
-        $collector = new NamedRouteCollector($parser, $generator);
+        $collector = new RouteCollector($parser, $generator);
 
         $this->assertSame($parser, $collector->getRouteParser());
     }
@@ -57,7 +57,7 @@ class NamedRouteCollectorTest extends TestCase
     {
         $parser = new Std();
         $generator = new DataGenerator();
-        $collector = new NamedRouteCollector($parser, $generator);
+        $collector = new RouteCollector($parser, $generator);
 
         $collector->get('/', 'Handler::Get', [
             'middleware' => ['GetMiddleware'],
@@ -93,7 +93,7 @@ class NamedRouteCollectorTest extends TestCase
     {
         $parser = new Std();
         $generator = new DataGenerator();
-        $collector = new NamedRouteCollector($parser, $generator, 'test');
+        $collector = new RouteCollector($parser, $generator, 'test');
 
         $collector->addGroup('/api', function ($collector) {
             $collector->get('/', 'Handler::ApiGet', [
@@ -146,7 +146,7 @@ class NamedRouteCollectorTest extends TestCase
     {
         $parser = new Std();
         $generator = new DataGenerator();
-        $collector = new NamedRouteCollector($parser, $generator);
+        $collector = new RouteCollector($parser, $generator);
 
         $collector->get('/', 'Handler::Get', ['as' => 'get']);
         $collector->post('/', 'Handler::Post', ['as' => 'post']);
@@ -172,7 +172,7 @@ class NamedRouteCollectorTest extends TestCase
     {
         $parser = new Std();
         $generator = new DataGenerator();
-        $collector = new NamedRouteCollector($parser, $generator);
+        $collector = new RouteCollector($parser, $generator);
 
         $collector->addGroup('/foo', function ($collector) {
             $collector->get('/bar', 'Handler::Bar', ['as' => 'bar']);
@@ -187,11 +187,30 @@ class NamedRouteCollectorTest extends TestCase
         $this->assertSame(['/foo/baz/boom'], $namedRoutes['foo.baz.boom']);
     }
 
+    public function testNamespaceRouteWithGroup()
+    {
+        $parser = new Std();
+        $generator = new DataGenerator();
+        $collector = new RouteCollector($parser, $generator);
+
+        $collector->addGroup('/foo', function ($collector) {
+            $collector->get('/bar', 'Handler::Bar', ['as' => 'bar']);
+            $collector->addGroup('/baz', function ($collector) {
+                $collector->get('/boom', 'Handler::Boom', ['as' => 'boom']);
+            }, ['as' => 'baz']);
+        }, ['namespace' => 'Foo']);
+
+        $data = $collector->getData()[0]['GET'];
+
+        $this->assertSame('Foo\Handler::Bar', $data['/foo/bar']->callback);
+        $this->assertSame('Foo\Handler::Boom', $data['/foo/baz/boom']->callback);
+    }
+
     public function testHandlerInOptions()
     {
         $parser = new Std();
         $generator = new DataGenerator();
-        $collector = new NamedRouteCollector($parser, $generator);
+        $collector = new RouteCollector($parser, $generator);
 
         $collector->get('/', [
             'as' => 'get',
@@ -209,7 +228,7 @@ class NamedRouteCollectorTest extends TestCase
     {
         $parser = new Std();
         $generator = new DataGenerator();
-        $collector = new NamedRouteCollector($parser, $generator);
+        $collector = new RouteCollector($parser, $generator);
 
         $collector->get('/', [
             'as' => 'get',
@@ -227,7 +246,7 @@ class NamedRouteCollectorTest extends TestCase
     {
         $parser = new Std();
         $generator = new DataGenerator();
-        $collector = new NamedRouteCollector($parser, $generator);
+        $collector = new RouteCollector($parser, $generator);
 
         $collector->get('/', ['class', 'method']);
 

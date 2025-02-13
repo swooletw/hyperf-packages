@@ -1,7 +1,7 @@
 {
     "name": "swooletw/hyperf-log",
     "type": "library",
-    "description": "The log package for Hyperf.",
+    "description": "The log package for Laravel Hyperf.",
     "license": "MIT",
     "keywords": [
         "php",
@@ -33,7 +33,7 @@
         "hyperf/stringable": "~3.1.0",
         "hyperf/contract": "~3.1.0",
         "hyperf/collection": "~3.1.0",
-        "swooletw/hyperf-support": "dev-master"
+        "swooletw/hyperf-support": "~0.1.0"
     },
     "config": {
         "sort-packages": true
@@ -43,7 +43,7 @@
             "config": "SwooleTW\\Hyperf\\Log\\ConfigProvider"
         },
         "branch-alias": {
-            "dev-main": "3.1-dev"
+            "dev-main": "0.1-dev"
         }
     }
 }

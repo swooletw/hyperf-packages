@@ -9,6 +9,7 @@ use Hyperf\Context\Context;
 use Hyperf\Stringable\Str;
 use InvalidArgumentException;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use SwooleTW\Hyperf\Bus\Contracts\Dispatcher as BusDispatcherContract;
 use SwooleTW\Hyperf\Notifications\Channels\DatabaseChannel;
 use SwooleTW\Hyperf\Notifications\Channels\MailChannel;
 use SwooleTW\Hyperf\Notifications\Channels\SlackNotificationRouterChannel;
@@ -51,7 +52,12 @@ class ChannelManager extends Manager implements DispatcherContract, FactoryContr
      */
     public function send(mixed $notifiables, mixed $notification): void
     {
-        $this->sendNow($notifiables, $notification);
+        (new NotificationSender(
+            $this,
+            $this->container->get(BusDispatcherContract::class),
+            $this->container->get(EventDispatcherInterface::class),
+            $this->getLocale()
+        ))->send($notifiables, $notification);
     }
 
     /**
@@ -61,6 +67,7 @@ class ChannelManager extends Manager implements DispatcherContract, FactoryContr
     {
         (new NotificationSender(
             $this,
+            $this->container->get(BusDispatcherContract::class),
             $this->container->get(EventDispatcherInterface::class),
             $this->getLocale()
         ))->sendNow($notifiables, $notification, $channels);

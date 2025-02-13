@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hyperf\Dispatcher;
 
+use Hyperf\Context\Context;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -21,6 +22,8 @@ class HttpRequestHandler implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        Context::set('request.middleware', $this->middlewares);
+
         return $this->container
             ->get(Pipeline::class)
             ->send($request)

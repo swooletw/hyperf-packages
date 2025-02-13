@@ -15,6 +15,7 @@ use SwooleTW\Hyperf\ObjectPool\Traits\HasPoolProxy;
 use SwooleTW\Hyperf\Queue\Connectors\BeanstalkdConnector;
 use SwooleTW\Hyperf\Queue\Connectors\ConnectorInterface;
 use SwooleTW\Hyperf\Queue\Connectors\DatabaseConnector;
+use SwooleTW\Hyperf\Queue\Connectors\DeferConnector;
 use SwooleTW\Hyperf\Queue\Connectors\NullConnector;
 use SwooleTW\Hyperf\Queue\Connectors\RedisConnector;
 use SwooleTW\Hyperf\Queue\Connectors\SqsConnector;
@@ -283,6 +284,7 @@ class QueueManager implements FactoryContract, MonitorContract
         $this->registerRedisConnector();
         $this->registerBeanstalkdConnector();
         $this->registerSqsConnector();
+        $this->registerDeferConnector();
     }
 
     /**
@@ -346,6 +348,16 @@ class QueueManager implements FactoryContract, MonitorContract
     {
         $this->addConnector('sqs', function () {
             return new SqsConnector();
+        });
+    }
+
+    /**
+     * Register the Coroutine defer queue connector.
+     */
+    protected function registerDeferConnector(): void
+    {
+        $this->addConnector('defer', function () {
+            return new DeferConnector();
         });
     }
 }

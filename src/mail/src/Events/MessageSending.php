@@ -14,8 +14,8 @@ class MessageSending
      * Create a new event instance.
      */
     public function __construct(
-        protected Email $message,
-        protected array $data = []
+        public Email $message,
+        public array $data = []
     ) {
     }
 

@@ -1,6 +1,6 @@
 {
     "name": "swooletw/hyperf-devtool",
-    "description": "The devtool package for Hyperf.",
+    "description": "The devtool package for Laravel Hyperf.",
     "license": "MIT",
     "keywords": [
         "php",
@@ -34,7 +34,7 @@
             "config": "SwooleTW\\Hyperf\\Devtool\\ConfigProvider"
         },
         "branch-alias": {
-            "dev-master": "3.1-dev"
+            "dev-master": "0.1-dev"
         }
     },
     "config": {

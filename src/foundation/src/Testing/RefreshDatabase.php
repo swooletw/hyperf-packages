@@ -7,6 +7,7 @@ namespace SwooleTW\Hyperf\Foundation\Testing;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Database\Connection as DatabaseConnection;
 use Hyperf\DbConnection\Db;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use SwooleTW\Hyperf\Foundation\Testing\Traits\CanConfigureMigrationCommands;
 
 trait RefreshDatabase
@@ -38,7 +39,9 @@ trait RefreshDatabase
 
         foreach ($this->connectionsToTransact() as $name) {
             if (isset(RefreshDatabaseState::$inMemoryConnections[$name])) {
-                $database->connection($name)->setPdo(RefreshDatabaseState::$inMemoryConnections[$name]);
+                $database->connection($name)
+                    ->setPdo(RefreshDatabaseState::$inMemoryConnections[$name])
+                    ->setEventDispatcher($this->app->get(EventDispatcherInterface::class));
             }
         }
     }

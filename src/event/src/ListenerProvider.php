@@ -27,10 +27,11 @@ class ListenerProvider implements ListenerProviderContract
             fn ($_, $key) => is_string($event) ? $event === $key : $event instanceof $key
         );
 
-        $wildcards = is_string($event) ? $this->getListenersUsingCondition(
+        $eventName = is_string($event) ? $event : get_class($event);
+        $wildcards = $this->getListenersUsingCondition(
             $this->wildcards,
-            fn ($_, $key) => Str::is($key, $event)
-        ) : collect();
+            fn ($_, $key) => Str::is($key, $eventName)
+        );
 
         $queue = new SplPriorityQueue();
 

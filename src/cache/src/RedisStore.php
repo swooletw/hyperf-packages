@@ -6,7 +6,6 @@ namespace SwooleTW\Hyperf\Cache;
 
 use Hyperf\Redis\RedisFactory;
 use Hyperf\Redis\RedisProxy;
-use SwooleTW\Hyperf\Cache\Contracts\Lock;
 use SwooleTW\Hyperf\Cache\Contracts\LockProvider;
 
 class RedisStore extends TaggableStore implements LockProvider

@@ -1,6 +1,6 @@
 {
     "name": "swooletw/hyperf-dispatcher",
-    "description": "The dispatcher package for Hyperf.",
+    "description": "The dispatcher package for Laravel Hyperf.",
     "license": "MIT",
     "keywords": [
         "php",
@@ -37,7 +37,7 @@
             "config": "SwooleTW\\Hyperf\\Dispatcher\\ConfigProvider"
         },
         "branch-alias": {
-            "dev-master": "3.1-dev"
+            "dev-master": "0.1-dev"
         }
     },
     "config": {

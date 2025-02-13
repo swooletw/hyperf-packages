@@ -1,7 +1,7 @@
 {
     "name": "swooletw/hyperf-cache",
     "type": "library",
-    "description": "The cache package for Hyperf.",
+    "description": "The cache package for Laravel Hyperf.",
     "license": "MIT",
     "keywords": [
         "php",
@@ -38,7 +38,7 @@
     },
     "suggest": {
         "hyperf/redis": "Required to use redis driver. (~3.1.0)",
-        "swooletw/cache": "Required to use file lock. (~3.1.0)"
+        "swooletw/cache": "Required to use file lock. (~0.1.0)"
     },
     "config": {
         "sort-packages": true
@@ -48,7 +48,7 @@
             "config": "SwooleTW\\Hyperf\\Cache\\ConfigProvider"
         },
         "branch-alias": {
-            "dev-main": "3.1-dev"
+            "dev-main": "0.1-dev"
         }
     }
 }

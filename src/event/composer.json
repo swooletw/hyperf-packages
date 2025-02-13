@@ -1,7 +1,7 @@
 {
     "name": "swooletw/hyperf-event",
     "type": "library",
-    "description": "The event package for Hyperf.",
+    "description": "The event package for Laravel Hyperf.",
     "license": "MIT",
     "keywords": [
         "php",
@@ -33,7 +33,14 @@
     "require": {
         "php": "^8.2",
         "hyperf/event": "~3.1.0",
+        "hyperf/collection": "~3.1.0",
+        "hyperf/context": "~3.1.0",
+        "hyperf/stringable": "~3.1.0",
+        "swooletw/hyperf-bus": "~0.1",
         "laravel/serializable-closure": "^1.3"
+    },
+    "suggest": {
+        "swooletw/hyperf-queue": "Required to use queueable listener. (~0.1.0)"
     },
     "config": {
         "sort-packages": true
@@ -43,7 +50,7 @@
             "config": "SwooleTW\\Hyperf\\Event\\ConfigProvider"
         },
         "branch-alias": {
-            "dev-main": "3.1-dev"
+            "dev-main": "0.1-dev"
         }
     }
 }

@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Auth\Guards;
 
 use Hyperf\Context\Context;
-use Hyperf\Contract\SessionInterface;
 use Hyperf\Macroable\Macroable;
 use SwooleTW\Hyperf\Auth\Contracts\Authenticatable;
 use SwooleTW\Hyperf\Auth\Contracts\StatefulGuard;
 use SwooleTW\Hyperf\Auth\Contracts\UserProvider;
+use SwooleTW\Hyperf\Session\Contracts\Session as SessionContract;
 use Throwable;
 
 class SessionGuard implements StatefulGuard
@@ -20,9 +20,8 @@ class SessionGuard implements StatefulGuard
     public function __construct(
         protected string $name,
         protected UserProvider $provider,
-        protected SessionInterface $session
+        protected SessionContract $session
     ) {
-        $this->session = $session;
     }
 
     /**

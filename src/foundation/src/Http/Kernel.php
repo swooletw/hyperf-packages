@@ -47,6 +47,14 @@ class Kernel extends HyperfServer implements MiddlewareContract
 
             [$request, $response] = $this->initRequestAndResponse($swooleRequest, $swooleResponse);
 
+            // Trim the trailing slashes of the path.
+            $uri = $request->getUri();
+            if ($uri->getPath() !== '/') {
+                $request->setUri(
+                    $uri->setPath(rtrim($uri->getPath(), '/'))
+                );
+            }
+
             // Convert Hyperf's uploaded files to Laravel style UploadedFile
             if ($uploadedFiles = $request->getUploadedFiles()) {
                 $request = $request->withUploadedFiles(array_map(function (HyperfUploadedFile $uploadedFile) {

@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Mail\Contracts;
 
+use DateInterval;
+use DateTimeInterface;
 use SwooleTW\Hyperf\Mail\SentMessage;
+use SwooleTW\Hyperf\Queue\Contracts\Factory as QueueFactory;
 
 interface Mailable
 {
@@ -12,6 +15,16 @@ interface Mailable
      * Send the message using the given mailer.
      */
     public function send(Factory|Mailer $mailer): ?SentMessage;
+
+    /**
+     * Queue the given message.
+     */
+    public function queue(QueueFactory $queue): mixed;
+
+    /**
+     * Deliver the queued message after (n) seconds.
+     */
+    public function later(DateInterval|DateTimeInterface|int $delay, QueueFactory $queue): mixed;
 
     /**
      * Set the recipients of the message.

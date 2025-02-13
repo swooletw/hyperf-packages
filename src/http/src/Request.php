@@ -12,15 +12,14 @@ use Hyperf\Collection\Collection;
 use Hyperf\Context\ApplicationContext;
 use Hyperf\Context\Context;
 use Hyperf\Context\RequestContext;
-use Hyperf\Contract\SessionInterface;
 use Hyperf\HttpServer\Request as HyperfRequest;
 use Hyperf\Stringable\Str;
 use Hyperf\Validation\ValidatorFactory;
 use Psr\Http\Message\ServerRequestInterface;
-use RuntimeException;
 use stdClass;
 use Stringable;
 use SwooleTW\Hyperf\Http\Contracts\RequestContract;
+use SwooleTW\Hyperf\Session\Contracts\Session as SessionContract;
 
 use function Hyperf\Collection\collect;
 use function Hyperf\Collection\data_get;
@@ -211,7 +210,7 @@ class Request extends HyperfRequest implements RequestContract
      */
     public function getHost(): string
     {
-        $host = $this->getHeader('HOST')[0] ?? $this->getServerParams('SERVER_NAME')[0] ?? $this->getServerParams('SERVER_ADDR')[0] ?? '';
+        $host = $this->header('HOST') ?? $this->server('SERVER_NAME') ?? $this->server('SERVER_ADDR') ?? '';
 
         return strtolower(preg_replace('/:\d+$/', '', trim($host)));
     }
@@ -236,8 +235,8 @@ class Request extends HyperfRequest implements RequestContract
      */
     public function getPort(): int|string
     {
-        if (! $host = $this->getHeader('HOST')[0] ?? '') {
-            return $this->getServerParams('SERVER_PORT')[0];
+        if (! $host = $this->header('HOST', '')) {
+            return $this->server('SERVER_PORT');
         }
 
         if ($host[0] === '[') {
@@ -268,7 +267,7 @@ class Request extends HyperfRequest implements RequestContract
      */
     public function isSecure(): bool
     {
-        $https = $this->getServerParams('HTTPS')[0] ?? '';
+        $https = $this->server('HTTPS', '');
 
         return ! empty($https) && strtolower($https) !== 'off';
     }
@@ -574,6 +573,7 @@ class Request extends HyperfRequest implements RequestContract
         if (! RequestContext::has()) {
             return '127.0.0.1';
         }
+
         return $this->getHeaderLine('x-real-ip')
             ?: $this->server('remote_addr');
     }
@@ -597,6 +597,19 @@ class Request extends HyperfRequest implements RequestContract
     public function root(): string
     {
         return rtrim($this->getSchemeAndHttpHost(), '/');
+    }
+
+    /**
+     * Get the full URL for the request.
+     */
+    public function fullUrl(): string
+    {
+        $url = $this->url();
+        if ($query = $this->getQueryString()) {
+            $url .= '?' . $query;
+        }
+
+        return $url;
     }
 
     /**
@@ -713,6 +726,16 @@ class Request extends HyperfRequest implements RequestContract
     }
 
     /**
+     * Determine if the request is the result of a prefetch call.
+     */
+    public function prefetch(): bool
+    {
+        return strcasecmp($this->server('HTTP_X_MOZ') ?? '', 'prefetch') === 0
+            || strcasecmp($this->header('Purpose') ?? '', 'prefetch') === 0
+            || strcasecmp($this->header('Sec-Purpose') ?? '', 'prefetch') === 0;
+    }
+
+    /**
      * Determine if the it is a range request.
      */
     public function isRange(): bool
@@ -729,15 +752,21 @@ class Request extends HyperfRequest implements RequestContract
     }
 
     /**
+     * Determine if the request has a session.
+     */
+    public function hasSession(): bool
+    {
+        return ApplicationContext::getContainer()
+            ->has(SessionContract::class);
+    }
+
+    /**
      * Get session for the current request.
      */
-    public function session(): SessionInterface
+    public function session(): SessionContract
     {
-        if (! Context::has(SessionInterface::class)) {
-            throw new RuntimeException('Session not set on request.');
-        }
-
-        return Context::get(SessionInterface::class);
+        return ApplicationContext::getContainer()
+            ->get(SessionContract::class);
     }
 
     /**

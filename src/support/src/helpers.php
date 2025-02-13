@@ -234,9 +234,37 @@ if (! function_exists('retry')) {
      *
      * @throws Throwable
      */
-    function retry(float|int $times, callable $callback, int $sleep = 0)
+    function retry(array|int $times, callable $callback, Closure|int $sleepMilliseconds = 0, ?callable $when = null)
     {
-        return \Hyperf\Support\retry($times, $callback, $sleep);
+        $attempts = 0;
+
+        $backoff = [];
+
+        if (is_array($times)) {
+            $backoff = $times;
+
+            $times = count($times) + 1;
+        }
+
+        beginning:
+        $attempts++;
+        --$times;
+
+        try {
+            return $callback($attempts);
+        } catch (Throwable $e) {
+            if ($times < 1 || ($when && ! $when($e))) {
+                throw $e;
+            }
+
+            $sleepMilliseconds = $backoff[$attempts - 1] ?? $sleepMilliseconds;
+
+            if ($sleepMilliseconds) {
+                usleep(value($sleepMilliseconds, $attempts, $e) * 1000);
+            }
+
+            goto beginning;
+        }
     }
 }
 

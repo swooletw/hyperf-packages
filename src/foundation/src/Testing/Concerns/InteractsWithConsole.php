@@ -14,6 +14,14 @@ trait InteractsWithConsole
     public bool $mockConsoleOutput = true;
 
     /**
+     * Alias of `command` method.
+     */
+    public function artisan(string $command, array $parameters = []): int
+    {
+        return $this->command($command, $parameters);
+    }
+
+    /**
      * Call hyperf command and return code.
      */
     public function command(string $command, array $parameters = []): int

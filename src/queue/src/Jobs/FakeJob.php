@@ -21,6 +21,11 @@ class FakeJob extends Job
      */
     public int $attempts = 1;
 
+    public function __construct(
+        public array $payload = []
+    ) {
+    }
+
     /**
      * The exception the job failed with.
      */
@@ -39,7 +44,15 @@ class FakeJob extends Job
      */
     public function getRawBody(): string
     {
-        return '';
+        return json_encode($this->payload);
+    }
+
+    /**
+     * Get the decoded body of the job.
+     */
+    public function payload(): array
+    {
+        return $this->payload;
     }
 
     /**
