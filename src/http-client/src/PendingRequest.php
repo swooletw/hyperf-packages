@@ -25,8 +25,8 @@ use Hyperf\Stringable\Str;
 use Hyperf\Stringable\Stringable;
 use JsonSerializable;
 use OutOfBoundsException;
-use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 use SwooleTW\Hyperf\HttpClient\Events\ConnectionFailed;
@@ -43,7 +43,7 @@ class PendingRequest
     /**
      * The Guzzle client instance.
      */
-    protected Client $client;
+    protected ?Client $client = null;
 
     /**
      * The Guzzle HTTP handler.
@@ -241,10 +241,12 @@ class PendingRequest
 
     /**
      * Attach a file to the request.
+     *
+     * @param resource|string $contents
      */
     public function attach(
         array|string $name,
-        string $contents = '',
+        $contents = '',
         ?string $filename = null,
         array $headers = []
     ): static {
@@ -734,11 +736,11 @@ class PendingRequest
 
         $shouldRetry = null;
 
-        return retry($this->tries ?? 1, function ($attempt) use ($method, $url, $options, &$shouldRetry) {
+        return retry($this->tries ?? 1, function ($attempt) use ($method, $url, $options, &$shouldRetry, $potentialTries) {
             try {
                 return tap(
                     $this->newResponse($this->sendRequest($method, $url, $options)),
-                    function (Response $response) use ($attempt, &$shouldRetry) {
+                    function (Response $response) use ($attempt, &$shouldRetry, $potentialTries) {
                         $this->populateResponse($response);
 
                         $this->dispatchResponseReceivedEvent($response);
@@ -801,10 +803,8 @@ class PendingRequest
 
     /**
      * Substitute the URL parameters in the given URL.
-     *
-     * @return string
      */
-    protected function expandUrlParameters(string $url)
+    protected function expandUrlParameters(string $url): string
     {
         return UriTemplate::expand($url, $this->urlParameters);
     }
@@ -861,7 +861,7 @@ class PendingRequest
     protected function makePromise(string $method, string $url, array $options = [], int $attempt = 1): PromiseInterface
     {
         return $this->promise = $this->sendRequest($method, $url, $options)
-            ->then(function (MessageInterface $message) {
+            ->then(function (ResponseInterface $message) {
                 return tap($this->newResponse($message), function ($response) {
                     $this->populateResponse($response);
                     $this->dispatchResponseReceivedEvent($response);
@@ -922,7 +922,11 @@ class PendingRequest
             return $exception;
         }
 
-        if ($attempt < $this->tries && $shouldRetry) {
+        $potentialTries = is_array($this->tries)
+            ? count($this->tries) + 1
+            : $this->tries;
+
+        if ($attempt < $potentialTries && $shouldRetry) {
             $options['delay'] = value(
                 $this->retryDelay,
                 $attempt,
@@ -942,7 +946,7 @@ class PendingRequest
             }
         }
 
-        if ($this->tries > 1 && $this->retryThrow) {
+        if ($potentialTries > 1 && $this->retryThrow) {
             return $response instanceof Response ? $response->toException() : $response;
         }
 
@@ -954,7 +958,7 @@ class PendingRequest
      *
      * @throws Exception
      */
-    protected function sendRequest(string $method, string $url, array $options = []): MessageInterface|PromiseInterface
+    protected function sendRequest(string $method, string $url, array $options = []): PromiseInterface|ResponseInterface
     {
         $clientMethod = $this->async ? 'requestAsync' : 'request';
 
@@ -1007,10 +1011,8 @@ class PendingRequest
 
     /**
      * Normalize the given request options.
-     *
-     * @return array
      */
-    protected function normalizeRequestOptions(array $options)
+    protected function normalizeRequestOptions(array $options): array
     {
         foreach ($options as $key => $value) {
             $options[$key] = match (true) {
@@ -1221,7 +1223,7 @@ class PendingRequest
     /**
      * Create a new response instance using the given PSR response.
      */
-    protected function newResponse(MessageInterface|PromiseInterface $response): Response
+    protected function newResponse(PromiseInterface|ResponseInterface $response): Response
     {
         return new Response($response);
     }

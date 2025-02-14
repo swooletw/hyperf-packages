@@ -14,7 +14,6 @@ use Hyperf\Macroable\Macroable;
 use Hyperf\Support\Fluent;
 use InvalidArgumentException;
 use LogicException;
-use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
 use Stringable;
@@ -32,7 +31,7 @@ class Response implements ArrayAccess, Stringable
     /**
      * The underlying PSR response.
      */
-    protected MessageInterface $response;
+    protected ResponseInterface $response;
 
     /**
      * The decoded JSON response.
@@ -52,7 +51,7 @@ class Response implements ArrayAccess, Stringable
     /**
      * Create a new response instance.
      */
-    public function __construct(MessageInterface $response)
+    public function __construct(ResponseInterface $response)
     {
         $this->response = $response;
     }
@@ -267,11 +266,9 @@ class Response implements ArrayAccess, Stringable
     /**
      * Throw an exception if a server or client error occurred.
      *
-     * @return $this
-     *
      * @throws RequestException
      */
-    public function throw()
+    public function throw(): static
     {
         $callback = func_get_args()[0] ?? null;
 
@@ -289,13 +286,9 @@ class Response implements ArrayAccess, Stringable
     /**
      * Throw an exception if a server or client error occurred and the given condition evaluates to true.
      *
-     * @param bool|Closure $condition
-     *
-     * @return $this
-     *
-     * @throws \Illuminate\Http\Client\RequestException
+     * @throws RequestException
      */
-    public function throwIf($condition)
+    public function throwIf(bool|Closure $condition): static
     {
         return value($condition, $this) ? $this->throw(func_get_args()[1] ?? null) : $this;
     }
@@ -305,11 +298,9 @@ class Response implements ArrayAccess, Stringable
      *
      * @param callable|int $statusCode
      *
-     * @return $this
-     *
-     * @throws \Illuminate\Http\Client\RequestException
+     * @throws RequestException
      */
-    public function throwIfStatus($statusCode)
+    public function throwIfStatus($statusCode): static
     {
         if (is_callable($statusCode)
             && $statusCode($this->status(), $this)) {
@@ -324,11 +315,9 @@ class Response implements ArrayAccess, Stringable
      *
      * @param callable|int $statusCode
      *
-     * @return $this
-     *
-     * @throws \Illuminate\Http\Client\RequestException
+     * @throws RequestException
      */
-    public function throwUnlessStatus($statusCode)
+    public function throwUnlessStatus($statusCode): static
     {
         if (is_callable($statusCode)) {
             return $statusCode($this->status(), $this) ? $this : $this->throw();
@@ -340,11 +329,9 @@ class Response implements ArrayAccess, Stringable
     /**
      * Throw an exception if the response status code is a 4xx level code.
      *
-     * @return $this
-     *
-     * @throws \Illuminate\Http\Client\RequestException
+     * @throws RequestException
      */
-    public function throwIfClientError()
+    public function throwIfClientError(): static
     {
         return $this->clientError() ? $this->throw() : $this;
     }
@@ -352,11 +339,9 @@ class Response implements ArrayAccess, Stringable
     /**
      * Throw an exception if the response status code is a 5xx level code.
      *
-     * @return $this
-     *
-     * @throws \Illuminate\Http\Client\RequestException
+     * @throws RequestException
      */
-    public function throwIfServerError()
+    public function throwIfServerError(): static
     {
         return $this->serverError() ? $this->throw() : $this;
     }
@@ -388,11 +373,9 @@ class Response implements ArrayAccess, Stringable
     /**
      * Dump the content from the response and end the script.
      *
-     * @param null|string $key
-     *
      * @return never
      */
-    public function dd($key = null)
+    public function dd(?string $key = null): void
     {
         $this->dump($key);
 
@@ -401,8 +384,6 @@ class Response implements ArrayAccess, Stringable
 
     /**
      * Dump the headers from the response.
-     *
-     * @return $this
      */
     public function dumpHeaders(): static
     {

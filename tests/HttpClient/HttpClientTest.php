@@ -579,7 +579,7 @@ class HttpClientTest extends TestCase
         $this->factory->asJson()->post(
             'http://foo.com/form',
             new class implements JsonSerializable,
-                                 Arrayable {
+                Arrayable {
                 public function jsonSerialize(): mixed
                 {
                     return [
@@ -1779,14 +1779,9 @@ class HttpClientTest extends TestCase
 
         $middleware = Middleware::history($history);
 
-        $responses = $this->factory->pool(function (Pool $pool) use ($middleware) {
-            return [
-                $pool->withMiddleware($middleware)->post('https://example.com', ['hyped-for' => 'laravel-movie']),
-            ];
-        });
-        //$responses = $this->factory->pool(fn(Pool $pool) => [
-        //    $pool->withMiddleware($middleware)->post('https://example.com', ['hyped-for' => 'laravel-movie']),
-        //]);
+        $responses = $this->factory->pool(fn (Pool $pool) => [
+            $pool->withMiddleware($middleware)->post('https://example.com', ['hyped-for' => 'laravel-movie']),
+        ]);
 
         $response = $responses[0];
 
@@ -2219,7 +2214,7 @@ class HttpClientTest extends TestCase
             '*' => $this->factory->response(['error'], 403),
         ]);
 
-        [$exception] = $this->factory->pool(fn($pool) => [
+        [$exception] = $this->factory->pool(fn ($pool) => [
             $pool->retry(2, 1000, null, true)->get('http://foo.com/get'),
         ]);
 
@@ -2237,7 +2232,7 @@ class HttpClientTest extends TestCase
 
         $whenAttempts = collect();
 
-        [$exception] = $this->factory->pool(fn($pool) => [
+        [$exception] = $this->factory->pool(fn ($pool) => [
             $pool->retry(2, 1000, function ($exception) use ($whenAttempts) {
                 $whenAttempts->push($exception);
 
@@ -2259,7 +2254,7 @@ class HttpClientTest extends TestCase
             '*' => $this->factory->response(['error'], 403),
         ]);
 
-        [$response] = $this->factory->pool(fn($pool) => [
+        [$response] = $this->factory->pool(fn ($pool) => [
             $pool->retry(2, 1000, null, false)->get('http://foo.com/get'),
         ]);
 
@@ -2278,7 +2273,7 @@ class HttpClientTest extends TestCase
 
         $whenAttempts = collect();
 
-        [$response] = $this->factory->pool(fn($pool) => [
+        [$response] = $this->factory->pool(fn ($pool) => [
             $pool->retry(2, 1000, function ($exception) use ($whenAttempts) {
                 $whenAttempts->push($exception);
 
@@ -2303,7 +2298,7 @@ class HttpClientTest extends TestCase
                 ->push(['ok'], 200),
         ]);
 
-        [$response] = $this->factory->pool(fn($pool) => [
+        [$response] = $this->factory->pool(fn ($pool) => [
             $pool->retry(2, 1000, function ($exception, $request) {
                 $this->assertInstanceOf(PendingRequest::class, $request);
 
@@ -2346,7 +2341,7 @@ class HttpClientTest extends TestCase
             '*' => $this->factory->response(['error'], 500),
         ]);
 
-        [$exception] = $this->factory->pool(fn($pool) => [
+        [$exception] = $this->factory->pool(fn ($pool) => [
             $pool->retry(2, 1000, function ($exception) {
                 throw new Exception('Foo bar');
             }, false)->get('http://foo.com/get'),
@@ -2411,7 +2406,7 @@ class HttpClientTest extends TestCase
 
     public function testFakeConnectionExceptionWithinFakeClosure()
     {
-        $this->factory->fake(fn() => $this->factory->failedConnection('Fake'));
+        $this->factory->fake(fn () => $this->factory->failedConnection('Fake'));
 
         $exception = null;
 
@@ -2505,7 +2500,7 @@ class HttpClientTest extends TestCase
         });
 
         $pendingRequest = $this->factory->withMiddleware(
-            Middleware::mapRequest(fn(RequestInterface $request) => $request->withHeader('X-Test-Header', 'Test'))
+            Middleware::mapRequest(fn (RequestInterface $request) => $request->withHeader('X-Test-Header', 'Test'))
         );
 
         $pendingRequest->post('https://laravel.example', ['laravel' => 'framework']);
@@ -2720,13 +2715,12 @@ class HttpClientTest extends TestCase
     }
 
     public function testRequestExceptionIsNotReturnedIfThePendingRequestIsSetToThrowOnFailureButTheResponseIsSuccessfulInPool(
-    )
-    {
+    ) {
         $this->factory->fake([
             '*' => $this->factory->response(['success'], 200),
         ]);
 
-        [$response] = $this->factory->pool(fn($pool) => [
+        [$response] = $this->factory->pool(fn ($pool) => [
             $pool->throw()->get('http://foo.com/get'),
         ]);
 
@@ -2740,7 +2734,7 @@ class HttpClientTest extends TestCase
             '*' => $this->factory->response(['error'], 403),
         ]);
 
-        [$exception] = $this->factory->pool(fn($pool) => [
+        [$exception] = $this->factory->pool(fn ($pool) => [
             $pool->throw()->get('http://foo.com/get'),
         ]);
 
@@ -2754,7 +2748,7 @@ class HttpClientTest extends TestCase
             '*' => $this->factory->response(['error'], 403),
         ]);
 
-        [$exception] = $this->factory->pool(fn($pool) => [
+        [$exception] = $this->factory->pool(fn ($pool) => [
             $pool->throwIf(true)->get('http://foo.com/get'),
         ]);
 
@@ -2768,7 +2762,7 @@ class HttpClientTest extends TestCase
             '*' => $this->factory->response(['error'], 403),
         ]);
 
-        [$response] = $this->factory->pool(fn($pool) => [
+        [$response] = $this->factory->pool(fn ($pool) => [
             $pool->throwIf(false)->get('http://foo.com/get'),
         ]);
 
@@ -2784,7 +2778,7 @@ class HttpClientTest extends TestCase
 
         $hitThrowCallback = collect();
 
-        [$exception] = $this->factory->pool(fn($pool) => [
+        [$exception] = $this->factory->pool(fn ($pool) => [
             $pool->throwIf(function ($response) {
                 $this->assertInstanceOf(Response::class, $response);
                 $this->assertSame(403, $response->status());
@@ -2813,7 +2807,7 @@ class HttpClientTest extends TestCase
 
         $hitThrowCallback = collect();
 
-        [$response] = $this->factory->pool(fn($pool) => [
+        [$response] = $this->factory->pool(fn ($pool) => [
             $pool->throwIf(function ($response) {
                 $this->assertInstanceOf(Response::class, $response);
                 $this->assertSame(403, $response->status());
@@ -2836,7 +2830,7 @@ class HttpClientTest extends TestCase
 
         $flag = collect();
 
-        [$exception] = $this->factory->pool(fn($pool) => [
+        [$exception] = $this->factory->pool(fn ($pool) => [
             $pool->throw(function ($exception) use (&$flag) {
                 $flag->push(true);
             })->get('http://foo.com/get'),
@@ -2854,7 +2848,7 @@ class HttpClientTest extends TestCase
             '*' => $this->factory->response(['error'], 403),
         ]);
 
-        [$exception] = $this->factory->pool(fn($pool) => [
+        [$exception] = $this->factory->pool(fn ($pool) => [
             $pool->retry(3)->throw()->get('http://foo.com/get'),
         ]);
 
@@ -2970,7 +2964,7 @@ class HttpClientTest extends TestCase
         $exception = null;
 
         try {
-            $this->factory->get('http://foo.com/api')->throwIfStatus(fn($status) => $status === 400);
+            $this->factory->get('http://foo.com/api')->throwIfStatus(fn ($status) => $status === 400);
         } catch (RequestException $e) {
             $exception = $e;
         }
@@ -3026,7 +3020,7 @@ class HttpClientTest extends TestCase
         $exception = null;
 
         try {
-            $this->factory->get('http://foo.com/api/400')->throwUnlessStatus(fn($status) => $status === 500);
+            $this->factory->get('http://foo.com/api/400')->throwUnlessStatus(fn ($status) => $status === 500);
         } catch (RequestException $e) {
             $exception = $e;
         }
@@ -3058,7 +3052,7 @@ class HttpClientTest extends TestCase
         $exception = null;
 
         try {
-            $this->factory->get('http://foo.com/api/500')->throwUnlessStatus(fn($status) => $status === 500);
+            $this->factory->get('http://foo.com/api/500')->throwUnlessStatus(fn ($status) => $status === 500);
         } catch (RequestException $e) {
             $exception = $e;
         }
@@ -3407,7 +3401,7 @@ class HttpClientTest extends TestCase
 
     public function testItCanGetTheGlobalMiddleware()
     {
-        $this->factory->globalMiddleware($middleware = fn() => null);
+        $this->factory->globalMiddleware($middleware = fn () => null);
 
         $this->assertEquals([$middleware], $this->factory->getGlobalMiddleware());
     }
@@ -3513,7 +3507,7 @@ class HttpClientTest extends TestCase
         $this->assertFalse($allowRedirects);
         $this->assertSame(['true'], $headers['X-Foo']);
 
-        $factory->globalOptions(fn() => [
+        $factory->globalOptions(fn () => [
             'timeout' => 10,
             'headers' => [
                 'X-Foo' => 'false',
