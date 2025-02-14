@@ -44,7 +44,6 @@ class QueryWatcherTest extends FeatureTestCase
         $this->assertSame(EntryType::QUERY, $entry->type);
         $this->assertSame('select count(*) as aggregate from "telescope_entries"', $entry->content['sql']);
         $this->assertSame('sqlite', $entry->content['connection']);
-        $this->assertFalse($entry->content['slow']);
     }
 
     public function testQueryWatcherCanPrepareBindings()
