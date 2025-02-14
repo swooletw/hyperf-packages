@@ -8,6 +8,7 @@ use Hyperf\Tappable\HigherOrderTapProxy;
 use Hyperf\ViewEngine\Contract\DeferringDisplayableValue;
 use SwooleTW\Hyperf\Support\Contracts\Htmlable;
 use SwooleTW\Hyperf\Support\Environment;
+use SwooleTW\Hyperf\Support\Sleep;
 
 if (! function_exists('value')) {
     /**
@@ -260,7 +261,7 @@ if (! function_exists('retry')) {
             $sleepMilliseconds = $backoff[$attempts - 1] ?? $sleepMilliseconds;
 
             if ($sleepMilliseconds) {
-                usleep(value($sleepMilliseconds, $attempts, $e) * 1000);
+                Sleep::usleep(value($sleepMilliseconds, $attempts, $e) * 1000);
             }
 
             goto beginning;

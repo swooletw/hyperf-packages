@@ -39,7 +39,7 @@ class Sleep
     /**
      * The callback that determines if sleeping should continue.
      */
-    public Closure $while;
+    public ?Closure $while = null;
 
     /**
      * The pending duration to sleep.
