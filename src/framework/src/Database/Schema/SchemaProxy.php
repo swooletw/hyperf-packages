@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Database\Schema;
 
 use Hyperf\Context\ApplicationContext;
-use Hyperf\Database\ConnectionInterface;
 use Hyperf\Database\ConnectionResolverInterface;
 use Hyperf\Database\Schema\Builder;
 
@@ -16,23 +15,22 @@ class SchemaProxy
 {
     public function __call(string $name, array $arguments)
     {
-        return ApplicationContext::getContainer()
-            ->get(ConnectionResolverInterface::class)
-            ->connection()
-            ->getSchemaBuilder()
+        return $this->connection()
             ->{$name}(...$arguments);
     }
 
     /**
-     * Create a connection by ConnectionResolver.
+     * Get schema builder with specific connection.
      */
-    public function connection(?string $name = null): ConnectionInterface
+    public function connection(?string $name = null): Builder
     {
         $resolver = ApplicationContext::getContainer()
             ->get(ConnectionResolverInterface::class);
 
-        return $resolver->connection(
+        $connection = $resolver->connection(
             $name ?: $resolver->getDefaultConnection()
         );
+
+        return $connection->getSchemaBuilder();
     }
 }

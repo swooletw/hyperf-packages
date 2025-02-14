@@ -5,15 +5,12 @@ declare(strict_types=1);
 namespace SwooleTW\Hyperf\Support\Facades;
 
 use Closure;
-use Hyperf\Contract\SessionInterface;
 use Psr\Container\ContainerInterface;
 use SwooleTW\Hyperf\Auth\AuthManager;
 use SwooleTW\Hyperf\Auth\Contracts\Authenticatable;
 use SwooleTW\Hyperf\Auth\Contracts\Guard;
 use SwooleTW\Hyperf\Auth\Contracts\StatefulGuard;
 use SwooleTW\Hyperf\Auth\Contracts\UserProvider;
-use SwooleTW\Hyperf\Auth\Events\Authenticated;
-use SwooleTW\Hyperf\Cookie\CookieJar;
 
 /**
  * @method static Guard|StatefulGuard guard(string $name = null)
@@ -38,23 +35,10 @@ use SwooleTW\Hyperf\Cookie\CookieJar;
  * @method static Authenticatable loginUsingId(mixed $id, bool $remember = false)
  * @method static bool onceUsingId(mixed $id)
  * @method static void logout()
- * @method static void logoutOtherDevices(string $password, string $attribute = 'password')
- * @method static bool viaRemember()
- * @method static void rememberUser(Authenticatable $user)
- * @method static void forgetUser()
  * @method static UserProvider|null getProvider()
  * @method static void setProvider(UserProvider $provider)
  * @method static string getName()
- * @method static string getRecallerName()
- * @method static SessionInterface getSession()
- * @method static void setSession(SessionInterface $session)
- * @method static string|null getLastAttempted()
  * @method static bool hasUser()
- * @method static string getCookieJar()
- * @method static void setCookieJar(CookieJar $cookie)
- * @method static Authenticated fired(Authenticatable $user)
- * @method static AuthManager getAuthManager()
- * @method static void setAuthManager(AuthManager $auth)
  *
  * @see AuthManager
  * @see Guard

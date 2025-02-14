@@ -8,6 +8,7 @@ use Closure;
 use FastRoute\Dispatcher;
 use Hyperf\Context\RequestContext;
 use Hyperf\Contract\Arrayable;
+use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\Jsonable;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\HttpServer\CoreMiddleware as HyperfCoreMiddleware;
@@ -15,10 +16,12 @@ use Hyperf\HttpServer\Router\Dispatched;
 use Hyperf\Server\Exception\ServerException;
 use Hyperf\View\RenderInterface;
 use Hyperf\ViewEngine\Contract\ViewInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use SwooleTW\Hyperf\HttpMessage\Exceptions\ServerErrorHttpException;
+use SwooleTW\Hyperf\View\Events\ViewRendered;
 use Swow\Psr7\Message\ResponsePlusInterface;
 
 class CoreMiddleware extends HyperfCoreMiddleware
@@ -31,6 +34,11 @@ class CoreMiddleware extends HyperfCoreMiddleware
     protected function transferToResponse($response, ServerRequestInterface $request): ResponsePlusInterface
     {
         if ($response instanceof ViewInterface) {
+            if ($this->container->get(ConfigInterface::class)->get('view.event.enable', false)) {
+                $this->container->get(EventDispatcherInterface::class)
+                    ->dispatch(new ViewRendered($response));
+            }
+
             return $this->response()
                 ->setHeader('Content-Type', $this->container->get(RenderInterface::class)->getContentType())
                 ->setBody(new SwooleStream((string) $response));

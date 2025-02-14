@@ -28,6 +28,7 @@ use SwooleTW\Hyperf\Router\UrlGenerator;
 use SwooleTW\Hyperf\Session\Contracts\Session as SessionContract;
 use SwooleTW\Hyperf\Support\Contracts\Responsable;
 use SwooleTW\Hyperf\Support\HtmlString;
+use SwooleTW\Hyperf\Support\Mix;
 
 use function SwooleTW\Hyperf\Filesystem\join_paths;
 
@@ -392,6 +393,18 @@ if (! function_exists('logger')) {
         $logger->debug($message, $context);
 
         return null;
+    }
+}
+
+if (! function_exists('mix')) {
+    /**
+     * Get the path to a versioned Mix file.
+     *
+     * @throws \RuntimeException
+     */
+    function mix(string $path, string $manifestDirectory = ''): HtmlString|string
+    {
+        return app(Mix::class)(...func_get_args());
     }
 }
 

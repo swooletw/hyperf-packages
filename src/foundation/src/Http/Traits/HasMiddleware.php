@@ -175,8 +175,6 @@ trait HasMiddleware
 
     /**
      * Add a new middleware to the beginning of the stack if it does not already exist.
-     *
-     * @return $this
      */
     public function prependMiddleware(string $middleware): static
     {
@@ -189,8 +187,6 @@ trait HasMiddleware
 
     /**
      * Add a new middleware to end of the stack if it does not already exist.
-     *
-     * @return $this
      */
     public function pushMiddleware(string $middleware): static
     {
@@ -203,8 +199,6 @@ trait HasMiddleware
 
     /**
      * Prepend the given middleware to the given middleware group.
-     *
-     * @return $this
      *
      * @throws InvalidArgumentException
      */
@@ -224,8 +218,6 @@ trait HasMiddleware
     /**
      * Append the given middleware to the given middleware group.
      *
-     * @return $this
-     *
      * @throws InvalidArgumentException
      */
     public function appendMiddlewareToGroup(string $group, string $middleware): static
@@ -243,8 +235,6 @@ trait HasMiddleware
 
     /**
      * Prepend the given middleware to the middleware priority list.
-     *
-     * @return $this
      */
     public function prependToMiddlewarePriority(string $middleware): static
     {
@@ -257,8 +247,6 @@ trait HasMiddleware
 
     /**
      * Append the given middleware to the middleware priority list.
-     *
-     * @return $this
      */
     public function appendToMiddlewarePriority(string $middleware): static
     {
@@ -287,8 +275,6 @@ trait HasMiddleware
 
     /**
      * Set the application's global middleware.
-     *
-     * @return $this
      */
     public function setGlobalMiddleware(array $middleware): static
     {
@@ -307,12 +293,24 @@ trait HasMiddleware
 
     /**
      * Set the application's middleware groups.
-     *
-     * @return $this
      */
     public function setMiddlewareGroups(array $groups): static
     {
         $this->middlewareGroups = $groups;
+
+        return $this;
+    }
+
+    /**
+     * Add the application's middleware groups.
+     */
+    public function addMiddlewareGroup(string $group, array $middleware): static
+    {
+        if (isset($this->middlewareGroups[$group])) {
+            $middleware = array_merge($this->middlewareGroups[$group], $middleware);
+        }
+
+        $this->middlewareGroups[$group] = $middleware;
 
         return $this;
     }
@@ -327,8 +325,6 @@ trait HasMiddleware
 
     /**
      * Set the application's route middleware aliases.
-     *
-     * @return $this
      */
     public function setMiddlewareAliases(array $aliases): static
     {
@@ -339,8 +335,6 @@ trait HasMiddleware
 
     /**
      * Set the application's middleware priority.
-     *
-     * @return $this
      */
     public function setMiddlewarePriority(array $priority): static
     {

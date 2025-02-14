@@ -7,18 +7,19 @@ namespace SwooleTW\Hyperf\Foundation\Testing\Http;
 use Hyperf\Collection\Arr;
 use Hyperf\Context\Context;
 use Hyperf\Contract\ConfigInterface;
-use Hyperf\Contract\PackerInterface;
 use Hyperf\Dispatcher\HttpDispatcher;
 use Hyperf\ExceptionHandler\ExceptionHandlerDispatcher;
 use Hyperf\HttpMessage\Server\Request as Psr7Request;
 use Hyperf\HttpMessage\Server\Response as Psr7Response;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\HttpMessage\Uri\Uri;
-use Hyperf\HttpServer\Exception\Handler\HttpExceptionHandler;
+use Hyperf\HttpServer\Event\RequestHandled;
+use Hyperf\HttpServer\Event\RequestReceived;
 use Hyperf\HttpServer\ResponseEmitter;
 use Hyperf\Support\Filesystem\Filesystem;
 use Hyperf\Testing\HttpMessage\Upload\UploadedFile;
 use Psr\Container\ContainerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
@@ -30,7 +31,9 @@ use function Hyperf\Collection\data_get;
 
 class TestClient extends HttpKernel
 {
-    protected PackerInterface $packer;
+    protected bool $enableEvents = false;
+
+    protected ?EventDispatcherInterface $event = null;
 
     protected float $waitTimeout = 10.0;
 
@@ -40,6 +43,12 @@ class TestClient extends HttpKernel
 
     public function __construct(ContainerInterface $container, $server = 'http')
     {
+        $this->enableEvents = $container->get(ConfigInterface::class)
+            ->get("server.servers.{$server}.options.enable_request_lifecycle", false);
+        if ($this->enableEvents) {
+            $this->event = $container->get(EventDispatcherInterface::class);
+        }
+
         parent::__construct(
             $container,
             $container->get(HttpDispatcher::class),
@@ -181,6 +190,7 @@ class TestClient extends HttpKernel
             'request_uri' => (new Uri(ltrim($path, '/')))->getPath(),
             'query_string' => http_build_query($query),
             'remote_addr' => '127.0.0.1',
+            'request_time_float' => microtime(true),
         ];
 
         $content = http_build_query($params);
@@ -202,19 +212,32 @@ class TestClient extends HttpKernel
 
     protected function execute(ServerRequestInterface $psr7Request): ResponseInterface
     {
-        $this->persistToContext($psr7Request, new Psr7Response());
+        $this->persistToContext($psr7Request, $psr7Response = new Psr7Response());
 
-        $psr7Request = $this->coreMiddleware->dispatch($psr7Request);
+        $this->event?->dispatch(new RequestReceived(
+            request: $psr7Request,
+            response: $psr7Response,
+            server: $this->serverName
+        ));
 
         try {
+            $request = $this->coreMiddleware->dispatch($psr7Request);
             $psr7Response = $this->dispatcher->dispatch(
                 $psr7Request,
                 $this->getMiddlewareForRequest($psr7Request),
                 $this->coreMiddleware
             );
         } catch (Throwable $throwable) {
-            // Delegate the exception to exception handler.
-            $psr7Response = $this->exceptionHandlerDispatcher->dispatch($throwable, $this->exceptionHandlers);
+            $psr7Response = $this->getResponseForException($throwable);
+        } finally {
+            if (isset($request)) {
+                $this->event?->dispatch(new RequestHandled(
+                    request: $request,
+                    response: $psr7Response,
+                    exception: $throwable ?? null,
+                    server: $this->serverName
+                ));
+            }
         }
 
         return $psr7Response;
@@ -303,13 +326,6 @@ class TestClient extends HttpKernel
         }
 
         return $stream;
-    }
-
-    protected function getDefaultExceptionHandler(): array
-    {
-        return [
-            HttpExceptionHandler::class,
-        ];
     }
 
     protected function getWaiter(): Waiter
