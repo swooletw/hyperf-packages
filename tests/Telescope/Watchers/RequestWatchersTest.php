@@ -8,6 +8,7 @@ use Hyperf\Contract\ConfigInterface;
 use Hyperf\HttpServer\Server as HttpServer;
 use Hyperf\Server\Event;
 use Mockery as m;
+use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use SwooleTW\Hyperf\Http\UploadedFile;
 use SwooleTW\Hyperf\Support\Facades\Response;
 use SwooleTW\Hyperf\Support\Facades\Route;
@@ -150,6 +151,7 @@ class RequestWatchersTest extends FeatureTestCase
         $this->assertSame('third, fourth', $entry->content['response_headers']['X-Foo']);
     }
 
+    #[RequiresPhpExtension('gd')]
     public function testRequestWatcherHandlesFileUploads()
     {
         $image = UploadedFile::fake()->image('avatar.jpg');
@@ -165,6 +167,7 @@ class RequestWatchersTest extends FeatureTestCase
         $this->assertSame($image->getSize() / 1000 . 'KB', $uploadedImage['size']);
     }
 
+    #[RequiresPhpExtension('gd')]
     public function testRequestWatcherHandlesUnlinkedFileUploads()
     {
         $image = UploadedFile::fake()->image('unlinked-image.jpg');
