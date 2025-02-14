@@ -28,7 +28,7 @@ use SwooleTW\Hyperf\HttpClient\Response;
  * @method static PendingRequest dump()
  * @method static PendingRequest maxRedirects(int $max)
  * @method static PendingRequest retry(int $times, Closure|int $sleepMilliseconds = 0, ?callable $when = null, bool $throw = true)
- * @method static PendingRequest sink(string $to)
+ * @method static PendingRequest sink(resource|string $to)
  * @method static PendingRequest stub(callable $callback)
  * @method static PendingRequest timeout(float|int $seconds)
  * @method static PendingRequest withBasicAuth(string $username, string $password)
