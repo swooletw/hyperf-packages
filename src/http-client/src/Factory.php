@@ -16,12 +16,11 @@ use Hyperf\Macroable\Macroable;
 use Hyperf\Stringable\Str;
 use PHPUnit\Framework\Assert as PHPUnit;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use SwooleTW\Hyperf\HttpClient\Contracts\FactoryContract;
 
 /**
  * @mixin PendingRequest
  */
-class Factory implements FactoryContract
+class Factory
 {
     use Macroable {
         __call as macroCall;

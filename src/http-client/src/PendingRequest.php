@@ -736,11 +736,11 @@ class PendingRequest
 
         $shouldRetry = null;
 
-        return retry($this->tries ?? 1, function ($attempt) use ($method, $url, $options, &$shouldRetry, $potentialTries) {
+        return retry($this->tries ?? 1, function ($attempt) use ($method, $url, $options, &$shouldRetry) {
             try {
                 return tap(
                     $this->newResponse($this->sendRequest($method, $url, $options)),
-                    function (Response $response) use ($attempt, &$shouldRetry, $potentialTries) {
+                    function (Response $response) use ($attempt, &$shouldRetry) {
                         $this->populateResponse($response);
 
                         $this->dispatchResponseReceivedEvent($response);

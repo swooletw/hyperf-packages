@@ -7,7 +7,7 @@ namespace SwooleTW\Hyperf\Support\Facades;
 use Closure;
 use GuzzleHttp\Promise\PromiseInterface;
 use Psr\Http\Message\StreamInterface;
-use SwooleTW\Hyperf\HttpClient\Contracts\FactoryContract;
+use SwooleTW\Hyperf\HttpClient\Factory;
 use SwooleTW\Hyperf\HttpClient\PendingRequest;
 use SwooleTW\Hyperf\HttpClient\Response;
 
@@ -60,6 +60,6 @@ class Http extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return FactoryContract::class;
+        return Factory::class;
     }
 }
