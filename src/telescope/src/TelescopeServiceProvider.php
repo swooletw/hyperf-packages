@@ -62,8 +62,8 @@ class TelescopeServiceProvider extends ServiceProvider
     protected function registerPublishing(): void
     {
         $this->publishes([
-            __DIR__ . '/../database/migrations/2025_02_08_000000_create_telescope_entries_table.php' => database_path('migrations/2018_08_08_100000_create_telescope_entries_table.php'),
-        ], 'telescope-views');
+            __DIR__ . '/../database/migrations/2025_02_08_000000_create_telescope_entries_table.php' => database_path('migrations/2025_02_08_000000_create_telescope_entries_table.php'),
+        ], 'telescope-migrations');
 
         $this->publishes([
             __DIR__ . '/../public' => public_path('vendor/telescope'),
