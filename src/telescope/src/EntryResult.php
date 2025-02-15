@@ -44,7 +44,11 @@ class EntryResult implements JsonSerializable
      */
     public function generateAvatar(): static
     {
-        $this->avatar = Avatar::url($this->content['user'] ?? []);
+        if (! is_array($user = $this->content['user'] ?? [])) {
+            $user = [];
+        }
+
+        $this->avatar = Avatar::url($user);
 
         return $this;
     }
