@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use SwooleTW\Hyperf\Telescope\Aspects;
 use SwooleTW\Hyperf\Telescope\Http\Middleware\Authorize;
 use SwooleTW\Hyperf\Telescope\Watchers;
 
@@ -212,5 +213,23 @@ return [
 
         Watchers\ScheduleWatcher::class => env('TELESCOPE_SCHEDULE_WATCHER', true),
         Watchers\ViewWatcher::class => env('TELESCOPE_VIEW_WATCHER', true),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Telescope Aspects
+    |--------------------------------------------------------------------------
+    |
+    | The following array lists the "aspects" that will be registered with
+    | Telescope. Aspects are used to provide additional context to the data
+    | that Telescope collects. Feel free to customize this list as needed.
+    |
+    */
+
+    'aspects' => [
+        Aspects\GuzzleHttpClientAspect::class => [
+            'enabled' => env('TELESCOPE_GUZZLE_HTTP_CLIENT_ASPECT', true),
+            'size_limit' => env('TELESCOPE_GUZZLE_HTTP_CLIENT_RESPONSE_SIZE_LIMIT', 64),
+        ],
     ],
 ];

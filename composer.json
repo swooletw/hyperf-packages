@@ -194,7 +194,8 @@
                 "SwooleTW\\Hyperf\\Notifications\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Queue\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Router\\ConfigProvider",
-                "SwooleTW\\Hyperf\\Session\\ConfigProvider"
+                "SwooleTW\\Hyperf\\Session\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Telescope\\ConfigProvider"
             ],
             "providers": [
                 "SwooleTW\\Hyperf\\Notifications\\NotificationServiceProvider",

@@ -38,6 +38,7 @@
             "dev-master": "0.1-dev"
         },
         "hyperf": {
+            "config": "SwooleTW\\Hyperf\\Telescope\\ConfigProvider",
             "providers": [
                 "SwooleTW\\Hyperf\\Telescope\\TelescopeServiceProvider"
             ]
