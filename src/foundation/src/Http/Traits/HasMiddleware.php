@@ -54,26 +54,39 @@ trait HasMiddleware
     protected array $parsedMiddleware = [];
 
     /**
+     * Cached middleware.
+     */
+    protected array $cachedMiddleware = [];
+
+    /**
      * Get middleware array for request.
      */
     public function getMiddlewareForRequest(ServerRequestInterface $request): array
     {
-        $middleware = $this->middleware;
         $dispatched = $request->getAttribute(Dispatched::class);
 
-        $registeredMiddleware = $dispatched->isFound()
+        $dispatchFound = $dispatched->isFound();
+        $registeredMiddleware = $dispatchFound
             ? MiddlewareManager::get($this->serverName, $dispatched->handler->route, $request->getMethod())
             : [];
 
+        $cacheKey = $dispatchFound
+            ? "{$this->serverName}_{$dispatched->handler->route}_{$request->getMethod()}"
+            : 'none';
+
+        if (! is_null($cache = $this->cachedMiddleware[$cacheKey] ?? null)) {
+            return $cache;
+        }
+
         $middleware = $this->resolveMiddleware(
-            array_merge($middleware, $registeredMiddleware)
+            array_merge($this->middleware, $registeredMiddleware)
         );
 
         if ($middleware && $this->middlewarePriority) {
             $middleware = $this->sortMiddleware($middleware);
         }
 
-        return $middleware;
+        return $this->cachedMiddleware[$cacheKey] = $middleware;
     }
 
     protected function resolveMiddleware(array $middlewares): array
@@ -182,6 +195,8 @@ trait HasMiddleware
             array_unshift($this->middleware, $middleware);
         }
 
+        $this->cachedMiddleware[] = [];
+
         return $this;
     }
 
@@ -193,6 +208,8 @@ trait HasMiddleware
         if (array_search($middleware, $this->middleware) === false) {
             $this->middleware[] = $middleware;
         }
+
+        $this->cachedMiddleware[] = [];
 
         return $this;
     }
@@ -212,6 +229,8 @@ trait HasMiddleware
             array_unshift($this->middlewareGroups[$group], $middleware);
         }
 
+        $this->cachedMiddleware[] = [];
+
         return $this;
     }
 
@@ -230,6 +249,8 @@ trait HasMiddleware
             $this->middlewareGroups[$group][] = $middleware;
         }
 
+        $this->cachedMiddleware[] = [];
+
         return $this;
     }
 
@@ -242,6 +263,8 @@ trait HasMiddleware
             array_unshift($this->middlewarePriority, $middleware);
         }
 
+        $this->cachedMiddleware[] = [];
+
         return $this;
     }
 
@@ -253,6 +276,8 @@ trait HasMiddleware
         if (! in_array($middleware, $this->middlewarePriority)) {
             $this->middlewarePriority[] = $middleware;
         }
+
+        $this->cachedMiddleware[] = [];
 
         return $this;
     }
@@ -280,6 +305,8 @@ trait HasMiddleware
     {
         $this->middleware = $middleware;
 
+        $this->cachedMiddleware[] = [];
+
         return $this;
     }
 
@@ -298,6 +325,8 @@ trait HasMiddleware
     {
         $this->middlewareGroups = $groups;
 
+        $this->cachedMiddleware[] = [];
+
         return $this;
     }
 
@@ -311,6 +340,8 @@ trait HasMiddleware
         }
 
         $this->middlewareGroups[$group] = $middleware;
+
+        $this->cachedMiddleware[] = [];
 
         return $this;
     }
@@ -330,6 +361,8 @@ trait HasMiddleware
     {
         $this->middlewareAliases = $aliases;
 
+        $this->cachedMiddleware[] = [];
+
         return $this;
     }
 
@@ -339,6 +372,8 @@ trait HasMiddleware
     public function setMiddlewarePriority(array $priority): static
     {
         $this->middlewarePriority = $priority;
+
+        $this->cachedMiddleware[] = [];
 
         return $this;
     }
