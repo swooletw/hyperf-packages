@@ -27,6 +27,7 @@
             "Illuminate\\Events\\": "src/event/illuminate/",
             "SwooleTW\\Hyperf\\": "src/framework/src/",
             "SwooleTW\\Hyperf\\Auth\\": "src/auth/src/",
+            "SwooleTW\\Hyperf\\Broadcasting\\": "src/broadcasting/src/",
             "SwooleTW\\Hyperf\\Bus\\": "src/bus/src/",
             "SwooleTW\\Hyperf\\Cache\\": "src/cache/src/",
             "SwooleTW\\Hyperf\\Config\\": "src/config/src/",
@@ -113,6 +114,7 @@
     },
     "replace": {
         "swooletw/hyperf-auth": "self.version",
+        "swooletw/hyperf-broadcasting": "self.version",
         "swooletw/hyperf-bus": "self.version",
         "swooletw/hyperf-cache": "self.version",
         "swooletw/hyperf-config": "self.version",
@@ -147,9 +149,12 @@
         "aws/aws-sdk-php": "Required to use the SES mail driver (^3.235.5).",
         "symfony/http-client": "Required to use the Symfony API mail transports (^6.2).",
         "symfony/mailgun-mailer": "Required to enable support for the Mailgun mail transport (^6.2).",
-        "symfony/postmark-mailer": "Required to enable support for the Postmark mail transport (^6.2)."
+        "symfony/postmark-mailer": "Required to enable support for the Postmark mail transport (^6.2).",
+        "ably/ably-php": "Required to use the Ably broadcast driver (^1.0).",
+        "pusher/pusher-php-server": "Required to use the Pusher broadcast driver (^6.0|^7.0)."
     },
     "require-dev": {
+        "ably/ably-php": "^1.0",
         "fakerphp/faker": "^2.0",
         "filp/whoops": "^2.15",
         "friendsofphp/php-cs-fixer": "^3.57.2",
@@ -166,6 +171,7 @@
         "pda/pheanstalk": "v5.0.9",
         "phpstan/phpstan": "^1.11.5",
         "phpunit/phpunit": "^10.0.7",
+        "pusher/pusher-php-server": "^7.2",
         "swoole/ide-helper": "~5.1.0"
     },
     "config": {
@@ -176,6 +182,7 @@
             "config": [
                 "SwooleTW\\Hyperf\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Auth\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Broadcasting\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Bus\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Cache\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Cookie\\ConfigProvider",

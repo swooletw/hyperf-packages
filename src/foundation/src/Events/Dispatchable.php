@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SwooleTW\Hyperf\Foundation\Events;
 
+use SwooleTW\Hyperf\Broadcasting\PendingBroadcast;
+
 trait Dispatchable
 {
     /**
@@ -19,9 +21,7 @@ trait Dispatchable
      */
     public static function dispatchIf(bool $boolean, mixed ...$arguments): mixed
     {
-        if ($boolean) {
-            return event(new static(...$arguments));
-        }
+        return $boolean ? event(new static(...$arguments)) : null;
     }
 
     /**
@@ -29,8 +29,14 @@ trait Dispatchable
      */
     public static function dispatchUnless(bool $boolean, mixed ...$arguments): mixed
     {
-        if (! $boolean) {
-            return event(new static(...$arguments));
-        }
+        return $boolean ? null : event(new static(...$arguments));
+    }
+
+    /**
+     * Broadcast the event with the given arguments.
+     */
+    public static function broadcast(): PendingBroadcast
+    {
+        return broadcast(new static(...func_get_args()));
     }
 }

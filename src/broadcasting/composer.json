@@ -1,0 +1,64 @@
+{
+    "name": "swooletw/hyperf-broadcasting",
+    "type": "library",
+    "description": "The filesystem package for Hyperf.",
+    "license": "MIT",
+    "keywords": [
+        "php",
+        "hyperf",
+        "swoole",
+        "broadcasting",
+        "laravel-hyperf"
+    ],
+    "authors": [
+        {
+            "name": "Albert Chen",
+            "email": "albert@laravel-hyperf.com",
+            "homepage": "https://albert-chen.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/swooletw/hyperf-packages/issues",
+        "source": "https://github.com/swooletw/hyperf-packages"
+    },
+    "autoload": {
+        "psr-4": {
+            "SwooleTW\\Hyperf\\Broadcasting": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.2",
+        "hyperf/collection": "~3.1.0",
+        "hyperf/contract": "~3.1.0",
+        "hyperf/http-server": "~3.1.0",
+        "hyperf/pool": "~3.1.0",
+        "hyperf/redis": "~3.1.0",
+        "hyperf/stringable": "~3.1.0",
+        "swooletw/hyperf-auth": "dev-master",
+        "swooletw/hyperf-bus": "dev-master",
+        "swooletw/hyperf-cache": "dev-master",
+        "swooletw/hyperf-foundation": "dev-master",
+        "swooletw/hyperf-framework": "dev-master",
+        "swooletw/hyperf-queue": "dev-master",
+        "swooletw/hyperf-router": "dev-master",
+        "swooletw/hyperf-support": "dev-master",
+        "swooletw/object-pool": "dev-master"
+    },
+    "suggest": {
+        "ext-hash": "Required to use the Ably and Pusher broadcast drivers.",
+        "ext-redis": "Required to use the Redis cache and queue drivers (^4.0|^5.0|^6.0).",
+        "ably/ably-php": "Required to use the Ably broadcast driver (^1.0).",
+        "pusher/pusher-php-server": "Required to use the Pusher broadcast driver (^6.0|^7.0)."
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "hyperf": {
+            "config": "SwooleTW\\Hyperf\\Broadcasting\\ConfigProvider"
+        },
+        "branch-alias": {
+            "dev-main": "3.1-dev"
+        }
+    }
+}
