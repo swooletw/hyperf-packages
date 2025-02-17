@@ -153,7 +153,7 @@ return [
             'hidden' => [],
         ],
 
-        // Watchers\ClientRequestWatcher::class => env('TELESCOPE_CLIENT_REQUEST_WATCHER', true),
+        Watchers\ClientRequestWatcher::class => env('TELESCOPE_GUZZLE_HTTP_CLIENT_ASPECT', true),
 
         Watchers\CommandWatcher::class => [
             'enabled' => env('TELESCOPE_COMMAND_WATCHER', true),
@@ -229,7 +229,8 @@ return [
     'aspects' => [
         Aspects\GuzzleHttpClientAspect::class => [
             'enabled' => env('TELESCOPE_GUZZLE_HTTP_CLIENT_ASPECT', true),
-            'size_limit' => env('TELESCOPE_GUZZLE_HTTP_CLIENT_RESPONSE_SIZE_LIMIT', 64),
+            'request_size_limit' => env('TELESCOPE_GUZZLE_HTTP_CLIENT_REQUEST_SIZE_LIMIT', 64),
+            'response_size_limit' => env('TELESCOPE_GUZZLE_HTTP_CLIENT_RESPONSE_SIZE_LIMIT', 64),
         ],
     ],
 ];
