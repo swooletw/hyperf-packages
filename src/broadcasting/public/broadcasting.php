@@ -1,7 +1,10 @@
 <?php
 
-return [
+declare(strict_types=1);
 
+use function Hyperf\Support\env;
+
+return [
     /*
     |--------------------------------------------------------------------------
     | Default Broadcaster
@@ -29,7 +32,6 @@ return [
     */
 
     'connections' => [
-
         'reverb' => [
             'driver' => 'reverb',
             'key' => env('REVERB_APP_KEY'),
@@ -53,7 +55,7 @@ return [
             'app_id' => env('PUSHER_APP_ID'),
             'options' => [
                 'cluster' => env('PUSHER_APP_CLUSTER'),
-                'host' => env('PUSHER_HOST') ?: 'api-'.env('PUSHER_APP_CLUSTER', 'mt1').'.pusher.com',
+                'host' => env('PUSHER_HOST') ?: 'api-' . env('PUSHER_APP_CLUSTER', 'mt1') . '.pusher.com',
                 'port' => env('PUSHER_PORT', 443),
                 'scheme' => env('PUSHER_SCHEME', 'https'),
                 'encrypted' => true,
@@ -62,11 +64,23 @@ return [
             'client_options' => [
                 // Guzzle client options: https://docs.guzzlephp.org/en/stable/request-options.html
             ],
+            'pool' => [
+                'min_objects' => 1,
+                'max_objects' => 10,
+                'wait_timeout' => 3.0,
+                'max_lifetime' => 60.0,
+            ],
         ],
 
         'ably' => [
             'driver' => 'ably',
             'key' => env('ABLY_KEY'),
+            'pool' => [
+                'min_objects' => 1,
+                'max_objects' => 10,
+                'wait_timeout' => 3.0,
+                'max_lifetime' => 60.0,
+            ],
         ],
 
         'log' => [

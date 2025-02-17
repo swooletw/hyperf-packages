@@ -28,6 +28,7 @@ use SwooleTW\Hyperf\Broadcasting\Contracts\ShouldBroadcastNow;
 use SwooleTW\Hyperf\Bus\Contracts\Dispatcher;
 use SwooleTW\Hyperf\Bus\UniqueLock;
 use SwooleTW\Hyperf\Cache\Contracts\Factory as Cache;
+use SwooleTW\Hyperf\Foundation\Http\Kernel;
 use SwooleTW\Hyperf\ObjectPool\Traits\HasPoolProxy;
 use SwooleTW\Hyperf\Queue\Contracts\Factory as Queue;
 
@@ -71,17 +72,22 @@ class BroadcastManager implements BroadcastingFactoryContract
      */
     public function routes(array $attributes = []): void
     {
-        if (class_exists('SwooleTW\Hyperf\Foundation\Http\Kernel')) {
+        if ($this->app->has(Kernel::class)) {
             $attributes = $attributes ?: ['middleware' => ['web']];
         }
 
-        $this->app->get(RouterDispatcherFactory::class)->getRouter('http')
-            ->addRoute(
-                ['GET', 'POST'],
-                '/broadcasting/auth',
-                [BroadcastController::class, 'authenticate'],
-                $attributes,
-            );
+        $kernels = $this->app->get(ConfigInterface::class)
+            ->get('server.kernels', []);
+        foreach (array_keys($kernels) as $kernel) {
+            $this->app->get(RouterDispatcherFactory::class)
+                ->getRouter($kernel)
+                ->addRoute(
+                    ['GET', 'POST'],
+                    '/broadcasting/auth',
+                    [BroadcastController::class, 'authenticate'],
+                    $attributes,
+                );
+        }
     }
 
     /**
