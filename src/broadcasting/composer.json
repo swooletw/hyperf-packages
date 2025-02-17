@@ -1,5 +1,5 @@
 {
-    "name": "swooletw/hyperf-filesystem",
+    "name": "swooletw/hyperf-broadcasting",
     "type": "library",
     "description": "The filesystem package for Hyperf.",
     "license": "MIT",

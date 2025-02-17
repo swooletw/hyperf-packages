@@ -14,6 +14,14 @@ class ConfigProvider
             'dependencies' => [
                 Factory::class => BroadcastManager::class,
             ],
+            'publish' => [
+                [
+                    'id' => 'config',
+                    'description' => 'The configuration file of broadcast.',
+                    'source' => __DIR__ . '/../publish/broadcasting.php',
+                    'destination' => BASE_PATH . '/config/autoload/broadcasting.php',
+                ],
+            ],
         ];
     }
 }

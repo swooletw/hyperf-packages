@@ -75,7 +75,7 @@ class BroadcastManager implements BroadcastingFactoryContract
             $attributes = $attributes ?: ['middleware' => ['web']];
         }
 
-        $this->app->get(RouterDispatcherFactory::class)->getRouter()
+        $this->app->get(RouterDispatcherFactory::class)->getRouter('http')
             ->addRoute(
                 ['GET', 'POST'],
                 '/broadcasting/auth',
