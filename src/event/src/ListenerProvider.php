@@ -17,25 +17,36 @@ class ListenerProvider implements ListenerProviderContract
 
     public array $wildcards = [];
 
+    public array $listenersCache = [];
+
     /**
      * Get all of the listeners for a given event name.
      */
     public function getListenersForEvent(object|string $event): iterable
     {
-        $listeners = $this->getListenersUsingCondition(
-            $this->listeners,
-            fn ($_, $key) => is_string($event) ? $event === $key : $event instanceof $key
-        );
-
         $eventName = is_string($event) ? $event : get_class($event);
-        $wildcards = $this->getListenersUsingCondition(
-            $this->wildcards,
-            fn ($_, $key) => Str::is($key, $eventName)
-        );
+
+        $listeners = [];
+        if (! is_null($cache = $this->listenersCache[$eventName] ?? null)) {
+            $listeners = $cache;
+        } else {
+            $listeners = $this->getListenersUsingCondition(
+                $this->listeners,
+                fn ($_, $key) => is_string($event) ? $event === $key : $event instanceof $key
+            );
+
+            $wildcards = $this->getListenersUsingCondition(
+                $this->wildcards,
+                fn ($_, $key) => Str::is($key, $eventName)
+            );
+
+            $listeners = $listeners->merge($wildcards)->toArray();
+            $this->listenersCache[$eventName] = $listeners;
+        }
 
         $queue = new SplPriorityQueue();
 
-        foreach ($listeners->merge($wildcards) as $index => $listener) {
+        foreach ($listeners as $index => $listener) {
             $queue->insert($listener, $index * -1);
         }
 
@@ -50,8 +61,9 @@ class ListenerProvider implements ListenerProviderContract
         array|callable|string $listener,
         int $priority = ListenerData::DEFAULT_PRIORITY
     ): void {
-        $listenerData = new ListenerData($event, $listener, $priority);
+        $this->listenersCache = [];
 
+        $listenerData = new ListenerData($event, $listener, $priority);
         if ($this->isWildcardEvent($event)) {
             $this->wildcards[$event][] = $listenerData;
 
@@ -74,6 +86,8 @@ class ListenerProvider implements ListenerProviderContract
      */
     public function forget(string $event): void
     {
+        $this->listenersCache = [];
+
         if ($this->isWildcardEvent($event)) {
             unset($this->wildcards[$event]);
 

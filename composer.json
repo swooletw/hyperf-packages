@@ -50,7 +50,8 @@
             "SwooleTW\\Hyperf\\Queue\\": "src/queue/src/",
             "SwooleTW\\Hyperf\\Router\\": "src/router/src/",
             "SwooleTW\\Hyperf\\Session\\": "src/session/src/",
-            "SwooleTW\\Hyperf\\Support\\": "src/support/src/"
+            "SwooleTW\\Hyperf\\Support\\": "src/support/src/",
+            "SwooleTW\\Hyperf\\Telescope\\": "src/telescope/src/"
         },
         "files": [
             "src/auth/src/Functions.php",
@@ -137,7 +138,8 @@
         "swooletw/hyperf-queue": "self.version",
         "swooletw/hyperf-router": "self.version",
         "swooletw/hyperf-session": "self.version",
-        "swooletw/hyperf-support": "self.version"
+        "swooletw/hyperf-support": "self.version",
+        "swooletw/hyperf-telescope": "self.version"
     },
     "suggest": {
         "hyperf/redis": "Required to use redis driver. (^3.1).",
@@ -199,10 +201,12 @@
                 "SwooleTW\\Hyperf\\Notifications\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Queue\\ConfigProvider",
                 "SwooleTW\\Hyperf\\Router\\ConfigProvider",
-                "SwooleTW\\Hyperf\\Session\\ConfigProvider"
+                "SwooleTW\\Hyperf\\Session\\ConfigProvider",
+                "SwooleTW\\Hyperf\\Telescope\\ConfigProvider"
             ],
             "providers": [
-                "SwooleTW\\Hyperf\\Notifications\\NotificationServiceProvider"
+                "SwooleTW\\Hyperf\\Notifications\\NotificationServiceProvider",
+                "SwooleTW\\Hyperf\\Telescope\\TelescopeServiceProvider"
             ]
         },
         "branch-alias": {

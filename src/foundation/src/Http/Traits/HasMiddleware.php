@@ -54,26 +54,39 @@ trait HasMiddleware
     protected array $parsedMiddleware = [];
 
     /**
+     * Cached middleware.
+     */
+    protected array $cachedMiddleware = [];
+
+    /**
      * Get middleware array for request.
      */
     public function getMiddlewareForRequest(ServerRequestInterface $request): array
     {
-        $middleware = $this->middleware;
         $dispatched = $request->getAttribute(Dispatched::class);
 
-        $registeredMiddleware = $dispatched->isFound()
+        $dispatchFound = $dispatched->isFound();
+        $registeredMiddleware = $dispatchFound
             ? MiddlewareManager::get($this->serverName, $dispatched->handler->route, $request->getMethod())
             : [];
 
+        $cacheKey = $dispatchFound
+            ? "{$this->serverName}_{$dispatched->handler->route}_{$request->getMethod()}"
+            : 'none';
+
+        if (! is_null($cache = $this->cachedMiddleware[$cacheKey] ?? null)) {
+            return $cache;
+        }
+
         $middleware = $this->resolveMiddleware(
-            array_merge($middleware, $registeredMiddleware)
+            array_merge($this->middleware, $registeredMiddleware)
         );
 
         if ($middleware && $this->middlewarePriority) {
             $middleware = $this->sortMiddleware($middleware);
         }
 
-        return $middleware;
+        return $this->cachedMiddleware[$cacheKey] = $middleware;
     }
 
     protected function resolveMiddleware(array $middlewares): array
@@ -175,8 +188,6 @@ trait HasMiddleware
 
     /**
      * Add a new middleware to the beginning of the stack if it does not already exist.
-     *
-     * @return $this
      */
     public function prependMiddleware(string $middleware): static
     {
@@ -184,13 +195,13 @@ trait HasMiddleware
             array_unshift($this->middleware, $middleware);
         }
 
+        $this->cachedMiddleware[] = [];
+
         return $this;
     }
 
     /**
      * Add a new middleware to end of the stack if it does not already exist.
-     *
-     * @return $this
      */
     public function pushMiddleware(string $middleware): static
     {
@@ -198,13 +209,13 @@ trait HasMiddleware
             $this->middleware[] = $middleware;
         }
 
+        $this->cachedMiddleware[] = [];
+
         return $this;
     }
 
     /**
      * Prepend the given middleware to the given middleware group.
-     *
-     * @return $this
      *
      * @throws InvalidArgumentException
      */
@@ -218,13 +229,13 @@ trait HasMiddleware
             array_unshift($this->middlewareGroups[$group], $middleware);
         }
 
+        $this->cachedMiddleware[] = [];
+
         return $this;
     }
 
     /**
      * Append the given middleware to the given middleware group.
-     *
-     * @return $this
      *
      * @throws InvalidArgumentException
      */
@@ -238,13 +249,13 @@ trait HasMiddleware
             $this->middlewareGroups[$group][] = $middleware;
         }
 
+        $this->cachedMiddleware[] = [];
+
         return $this;
     }
 
     /**
      * Prepend the given middleware to the middleware priority list.
-     *
-     * @return $this
      */
     public function prependToMiddlewarePriority(string $middleware): static
     {
@@ -252,19 +263,21 @@ trait HasMiddleware
             array_unshift($this->middlewarePriority, $middleware);
         }
 
+        $this->cachedMiddleware[] = [];
+
         return $this;
     }
 
     /**
      * Append the given middleware to the middleware priority list.
-     *
-     * @return $this
      */
     public function appendToMiddlewarePriority(string $middleware): static
     {
         if (! in_array($middleware, $this->middlewarePriority)) {
             $this->middlewarePriority[] = $middleware;
         }
+
+        $this->cachedMiddleware[] = [];
 
         return $this;
     }
@@ -287,12 +300,12 @@ trait HasMiddleware
 
     /**
      * Set the application's global middleware.
-     *
-     * @return $this
      */
     public function setGlobalMiddleware(array $middleware): static
     {
         $this->middleware = $middleware;
+
+        $this->cachedMiddleware[] = [];
 
         return $this;
     }
@@ -307,12 +320,28 @@ trait HasMiddleware
 
     /**
      * Set the application's middleware groups.
-     *
-     * @return $this
      */
     public function setMiddlewareGroups(array $groups): static
     {
         $this->middlewareGroups = $groups;
+
+        $this->cachedMiddleware[] = [];
+
+        return $this;
+    }
+
+    /**
+     * Add the application's middleware groups.
+     */
+    public function addMiddlewareGroup(string $group, array $middleware): static
+    {
+        if (isset($this->middlewareGroups[$group])) {
+            $middleware = array_merge($this->middlewareGroups[$group], $middleware);
+        }
+
+        $this->middlewareGroups[$group] = $middleware;
+
+        $this->cachedMiddleware[] = [];
 
         return $this;
     }
@@ -327,24 +356,24 @@ trait HasMiddleware
 
     /**
      * Set the application's route middleware aliases.
-     *
-     * @return $this
      */
     public function setMiddlewareAliases(array $aliases): static
     {
         $this->middlewareAliases = $aliases;
+
+        $this->cachedMiddleware[] = [];
 
         return $this;
     }
 
     /**
      * Set the application's middleware priority.
-     *
-     * @return $this
      */
     public function setMiddlewarePriority(array $priority): static
     {
         $this->middlewarePriority = $priority;
+
+        $this->cachedMiddleware[] = [];
 
         return $this;
     }

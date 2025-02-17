@@ -1,0 +1,51 @@
+{
+    "name": "swooletw/hyperf-telescope",
+    "description": "The telescope package for Laravel Hyperf.",
+    "license": "MIT",
+    "keywords": [
+        "php",
+        "hyperf",
+        "telescope",
+        "swoole",
+        "laravel-hyperf"
+    ],
+    "support": {
+        "issues": "https://github.com/swooletw/hyperf-packages/issues",
+        "source": "https://github.com/swooletw/hyperf-packages"
+    },
+    "authors": [
+        {
+            "name": "Albert Chen",
+            "email": "albert@laravel-hyperf.com",
+            "homepage": "https://albert-chen.com"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "hyperf/context": "~3.1.0",
+        "hyperf/support": "~3.1.0",
+        "hyperf/stringable": "~3.1.0",
+        "hyperf/tappable": "~3.1.0",
+        "hyperf/collection": "~3.1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "SwooleTW\\Hyperf\\Telescope\\": "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1-dev"
+        },
+        "hyperf": {
+            "config": "SwooleTW\\Hyperf\\Telescope\\ConfigProvider",
+            "providers": [
+                "SwooleTW\\Hyperf\\Telescope\\TelescopeServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev"
+}
