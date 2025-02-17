@@ -9,6 +9,7 @@ use Hyperf\Stringable\Str;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use ReflectionFunction;
+use SwooleTW\Hyperf\Broadcasting\Contracts\ShouldBroadcast;
 use SwooleTW\Hyperf\Queue\Contracts\ShouldQueue;
 use SwooleTW\Hyperf\Telescope\ExtractProperties;
 use SwooleTW\Hyperf\Telescope\ExtractTags;
@@ -45,10 +46,9 @@ class EventWatcher extends Watcher
             'name' => $eventName,
             'payload' => empty($formattedPayload) ? null : $formattedPayload,
             'listeners' => $this->formatListeners($eventName),
-            'broadcast' => false,
-            // 'broadcast' => class_exists($eventName)
-            //     ? in_array(ShouldBroadcast::class, (array) class_implements($eventName))
-            //     : false,
+            'broadcast' => class_exists($eventName)
+                ? in_array(ShouldBroadcast::class, (array) class_implements($eventName))
+                : false,
         ])->tags(class_exists($eventName) && isset($payload[0]) ? ExtractTags::from($payload[0]) : []));
     }
 
