@@ -29,11 +29,6 @@ class Response implements ArrayAccess, Stringable
     }
 
     /**
-     * The underlying PSR response.
-     */
-    protected ResponseInterface $response;
-
-    /**
      * The decoded JSON response.
      */
     protected array $decoded = [];
@@ -51,9 +46,8 @@ class Response implements ArrayAccess, Stringable
     /**
      * Create a new response instance.
      */
-    public function __construct(ResponseInterface $response)
+    public function __construct(protected ResponseInterface $response)
     {
-        $this->response = $response;
     }
 
     /**

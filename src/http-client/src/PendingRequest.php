@@ -122,7 +122,7 @@ class PendingRequest
      *
      * @var null|callable
      */
-    protected $retryWhenCallback;
+    protected $retryWhenCallback = null;
 
     /**
      * The callbacks that should execute before the request is sent.
@@ -962,7 +962,7 @@ class PendingRequest
     {
         $clientMethod = $this->async ? 'requestAsync' : 'request';
 
-        $laravelData = $this->parseRequestData($method, $url, $options);
+        $data = $this->parseRequestData($method, $url, $options);
         $onStats = function (TransferStats $transferStats) {
             if (($callback = ($this->options['on_stats'] ?? false)) instanceof Closure) {
                 $transferStats = $callback($transferStats) ?: $transferStats;
@@ -972,7 +972,7 @@ class PendingRequest
         };
 
         $mergedOptions = $this->normalizeRequestOptions($this->mergeOptions([
-            'laravel_data' => $laravelData,
+            'data' => $data,
             'on_stats' => $onStats,
         ], $options));
 
@@ -988,25 +988,25 @@ class PendingRequest
             return [];
         }
 
-        $laravelData = $options[$this->bodyFormat] ?? $options['query'] ?? [];
+        $data = $options[$this->bodyFormat] ?? $options['query'] ?? [];
 
         $urlString = (new Stringable($url));
 
-        if (empty($laravelData) && $method === 'GET' && $urlString->contains('?')) {
-            $laravelData = (string) $urlString->after('?');
+        if (empty($data) && $method === 'GET' && $urlString->contains('?')) {
+            $data = (string) $urlString->after('?');
         }
 
-        if (is_string($laravelData)) {
-            parse_str($laravelData, $parsedData);
+        if (is_string($data)) {
+            parse_str($data, $parsedData);
 
-            $laravelData = is_array($parsedData) ? $parsedData : [];
+            $data = is_array($parsedData) ? $parsedData : [];
         }
 
-        if ($laravelData instanceof JsonSerializable) {
-            $laravelData = $laravelData->jsonSerialize();
+        if ($data instanceof JsonSerializable) {
+            $data = $data->jsonSerialize();
         }
 
-        return is_array($laravelData) ? $laravelData : [];
+        return is_array($data) ? $data : [];
     }
 
     /**
@@ -1119,7 +1119,7 @@ class PendingRequest
 
                 return $promise->then(function ($response) use ($request, $options) {
                     $this->factory?->recordRequestResponsePair(
-                        (new Request($request))->withData($options['laravel_data']),
+                        (new Request($request))->withData($options['data']),
                         $this->newResponse($response)
                     );
 
@@ -1138,7 +1138,7 @@ class PendingRequest
             return function ($request, $options) use ($handler) {
                 $response = ($this->stubCallbacks ?? new Collection())
                     ->map
-                    ->__invoke((new Request($request))->withData($options['laravel_data']), $options)
+                    ->__invoke((new Request($request))->withData($options['data']), $options)
                     ->filter()
                     ->first();
 
@@ -1195,7 +1195,7 @@ class PendingRequest
             $this->beforeSendingCallbacks->each(function ($callback) use (&$request, $options) {
                 $callbackResult = call_user_func(
                     $callback,
-                    (new Request($request))->withData($options['laravel_data']),
+                    (new Request($request))->withData($options['data']),
                     $options,
                     $this
                 );

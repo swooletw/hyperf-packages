@@ -17,6 +17,8 @@ use Hyperf\Stringable\Str;
 use PHPUnit\Framework\Assert as PHPUnit;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
+use function Hyperf\Tappable\tap;
+
 /**
  * @mixin PendingRequest
  */
@@ -25,11 +27,6 @@ class Factory
     use Macroable {
         __call as macroCall;
     }
-
-    /**
-     * The event dispatcher implementation.
-     */
-    protected ?EventDispatcherInterface $dispatcher;
 
     /**
      * The middleware to apply to every request.
@@ -69,10 +66,8 @@ class Factory
     /**
      * Create a new factory instance.
      */
-    public function __construct(?EventDispatcherInterface $dispatcher = null)
+    public function __construct(protected ?EventDispatcherInterface $dispatcher = null)
     {
-        $this->dispatcher = $dispatcher;
-
         $this->stubCallbacks = new Collection();
     }
 

@@ -18,7 +18,7 @@ class Request implements ArrayAccess
     /**
      * The decoded payload for the request.
      */
-    protected array $data;
+    protected array $data = [];
 
     /**
      * Create a new request instance.
