@@ -122,7 +122,7 @@ class PendingRequest
      *
      * @var null|callable
      */
-    protected $retryWhenCallback = null;
+    protected $retryWhenCallback;
 
     /**
      * The callbacks that should execute before the request is sent.
